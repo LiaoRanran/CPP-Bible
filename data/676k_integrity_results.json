@@ -1,0 +1,5464 @@
+{
+ "schema": "queyi-audit-676k-integrity/v1",
+ "generated_by": "tools/audit_676k_integrity.py",
+ "E1_index_consistency": {
+  "expA": {
+   "index_ids_key": "index[].id",
+   "declared_count_field": 100,
+   "declared_count": 100,
+   "actual_json": 100,
+   "actual_cpp_samples": 100,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expB": {
+   "index_ids_key": "samples[].sample_id",
+   "declared_count_field": 94,
+   "declared_count": 94,
+   "actual_json": 94,
+   "actual_cpp_samples": 94,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expC": {
+   "index_ids_key": "index[].id",
+   "declared_count_field": 200,
+   "declared_count": 200,
+   "actual_json": 200,
+   "actual_cpp_samples": 200,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expD": {
+   "index_ids_key": "samples[].sample_id",
+   "declared_count_field": 200,
+   "declared_count": 200,
+   "actual_json": 200,
+   "actual_cpp_samples": 200,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expE": {
+   "index_ids_key": "samples[].sample_id",
+   "declared_count_field": 200,
+   "declared_count": 200,
+   "actual_json": 200,
+   "actual_cpp_samples": 200,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expF": {
+   "index_ids_key": "index[].id",
+   "declared_count_field": 149,
+   "declared_count": 149,
+   "actual_json": 149,
+   "actual_cpp_samples": 149,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  },
+  "expG": {
+   "index_ids_key": "samples[].sample_id",
+   "declared_count_field": 99,
+   "declared_count": 99,
+   "actual_json": 99,
+   "actual_cpp_samples": 99,
+   "count_match": true,
+   "dup_ids": [],
+   "missing_json": [],
+   "missing_cpp": [],
+   "extra_json_not_in_index": [],
+   "type_dist_mismatch": {}
+  }
+ },
+ "E2_field_completeness": {
+  "n_checked_expansion_json": 1042,
+  "field_presence": {
+   "sample_id": 1042,
+   "defect_type": 1042,
+   "defect_location": 1042,
+   "expected_verdict": 1042,
+   "planted": 1042,
+   "notes": 1042
+  },
+  "missing_field": [],
+  "line_out_of_range": [],
+  "bad_expected_verdict": [],
+  "bad_planted_type": [],
+  "planted_false_without_url": [],
+  "defect_location_missing_parts": [
+   {
+    "batch": "expA",
+    "file": "sample_001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expA",
+    "file": "sample_100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expB",
+    "file": "sample_B100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_101.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_102.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_103.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_104.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_105.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_106.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_107.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_108.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_109.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_110.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_111.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_112.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_113.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_114.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_115.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_116.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_117.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_118.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_119.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_120.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_121.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_122.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_123.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_124.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_125.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_126.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_127.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_128.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_129.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_130.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_131.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_132.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_133.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_134.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_135.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_136.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_137.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_138.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_139.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_140.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_141.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_142.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_143.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_144.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_145.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_146.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_147.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_148.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_149.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_150.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_151.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_152.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_153.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_154.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_155.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_156.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_157.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_158.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_159.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_160.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_161.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_162.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_163.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_164.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_165.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_166.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_167.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_168.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_169.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_170.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_171.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_172.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_173.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_174.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_175.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_176.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_177.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_178.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_179.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_180.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_181.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_182.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_183.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_184.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_185.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_186.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_187.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_188.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_189.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_190.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_191.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_192.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_193.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_194.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_195.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_196.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_197.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_198.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_199.json",
+    "part": "file"
+   },
+   {
+    "batch": "expC",
+    "file": "sample_200.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D101.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D102.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D103.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D104.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D105.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D106.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D107.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D108.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D109.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D110.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D111.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D112.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D113.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D114.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D115.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D116.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D117.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D118.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D119.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D120.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D121.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D122.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D123.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D124.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D125.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D126.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D127.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D128.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D129.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D130.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D131.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D132.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D133.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D134.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D135.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D136.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D137.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D138.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D139.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D140.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D141.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D142.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D143.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D144.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D145.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D146.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D147.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D148.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D149.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D150.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D151.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D152.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D153.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D154.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D155.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D156.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D157.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D158.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D159.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D160.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D161.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D162.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D163.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D164.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D165.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D166.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D167.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D168.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D169.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D170.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D171.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D172.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D173.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D174.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D175.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D176.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D177.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D178.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D179.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D180.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D181.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D182.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D183.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D184.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D185.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D186.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D187.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D188.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D189.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D190.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D191.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D192.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D193.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D194.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D195.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D196.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D197.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D198.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D199.json",
+    "part": "file"
+   },
+   {
+    "batch": "expD",
+    "file": "sample_D200.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E101.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E102.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E103.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E104.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E105.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E106.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E107.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E108.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E109.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E110.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E111.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E112.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E113.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E114.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E115.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E116.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E117.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E118.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E119.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E120.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E121.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E122.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E123.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E124.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E125.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E126.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E127.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E128.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E129.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E130.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E131.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E132.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E133.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E134.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E135.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E136.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E137.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E138.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E139.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E140.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E141.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E142.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E143.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E144.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E145.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E146.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E147.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E148.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E149.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E150.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E151.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E152.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E153.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E154.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E155.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E156.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E157.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E158.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E159.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E160.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E161.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E162.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E163.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E164.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E165.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E166.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E167.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E168.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E169.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E170.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E171.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E172.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E173.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E174.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E175.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E176.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E177.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E178.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E179.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E180.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E181.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E182.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E183.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E184.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E185.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E186.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E187.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E188.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E189.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E190.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E191.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E192.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E193.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E194.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E195.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E196.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E197.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E198.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E199.json",
+    "part": "file"
+   },
+   {
+    "batch": "expE",
+    "file": "sample_E200.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F099.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F100.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F101.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F102.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F104.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F105.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F106.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F107.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F108.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F109.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F110.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F111.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F112.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F113.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F114.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F115.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F116.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F117.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F118.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F119.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F120.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F121.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F122.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F123.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F124.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F125.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F126.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F128.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F130.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F132.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F134.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F136.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F138.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F140.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F141.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F143.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F144.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F146.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F147.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F149.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F150.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F152.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F153.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F155.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F156.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F158.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F159.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F161.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F162.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F164.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F165.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F167.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F168.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F170.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F171.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F172.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F173.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F174.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F175.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F176.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F177.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F178.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F179.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F180.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F181.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F183.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F185.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F187.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F189.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F192.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F194.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F196.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F198.json",
+    "part": "file"
+   },
+   {
+    "batch": "expF",
+    "file": "sample_F200.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G001.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G002.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G003.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G004.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G005.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G006.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G007.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G008.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G009.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G010.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G011.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G012.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G013.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G014.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G015.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G016.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G017.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G018.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G019.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G020.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G021.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G022.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G023.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G024.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G025.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G026.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G027.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G028.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G029.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G030.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G031.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G032.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G033.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G034.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G035.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G036.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G037.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G038.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G039.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G040.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G041.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G042.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G043.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G044.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G045.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G046.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G047.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G048.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G049.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G050.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G051.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G052.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G053.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G054.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G055.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G056.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G057.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G058.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G059.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G060.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G061.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G062.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G063.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G064.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G065.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G066.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G067.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G068.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G069.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G070.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G071.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G072.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G073.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G074.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G075.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G076.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G077.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G078.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G079.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G080.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G081.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G082.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G083.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G084.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G085.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G086.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G087.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G088.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G089.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G090.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G091.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G092.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G093.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G094.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G095.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G096.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G097.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G098.json",
+    "part": "file"
+   },
+   {
+    "batch": "expG",
+    "file": "sample_G099.json",
+    "part": "file"
+   }
+  ]
+ },
+ "E2_manifest_layer": {
+  "n": 105,
+  "no_defect_type": [],
+  "no_expected_verdict": [],
+  "bad_verdict": [],
+  "planted_null": [
+   "corpus:d3f-01",
+   "corpus:d3f-02",
+   "corpus:d3f-03",
+   "corpus:d3f-04",
+   "corpus:d3f-05",
+   "corpus:d3f-06",
+   "corpus:d3f-07",
+   "corpus:d3f-08",
+   "corpus:d3f-09",
+   "corpus:d3f-10",
+   "corpus:d3f-11",
+   "corpus:d3f-12",
+   "corpus:d3f-13",
+   "corpus:d3f-14",
+   "corpus:d3f-15",
+   "corpus:d3f-16",
+   "corpus:d3e-01",
+   "corpus:d3e-02",
+   "corpus:d3e-03",
+   "corpus:d3e-04",
+   "corpus:d3e-05",
+   "corpus:d3e-06",
+   "corpus:d3e-07",
+   "corpus:d3e-08",
+   "corpus:d3e-09",
+   "corpus:d3e-10",
+   "corpus:d3e-11",
+   "corpus:d3e-12",
+   "corpus:d3e-13",
+   "corpus:d3e-14",
+   "corpus:d3e-19",
+   "corpus:d3e-20",
+   "corpus:d3-01",
+   "corpus:d3-03",
+   "corpus:d3-04",
+   "corpus:d3-05",
+   "corpus:d3-06",
+   "corpus:d3-07",
+   "corpus:d3-08",
+   "corpus:d3-09",
+   "corpus:d3-10",
+   "corpus:d3-11",
+   "corpus:d3-12",
+   "corpus:d3-14",
+   "corpus:d3-15",
+   "corpus:d3-18",
+   "corpus:d3-19",
+   "corpus:d3-21",
+   "corpus:d3-22",
+   "corpus:d3-23",
+   "corpus:d3-24",
+   "corpus:d3-25",
+   "corpus:d3-26",
+   "corpus:d3-27",
+   "corpus:d3-28",
+   "corpus:d3-29",
+   "corpus:d3-30",
+   "corpus:d3-31",
+   "corpus:d3-32",
+   "corpus:d3-33",
+   "corpus:d3-34",
+   "corpus:d3-35",
+   "corpus:d3-36",
+   "corpus:d3-37"
+  ],
+  "planted_false": [],
+  "no_files": [
+   "corpus:d3f-01",
+   "corpus:d3f-02",
+   "corpus:d3f-03",
+   "corpus:d3f-04",
+   "corpus:d3f-05",
+   "corpus:d3f-06",
+   "corpus:d3f-07",
+   "corpus:d3f-08",
+   "corpus:d3f-09",
+   "corpus:d3f-10",
+   "corpus:d3f-11",
+   "corpus:d3f-12",
+   "corpus:d3f-13",
+   "corpus:d3f-14",
+   "corpus:d3f-15",
+   "corpus:d3f-16",
+   "corpus:d3e-01",
+   "corpus:d3e-02",
+   "corpus:d3e-03",
+   "corpus:d3e-04",
+   "corpus:d3e-05",
+   "corpus:d3e-06",
+   "corpus:d3e-07",
+   "corpus:d3e-08",
+   "corpus:d3e-09",
+   "corpus:d3e-10",
+   "corpus:d3e-11",
+   "corpus:d3e-12",
+   "corpus:d3e-13",
+   "corpus:d3e-14",
+   "corpus:d3e-19",
+   "corpus:d3e-20",
+   "corpus:d3-01",
+   "corpus:d3-03",
+   "corpus:d3-04",
+   "corpus:d3-05",
+   "corpus:d3-06",
+   "corpus:d3-07",
+   "corpus:d3-08",
+   "corpus:d3-09",
+   "corpus:d3-10",
+   "corpus:d3-11",
+   "corpus:d3-12",
+   "corpus:d3-14",
+   "corpus:d3-15",
+   "corpus:d3-18",
+   "corpus:d3-19",
+   "corpus:d3-21",
+   "corpus:d3-22",
+   "corpus:d3-23",
+   "corpus:d3-24",
+   "corpus:d3-25",
+   "corpus:d3-26",
+   "corpus:d3-27",
+   "corpus:d3-28",
+   "corpus:d3-29",
+   "corpus:d3-30",
+   "corpus:d3-31",
+   "corpus:d3-32",
+   "corpus:d3-33",
+   "corpus:d3-34",
+   "corpus:d3-35",
+   "corpus:d3-36",
+   "corpus:d3-37"
+  ]
+ }
+}

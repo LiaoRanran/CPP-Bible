@@ -1,0 +1,1589 @@
+{
+ "schema": "queyi-audit-676k-sample/v1",
+ "generated_by": "tools/audit_676k_sample.py",
+ "seed": 6761,
+ "fraction": 0.1,
+ "n_population": 1147,
+ "n_strata": 75,
+ "n_sampled": 144,
+ "per_stratum": {
+  "corpus|API": {
+   "n": 4,
+   "k": 1
+  },
+  "corpus|CONC": {
+   "n": 2,
+   "k": 1
+  },
+  "corpus|MEM": {
+   "n": 4,
+   "k": 1
+  },
+  "corpus|UB": {
+   "n": 40,
+   "k": 4
+  },
+  "corpus|ambiguity": {
+   "n": 1,
+   "k": 1
+  },
+  "corpus|compiler-bug": {
+   "n": 1,
+   "k": 1
+  },
+  "corpus|compiler-diff": {
+   "n": 2,
+   "k": 1
+  },
+  "corpus|historical": {
+   "n": 1,
+   "k": 1
+  },
+  "corpus|memory-order": {
+   "n": 1,
+   "k": 1
+  },
+  "corpus|unspecified": {
+   "n": 8,
+   "k": 1
+  },
+  "expA|memory_safety": {
+   "n": 24,
+   "k": 2
+  },
+  "expA|null_pointer_deref": {
+   "n": 15,
+   "k": 2
+  },
+  "expA|out_of_bounds": {
+   "n": 20,
+   "k": 2
+  },
+  "expA|undefined_behavior": {
+   "n": 21,
+   "k": 2
+  },
+  "expA|uninitialized_read": {
+   "n": 20,
+   "k": 2
+  },
+  "expB|data_race": {
+   "n": 14,
+   "k": 1
+  },
+  "expB|integer_overflow": {
+   "n": 20,
+   "k": 2
+  },
+  "expB|other_ub": {
+   "n": 20,
+   "k": 2
+  },
+  "expB|resource_leak": {
+   "n": 20,
+   "k": 2
+  },
+  "expB|type_punning": {
+   "n": 20,
+   "k": 2
+  },
+  "expC|conditional_trigger": {
+   "n": 40,
+   "k": 4
+  },
+  "expC|cross_tu_ub": {
+   "n": 30,
+   "k": 3
+  },
+  "expC|move_semantics": {
+   "n": 30,
+   "k": 3
+  },
+  "expC|optimization_dependent": {
+   "n": 40,
+   "k": 4
+  },
+  "expC|raii_violation": {
+   "n": 30,
+   "k": 3
+  },
+  "expC|virtual_function": {
+   "n": 30,
+   "k": 3
+  },
+  "expD|algorithm_misuse": {
+   "n": 35,
+   "k": 4
+  },
+  "expD|iterator_invalidation": {
+   "n": 35,
+   "k": 4
+  },
+  "expD|lambda_capture": {
+   "n": 30,
+   "k": 3
+  },
+  "expD|smart_pointer": {
+   "n": 30,
+   "k": 3
+  },
+  "expD|stl_container_ub": {
+   "n": 35,
+   "k": 4
+  },
+  "expD|string_ub": {
+   "n": 35,
+   "k": 4
+  },
+  "expE|aba_problem": {
+   "n": 30,
+   "k": 3
+  },
+  "expE|atomic_ub": {
+   "n": 35,
+   "k": 4
+  },
+  "expE|condition_variable": {
+   "n": 30,
+   "k": 3
+  },
+  "expE|deadlock": {
+   "n": 35,
+   "k": 4
+  },
+  "expE|lock_priority_inversion": {
+   "n": 30,
+   "k": 3
+  },
+  "expE|memory_order": {
+   "n": 40,
+   "k": 4
+  },
+  "expF|alignment": {
+   "n": 25,
+   "k": 2
+  },
+  "expF|bit_operation": {
+   "n": 28,
+   "k": 3
+  },
+  "expF|endianness": {
+   "n": 28,
+   "k": 3
+  },
+  "expF|interrupt_safety": {
+   "n": 20,
+   "k": 2
+  },
+  "expF|register_ub": {
+   "n": 20,
+   "k": 2
+  },
+  "expF|volatile_misuse": {
+   "n": 28,
+   "k": 3
+  },
+  "expG|compiler_warning": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|division_by_zero": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|double_free": {
+   "n": 3,
+   "k": 1
+  },
+  "expG|global_overflow": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|heap_overflow": {
+   "n": 12,
+   "k": 1
+  },
+  "expG|heap_overread": {
+   "n": 17,
+   "k": 2
+  },
+  "expG|heap_underflow": {
+   "n": 2,
+   "k": 1
+  },
+  "expG|infinite_loop": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|info_leak": {
+   "n": 2,
+   "k": 1
+  },
+  "expG|integer_overflow": {
+   "n": 6,
+   "k": 1
+  },
+  "expG|logic_error": {
+   "n": 17,
+   "k": 2
+  },
+  "expG|memory_leak": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|null_deref": {
+   "n": 5,
+   "k": 1
+  },
+  "expG|pointer_overflow": {
+   "n": 3,
+   "k": 1
+  },
+  "expG|race_condition": {
+   "n": 4,
+   "k": 1
+  },
+  "expG|resource_exhaustion": {
+   "n": 2,
+   "k": 1
+  },
+  "expG|stack_overflow": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|stack_overflow_write": {
+   "n": 5,
+   "k": 1
+  },
+  "expG|stack_overread": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|state_machine": {
+   "n": 4,
+   "k": 1
+  },
+  "expG|timing_side_channel": {
+   "n": 1,
+   "k": 1
+  },
+  "expG|type_confusion": {
+   "n": 2,
+   "k": 1
+  },
+  "expG|use_after_free": {
+   "n": 7,
+   "k": 1
+  },
+  "holdout|CONC": {
+   "n": 3,
+   "k": 1
+  },
+  "holdout|MEM": {
+   "n": 6,
+   "k": 1
+  },
+  "holdout|ODR": {
+   "n": 1,
+   "k": 1
+  },
+  "holdout|RAII/UB": {
+   "n": 1,
+   "k": 1
+  },
+  "holdout|UB": {
+   "n": 24,
+   "k": 2
+  },
+  "holdout|leak": {
+   "n": 1,
+   "k": 1
+  },
+  "holdout|memory": {
+   "n": 4,
+   "k": 1
+  },
+  "holdout|memory-order": {
+   "n": 1,
+   "k": 1
+  }
+ },
+ "sampled": [
+  {
+   "uid": "corpus:d3-01",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-11",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-14",
+   "batch": "corpus",
+   "defect_type": "compiler-diff",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-18",
+   "batch": "corpus",
+   "defect_type": "ambiguity",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-19",
+   "batch": "corpus",
+   "defect_type": "compiler-bug",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-34",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3-35",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3e-06",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3e-19",
+   "batch": "corpus",
+   "defect_type": "memory-order",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3e-20",
+   "batch": "corpus",
+   "defect_type": "historical",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3f-03",
+   "batch": "corpus",
+   "defect_type": "MEM",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3f-10",
+   "batch": "corpus",
+   "defect_type": "CONC",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "corpus:d3f-13",
+   "batch": "corpus",
+   "defect_type": "API",
+   "files": [],
+   "dir": ""
+  },
+  {
+   "uid": "expA:sample_001",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "sample_001.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_018",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "sample_018.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_027",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "files": [
+    "sample_027.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_028",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "files": [
+    "sample_028.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_051",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "files": [
+    "sample_051.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_052",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "files": [
+    "sample_052.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_064",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "sample_064.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_078",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "sample_078.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_080",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "files": [
+    "sample_080.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expA:sample_100",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "files": [
+    "sample_100.cpp"
+   ],
+   "dir": "data/holdout_expansion/expA"
+  },
+  {
+   "uid": "expB:sample_B014",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "files": [
+    "sample_B014.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B022",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "sample_B022.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B025",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "sample_B025.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B043",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "files": [
+    "sample_B043.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B049",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "files": [
+    "sample_B049.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B061",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "sample_B061.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B069",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "sample_B069.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B088",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "sample_B088.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expB:sample_B090",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "sample_B090.cpp"
+   ],
+   "dir": "data/holdout_expansion/expB"
+  },
+  {
+   "uid": "expC:sample_002",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "sample_002.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_014",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "sample_014.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_024",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "sample_024.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_034",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "sample_034.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_038",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "sample_038.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_049",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "sample_049.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_061",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "sample_061.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_070",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "sample_070.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_088",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "sample_088.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_107",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "sample_107_a.cpp",
+    "sample_107_b.cpp",
+    "sample_107_main.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_110",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "sample_110_a.cpp",
+    "sample_110_b.cpp",
+    "sample_110_main.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_111",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "sample_111_a.cpp",
+    "sample_111_b.cpp",
+    "sample_111_main.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_128",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "sample_128.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_146",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "sample_146.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_149",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "sample_149.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_150",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "sample_150.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_169",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "sample_169.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_176",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "sample_176.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_193",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "sample_193.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expC:sample_197",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "sample_197.cpp"
+   ],
+   "dir": "data/holdout_expansion/expC"
+  },
+  {
+   "uid": "expD:D013",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "sample_D013.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D017",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "sample_D017.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D033",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "sample_D033.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D035",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "sample_D035.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D048",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "sample_D048.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D051",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "sample_D051.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D053",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "sample_D053.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D054",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "sample_D054.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D088",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "sample_D088.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D094",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "sample_D094.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D097",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "sample_D097.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D099",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "sample_D099.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D126",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "sample_D126.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D127",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "sample_D127.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D128",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "sample_D128.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D130",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "sample_D130.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D151",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "sample_D151.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D156",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "sample_D156.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D169",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "sample_D169.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D175",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "sample_D175.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D176",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "sample_D176.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expD:D178",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "sample_D178.cpp"
+   ],
+   "dir": "data/holdout_expansion/expD"
+  },
+  {
+   "uid": "expE:sample_E004",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "sample_E004.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E013",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "sample_E013.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E031",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "sample_E031.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E035",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "sample_E035.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E052",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "sample_E052.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E054",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "sample_E054.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E055",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "sample_E055.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E059",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "sample_E059.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E082",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "sample_E082.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E089",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "sample_E089.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E095",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "sample_E095.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E099",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "sample_E099.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E118",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "sample_E118.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E132",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "sample_E132.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E139",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "sample_E139.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E141",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "sample_E141.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E152",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "sample_E152.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E170",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "sample_E170.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E175",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "sample_E175.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E186",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "sample_E186.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expE:sample_E200",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "sample_E200.cpp"
+   ],
+   "dir": "data/holdout_expansion/expE"
+  },
+  {
+   "uid": "expF:F013",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "sample_F013.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F029",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "sample_F029.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F057",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "sample_F057.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F066",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "sample_F066.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F069",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "sample_F069.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F071",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "sample_F071.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F084",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "sample_F084.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F092",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "sample_F092.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F113",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "sample_F113.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F115",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "sample_F115.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F140",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "sample_F140.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F146",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "files": [
+    "sample_F146.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F156",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "files": [
+    "sample_F156.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F172",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "sample_F172.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expF:F176",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "sample_F176.cpp"
+   ],
+   "dir": "data/holdout_expansion/expF"
+  },
+  {
+   "uid": "expG:sample_G004",
+   "batch": "expG",
+   "defect_type": "memory_leak",
+   "files": [
+    "sample_G004.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G005",
+   "batch": "expG",
+   "defect_type": "double_free",
+   "files": [
+    "sample_G005.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G012",
+   "batch": "expG",
+   "defect_type": "integer_overflow",
+   "files": [
+    "sample_G012.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G013",
+   "batch": "expG",
+   "defect_type": "pointer_overflow",
+   "files": [
+    "sample_G013.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G015",
+   "batch": "expG",
+   "defect_type": "stack_overflow",
+   "files": [
+    "sample_G015.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G016",
+   "batch": "expG",
+   "defect_type": "null_deref",
+   "files": [
+    "sample_G016.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G018",
+   "batch": "expG",
+   "defect_type": "stack_overflow_write",
+   "files": [
+    "sample_G018.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G019",
+   "batch": "expG",
+   "defect_type": "infinite_loop",
+   "files": [
+    "sample_G019.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G021",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "files": [
+    "sample_G021.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G026",
+   "batch": "expG",
+   "defect_type": "stack_overread",
+   "files": [
+    "sample_G026.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G035",
+   "batch": "expG",
+   "defect_type": "use_after_free",
+   "files": [
+    "sample_G035.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G041",
+   "batch": "expG",
+   "defect_type": "info_leak",
+   "files": [
+    "sample_G041.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G051",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "sample_G051.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G057",
+   "batch": "expG",
+   "defect_type": "heap_overflow",
+   "files": [
+    "sample_G057.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G058",
+   "batch": "expG",
+   "defect_type": "division_by_zero",
+   "files": [
+    "sample_G058.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G071",
+   "batch": "expG",
+   "defect_type": "heap_underflow",
+   "files": [
+    "sample_G071.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G074",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "files": [
+    "sample_G074.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G080",
+   "batch": "expG",
+   "defect_type": "type_confusion",
+   "files": [
+    "sample_G080.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G083",
+   "batch": "expG",
+   "defect_type": "race_condition",
+   "files": [
+    "sample_G083.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G086",
+   "batch": "expG",
+   "defect_type": "timing_side_channel",
+   "files": [
+    "sample_G086.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G088",
+   "batch": "expG",
+   "defect_type": "resource_exhaustion",
+   "files": [
+    "sample_G088.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G092",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "sample_G092.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G094",
+   "batch": "expG",
+   "defect_type": "global_overflow",
+   "files": [
+    "sample_G094.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G095",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "files": [
+    "sample_G095.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "expG:sample_G099",
+   "batch": "expG",
+   "defect_type": "compiler_warning",
+   "files": [
+    "sample_G099.cpp"
+   ],
+   "dir": "data/holdout_expansion/expG"
+  },
+  {
+   "uid": "holdout:h14",
+   "batch": "holdout",
+   "defect_type": "ODR",
+   "files": [
+    "_atom_inline_odr_a.cpp"
+   ],
+   "dir": "Examples/atoms"
+  },
+  {
+   "uid": "holdout:h27",
+   "batch": "holdout",
+   "defect_type": "memory",
+   "files": [
+    "h27.cpp"
+   ],
+   "dir": "data/cards_665/fixtures"
+  },
+  {
+   "uid": "holdout:h34",
+   "batch": "holdout",
+   "defect_type": "memory-order",
+   "files": [
+    "_atom_fence_vs_atomic.cpp"
+   ],
+   "dir": "Examples/atoms"
+  },
+  {
+   "uid": "holdout:h40",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "_atom_leak_detection.cpp"
+   ],
+   "dir": "Examples/atoms"
+  },
+  {
+   "uid": "holdout:h43",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "ub_stack_after_scope.cpp"
+   ],
+   "dir": "Appendix/ub"
+  },
+  {
+   "uid": "holdout:h50",
+   "batch": "holdout",
+   "defect_type": "MEM",
+   "files": [
+    "_ch14_leak.cpp"
+   ],
+   "dir": "Examples"
+  },
+  {
+   "uid": "holdout:h58",
+   "batch": "holdout",
+   "defect_type": "CONC",
+   "files": [
+    "_ch147_race.cpp"
+   ],
+   "dir": "Examples"
+  },
+  {
+   "uid": "holdout:h7",
+   "batch": "holdout",
+   "defect_type": "leak",
+   "files": [
+    "_atom_leak_detection.cpp"
+   ],
+   "dir": "Examples/atoms"
+  },
+  {
+   "uid": "holdout:h8",
+   "batch": "holdout",
+   "defect_type": "RAII/UB",
+   "files": [
+    "_atom_rule_three_bug.cpp"
+   ],
+   "dir": "Examples/atoms"
+  }
+ ]
+}

@@ -1,0 +1,3154 @@
+# 676k 盲化重标注输入 · seed=6761 · n=144
+# 注释已抹为空白（保留行号）；不含任何原始标注字段。
+
+===== [1] uid=corpus:d3-01 batch=corpus files=[] =====
+(no source on disk)
+
+===== [2] uid=corpus:d3-11 batch=corpus files=[] =====
+(no source on disk)
+
+===== [3] uid=corpus:d3-14 batch=corpus files=[] =====
+(no source on disk)
+
+===== [4] uid=corpus:d3-18 batch=corpus files=[] =====
+(no source on disk)
+
+===== [5] uid=corpus:d3-19 batch=corpus files=[] =====
+(no source on disk)
+
+===== [6] uid=corpus:d3-34 batch=corpus files=[] =====
+(no source on disk)
+
+===== [7] uid=corpus:d3-35 batch=corpus files=[] =====
+(no source on disk)
+
+===== [8] uid=corpus:d3e-06 batch=corpus files=[] =====
+(no source on disk)
+
+===== [9] uid=corpus:d3e-19 batch=corpus files=[] =====
+(no source on disk)
+
+===== [10] uid=corpus:d3e-20 batch=corpus files=[] =====
+(no source on disk)
+
+===== [11] uid=corpus:d3f-03 batch=corpus files=[] =====
+(no source on disk)
+
+===== [12] uid=corpus:d3f-10 batch=corpus files=[] =====
+(no source on disk)
+
+===== [13] uid=corpus:d3f-13 batch=corpus files=[] =====
+(no source on disk)
+
+===== [14] uid=expA:sample_001 batch=expA files=['sample_001.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  int* p = new int[8];
+  p[0] = 42;
+  delete[] p;
+  int v = p[0];                                                           
+  (void)v;
+  return 0;
+}
+
+===== [15] uid=expA:sample_018 batch=expA files=['sample_018.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  int* a = new int[8];
+  a[10] = 1;                                                                 
+  delete[] a;
+  return 0;
+}
+
+===== [16] uid=expA:sample_027 batch=expA files=['sample_027.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+#include <cstring>
+int main() {
+  int* a = new int[16];
+  int v = a[17];                                                                  
+  (void)v;
+  delete[] a;
+  return 0;
+}
+
+===== [17] uid=expA:sample_028 batch=expA files=['sample_028.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+#include <cstring>
+int main() {
+  int* a = new int[32];
+  int v = a[33];                                                                  
+  (void)v;
+  delete[] a;
+  return 0;
+}
+
+===== [18] uid=expA:sample_051 batch=expA files=['sample_051.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  auto get = []() -> int* { return nullptr; };
+  int* p = get();
+  *p = 3;                                                                       
+  return 0;
+}
+
+===== [19] uid=expA:sample_052 batch=expA files=['sample_052.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  auto get = []() -> int* { return nullptr; };
+  int* p = get();
+  *p = 3;                                                                       
+  return 0;
+}
+
+===== [20] uid=expA:sample_064 batch=expA files=['sample_064.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  int a;
+  if (a > 100) { (void)1; }                                                             
+  return 0;
+}
+
+===== [21] uid=expA:sample_078 batch=expA files=['sample_078.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  struct P { int a; int b; };
+  P p;
+  int r = p.a + p.b;                                                                    
+  (void)r;
+  return 0;
+}
+
+===== [22] uid=expA:sample_080 batch=expA files=['sample_080.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  int r = 1 << 33;                                                                                     
+  (void)r;
+  return 0;
+}
+
+===== [23] uid=expA:sample_100 batch=expA files=['sample_100.cpp'] =====
+                                                             
+                                      
+#include <cstdio>
+int main() {
+  int a = 10;
+  int r = a / 0;                                                                   
+  (void)r;
+  return 0;
+}
+
+===== [24] uid=expB:sample_B014 batch=expB files=['sample_B014.cpp'] =====
+              
+                         
+                 
+                
+                          
+                           
+                                                 
+
+#include <thread>
+#include <cstdio>
+int arr[4] = {0};
+void f(){ for (int i = 0; i < 2000000; i++) arr[2]++;                                  }
+int main(){
+  std::thread a(f), b(f);
+  a.join(); b.join();
+  std::printf("%d\", arr[2]);
+  return 0;
+}
+
+===== [25] uid=expB:sample_B022 batch=expB files=['sample_B022.cpp'] =====
+              
+                                
+                 
+                
+                          
+                            
+                                                 
+
+#include <cstdio>
+int main(){
+  volatile int a = 46341;
+  volatile int b = a * a;                                                
+  std::printf("%d\", (int)b);
+  return 0;
+}
+
+===== [26] uid=expB:sample_B025 batch=expB files=['sample_B025.cpp'] =====
+              
+                                
+                 
+                
+                          
+                            
+                                                 
+
+#include <climits>
+#include <cstdio>
+int main(){
+  volatile int m = INT_MIN;
+  volatile int r = m / -1;                                   
+  std::printf("%d\", (int)r);
+  return 0;
+}
+
+===== [27] uid=expB:sample_B043 batch=expB files=['sample_B043.cpp'] =====
+              
+                             
+                   
+                
+                          
+                           
+                                                 
+
+#include <cstdlib>
+#include <cstdio>
+int main(){
+  int* p = (int*)std::malloc(4 * sizeof(int));
+  p[0] = 1;
+  std::printf("%d\", p[0]);
+                                              
+  return 0;
+}
+
+===== [28] uid=expB:sample_B049 batch=expB files=['sample_B049.cpp'] =====
+              
+                             
+                   
+                
+                          
+                           
+                                                 
+
+#include <cstdlib>
+#include <cstdio>
+int main(){
+  int* p = (int*)std::malloc(sizeof(int));
+  *p = 7;                                             
+  std::printf("%d\", *p);
+  return 0;
+}
+
+===== [29] uid=expB:sample_B061 batch=expB files=['sample_B061.cpp'] =====
+              
+                            
+                   
+                
+                          
+                            
+                                                 
+
+#include <cstdio>
+int main(){
+  alignas(1) char buf[8] = {0};
+  int* p = (int*)(buf + 1);                                                                 
+  *p = 5;
+  std::printf("%d\", *p);
+  return 0;
+}
+
+===== [30] uid=expB:sample_B069 batch=expB files=['sample_B069.cpp'] =====
+              
+                            
+                   
+                
+                          
+                            
+                                                 
+
+#include <cstdio>
+int main(){
+  char buf[8] = {0};
+  int* p = (int*)(buf + 1);                                                          
+  *p = *p + 1;
+  std::printf("%d\", *p);
+  return 0;
+}
+
+===== [31] uid=expB:sample_B088 batch=expB files=['sample_B088.cpp'] =====
+              
+                        
+                 
+                
+                          
+                           
+                                                 
+
+#include <cstdio>
+int main(){
+  void (*fp)() = nullptr;
+  fp();                                                             
+  return 0;
+}
+
+===== [32] uid=expB:sample_B090 batch=expB files=['sample_B090.cpp'] =====
+              
+                        
+                 
+                
+                         
+                           
+                                                 
+
+#include <cstdio>
+struct S { void f(){ std::printf("ok\"); } };
+int main(){
+  S* s = nullptr;
+  s->f();                                                                    
+  return 0;
+}
+
+===== [33] uid=expC:sample_002 batch=expC files=['sample_002.cpp'] =====
+#include <utility>
+struct Bx { int val; };
+int main(){
+  Bx a{1};
+  a = std::move(a);                                             
+  (void)a;
+  return 0;
+}
+
+===== [34] uid=expC:sample_014 batch=expC files=['sample_014.cpp'] =====
+struct S{int v;};
+S& h(){ S s{7}; return s; }                               
+int main(){ (void)h(); return 0; }
+
+===== [35] uid=expC:sample_024 batch=expC files=['sample_024.cpp'] =====
+#include <vector>
+int main(){
+  std::vector<int> v{1,2,3};
+  std::vector<int> w = std::move(v);
+  (void)v.size();                                              
+  return 0;
+}
+
+===== [36] uid=expC:sample_034 batch=expC files=['sample_034.cpp'] =====
+int main(){
+  int* p = new int[16];
+  if (true) return 0;                                           
+  delete[] p;
+  return 0;
+}
+
+===== [37] uid=expC:sample_038 batch=expC files=['sample_038.cpp'] =====
+int main(){
+  int* p = new int(10);
+  delete[] p;                                         
+  return 0;
+}
+
+===== [38] uid=expC:sample_049 batch=expC files=['sample_049.cpp'] =====
+#include <mutex>
+std::mutex m;
+int worker(){
+  m.lock();
+  if (true) return -1;                                           
+  m.unlock();
+  return 0;
+}
+int main(){ return worker(); }
+
+===== [39] uid=expC:sample_061 batch=expC files=['sample_061.cpp'] =====
+#include <cstdio>
+struct B { B(){ vf(); } virtual void vf(){ printf("B\"); } };
+struct D : B { void vf() override { printf("D\"); } };
+int main(){ D d; return 0; }
+
+===== [40] uid=expC:sample_070 batch=expC files=['sample_070.cpp'] =====
+#include <cstdio>
+struct B { virtual ~B(){ vf(); } virtual void vf(){ printf("B\"); } };
+struct D : B { void vf() override { printf("D\"); } };
+int main(){ D d; return 0; }
+
+===== [41] uid=expC:sample_088 batch=expC files=['sample_088.cpp'] =====
+#include <cstdio>
+struct B { virtual void vf(){ printf("B\"); } virtual ~B(){} };
+struct D : B { void vf() override { printf("D\"); } };
+int main(){
+  B* p = new D;
+  delete p;               
+  p->vf();                                                   
+  return 0;
+}
+
+===== [42] uid=expC:sample_107 batch=expC files=['sample_107_a.cpp', 'sample_107_b.cpp', 'sample_107_main.cpp'] =====
+extern int y;
+int x = y + 1;                                                  
+
+
+int y = 5;
+
+
+extern int x;
+int main(){ (void)x; return 0; }
+
+===== [43] uid=expC:sample_110 batch=expC files=['sample_110_a.cpp', 'sample_110_b.cpp', 'sample_110_main.cpp'] =====
+extern int y;
+int x = y + 1;                                                  
+
+
+int y = 5;
+
+
+extern int x;
+int main(){ (void)x; return 0; }
+
+===== [44] uid=expC:sample_111 batch=expC files=['sample_111_a.cpp', 'sample_111_b.cpp', 'sample_111_main.cpp'] =====
+extern int y;
+int x = y + 1;                                                  
+
+
+int y = 5;
+
+
+extern int x;
+int main(){ (void)x; return 0; }
+
+===== [45] uid=expC:sample_128 batch=expC files=['sample_128.cpp'] =====
+#include <climits>
+int main(){
+  int x = INT_MAX;
+  x = x + 1;                                  
+  (void)x;
+  return 0;
+}
+
+===== [46] uid=expC:sample_146 batch=expC files=['sample_146.cpp'] =====
+int main(){
+  int a = 10;
+  int r = a / 0;                                
+  (void)r;
+  return 0;
+}
+
+===== [47] uid=expC:sample_149 batch=expC files=['sample_149.cpp'] =====
+#include <cstdio>
+float g(float* pf, int* pi){ *pi = 1; return *pf; }                                                    
+int main(){
+  float x = 2.0f;
+  int r = (int)g(&x, (int*)&x);
+  printf("%d\", r);
+  return 0;
+}
+
+===== [48] uid=expC:sample_150 batch=expC files=['sample_150.cpp'] =====
+#include <cstdio>
+float g(float* pf, int* pi){ *pi = 1; return *pf; }                                                    
+int main(){
+  float x = 2.0f;
+  int r = (int)g(&x, (int*)&x);
+  printf("%d\", r);
+  return 0;
+}
+
+===== [49] uid=expC:sample_169 batch=expC files=['sample_169.cpp'] =====
+int main(){
+  int n = 9;
+  int a[5] = {0};
+  for (int i = 0; i < n; ++i) a[i] = i;                                  
+  return 0;
+}
+
+===== [50] uid=expC:sample_176 batch=expC files=['sample_176.cpp'] =====
+int main(){
+  int flag = 1;
+  int* p = new int[4];
+  if (flag) { delete[] p; }
+  int v = p[0];                                              
+  (void)v;
+  return 0;
+}
+
+===== [51] uid=expC:sample_193 batch=expC files=['sample_193.cpp'] =====
+int main(){
+  int n = 8;
+  int sum = 0;
+  for (int i = 0; i <= n; ++i) sum += i;                                                  
+  (void)sum;
+  return 0;
+}
+
+===== [52] uid=expC:sample_197 batch=expC files=['sample_197.cpp'] =====
+int main(){
+  double d = 3.999;
+  int r = (int)d;                                               
+  (void)r;
+  return 0;
+}
+
+===== [53] uid=expD:D013 batch=expD files=['sample_D013.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+int main() {
+  std::vector<int> v = {10, 20, 30, 40};
+  auto it = v.begin() + 1;
+  v.erase(v.begin());
+  std::printf("%d\", *it);                                                
+  return 0;
+}
+
+===== [54] uid=expD:D017 batch=expD files=['sample_D017.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+int main() {
+  std::vector<int> v = {10, 20, 30, 40};
+  auto it = v.begin() + 5;
+  v.erase(v.begin());
+  std::printf("%d\", *it);                                                
+  return 0;
+}
+
+===== [55] uid=expD:D033 batch=expD files=['sample_D033.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+struct Holder {
+  std::vector<int> v = {1, 2, 3};
+  int read_bad() {
+    auto it = v.begin();
+    v.push_back(4);
+    return *it;                                               
+  }
+};
+int main() {
+  Holder h;
+  std::printf("%d\", h.read_bad());
+  return 0;
+}
+
+===== [56] uid=expD:D035 batch=expD files=['sample_D035.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+int main() {
+  std::vector<int> v = {1, 2, 3, 4, 5};
+  auto it = v.begin() + 5;
+  v.erase(v.begin());
+  std::printf("%d\", *it);                                           
+  return 0;
+}
+
+===== [57] uid=expD:D048 batch=expD files=['sample_D048.cpp'] =====
+                                                                    
+                                      
+#include <array>
+#include <cstdio>
+int main() {
+  std::array<int, 3> a = {1, 2, 3};
+  int x = a[4];                                      
+  std::printf("%d\", x);
+  return 0;
+}
+
+===== [58] uid=expD:D051 batch=expD files=['sample_D051.cpp'] =====
+                                                                    
+                                      
+#include <array>
+#include <cstdio>
+int main() {
+  std::array<int, 3> a = {1, 2, 3};
+  int x = a[7];                                      
+  std::printf("%d\", x);
+  return 0;
+}
+
+===== [59] uid=expD:D053 batch=expD files=['sample_D053.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+int main() {
+  std::vector<bool> vb(3, false);
+  auto bit = vb[1];                  
+  for (int k = 0; k < 80; ++k) vb.push_back(true);                   
+  bool b = bit;                                               
+  std::printf("%d\", (int)b);
+  return 0;
+}
+
+===== [60] uid=expD:D054 batch=expD files=['sample_D054.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <cstdio>
+int main() {
+  std::vector<bool> vb(3, false);
+  auto bit = vb[1];                  
+  for (int k = 0; k < 88; ++k) vb.push_back(true);                   
+  bool b = bit;                                               
+  std::printf("%d\", (int)b);
+  return 0;
+}
+
+===== [61] uid=expD:D088 batch=expD files=['sample_D088.cpp'] =====
+                                                                    
+                                      
+#include <string>
+#include <cstdio>
+int main() {
+  std::string s = "abc";
+  std::string t = s.substr(5, 3);                                                      
+  std::printf("%s\", t.c_str());
+  return 0;
+}
+
+===== [62] uid=expD:D094 batch=expD files=['sample_D094.cpp'] =====
+                                                                    
+                                      
+#include <string>
+#include <string_view>
+#include <cstdio>
+int main() {
+  std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+  std::string_view sv(s.data(), s.size());
+  s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");                        
+  unsigned long sum = 0;
+  for (char ch : sv) sum += (unsigned char)ch;                                                 
+  std::printf("%lu\", sum);
+  return 0;
+}
+
+===== [63] uid=expD:D097 batch=expD files=['sample_D097.cpp'] =====
+                                                                    
+                                      
+#include <string>
+#include <string_view>
+#include <cstdio>
+int main() {
+  std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+  std::string_view sv(s.data(), s.size());
+  s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");                        
+  unsigned long sum = 0;
+  for (char ch : sv) sum += (unsigned char)ch;                                                 
+  std::printf("%lu\", sum);
+  return 0;
+}
+
+===== [64] uid=expD:D099 batch=expD files=['sample_D099.cpp'] =====
+                                                                    
+                                      
+#include <string>
+#include <string_view>
+#include <cstdio>
+int main() {
+  std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+  std::string_view sv(s.data(), s.size());
+  s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");                        
+  unsigned long sum = 0;
+  for (char ch : sv) sum += (unsigned char)ch;                                                 
+  std::printf("%lu\", sum);
+  return 0;
+}
+
+===== [65] uid=expD:D126 batch=expD files=['sample_D126.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <algorithm>
+#include <cstdio>
+int main() {
+  std::vector<int> in(5, 1);
+  std::vector<int> out(5);
+  std::transform(in.begin(), in.end(), out.begin(), [](int x){ return x + 1; });                                  
+  std::printf("%zu\", out.size());
+  return 0;
+}
+
+===== [66] uid=expD:D127 batch=expD files=['sample_D127.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <numeric>
+#include <cstdio>
+int main() {
+  std::vector<double> v = {0.1, 0.2, 0.3};
+  int sum = std::accumulate(v.begin(), v.end(), 0);                                                
+  std::printf("%d\", sum);                
+  return 0;
+}
+
+===== [67] uid=expD:D128 batch=expD files=['sample_D128.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <numeric>
+#include <cstdio>
+int main() {
+  std::vector<double> v = {0.1, 0.2, 0.3};
+  int sum = std::accumulate(v.begin(), v.end(), 0);                                                
+  std::printf("%d\", sum);                
+  return 0;
+}
+
+===== [68] uid=expD:D130 batch=expD files=['sample_D130.cpp'] =====
+                                                                    
+                                      
+#include <vector>
+#include <numeric>
+#include <cstdio>
+int main() {
+  std::vector<double> v = {0.1, 0.2, 0.3};
+  int sum = std::accumulate(v.begin(), v.end(), 0);                                                
+  std::printf("%d\", sum);                
+  return 0;
+}
+
+===== [69] uid=expD:D151 batch=expD files=['sample_D151.cpp'] =====
+                                                                    
+                                      
+#include <memory>
+#include <cstdio>
+int main() {
+  auto p = std::make_shared<int>(7);
+  int* raw = p.get();
+  delete raw;                                              
+  std::printf("%d\", *p);
+  return 0;
+}
+
+===== [70] uid=expD:D156 batch=expD files=['sample_D156.cpp'] =====
+                                                                    
+                                      
+#include <memory>
+#include <cstdio>
+struct Node {
+  std::shared_ptr<Node> next;
+};
+int main() {
+  auto a = std::make_shared<Node>();
+  auto b = std::make_shared<Node>();
+  a->next = b; b->next = a;                                             
+  std::printf("leak\");
+  return 0;
+}
+
+===== [71] uid=expD:D169 batch=expD files=['sample_D169.cpp'] =====
+                                                                    
+                                      
+#include <memory>
+#include <cstdio>
+int main() {
+  int* raw = new int(1);
+  std::shared_ptr<int> a(raw);
+  std::shared_ptr<int> b(raw);                                             
+  std::printf("%d\", *a);
+  return 0;
+}
+
+===== [72] uid=expD:D175 batch=expD files=['sample_D175.cpp'] =====
+                                                                    
+                                      
+#include <functional>
+#include <cstdio>
+std::function<int()> make() {
+  int x = 42;
+  return [&x]() { return x + 5; };                                        
+}
+int main() {
+  auto f = make();
+  std::printf("%d\", f());
+  return 0;
+}
+
+===== [73] uid=expD:D176 batch=expD files=['sample_D176.cpp'] =====
+                                                                    
+                                      
+#include <functional>
+#include <cstdio>
+std::function<int()> make() {
+  int x = 42;
+  return [&x]() { return x + 6; };                                        
+}
+int main() {
+  auto f = make();
+  std::printf("%d\", f());
+  return 0;
+}
+
+===== [74] uid=expD:D178 batch=expD files=['sample_D178.cpp'] =====
+                                                                    
+                                      
+#include <functional>
+#include <memory>
+#include <cstdio>
+struct Widget {
+  int v = 7;
+  std::function<int()> bind() { return [this]() { return v; }; }                                 
+};
+int main() {
+  std::function<int()> f;
+  { auto w = std::make_unique<Widget>(); f = w->bind(); }
+  std::printf("%d\", f());
+  return 0;
+}
+
+===== [75] uid=expE:sample_E004 batch=expE files=['sample_E004.cpp'] =====
+              
+                            
+                 
+                
+                         
+                                
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+struct Node { int v; Node* next; };
+static Node* g_node = nullptr;                       
+static std::atomic<bool> g_init{false}, go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static Node* acquire_node(){
+  if (g_init.load(std::memory_order_acquire)){
+                                                      
+    if (g_init.load(std::memory_order_relaxed)) return g_node;
+  }
+  Node* n = new Node{7, nullptr};
+  g_node = n;
+  g_init.store(true, std::memory_order_release);
+  return n;
+}
+int main(){
+  std::thread t1([]{ wait_go(); std::printf("E004 v=%d\", acquire_node()->v); });
+  std::thread t2([]{ wait_go(); std::printf("E004 v=%d\", acquire_node()->v); });
+  go.store(true, std::memory_order_release);
+  t1.join(); t2.join();
+  return 0;
+}
+
+===== [76] uid=expE:sample_E013 batch=expE files=['sample_E013.cpp'] =====
+              
+                            
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::atomic<unsigned long long> stamp{0};
+static std::atomic<bool> flag{false}, go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void producer(){
+  wait_go();
+                                                          
+  stamp.store(0xDEADBEEFULL, std::memory_order_relaxed);
+  flag.store(true, std::memory_order_relaxed);
+}
+static void consumer(){
+  wait_go();
+  while(!flag.load(std::memory_order_relaxed)){}
+  std::printf("E013 stamp=%llx\", stamp.load(std::memory_order_relaxed));
+}
+int main(){
+  std::thread p(producer), c(consumer);
+  go.store(true, std::memory_order_release);
+  p.join(); c.join();
+  return 0;
+}
+
+===== [77] uid=expE:sample_E031 batch=expE files=['sample_E031.cpp'] =====
+              
+                            
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::atomic<int> f1{0}, f2{0}, f3{0};
+static std::atomic<bool> all_ready{false}, go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void producer(){
+  wait_go();
+  f1.store(10, std::memory_order_relaxed);
+  f2.store(20, std::memory_order_relaxed);
+  f3.store(30, std::memory_order_relaxed);
+  all_ready.store(true, std::memory_order_release);
+}
+static void consumer(){
+  wait_go();
+  while(!all_ready.load(std::memory_order_acquire)){}
+                                                                                      
+  std::printf("E031 f1=%d f2=%d f3=%d\",
+              f1.load(std::memory_order_relaxed),
+              f2.load(std::memory_order_relaxed),
+              f3.load(std::memory_order_relaxed));
+}
+int main(){
+  std::thread p(producer), c(consumer);
+  go.store(true, std::memory_order_release);
+  p.join(); c.join();
+  return 0;
+}
+
+===== [78] uid=expE:sample_E035 batch=expE files=['sample_E035.cpp'] =====
+              
+                            
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static int cells[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+static std::atomic<int> w_cursor{0}, r_cursor{0}, go{0};
+static void wait_go(){ while(go.load(std::memory_order_acquire) == 0){} }
+static void producer(){
+  wait_go();
+  for (int i = 0; i < 8; ++i){
+    cells[i] = i + 500;                                          
+                                                                     
+    w_cursor.store(i + 1, std::memory_order_relaxed);
+  }
+}
+static void consumer(){
+  wait_go();
+                                                          
+  while (w_cursor.load(std::memory_order_relaxed) < 8){}
+  std::printf("E035 c7=%d\", cells[7]);
+}
+int main(){
+  std::thread p(producer), c(consumer);
+  go.store(1, std::memory_order_release);
+  p.join(); c.join();
+  return 0;
+}
+
+===== [79] uid=expE:sample_E052 batch=expE files=['sample_E052.cpp'] =====
+              
+                         
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::atomic<int*> slot{nullptr};
+static std::atomic<bool> ready{false}, go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void publish(){
+  wait_go();
+  int* h = new int(7);
+  slot.store(h, std::memory_order_relaxed);
+  ready.store(true, std::memory_order_release);
+                                                               
+  delete h;
+}
+static void consume(){
+  wait_go();
+  while(!ready.load(std::memory_order_acquire)){}
+                                             
+  std::printf("E052 v=%d\", *slot.load(std::memory_order_relaxed));
+}
+int main(){
+  std::thread a(publish), b(consume);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [80] uid=expE:sample_E054 batch=expE files=['sample_E054.cpp'] =====
+              
+                         
+                   
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::atomic<bool> busy{false};
+static int critical_writes = 0;
+static std::atomic<bool> go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void enter(){
+  wait_go();
+                                                                
+  busy.exchange(true, std::memory_order_acq_rel);
+  critical_writes = critical_writes + 1;
+  busy.store(false, std::memory_order_release);
+}
+int main(){
+  std::thread a(enter), b(enter);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  std::printf("E054 writes=%d\", critical_writes);
+  return 0;
+}
+
+===== [81] uid=expE:sample_E055 batch=expE files=['sample_E055.cpp'] =====
+              
+                         
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+struct Gate {
+  std::atomic_flag f;                                             
+  int payload;
+  Gate() : payload(0) {}
+};
+static Gate g;
+static std::atomic<bool> go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void guard(int id){
+  wait_go();
+                                                               
+  while (g.f.test_and_set(std::memory_order_acquire)){}
+  g.payload = id;
+  g.f.clear(std::memory_order_release);
+}
+int main(){
+  std::thread a(guard, 1), b(guard, 2);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  std::printf("E055 payload=%d\", g.payload);
+  return 0;
+}
+
+===== [82] uid=expE:sample_E059 batch=expE files=['sample_E059.cpp'] =====
+              
+                         
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::atomic<bool>* g_at = nullptr;
+static std::atomic<bool> escaped{false}, go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void publish_and_die(){
+  wait_go();
+                                             
+                                     
+                                                 
+  g_at = new std::atomic<bool>(true);
+  escaped.store(true, std::memory_order_release);
+  delete g_at;
+}
+static void worker(){
+  wait_go();
+  while(!escaped.load(std::memory_order_acquire)){}
+                                                                              
+  std::atomic<bool>* p = reinterpret_cast<std::atomic<bool>*>(g_at);
+  std::printf("E059 v=%d\", (int)p->load(std::memory_order_relaxed));
+}
+int main(){
+  std::thread a(publish_and_die), b(worker);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [83] uid=expE:sample_E082 batch=expE files=['sample_E082.cpp'] =====
+              
+                        
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <thread>
+#include <cstdio>
+static std::mutex m;
+static int depth = 0;
+static void inner(){
+                                                                    
+  std::lock_guard<std::mutex> g(m);
+  depth++;
+}
+static void outer(){
+  std::lock_guard<std::mutex> g(m);
+  depth++;
+  inner();
+}
+int main(){
+  std::thread a(outer);
+  a.join();
+  std::printf("E082 depth=%d\", depth);
+  return 0;
+}
+
+===== [84] uid=expE:sample_E089 batch=expE files=['sample_E089.cpp'] =====
+              
+                        
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <thread>
+#include <cstdio>
+static std::mutex m1, m2;
+static void f(){
+  std::unique_lock<std::mutex> held(m1);               
+                                              
+                                                   
+  std::lock(m1, m2);
+  std::printf("E089 never\");
+}
+int main(){
+  std::thread t(f);
+  t.join();
+  return 0;
+}
+
+===== [85] uid=expE:sample_E095 batch=expE files=['sample_E095.cpp'] =====
+              
+                        
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::mutex big, small;
+static std::atomic<int> held{0};
+static std::atomic<bool> go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void on_big_ready(){
+                                                                    
+  std::lock_guard<std::mutex> s(small);
+  std::printf("E095 callback\");
+}
+static void big_path(){
+  wait_go();
+  std::lock_guard<std::mutex> b(big);
+  held.fetch_add(1, std::memory_order_release);
+  while (held.load(std::memory_order_acquire) < 2){}
+  on_big_ready();
+}
+static void small_path(){
+  wait_go();
+  std::lock_guard<std::mutex> s(small);
+  held.fetch_add(1, std::memory_order_release);
+  while (held.load(std::memory_order_acquire) < 2){}
+                                                         
+  std::lock_guard<std::mutex> b(big);
+  std::printf("E095 small path\");
+}
+int main(){
+  std::thread a(big_path), b(small_path);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [86] uid=expE:sample_E099 batch=expE files=['sample_E099.cpp'] =====
+              
+                        
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::mutex la, lb;
+static std::condition_variable cva, cvb;
+static bool left_done = false, right_done = false;
+static std::atomic<bool> go{false};
+static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+static void left(){
+  wait_go();
+  std::unique_lock<std::mutex> l(la);
+                                                                                          
+  cva.wait(l, []{ return right_done; });
+  left_done = true;
+  cvb.notify_all();
+}
+static void right(){
+  wait_go();
+  std::unique_lock<std::mutex> l(lb);
+                                         
+  cvb.wait(l, []{ return left_done; });
+  right_done = true;
+  cva.notify_all();
+}
+int main(){
+  std::thread a(left), b(right);
+  go.store(true, std::memory_order_release);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [87] uid=expE:sample_E118 batch=expE files=['sample_E118.cpp'] =====
+              
+                           
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+struct Cell { int v; Cell* next; };
+static std::atomic<Cell*> head{nullptr};
+static std::atomic<int> step{0};
+static std::atomic<int> freed{0};
+int main(){
+  Cell* c1 = new Cell{1, nullptr};
+  Cell* c2 = new Cell{2, c1};
+  head.store(c2, std::memory_order_release);
+  std::thread a([&]{
+    Cell* h = head.load(std::memory_order_acquire);
+    step.store(1, std::memory_order_release);
+    while (step.load(std::memory_order_acquire) != 2){}
+                                                           
+    Cell* nx = h->next;
+    std::printf("E118 v=%d\", h->v);
+    head.compare_exchange_strong(h, nx, std::memory_order_acq_rel, std::memory_order_acquire);
+  });
+  while (step.load(std::memory_order_acquire) != 1){}
+  Cell* taken = head.exchange(nullptr, std::memory_order_acq_rel);
+  delete taken;                            
+  head.store(new Cell{9, nullptr});                   
+  step.store(2, std::memory_order_release);
+  a.join();
+  delete taken;
+  return 0;
+}
+
+===== [88] uid=expE:sample_E132 batch=expE files=['sample_E132.cpp'] =====
+              
+                           
+                 
+                
+                         
+                                
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+struct Node { int v; int gen; Node* next; };
+static Node arena[2];
+static std::atomic<Node*> top{nullptr};
+static std::atomic<int> step{0}, read_gen{0};
+int main(){
+  arena[0].v = 1; arena[0].gen = 100; arena[0].next = nullptr;
+  top.store(&arena[0], std::memory_order_release);
+  std::thread a([&]{
+    Node* p = top.load(std::memory_order_acquire);
+    step.store(1, std::memory_order_release);
+    while (step.load(std::memory_order_acquire) != 2){}
+                                                      
+                                              
+    read_gen.store(p->gen, std::memory_order_relaxed);
+    std::printf("E132 v=%d gen=%d\", p->v, p->gen);
+  });
+  while (step.load(std::memory_order_acquire) != 1){}
+  top.store(nullptr, std::memory_order_release);
+  arena[0].v = 2; arena[0].gen = 200;                      
+  top.store(&arena[0], std::memory_order_release);
+  step.store(2, std::memory_order_release);
+  a.join();
+  std::printf("E132 read_gen=%d\", read_gen.load());
+  return 0;
+}
+
+===== [89] uid=expE:sample_E139 batch=expE files=['sample_E139.cpp'] =====
+              
+                           
+                 
+                
+                         
+                                
+                  
+                     
+                                                 
+
+#include <atomic>
+#include <thread>
+#include <cstdio>
+struct Block { int tag; int data; Block* next; };
+static std::atomic<Block*> freelist{nullptr};
+static std::atomic<Block*> published{nullptr};
+static std::atomic<int> step{0};
+int main(){
+  Block* b1 = new Block{1, 111, nullptr};
+  freelist.store(b1, std::memory_order_release);
+  published.store(b1, std::memory_order_release);
+  std::thread t([&]{
+    Block* b = published.load(std::memory_order_acquire);
+    step.store(1, std::memory_order_release);
+    while (step.load(std::memory_order_acquire) != 2){}
+                                                      
+                                           
+    std::printf("E139 tag=%d data=%d\", b->tag, b->data);
+  });
+  while (step.load(std::memory_order_acquire) != 1){}
+  Block* old = freelist.exchange(nullptr, std::memory_order_acq_rel);
+  delete old;                                                                     
+  freelist.store(new Block{2, 222, nullptr});                    
+  step.store(2, std::memory_order_release);
+  t.join();
+  return 0;
+}
+
+===== [90] uid=expE:sample_E141 batch=expE files=['sample_E141.cpp'] =====
+              
+                                       
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <cstdio>
+static std::mutex m;
+static long acc = 0;
+static std::atomic<int> stage{0};
+static void low_prio(){
+  std::lock_guard<std::mutex> lk(m);
+                                        
+                                               
+  stage.store(1, std::memory_order_release);
+  for (long i = 0; i < 3000000; ++i) acc += i % 7;
+  stage.store(2, std::memory_order_release);
+}
+static void high_prio(){
+  while (stage.load(std::memory_order_acquire) < 1){}
+                                     
+  std::lock_guard<std::mutex> lk(m);
+  acc += 1;
+  stage.store(3, std::memory_order_release);
+}
+static void mid_prio(){
+  while (stage.load(std::memory_order_acquire) < 1){}
+  while (stage.load(std::memory_order_acquire) < 2){
+                                             
+    std::this_thread::yield();
+  }
+}
+int main(){
+  std::thread a(low_prio), b(high_prio), c(mid_prio);
+  a.join(); b.join(); c.join();
+  std::printf("E141 acc=%ld stage=%d\", acc, stage.load());
+  return 0;
+}
+
+===== [91] uid=expE:sample_E152 batch=expE files=['sample_E152.cpp'] =====
+              
+                                       
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <cstdio>
+static std::mutex log_lock;
+static char logbuf[256];
+static std::atomic<int> stage{0};
+static void flush(){
+  std::lock_guard<std::mutex> lk(log_lock);
+  stage.store(1, std::memory_order_release);
+                                         
+  for (int k = 0; k < 3000; ++k){
+    for (int i = 0; i < 256; ++i) logbuf[i] = 'a' + ((k + i) % 26);
+    if ((k % 512) == 0) std::this_thread::sleep_for(std::chrono::microseconds(80));
+  }
+  stage.store(2, std::memory_order_release);
+}
+static void alert(){
+  while (stage.load(std::memory_order_acquire) < 1){}
+                                 
+  std::lock_guard<std::mutex> lk(log_lock);
+  logbuf[0] = 'Z';
+  stage.store(3, std::memory_order_release);
+}
+static void tail(){
+  while (stage.load(std::memory_order_acquire) < 1){}
+                                      
+                                        
+  int sum = 0;
+  for (int k = 0; k < 300000; ++k) sum += logbuf[k % 256];
+  std::printf("E152 sum=%d\", sum);
+  while (stage.load(std::memory_order_acquire) < 2){}
+}
+int main(){
+  std::thread a(flush), b(alert), c(tail);
+  a.join(); b.join(); c.join();
+  std::printf("E152 logbuf0=%c\", logbuf[0]);
+  return 0;
+}
+
+===== [92] uid=expE:sample_E170 batch=expE files=['sample_E170.cpp'] =====
+              
+                                       
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::mutex key_lock;
+static unsigned char key[32] = {0};
+static std::atomic<int> stage{0};
+static void sign(){
+  std::lock_guard<std::mutex> lk(key_lock);
+  stage.store(1, std::memory_order_release);
+                                             
+  for (int round = 0; round < 5000; ++round)
+    for (int i = 0; i < 32; ++i) key[i] = (unsigned char)((key[i] * 31 + round) & 0xFF);
+  stage.store(2, std::memory_order_release);
+}
+static void handshake(){
+  while (stage.load(std::memory_order_acquire) < 1){}
+                                  
+  std::lock_guard<std::mutex> lk(key_lock);
+  std::printf("E170 key0=%d\", key[0]);
+  stage.store(3, std::memory_order_release);
+}
+int main(){
+  std::thread a(sign), b(handshake);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [93] uid=expE:sample_E175 batch=expE files=['sample_E175.cpp'] =====
+              
+                                  
+                 
+                
+                          
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
+#include <cstdio>
+static std::mutex m;
+static std::condition_variable cv;
+static bool ready = false;
+static std::atomic<int> notified{0}, finished{0};
+static void consumer(){
+  std::unique_lock<std::mutex> lk(m);
+  while (!ready) cv.wait(lk);                    
+  finished.store(1, std::memory_order_release);
+}
+static void producer(){
+                                            
+                                       
+                                         
+                                           
+                                       
+                              
+  notified.store(1, std::memory_order_release);
+  ready = true;
+  cv.notify_all();
+}
+int main(){
+  std::thread a(consumer), b(producer);
+  a.join(); b.join();
+  std::printf("E175 finished=%d\", finished.load());
+  return 0;
+}
+
+===== [94] uid=expE:sample_E186 batch=expE files=['sample_E186.cpp'] =====
+              
+                                  
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <cstdio>
+static std::mutex m;
+static std::condition_variable cv;
+static bool ready = false;
+static std::atomic<int> waiting{0};
+static void waiter(){
+                                                 
+                                                                    
+  auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
+  std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  std::unique_lock<std::mutex> lk(m);
+  waiting.store(1, std::memory_order_release);
+  std::cv_status st = cv.wait_until(lk, deadline);
+  bool ok = (st == std::cv_status::no_timeout);
+  std::printf("E186 ok=%d ready=%d\", (int)ok, (int)ready);
+}
+static void setter(){
+  while (waiting.load(std::memory_order_acquire) == 0){}
+  std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  {
+    std::lock_guard<std::mutex> lk(m);
+    ready = true;
+  }
+  cv.notify_all();
+}
+int main(){
+  std::thread a(waiter), b(setter);
+  a.join(); b.join();
+  return 0;
+}
+
+===== [95] uid=expE:sample_E200 batch=expE files=['sample_E200.cpp'] =====
+              
+                                  
+                 
+                
+                         
+                           
+                  
+                     
+                                                 
+
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <cstdio>
+static std::mutex m;
+static std::condition_variable cv;
+static bool shutting_down = false;
+static bool workers_stopped = false;
+static std::atomic<int> finished{0};
+static void worker(){
+  std::unique_lock<std::mutex> lk(m);
+  while (!shutting_down) cv.wait(lk);
+                                                  
+                                          
+  while (!workers_stopped) cv.wait(lk);
+  finished.fetch_add(1, std::memory_order_release);
+}
+static void shutdown(){
+  cv.notify_all();                                   
+  std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  {
+    std::lock_guard<std::mutex> lk(m);
+    shutting_down = true;                    
+    workers_stopped = true;
+  }
+  cv.notify_all();
+}
+int main(){
+  std::thread a(worker), b(worker), c(shutdown);
+  a.join(); b.join(); c.join();
+  std::printf("E200 finished=%d\", finished.load());
+  return 0;
+}
+
+===== [96] uid=expF:F013 batch=expF files=['sample_F013.cpp'] =====
+#include <cstdint>
+#include <cstdio>
+int main(){
+  char buffer[64] = {0};
+  int* p = reinterpret_cast<int*>(buffer + 6);          
+  int v = *p;                                 
+  (void)v;
+  std::printf("ok\");
+  return 0;
+}
+
+===== [97] uid=expF:F029 batch=expF files=['sample_F029.cpp'] =====
+#include <type_traits>
+#include <cstdio>
+struct Payload { double x; };
+int main(){
+  std::aligned_storage<32, 4> buf;                            
+  Payload* p = reinterpret_cast<Payload*>(&buf);                            
+  p->x = 1.0;
+  std::printf("%f\", p->x);
+  return 0;
+}
+
+===== [98] uid=expF:F057 batch=expF files=['sample_F057.cpp'] =====
+#include <cstdint>
+#include <cstdio>
+int main(){
+  uint64_t v = 0x1122334455667788ULL;
+  uint32_t lo = static_cast<uint32_t>(v);                                         
+  std::printf("%u\", lo);
+  return 0;
+}
+
+===== [99] uid=expF:F066 batch=expF files=['sample_F066.cpp'] =====
+#include <cstdint>
+#include <cstdio>
+int main(){
+  unsigned char raw[8] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0, 0};
+  uint16_t v = *reinterpret_cast<uint16_t*>(raw + 1);                                        
+  std::printf("%llu\", static_cast<unsigned long long>(v));
+  return 0;
+}
+
+===== [100] uid=expF:F069 batch=expF files=['sample_F069.cpp'] =====
+#include <cstdint>
+#include <cstdio>
+int main(){
+  unsigned char raw[8] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0, 0};
+  uint64_t v = *reinterpret_cast<uint64_t*>(raw + 1);                                        
+  std::printf("%llu\", static_cast<unsigned long long>(v));
+  return 0;
+}
+
+===== [101] uid=expF:F071 batch=expF files=['sample_F071.cpp'] =====
+#include <cstdio>
+volatile int flag = 0;
+int main(){
+                                                   
+  flag = 1;                                                        
+  while (flag != 0) { break; }
+  std::printf("%d\", flag);
+  return 0;
+}
+
+===== [102] uid=expF:F084 batch=expF files=['sample_F084.cpp'] =====
+#include <cstdio>
+struct Dev { int reg; void write(int v){ reg = v; } };
+int main(){
+  volatile Dev d{0};
+  Dev& r = const_cast<Dev&>(d);                                                                            
+  r.write(7);
+  std::printf("%d\", (int)d.reg);
+  return 0;
+}
+
+===== [103] uid=expF:F092 batch=expF files=['sample_F092.cpp'] =====
+#include <cstdio>
+volatile int counter = 0;
+int main(){
+  counter = counter + 1;                                                    
+  std::printf("%d\", counter);
+  return 0;
+}
+
+===== [104] uid=expF:F113 batch=expF files=['sample_F113.cpp'] =====
+#include <cstdio>
+int main(){
+  int x = 1;
+  int y = x << 34;                                     
+  std::printf("%d\", y);
+  return 0;
+}
+
+===== [105] uid=expF:F115 batch=expF files=['sample_F115.cpp'] =====
+#include <cstdio>
+int main(){
+  int x = 1;
+  int y = x << 36;                                     
+  std::printf("%d\", y);
+  return 0;
+}
+
+===== [106] uid=expF:F140 batch=expF files=['sample_F140.cpp'] =====
+#include <bitset>
+#include <cstdio>
+int main(){
+  std::bitset<8> bs;
+  bool b = bs[13];                                                           
+  std::printf("%d\", (int)b);
+  return 0;
+}
+
+===== [107] uid=expF:F146 batch=expF files=['sample_F146.cpp'] =====
+#include <csignal>
+#include <signal.h>
+#include <cstdio>
+static int shared = 0;
+extern "C" void isr(int) { shared++; }
+int main(){
+  std::signal(SIGINT, isr);
+  std::raise(SIGINT);                                                
+  std::printf("%d\", shared);
+  return 0;
+}
+
+===== [108] uid=expF:F156 batch=expF files=['sample_F156.cpp'] =====
+#include <csignal>
+#include <signal.h>
+#include <cstdio>
+static long total = 0;
+extern "C" void isr(int) { for (int k = 0; k < 1000; ++k) total += k; }
+int main(){
+  std::signal(SIGINT, isr);
+  std::raise(SIGINT);                                             
+  std::printf("%ld\", total);
+  return 0;
+}
+
+===== [109] uid=expF:F172 batch=expF files=['sample_F172.cpp'] =====
+#include <cstdio>
+int main(){
+  register int r1 = 1;                                                       
+  std::printf("%d\", r1);
+  return 0;
+}
+
+===== [110] uid=expF:F176 batch=expF files=['sample_F176.cpp'] =====
+#include <cstdio>
+int main(){
+  register int r5 = 5;                                                       
+  std::printf("%d\", r5);
+  return 0;
+}
+
+===== [111] uid=expG:sample_G004 batch=expG files=['sample_G004.cpp'] =====
+              
+                           
+                 
+                 
+                          
+                           
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
+                                                                 
+struct DtlsRecord {
+    unsigned char* data;
+    int            len;
+};
+
+static int dtls1_buffer_record(int current_epoch, int rec_epoch) {
+                                       
+    DtlsRecord* r = new DtlsRecord{ new unsigned char[512], 512 };
+    std::memset(r->data, 0xAB, 512);
+
+    if (rec_epoch != current_epoch) {
+                                          
+                     return -1;                                
+    }
+    std::printf("record buffered (epoch=%d, len=%d)\", rec_epoch, r->len);
+    delete[] r->data;
+    delete r;
+    return 0;
+}
+
+int main() {
+                                              
+    for (int i = 0; i < 8; ++i) {
+        if (dtls1_buffer_record(1, 2) != 0)
+            std::printf("record dropped (leaked)\");
+    }
+    return 0;
+}
+
+===== [112] uid=expG:sample_G005 batch=expG files=['sample_G005.cpp'] =====
+              
+                           
+                 
+                 
+                          
+                           
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstring>
+                                           
+struct HmFragment {
+    unsigned char* frag;
+    int            frag_len;
+};
+
+static void dtls1_hm_fragment_free(HmFragment* f) {
+    if (!f) return;
+    delete[] f->frag;
+    delete f;
+}
+
+static int dtls1_process_fragment(bool crafted_error) {
+    HmFragment* f = new HmFragment{ new unsigned char[256], 256 };
+    std::memset(f->frag, 0, 256);
+
+    if (crafted_error) {
+        dtls1_hm_fragment_free(f);                 
+        std::printf("fragment error path: freed once\");
+                    
+    }
+                                        
+    dtls1_hm_fragment_free(f);
+    return 0;
+}
+
+int main() {
+    dtls1_process_fragment(true);                                          
+    return 0;
+}
+
+===== [113] uid=expG:sample_G012 batch=expG files=['sample_G012.cpp'] =====
+              
+                                
+                 
+                 
+                          
+                            
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstring>
+                                                      
+struct MDC2_CTX {
+    int            num;
+    unsigned char  data[16];
+};
+
+static int MDC2_Update(MDC2_CTX* c, const unsigned char* in, int inl) {
+                 c->num += inl;                                      
+    if (c->num >= 0 && c->num <= 16)
+        std::memcpy(c->data + c->num, in, (size_t)inl < 16u - (size_t)c->num ? (size_t)inl : 0);
+    return 0;
+}
+
+int main() {
+    MDC2_CTX ctx;
+    ctx.num = 2147483640;                                        
+    unsigned char chunk[4] = {1, 2, 3, 4};
+    volatile int inl = 100;
+    MDC2_Update(&ctx, chunk, inl);
+    std::printf("num=%d\", ctx.num);
+    return 0;
+}
+
+===== [114] uid=expG:sample_G013 batch=expG files=['sample_G013.cpp'] =====
+              
+                                
+                 
+                 
+                         
+                            
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstdint>
+                                                     
+static bool within_bounds(const unsigned char* p, size_t plen, long long len) {
+                                                             
+                 return (p + len) <= (p + plen);
+}
+
+int main() {
+    unsigned char* heap_buf = new unsigned char[64];
+                                                      
+    volatile long long len = 0x7FFFFFFFFFFFFFFFLL;
+    bool pass = within_bounds(heap_buf, 64, len);
+    std::printf("in_bounds=%d (回绕使越界长度通过边界检查)\", (int)pass);
+    delete[] heap_buf;
+    return 0;
+}
+
+===== [115] uid=expG:sample_G015 batch=expG files=['sample_G015.cpp'] =====
+              
+                              
+                 
+                 
+                          
+                           
+                                                                                   
+                                                 
+#include <cstdio>
+                                         
+struct Asn1Obj {
+    int               tag;                                     
+    const Asn1Obj*    child;          
+};
+
+static int asn1_parse_constructed(const Asn1Obj* o) {
+    unsigned char pad[8];                             
+    pad[0] = (unsigned char)o->tag;
+    if (o->child)
+                     return 1 + asn1_parse_constructed(o->child) + pad[0];           
+    return 0;
+}
+
+int main() {
+                                     
+    const int DEPTH = 2000000;
+    Asn1Obj* head = new Asn1Obj{ 0x30, 0 };
+    for (int i = 0; i < DEPTH; ++i)
+        head = new Asn1Obj{ 0x30, head };
+    std::printf("parse=%d\", asn1_parse_constructed(head));
+    return 0;
+}
+
+===== [116] uid=expG:sample_G016 batch=expG files=['sample_G016.cpp'] =====
+              
+                          
+                 
+                 
+                          
+                           
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstring>
+                                                                
+enum GenNameType { GEN_DNS = 2, GEN_OTHERNAME = 4, GEN_EDIPARTY = 5 };
+
+struct OtherName { int name_len; };
+
+struct GENERAL_NAME {
+    GenNameType type;
+    union {
+        OtherName*   otherName;                                     
+        const char*  dNSName;
+    } d;
+};
+
+static int GENERAL_NAME_cmp(const GENERAL_NAME* a, const GENERAL_NAME* b) {
+    if (a->type != b->type) return -1;
+    switch (a->type) {
+    case GEN_OTHERNAME:
+        return a->d.otherName->name_len - b->d.otherName->name_len;
+    case GEN_DNS:
+        return std::strcmp(a->d.dNSName, b->d.dNSName);
+    default:
+        break;
+    }
+                                                                        
+    return a->d.otherName->name_len - b->d.otherName->name_len;              
+}
+
+int main() {
+    GENERAL_NAME a{ GEN_EDIPARTY, {0} };                    
+    GENERAL_NAME b{ GEN_EDIPARTY, {0} };
+    std::printf("cmp=%d\", GENERAL_NAME_cmp(&a, &b));
+    return 0;
+}
+
+===== [117] uid=expG:sample_G018 batch=expG files=['sample_G018.cpp'] =====
+              
+                                    
+                 
+                 
+                          
+                           
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
+                                               
+static int punycode_decode(const char* in, size_t inlen, unsigned int* out, size_t out_cap) {
+    size_t out_count = 0;
+    size_t i = 0;
+                                   
+    while (i < inlen && in[i] != '-') {
+                     out[out_count++] = (unsigned char)in[i];                               
+        ++i;
+    }
+    if (i < inlen) ++i;           
+                         
+    for (; i < inlen; ++i)
+        if (in[i] >= 'a' && in[i] <= 'z') ++out_count;
+    return (int)out_count;
+}
+
+int main() {
+    unsigned int out[8];                                     
+    char crafted[48];                                                               
+    std::memset(crafted, 'a', 40);
+    crafted[40] = '-';
+    crafted[41] = 'x'; crafted[42] = '9'; crafted[43] = 'a'; crafted[44] = '\';
+    int n = punycode_decode(crafted, 44, out, 8);
+    std::printf("decoded=%d first=%u\", n, out[0]);                      
+    return 0;
+}
+
+===== [118] uid=expG:sample_G019 batch=expG files=['sample_G019.cpp'] =====
+              
+                             
+                 
+                
+                         
+                            
+                                                                                   
+                                                 
+#include <cstdio>
+                                            
+static unsigned int bn_mod_sqrt(unsigned int a, unsigned int p) {
+    unsigned int y = a % p;
+                                                   
+    for (;;) {
+        if (y == 1) return 0;                             
+                     y = (y * y) % p;                                     
+    }
+}
+
+int main() {
+                        
+    std::printf("sqrt=%u\", bn_mod_sqrt(3, 15));                
+    return 0;
+}
+
+===== [119] uid=expG:sample_G021 batch=expG files=['sample_G021.cpp'] =====
+              
+                             
+                 
+                 
+                         
+                            
+                                                                                   
+                                                 
+#include <cstdio>
+                                                   
+enum HsState { HS_CLIENT_HELLO_SENT, HS_SERVER_HELLO_DONE, HS_ESTABLISHED };
+enum HsMsg { MSG_FINISHED = 16, MSG_CCS = 20 };
+
+struct SslSession {
+    HsState state;
+    bool    ccs_seen;
+    int     master_key_len;                
+};
+
+static void ssl3_process_message(SslSession* s, int msg_type) {
+    if (msg_type == MSG_CCS) {
+                                                              
+        s->ccs_seen = true;
+        s->master_key_len = 0;                             
+        s->state = HS_ESTABLISHED;
+    } else if (msg_type == MSG_FINISHED && s->state == HS_ESTABLISHED) {
+        std::printf("finished accepted with key_len=%d\", s->master_key_len);
+    }
+}
+
+int main() {
+    SslSession s{ HS_CLIENT_HELLO_SENT, false, 48 };
+    ssl3_process_message(&s, MSG_CCS);                                        
+    ssl3_process_message(&s, MSG_FINISHED);                   
+    std::printf("state=%d key_len=%d (正确: CCS 应被拒绝, key_len=48)\",
+                (int)s.state, s.master_key_len);
+    return 0;
+}
+
+===== [120] uid=expG:sample_G026 batch=expG files=['sample_G026.cpp'] =====
+              
+                              
+                 
+                 
+                          
+                           
+                                                                                      
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <string>
+                                                
+static const size_t TFTP_BUFFER_SIZE = 515;
+
+static void tftp_send_first(const std::string& filename) {
+    char buffer[TFTP_BUFFER_SIZE];                               
+    size_t name_len = filename.size();                   
+    if (name_len > TFTP_BUFFER_SIZE - 4) {                 
+        std::memcpy(buffer + 2, filename.c_str(), TFTP_BUFFER_SIZE - 4);
+        name_len = TFTP_BUFFER_SIZE - 4;
+    } else {
+        std::memcpy(buffer + 2, filename.c_str(), name_len);
+    }
+    buffer[0] = 0; buffer[1] = 1;                        
+                 size_t send_size = 2 + filename.size() + 1;                          
+    char* sendbuf = new char[send_size];
+    std::memcpy(sendbuf, buffer, send_size);                                       
+    std::printf("tftp rrq sent %zu bytes, head=%c%c\", send_size, sendbuf[0], sendbuf[1]);
+    delete[] sendbuf;
+}
+
+int main() {
+    tftp_send_first(std::string(600, 'a'));           
+    return 0;
+}
+
+===== [121] uid=expG:sample_G035 batch=expG files=['sample_G035.cpp'] =====
+              
+                              
+                 
+                 
+                          
+                           
+                                                                                
+                                                 
+#include <cstdio>
+#include <string>
+                                             
+struct SmbRequest {
+    std::string path;                          
+};
+
+struct SmbSession {
+    const char* tree;                               
+};
+
+static void smb_first_request(SmbSession* s) {
+    SmbRequest* r = new SmbRequest;
+    r->path = "//server/share";                                    
+    s->tree = r->path.c_str();
+                 delete r;                                            
+}
+
+static void smb_second_request(SmbSession* s) {
+    std::printf("tree=%s\", s->tree);                            
+}
+
+int main() {
+    SmbSession s{ 0 };
+    smb_first_request(&s);
+    smb_second_request(&s);
+    return 0;
+}
+
+===== [122] uid=expG:sample_G041 batch=expG files=['sample_G041.cpp'] =====
+              
+                         
+                   
+                 
+                         
+                           
+                                                                                  
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <string>
+                                                 
+static const char* k_machine_env[] = {
+    "USER=alice", "HOME=/home/alice", "SECRET_TOKEN=s3cr3t-value", 0
+};
+
+static std::string telnet_send_new_env(const char* user_opt) {
+                                        
+    std::string payload = "NEW_ENV:";
+    payload += user_opt;
+                                                        
+    for (int i = 0; k_machine_env[i]; ++i) {
+        payload += ";";
+        payload += k_machine_env[i];
+    }
+    return payload;
+}
+
+int main() {
+    std::string sent = telnet_send_new_env("TERM=xterm");
+    std::printf("TELNET 发送: %s\", sent.c_str());
+    std::printf("(正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机)\");
+    return 0;
+}
+
+===== [123] uid=expG:sample_G051 batch=expG files=['sample_G051.cpp'] =====
+              
+                             
+                 
+                 
+                          
+                           
+                                                                                  
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
+                                                     
+struct RtreeNode {
+    unsigned char* data;
+    int            data_len;            
+    int            n_cell;                       
+};
+
+static double rtreenode_read_coord(const RtreeNode* n, int cell, int dim) {
+                       
+    size_t off = sizeof(int) + (size_t)cell * 32 + (size_t)dim * 8;
+    double v;
+                                                   
+    std::memcpy(&v, n->data + off, sizeof(v));
+    return v;
+}
+
+int main() {
+                                                           
+    RtreeNode n;
+    n.data_len = 8 + 2 * 32;
+    n.n_cell = 9;
+    n.data = new unsigned char[n.data_len];
+    std::memset(n.data, 0x3F, n.data_len);
+    std::memcpy(n.data, &n.n_cell, sizeof(int));
+    for (int c = 0; c < n.n_cell; ++c)
+        std::printf("cell %d coord0=%f\", c, rtreenode_read_coord(&n, c, 0));             
+    delete[] n.data;
+    return 0;
+}
+
+===== [124] uid=expG:sample_G057 batch=expG files=['sample_G057.cpp'] =====
+              
+                             
+                 
+                 
+                          
+                           
+                                                                                  
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <cstdint>
+                                               
+static const int PNG_MAX_PALETTE_LENGTH = 256;
+
+struct PngInfo {
+    unsigned char  palette[PNG_MAX_PALETTE_LENGTH * 3];                 
+    int            num_palette;
+};
+
+static void png_set_PLTE(PngInfo* info, const unsigned char* chunk, int chunk_len) {
+    int num = chunk_len / 3;
+                                                           
+    std::memcpy(info->palette, chunk, (size_t)num * 3);
+    info->num_palette = num;
+}
+
+int main() {
+                                                
+    unsigned char* chunk = new unsigned char[1200];
+    std::memset(chunk, 0x7F, 1200);
+    PngInfo info;
+    std::memset(&info, 0, sizeof(info));
+    png_set_PLTE(&info, chunk, 1200);                                         
+    std::printf("num_palette=%d\", info.num_palette);
+    delete[] chunk;
+    return 0;
+}
+
+===== [125] uid=expG:sample_G058 batch=expG files=['sample_G058.cpp'] =====
+              
+                                
+                   
+                 
+                          
+                            
+                                                                                    
+                                                 
+#include <cstdio>
+#include <cstdint>
+                                              
+static void png_check_chunk_length(unsigned int length, unsigned int height, unsigned int idat_limit) {
+                                                
+                 int32_t hh = (int32_t)height + 7;                                       
+    int32_t denom = (int32_t)((hh & 0x7fffffffL) / (int32_t)height + 1L);
+    unsigned int row_factor = idat_limit / (unsigned int)denom;
+                                 
+    unsigned int blocks = length / row_factor;                   
+    std::printf("chunk length check: %u blocks of %u (hh=%d)\", blocks, row_factor, hh);
+}
+
+int main() {
+                                                       
+    png_check_chunk_length(0x7FFFFFF4u, 0x7FFFFFFCu, 0x40000000u);
+    return 0;
+}
+
+===== [126] uid=expG:sample_G071 batch=expG files=['sample_G071.cpp'] =====
+              
+                              
+                 
+                
+                          
+                           
+                                                                                       
+                                                 
+#include <cstdio>
+#include <cstring>
+                                               
+static const char* k_cwd_prefix = "/very/deeply/nested/directory/prefix/that/is/quite/long/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+static char* realpath_mirror(const char* rel_path, char* resolved, size_t dest_cap) {
+    size_t prefix_len = std::strlen(k_cwd_prefix);
+    size_t rel_len = std::strlen(rel_path);
+    char* dest_end = resolved + dest_cap;
+                                            
+    char* p = dest_end - rel_len - 1 - prefix_len;
+    std::memcpy(p, k_cwd_prefix, prefix_len);                               
+    std::memcpy(p + prefix_len, rel_path, rel_len);
+    return p;
+}
+
+int main() {
+    char* resolved = new char[256];
+    realpath_mirror("/etc/passwd", resolved, 256);                              
+    delete[] resolved;
+    return 0;
+}
+
+===== [127] uid=expG:sample_G074 batch=expG files=['sample_G074.cpp'] =====
+              
+                           
+                 
+                 
+                         
+                            
+                                                                                
+                                                 
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <vector>
+                                    
+static std::vector<std::string> g_executed;
+
+static bool bash_import_function(const char* env_value) {
+    if (std::strncmp(env_value, "() {", 4) != 0) return false;
+    const char* body_end = std::strstr(env_value, "};");
+    if (!body_end) return false;
+                
+    g_executed.push_back(std::string("define func: ") + std::string(env_value + 4, body_end - env_value - 4));
+                                                     
+    const char* trailing = body_end + 2;
+    if (*trailing)
+        g_executed.push_back(std::string("EXECUTE: ") + (trailing + 1));
+    return true;
+}
+
+int main() {
+    bash_import_function("() { :; }; echo pwned; cat /etc/shadow");
+    for (const std::string& e : g_executed)
+        std::printf("%s\", e.c_str());
+    std::printf("(正确行为: 只注册函数体, 尾随命令必须被丢弃)\");
+    return 0;
+}
+
+===== [128] uid=expG:sample_G080 batch=expG files=['sample_G080.cpp'] =====
+              
+                              
+                 
+                
+                          
+                           
+                                                                                        
+                                                 
+#include <cstdio>
+#include <cstring>
+                                                      
+struct SockCommon {                          
+    int family;
+    int state;
+};
+
+struct SockInet : SockCommon {                         
+    int ports[4];
+};
+
+struct SockBluetooth : SockCommon {                                 
+    int bdaddr[6];
+    int extra[8];
+};
+
+static SockBluetooth* sk_clone_lock(const SockCommon* proto) {
+    SockBluetooth* nb = new SockBluetooth;
+    std::memset(nb, 0, sizeof(*nb));
+                 *nb = *static_cast<const SockBluetooth*>(proto);                         
+    return nb;
+}
+
+int main() {
+    SockInet src{ 2, 1, { 80, 443, 0, 0 } };
+    SockBluetooth* cloned = sk_clone_lock(&src);                       
+    std::printf("cloned family=%d\", cloned->family);
+    delete cloned;
+    return 0;
+}
+
+===== [129] uid=expG:sample_G083 batch=expG files=['sample_G083.cpp'] =====
+              
+                              
+                 
+                
+                          
+                           
+                                                                                        
+                                                 
+#include <cstdio>
+#include <thread>
+                                                   
+struct HdlcBuf {
+    bool busy;
+    int  len;
+};
+
+static HdlcBuf* g_active = new HdlcBuf{ true, 128 };
+static HdlcBuf* g_free_list = 0;
+
+static void n_hdlc_flush(bool writer) {
+                                         
+    if (g_active->busy && writer) {
+        HdlcBuf* b = g_active;
+        g_active = 0;
+        delete b;                                    
+    } else if (g_active) {
+        delete g_active;                                                      
+        g_active = 0;
+    }
+}
+
+int main() {
+    std::thread a([]{ for (int i = 0; i < 100000; ++i) if (!g_active) g_active = new HdlcBuf{ true, 128 }; n_hdlc_flush(true); });
+    std::thread b([]{ for (int i = 0; i < 100000; ++i) { if (g_active) n_hdlc_flush(false); } });
+    a.join();
+    b.join();
+    std::printf("done\");
+    return 0;
+}
+
+===== [130] uid=expG:sample_G086 batch=expG files=['sample_G086.cpp'] =====
+              
+                                   
+                   
+                
+                         
+                            
+                                                                                   
+                                                 
+#include <cstdio>
+#include <cstdint>
+                                        
+static long g_op_count = 0;                     
+
+static unsigned int mont_mul_nonct(unsigned int a, unsigned int b, unsigned int n) {
+    unsigned int r = 0;
+    for (int i = 0; i < 32; ++i) {
+                                          
+        if ((b >> i) & 1u) { r = (r + a) % n; g_op_count += 3; }
+        else               g_op_count += 1;
+        a = (a + a) % n;
+    }
+    return r;
+}
+
+int main() {
+    unsigned int n = 0xFFFFFFFBu;
+    g_op_count = 0;
+    mont_mul_nonct(1234567u, 0x55555555u, n);                  
+    long ops1 = g_op_count;
+    g_op_count = 0;
+    mont_mul_nonct(1234567u, 0xFFFFFFFFu, n);                   
+    long ops2 = g_op_count;
+    std::printf("ops(k1)=%ld ops(k2)=%ld 差异=%ld (应恒等: 常量时间缺失)\",
+                ops1, ops2, ops2 - ops1);
+    return 0;
+}
+
+===== [131] uid=expG:sample_G088 batch=expG files=['sample_G088.cpp'] =====
+              
+                                   
+                   
+                
+                         
+                            
+                                                                                 
+                                                 
+#include <cstdio>
+#include <vector>
+                                                      
+struct H2Stream {
+    int  id;
+    bool reset_pending;
+};
+
+static std::vector<H2Stream*> g_open_streams;
+
+static void h2_on_incoming_stream(int id, bool invalid_request) {
+    H2Stream* s = new H2Stream{ id, false };
+    g_open_streams.push_back(s);
+    if (invalid_request) {
+                                                            
+        s->reset_pending = true;
+        g_open_streams.push_back(new H2Stream{ id + 1000000, false });                 
+    }
+}
+
+int main() {
+                                               
+    for (int i = 0; i < 10000; ++i)
+        h2_on_incoming_stream(i, true);
+    std::printf("open_streams=%zu (正确行为: 服务端应限流, 例如 <= 100)\", g_open_streams.size());
+    for (H2Stream* s : g_open_streams) delete s;                         
+    return 0;
+}
+
+===== [132] uid=expG:sample_G092 batch=expG files=['sample_G092.cpp'] =====
+              
+                             
+                   
+                
+                          
+                           
+                                                                                          
+                                                 
+#include <cstdio>
+#include <cstring>
+                                               
+static void json_parse_string(const char* cur, const char* end) {
+    if (*cur != '\') return;
+    ++cur;
+                 while (*cur && *cur != '\') ++cur;                         
+    ++cur;                                                                     
+    std::printf("string parsed len=%ld\", (long)(cur - end));
+}
+
+int main() {
+                                                     
+    char* in = new char[4]{ '\', 'a', 'b', 'c' };
+    json_parse_string(in, in + 4);
+    delete[] in;
+    return 0;
+}
+
+===== [133] uid=expG:sample_G094 batch=expG files=['sample_G094.cpp'] =====
+              
+                               
+                   
+                 
+                          
+                           
+                                                                                                   
+                                                 
+#include <cstdio>
+                                                        
+enum XMLError {
+    XML_SUCCESS = 0,
+    XML_NO_ATTRIBUTE, XML_WRONG_ATTRIBUTE_TYPE, XML_ERROR_FILE_NOT_FOUND,
+    XML_ERROR_FILE_COULD_NOT_BE_OPENED, XML_ERROR_FILE_READ_ERROR,
+    XML_ERROR_PARSING_ELEMENT, XML_ERROR_PARSING_ATTRIBUTE,
+    XML_ERROR_PARSING_TEXT, XML_ERROR_PARSING_CDATA, XML_ERROR_PARSING_COMMENT,
+    XML_ERROR_PARSING_DECLARATION, XML_ERROR_PARSING_UNKNOWN,
+    XML_ERROR_EMPTY_DOCUMENT, XML_ERROR_PARSING, XML_ERROR_PARSING_X,
+    XML_ERROR_ELEMENT_MISMATCH, XML_ERROR_PARSING_ROOT_ELEMENT,
+    XML_ERROR_PARSING_DOCUMENT, XML_ERROR_COUNT
+                                                                   
+};
+
+static const char* _errorNames[19] = {
+    "XML_SUCCESS", "XML_NO_ATTRIBUTE", "XML_WRONG_ATTRIBUTE_TYPE",
+    "XML_ERROR_FILE_NOT_FOUND", "XML_ERROR_FILE_COULD_NOT_BE_OPENED",
+    "XML_ERROR_FILE_READ_ERROR", "XML_ERROR_PARSING_ELEMENT",
+    "XML_ERROR_PARSING_ATTRIBUTE", "XML_ERROR_PARSING_TEXT",
+    "XML_ERROR_PARSING_CDATA", "XML_ERROR_PARSING_COMMENT",
+    "XML_ERROR_PARSING_DECLARATION", "XML_ERROR_PARSING_UNKNOWN",
+    "XML_ERROR_EMPTY_DOCUMENT", "XML_ERROR_PARSING", "XML_ERROR_PARSING_X",
+    "XML_ERROR_ELEMENT_MISMATCH", "XML_ERROR_PARSING_ROOT_ELEMENT",
+    "XML_ERROR_PARSING_DOCUMENT"
+};
+
+static const char* ErrorIDToName(XMLError errorID) {
+                 return _errorNames[errorID];                                                
+}
+
+int main() {
+                                                             
+    XMLError err = XML_ERROR_COUNT;
+    std::printf("error name=%s\", ErrorIDToName(err));                              
+    return 0;
+}
+
+===== [134] uid=expG:sample_G095 batch=expG files=['sample_G095.cpp'] =====
+              
+                           
+                   
+                 
+                         
+                            
+                                                                                                   
+                                                 
+#include <cstdio>
+#include <cstdlib>
+                                              
+static bool query_unsigned_attribute(const char* value, unsigned* out) {
+    char* end = 0;
+                                                         
+    unsigned long v = std::strtoul(value, &end, 10);
+    if (end == value) return false;                  
+    *out = (unsigned)v;                                                    
+    return true;
+}
+
+int main() {
+                                                       
+    unsigned parsed = 0;
+    bool ok = query_unsigned_attribute("10000000000", &parsed);
+    std::printf("ok=%d parsed=%u (期望: 报错或 4294967295, 实际: 1410065408)\",
+                (int)ok, parsed);
+    return 0;
+}
+
+===== [135] uid=expG:sample_G099 batch=expG files=['sample_G099.cpp'] =====
+              
+                                
+                
+                
+                          
+                                    
+                                                                                   
+                                                 
+#include <cstdio>
+#include <string>
+#include <utility>
+                                                                    
+struct ArgMapper {
+    const std::string& map(const std::string& s) { return s; }
+    const std::string& map(int) { static const std::string empty; return empty; }
+};
+
+template <typename T>
+void format_value(T&& val) {
+                                                                                                  
+    const auto& arg = ArgMapper().map(std::forward<T>(val));                       
+    std::printf("format: %s\", arg.c_str());
+}
+
+int main() {
+    std::string s = "hello";
+    format_value(s);                                                          
+    format_value(std::string("temp"));                     
+    return 0;
+}
+
+===== [136] uid=holdout:h14 batch=holdout files=['_atom_inline_odr_a.cpp'] =====
+                                                      
+#define ODR_VALUE 1
+#include "_atom_inline_odr_shared.h"
+
+int tu_a_value() { return odr_fn(); }
+int tu_a_stable() { return stable_fn(); }
+
+===== [137] uid=holdout:h27 batch=holdout files=['h27.cpp'] =====
+int main(){int* p=new int(1); delete p; delete p; return 0;}
+
+===== [138] uid=holdout:h34 batch=holdout files=['_atom_fence_vs_atomic.cpp'] =====
+                                                                             
+  
+                                                                        
+                                                       
+                                                                  
+                                                                     
+                                                       
+  
+                                                              
+                                                     
+                                                                      
+                                                                  
+                                                  
+                                              
+                                                              
+                                               
+  
+                                                                
+                                             
+                                                                         
+                                                              
+                                                                           
+                                       
+                                                                      
+                                                                      
+                                                            
+                                                  
+                                                                           
+                                            
+                                             
+                                                     
+                                        
+                                                 
+                                   
+  
+                                             
+                                              
+                                
+
+extern "C" int printf(const char *, ...);
+
+                                                           
+int w_sf_a = 0;                              
+int w_sf_b = 0;                              
+int w_tf_a = 0;                              
+int w_tf_b = 0;                              
+
+                              
+int s_p_a = 0;                      
+int s_p_b = 0;                                     
+int s_sf_a = 0;                            
+int s_sf_b = 0;                            
+int s_f_a = 0;                           
+int s_f_b = 0;                           
+volatile int s_v_a = 0;                                       
+volatile int s_v_b = 0;                        
+int s_o_a = 0;                              
+int s_o_b = 0;                              
+
+                                                 
+__attribute__((noinline)) void set_all_flags(int v)
+{
+    s_p_b = v;
+    s_sf_b = v;
+    s_f_b = v;
+    s_v_b = v;
+    s_o_b = v;
+                                                    
+    s_p_a = 7;
+    s_sf_a = 8;
+    s_f_a = 9;
+    s_v_a = 10;
+    s_o_a = 11;
+    w_sf_a = 1;
+    w_tf_a = 1;
+}
+
+                                           
+__attribute__((noinline)) int writer_signal_fence()
+{
+    w_sf_a = 1;
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    w_sf_b = 2;
+    return w_sf_a + w_sf_b;
+}
+
+                                                
+__attribute__((noinline)) int writer_thread_fence()
+{
+    w_tf_a = 1;
+    __atomic_thread_fence(__ATOMIC_SEQ_CST);
+    w_tf_b = 2;
+    return w_tf_a + w_tf_b;
+}
+
+                                     
+__attribute__((noinline)) int spin_plain()
+{
+    while (!s_p_b) {
+    }
+    return s_p_a;
+}
+
+                                     
+__attribute__((noinline)) int spin_signal_fence()
+{
+    while (!s_sf_b) {
+        __atomic_signal_fence(__ATOMIC_SEQ_CST);
+    }
+    return s_sf_a;
+}
+
+                                              
+__attribute__((noinline)) int spin_with_fence()
+{
+    while (!s_f_b) {
+        __atomic_thread_fence(__ATOMIC_SEQ_CST);
+    }
+    return s_f_a;
+}
+
+                                            
+__attribute__((noinline)) int spin_volatile()
+{
+    unsigned bound = 1000000;
+    while (!s_v_b && --bound > 0) {
+    }
+    return s_v_a;
+}
+
+                                        
+__attribute__((noinline)) int spin_fence_outside()
+{
+    __atomic_signal_fence(__ATOMIC_SEQ_CST);             
+    while (!s_o_b) {
+    }
+    return s_o_a;
+}
+
+int main()
+{
+    set_all_flags(1);                                        
+    int r_p = spin_plain();
+    int r_sf = spin_signal_fence();
+    int r_f = spin_with_fence();
+    int r_v = spin_volatile();
+    int r_o = spin_fence_outside();
+    int r_wsf = writer_signal_fence();
+    int r_wtf = writer_thread_fence();
+
+    printf("spin_plain_ret=%d|spin_signal_fence_ret=%d|spin_with_fence_ret=%d|spin_volatile_ret=%d\",
+           r_p, r_sf, r_f, r_v);
+    printf("spin_fence_outside_ret=%d|writer_signal_fence_ret=%d|writer_thread_fence_ret=%d\",
+           r_o, r_wsf, r_wtf);
+    printf("functions_present=7|spin_volatile_engaged=%d\", (r_v != 0) ? 1 : 0);
+    return 0;
+}
+
+===== [139] uid=holdout:h40 batch=holdout files=['_atom_leak_detection.cpp'] =====
+                                                              
+  
+                                      
+                                                           
+                                                                
+                                                                     
+  
+                                                              
+                                                                    
+                                                                 
+                                                            
+                               
+  
+                                               
+#include <cstdio>
+#include <memory>
+#include <vector>
+
+namespace {
+volatile int g_scoped_dtor = 0;
+volatile int g_cycle_dtor  = 0;
+volatile int g_owned_dtor  = 0;
+                                     
+                                            
+                                                 
+volatile int g_cycle_ctor  = 0;
+
+struct Scoped {
+    int id = 0;
+    ~Scoped() { g_scoped_dtor = g_scoped_dtor + 1; }
+};
+struct Node {                                              
+    std::shared_ptr<Node> next;
+    Node() { g_cycle_ctor = g_cycle_ctor + 1; }                      
+    ~Node() { g_cycle_dtor = g_cycle_dtor + 1; }
+};
+struct Owned {
+    int id = 0;
+    ~Owned() { g_owned_dtor = g_owned_dtor + 1; }
+};
+
+std::vector<std::shared_ptr<Owned>>& registry() {                  
+    static std::vector<std::shared_ptr<Owned>> r;
+    return r;
+}
+
+__attribute__((noinline)) void run_scoped() { Scoped s{1}; (void)s; }
+
+__attribute__((noinline)) void run_cycle() {
+    auto a = std::make_shared<Node>();
+    auto b = std::make_shared<Node>();
+    a->next = b;                                         
+    b->next = a;                                                                
+}
+
+__attribute__((noinline)) void run_owned() {
+    registry().push_back(std::make_shared<Owned>());                   
+}
+}              
+
+int main() {
+    run_scoped();
+    run_cycle();
+    run_owned();
+
+    std::printf("scoped_dtor_count=%d\", static_cast<int>(g_scoped_dtor));
+    std::printf("cycle_dtor_count=%d\", static_cast<int>(g_cycle_dtor));
+    std::printf("owned_dtor_count=%d\", static_cast<int>(g_owned_dtor));
+    std::printf("owned_registry_size=%zu\", registry().size());
+                                                                                      
+                                         
+                                                   
+                                                 
+                                                               
+    std::printf("scoped_is_clean=%d\", g_scoped_dtor == 1 ? 1 : 0);
+    std::printf("cycle_allocated=%d\", static_cast<int>(g_cycle_ctor));
+    std::printf("cycle_destroyed=%d\", static_cast<int>(g_cycle_dtor));
+    std::printf("cycle_live_objects=%d\", static_cast<int>(g_cycle_ctor - g_cycle_dtor));
+    return 0;
+}
+
+===== [140] uid=holdout:h43 batch=holdout files=['ub_stack_after_scope.cpp'] =====
+                                                    
+                                                                                                                 
+                                             
+#include <cstdio>
+
+int* leaked = nullptr;
+
+void f() {
+    int x = 5;                          
+    leaked = &x;                      
+}                                          
+
+int main() {
+    f();
+    *leaked = 10;                     
+    std::printf("leaked = %d\", *leaked);
+    return 0;
+}
+
+===== [141] uid=holdout:h50 batch=holdout files=['_ch14_leak.cpp'] =====
+                                   
+#include <cstddef>
+
+int main() {
+    int* p = new int[100];              
+    (void)p;                              
+    return 0;                              
+}
+
+===== [142] uid=holdout:h58 batch=holdout files=['_ch147_race.cpp'] =====
+#include <thread>
+int g = 0;
+void inc(){ for(int i=0;i<100000;++i) ++g; }             
+int main(){ std::thread a(inc), b(inc); a.join(); b.join(); }
+
+===== [143] uid=holdout:h7 batch=holdout files=['_atom_leak_detection.cpp'] =====
+                                                              
+  
+                                      
+                                                           
+                                                                
+                                                                     
+  
+                                                              
+                                                                    
+                                                                 
+                                                            
+                               
+  
+                                               
+#include <cstdio>
+#include <memory>
+#include <vector>
+
+namespace {
+volatile int g_scoped_dtor = 0;
+volatile int g_cycle_dtor  = 0;
+volatile int g_owned_dtor  = 0;
+                                     
+                                            
+                                                 
+volatile int g_cycle_ctor  = 0;
+
+struct Scoped {
+    int id = 0;
+    ~Scoped() { g_scoped_dtor = g_scoped_dtor + 1; }
+};
+struct Node {                                              
+    std::shared_ptr<Node> next;
+    Node() { g_cycle_ctor = g_cycle_ctor + 1; }                      
+    ~Node() { g_cycle_dtor = g_cycle_dtor + 1; }
+};
+struct Owned {
+    int id = 0;
+    ~Owned() { g_owned_dtor = g_owned_dtor + 1; }
+};
+
+std::vector<std::shared_ptr<Owned>>& registry() {                  
+    static std::vector<std::shared_ptr<Owned>> r;
+    return r;
+}
+
+__attribute__((noinline)) void run_scoped() { Scoped s{1}; (void)s; }
+
+__attribute__((noinline)) void run_cycle() {
+    auto a = std::make_shared<Node>();
+    auto b = std::make_shared<Node>();
+    a->next = b;                                         
+    b->next = a;                                                                
+}
+
+__attribute__((noinline)) void run_owned() {
+    registry().push_back(std::make_shared<Owned>());                   
+}
+}              
+
+int main() {
+    run_scoped();
+    run_cycle();
+    run_owned();
+
+    std::printf("scoped_dtor_count=%d\", static_cast<int>(g_scoped_dtor));
+    std::printf("cycle_dtor_count=%d\", static_cast<int>(g_cycle_dtor));
+    std::printf("owned_dtor_count=%d\", static_cast<int>(g_owned_dtor));
+    std::printf("owned_registry_size=%zu\", registry().size());
+                                                                                      
+                                         
+                                                   
+                                                 
+                                                               
+    std::printf("scoped_is_clean=%d\", g_scoped_dtor == 1 ? 1 : 0);
+    std::printf("cycle_allocated=%d\", static_cast<int>(g_cycle_ctor));
+    std::printf("cycle_destroyed=%d\", static_cast<int>(g_cycle_dtor));
+    std::printf("cycle_live_objects=%d\", static_cast<int>(g_cycle_ctor - g_cycle_dtor));
+    return 0;
+}
+
+===== [144] uid=holdout:h8 batch=holdout files=['_atom_rule_three_bug.cpp'] =====
+                                    
+                                                   
+                                                    
+                                             
+                                                           
+                                                                   
+                                               
+#include <iostream>
+#include <cstdlib>
+
+volatile long g_allocs = 0;
+volatile long g_dtors = 0;
+void* operator new(size_t n) { g_allocs = g_allocs + 1; return std::malloc(n); }
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, size_t) noexcept { std::free(p); }
+
+struct Buggy {                                                           
+    int* data;
+    Buggy() : data(new int(42)) {}
+    ~Buggy() { g_dtors = g_dtors + 1; }                                
+};
+
+struct Correct {                                                           
+    int* data;
+    Correct() : data(new int(42)) {}
+    ~Correct() { g_dtors = g_dtors + 1; }                            
+    Correct(const Correct& o) : data(new int(*o.data)) {}
+    Correct& operator=(const Correct& o) { *data = *o.data; return *this; }
+};
+
+int main() {
+    long a0 = g_allocs, d0 = g_dtors;
+    bool same_buggy = false;
+    long allocs_buggy = 0, dtors_buggy = 0;
+    {
+        Buggy a;
+        Buggy b = a;                                    
+        same_buggy = (b.data == a.data);
+        allocs_buggy = g_allocs - a0;
+    }                                                              
+    dtors_buggy = g_dtors - d0;
+
+    bool same_correct = false;
+    long allocs_correct = 0, dtors_correct = 0;
+    {
+        Correct c;
+        Correct d = c;                             
+        same_correct = (d.data == c.data);
+        allocs_correct = g_allocs - a0 - allocs_buggy;
+        long dd0 = g_dtors;
+        (void)dd0;
+                                   
+    }
+    dtors_correct = g_dtors - d0 - dtors_buggy;
+
+    std::cout << "buggy  : allocs=" << allocs_buggy << " same_ptr=" << (same_buggy ? 1 : 0)
+              << " dtor_runs=" << dtors_buggy << " (one buffer, two dtors)\";
+    std::cout << "correct: allocs=" << allocs_correct << " same_ptr=" << (same_correct ? 1 : 0)
+              << " dtor_runs=" << dtors_correct << " (two buffers, two dtors)\";
+    return 0;
+}
+

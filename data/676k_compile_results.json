@@ -1,0 +1,3696 @@
+{
+ "schema": "queyi-audit-676k-compile/v1",
+ "generated_by": "tools/audit_676k_compile.py",
+ "compiler": "WSL g++ 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)",
+ "flags": "-std=c++17 -O0 -g -fsyntax-only",
+ "seed": 6761,
+ "n_sampled": 230,
+ "n_files": 233,
+ "n_file_results": 233,
+ "wsl_rc": 0,
+ "wsl_stderr_head": "",
+ "samples": [
+  {
+   "uid": "corpus:d3-01",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-07",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-25",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-26",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-27",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-33",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3e-04",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3e-13",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-06",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-07",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-13",
+   "batch": "corpus",
+   "defect_type": "API",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-14",
+   "batch": "corpus",
+   "defect_type": "API",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-16",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "n_files": 0,
+   "n_compiled": 0,
+   "status": "no_source",
+   "pass": false,
+   "files": []
+  },
+  {
+   "uid": "expA:sample_001",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_001",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_003",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_003",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_004",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_004",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_008",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_008",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_009",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_009",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_011",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_011",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_013",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_013",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_020",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_020",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_031",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_031",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_033",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_033",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_040",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_040",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_055",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_055",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_057",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_057",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_060",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_060",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_069",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_069",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_075",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_075",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_077",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_077",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_081",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_081",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_081.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_081.cpp:5:13: warning: left shift count >= width of type [-Wshift-count-overflow]|    5 |   int r = 1 << 40; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 40 too large for 32-bit int|      |"
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_086",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_086",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_086.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_086.cpp:5:13: warning: left shift count is negative [-Wshift-count-negative]|    5 |   int r = 1 << (-5); // <<PLANTED-DEFECT>> undefined behavior: negative shift exponent -5|      |           ~~^~~~~~"
+    }
+   ]
+  },
+  {
+   "uid": "expA:sample_097",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expA:sample_097",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_097.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_097.cpp:5:13: warning: left shift count >= width of type [-Wshift-count-overflow]|    5 |   int r = 1 << 50; // <<PLANTED-DEFECT>> undefined behavior: shift exponent 50 too large for 32-bit int|      |"
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B004",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B004",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B013",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B013",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B019",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B019",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B021",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B021",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B024",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B024",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B036",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B036",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B037",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B037",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B041",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B041",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B057",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B057",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B060",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B060",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B063",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B063",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B065",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B065",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B072",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B072",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B079",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B079",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B083",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B083",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expB/sample_B083.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expB/sample_B083.cpp:12:22: warning: left shift count >= width of type [-Wshift-count-overflow]|   12 |   volatile int y = x << 40; /*DEFECT: shift count >= width (UB) */|      |                    ~~^~~~~"
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B087",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B087",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B090",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B090",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B092",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B092",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expB/sample_B092.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expB/sample_B092.cpp:12:13: warning: left shift count >= width of type [-Wshift-count-overflow]|   12 |   int y = x << 32; /*DEFECT: shift by exactly width (UB) -> UBSan catch */|      |           ~~^~~~~"
+    }
+   ]
+  },
+  {
+   "uid": "expB:sample_B100",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expB:sample_B100",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_006",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_006",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_008",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_008",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_025",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_025",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_033",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_033",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_034",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_034",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_045",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_045",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_050",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_050",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_052",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_052",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_053",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_053",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_054",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_054",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_058",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_058",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_060",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_060",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_061",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_061",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_062",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_062",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_066",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_066",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_069",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_069",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_072",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_072",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_075",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_075",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_076",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_076",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_079",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_079",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_081",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_081",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_083",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_083",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_088",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_088",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_092",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 3,
+   "n_compiled": 3,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_092",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_092",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_092",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_094",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 3,
+   "n_compiled": 3,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_094",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_094",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_094",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_096",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 3,
+   "n_compiled": 3,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_096",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_096",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_096",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_100",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 5,
+   "n_compiled": 5,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_100",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_100",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_100",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_100",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_100",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_107",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 3,
+   "n_compiled": 3,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_107",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_107",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_107",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_116",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "n_files": 5,
+   "n_compiled": 5,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_116",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_116",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_116",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_116",
+     "rc": 0,
+     "msg": ""
+    },
+    {
+     "uid": "expC:sample_116",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_125",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_125",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_128",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_128",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_131",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_131",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_140",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_140",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expC/sample_140.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expC/sample_140.cpp:2:13: warning: left shift count >= width of type [-Wshift-count-overflow]|    2 |   int r = 1 << 40; // <<PLANTED-DEFECT>> 移位量超出 int 位宽（UB）|      |           ~~^~~~~"
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_145",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_145",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expC/sample_145.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expC/sample_145.cpp:3:13: warning: division by zero [-Wdiv-by-zero]|    3 |   int r = a / 0; // <<PLANTED-DEFECT>> 整数除以零（UB）|      |           ~~^~~"
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_166",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_166",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_171",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_171",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_185",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_185",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_190",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_190",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_195",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_195",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expC:sample_199",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expC:sample_199",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D003",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D003",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D013",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D013",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D015",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D015",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D016",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D016",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D020",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D020",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D021",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D021",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D031",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D031",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D038",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D038",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D045",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D045",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D050",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D050",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D057",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D057",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D058",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D058",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D064",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D064",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D068",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D068",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D069",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D069",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D076",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D076",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D082",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D082",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D083",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D083",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D085",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D085",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D092",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D092",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D095",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D095",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D098",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D098",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D122",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D122",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D123",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D123",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D124",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D124",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D129",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D129",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D139",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D139",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D144",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D144",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D156",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D156",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D157",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D157",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D162",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D162",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D166",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D166",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D170",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D170",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D171",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D171",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D177",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D177",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D179",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D179",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D180",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D180",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D187",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D187",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D188",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D188",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expD:D199",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expD:D199",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E002",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E002",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E008",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E008",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E010",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E010",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E013",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E013",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E019",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E019",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E020",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E020",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E035",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E035",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E036",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E036",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E040",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E040",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E043",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E043",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E045",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E045",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E052",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E052",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E057",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E057",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E071",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E071",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E073",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E073",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E075",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E075",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E076",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E076",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E082",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E082",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E083",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E083",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E090",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E090",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E091",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E091",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E093",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E093",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E105",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E105",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E117",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E117",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E118",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E118",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E120",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E120",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E121",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E121",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E124",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E124",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E126",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E126",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E129",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E129",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E135",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E135",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E140",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E140",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E143",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E143",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E147",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E147",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E155",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E155",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E182",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E182",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E185",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E185",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E187",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E187",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E192",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E192",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expE:sample_E195",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expE:sample_E195",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F008",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F008",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F011",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F011",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F013",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F013",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F014",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F014",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F015",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F015",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F036",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F036",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F049",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F049",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F069",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F069",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F076",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F076",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F082",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F082",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F085",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F085",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F092",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F092",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F099",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F099",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F101",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F101",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F104",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F104",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F106",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F106",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F106.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F106.cpp:4:13: warning: left shift count is negative [-Wshift-count-negative]|    4 |   int y = x << -1;  // <<PLANTED-DEFECT>> 负移位量（UB）|      |           ~~^~~~~"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F116",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F116",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F116.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F116.cpp:5:18: warning: left shift count >= width of type [-Wshift-count-overflow]|    5 |   uint32_t y = x << 32;  // <<PLANTED-DEFECT>> 无符号左移超出位宽（UB）|      |                ~~^"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F118",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F118",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F118.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F118.cpp:5:18: warning: left shift count >= width of type [-Wshift-count-overflow]|    5 |   uint32_t y = x << 34;  // <<PLANTED-DEFECT>> 无符号左移超出位宽（UB）|      |                ~~^"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F120",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F120",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F120.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F120.cpp:5:18: warning: left shift count >= width of type [-Wshift-count-overflow]|    5 |   uint32_t y = x << 36;  // <<PLANTED-DEFECT>> 无符号左移超出位宽（UB）|      |                ~~^"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F124",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F124",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F124.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F124.cpp:4:15: warning: conversion from ‘unsigned int’ to ‘unsigned char:5’ changes value from ‘64’ to ‘0’ [-Woverflow]|    4 |   Bf b; b.f = 64;  // <<PLANTED-DEFECT>> 写入超过 5 "
+    }
+   ]
+  },
+  {
+   "uid": "expF:F134",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F134",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F146",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F146",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F161",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F161",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F172",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F172",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F172.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F172.cpp:3:16: warning: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]|    3 |   register int r1 = 1;  // <<PLANTED-DEFECT>> register 关键字（C++17 弃用、C++20 移"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F175",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F175",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F175.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F175.cpp:3:16: warning: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]|    3 |   register int r4 = 4;  // <<PLANTED-DEFECT>> register 关键字（C++17 弃用、C++20 移"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F176",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F176",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F176.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F176.cpp:3:16: warning: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]|    3 |   register int r5 = 5;  // <<PLANTED-DEFECT>> register 关键字（C++17 弃用、C++20 移"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F179",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F179",
+     "rc": 0,
+     "msg": "/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F179.cpp: In function ‘int main()’:|/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expF/sample_F179.cpp:3:16: warning: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]|    3 |   register int r8 = 8;  // <<PLANTED-DEFECT>> register 关键字（C++17 弃用、C++20 移"
+    }
+   ]
+  },
+  {
+   "uid": "expF:F181",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F181",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F183",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F183",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expF:F192",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expF:F192",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G005",
+   "batch": "expG",
+   "defect_type": "double_free",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G005",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G011",
+   "batch": "expG",
+   "defect_type": "integer_overflow",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G011",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G017",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G017",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G021",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G021",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G023",
+   "batch": "expG",
+   "defect_type": "null_deref",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G023",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G027",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G027",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G029",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G029",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G038",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G038",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G044",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G044",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G047",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G047",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G050",
+   "batch": "expG",
+   "defect_type": "stack_overflow_write",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G050",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G052",
+   "batch": "expG",
+   "defect_type": "null_deref",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G052",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G058",
+   "batch": "expG",
+   "defect_type": "division_by_zero",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G058",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G065",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G065",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G076",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G076",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G078",
+   "batch": "expG",
+   "defect_type": "use_after_free",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G078",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G084",
+   "batch": "expG",
+   "defect_type": "race_condition",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G084",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G089",
+   "batch": "expG",
+   "defect_type": "resource_exhaustion",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G089",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G098",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G098",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "expG:sample_G099",
+   "batch": "expG",
+   "defect_type": "compiler_warning",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "expG:sample_G099",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h1",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h1",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h25",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h25",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h26",
+   "batch": "holdout",
+   "defect_type": "memory",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h26",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h34",
+   "batch": "holdout",
+   "defect_type": "memory-order",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h34",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h40",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h40",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h46",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h46",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h55",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h55",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  },
+  {
+   "uid": "holdout:h56",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "n_files": 1,
+   "n_compiled": 1,
+   "status": "pass",
+   "pass": true,
+   "files": [
+    {
+     "uid": "holdout:h56",
+     "rc": 0,
+     "msg": ""
+    }
+   ]
+  }
+ ]
+}

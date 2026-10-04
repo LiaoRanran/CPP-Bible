@@ -1,0 +1,2280 @@
+===== [1] uid=corpus:d3-01 =====
+(no source on disk)
+
+===== [2] uid=corpus:d3-11 =====
+(no source on disk)
+
+===== [3] uid=corpus:d3-14 =====
+(no source on disk)
+
+===== [4] uid=corpus:d3-18 =====
+(no source on disk)
+
+===== [5] uid=corpus:d3-19 =====
+(no source on disk)
+
+===== [6] uid=corpus:d3-34 =====
+(no source on disk)
+
+===== [7] uid=corpus:d3-35 =====
+(no source on disk)
+
+===== [8] uid=corpus:d3e-06 =====
+(no source on disk)
+
+===== [9] uid=corpus:d3e-19 =====
+(no source on disk)
+
+===== [10] uid=corpus:d3e-20 =====
+(no source on disk)
+
+===== [11] uid=corpus:d3f-03 =====
+(no source on disk)
+
+===== [12] uid=corpus:d3f-10 =====
+(no source on disk)
+
+===== [13] uid=corpus:d3f-13 =====
+(no source on disk)
+
+===== [14] uid=expA:sample_001 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   int* p = new int[8];
+   6|   p[0] = 42;
+   7|   delete[] p;
+   8|   int v = p[0];
+   9|   (void)v;
+  10|   return 0;
+  11| }
+
+===== [15] uid=expA:sample_018 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   int* a = new int[8];
+   6|   a[10] = 1;
+   7|   delete[] a;
+   8|   return 0;
+   9| }
+
+===== [16] uid=expA:sample_027 =====
+   3| #include <cstdio>
+   4| #include <cstring>
+   5| int main() {
+   6|   int* a = new int[16];
+   7|   int v = a[17];
+   8|   (void)v;
+   9|   delete[] a;
+  10|   return 0;
+  11| }
+
+===== [17] uid=expA:sample_028 =====
+   3| #include <cstdio>
+   4| #include <cstring>
+   5| int main() {
+   6|   int* a = new int[32];
+   7|   int v = a[33];
+   8|   (void)v;
+   9|   delete[] a;
+  10|   return 0;
+  11| }
+
+===== [18] uid=expA:sample_051 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   auto get = []() -> int* { return nullptr; };
+   6|   int* p = get();
+   7|   *p = 3;
+   8|   return 0;
+   9| }
+
+===== [19] uid=expA:sample_052 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   auto get = []() -> int* { return nullptr; };
+   6|   int* p = get();
+   7|   *p = 3;
+   8|   return 0;
+   9| }
+
+===== [20] uid=expA:sample_064 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   int a;
+   6|   if (a > 100) { (void)1; }
+   7|   return 0;
+   8| }
+
+===== [21] uid=expA:sample_078 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   struct P { int a; int b; };
+   6|   P p;
+   7|   int r = p.a + p.b;
+   8|   (void)r;
+   9|   return 0;
+  10| }
+
+===== [22] uid=expA:sample_080 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   int r = 1 << 33;
+   6|   (void)r;
+   7|   return 0;
+   8| }
+
+===== [23] uid=expA:sample_100 =====
+   3| #include <cstdio>
+   4| int main() {
+   5|   int a = 10;
+   6|   int r = a / 0;
+   7|   (void)r;
+   8|   return 0;
+   9| }
+
+===== [24] uid=expB:sample_B014 =====
+   9| #include <thread>
+  10| #include <cstdio>
+  11| int arr[4] = {0};
+  12| void f(){ for (int i = 0; i < 2000000; i++) arr[2]++;                                  }
+  13| int main(){
+  14|   std::thread a(f), b(f);
+  15|   a.join(); b.join();
+  16|   std::printf("%d\", arr[2]);
+  17|   return 0;
+  18| }
+
+===== [25] uid=expB:sample_B022 =====
+   9| #include <cstdio>
+  10| int main(){
+  11|   volatile int a = 46341;
+  12|   volatile int b = a * a;
+  13|   std::printf("%d\", (int)b);
+  14|   return 0;
+  15| }
+
+===== [26] uid=expB:sample_B025 =====
+   9| #include <climits>
+  10| #include <cstdio>
+  11| int main(){
+  12|   volatile int m = INT_MIN;
+  13|   volatile int r = m / -1;
+  14|   std::printf("%d\", (int)r);
+  15|   return 0;
+  16| }
+
+===== [27] uid=expB:sample_B043 =====
+   9| #include <cstdlib>
+  10| #include <cstdio>
+  11| int main(){
+  12|   int* p = (int*)std::malloc(4 * sizeof(int));
+  13|   p[0] = 1;
+  14|   std::printf("%d\", p[0]);
+  16|   return 0;
+  17| }
+
+===== [28] uid=expB:sample_B049 =====
+   9| #include <cstdlib>
+  10| #include <cstdio>
+  11| int main(){
+  12|   int* p = (int*)std::malloc(sizeof(int));
+  13|   *p = 7;
+  14|   std::printf("%d\", *p);
+  15|   return 0;
+  16| }
+
+===== [29] uid=expB:sample_B061 =====
+   9| #include <cstdio>
+  10| int main(){
+  11|   alignas(1) char buf[8] = {0};
+  12|   int* p = (int*)(buf + 1);
+  13|   *p = 5;
+  14|   std::printf("%d\", *p);
+  15|   return 0;
+  16| }
+
+===== [30] uid=expB:sample_B069 =====
+   9| #include <cstdio>
+  10| int main(){
+  11|   char buf[8] = {0};
+  12|   int* p = (int*)(buf + 1);
+  13|   *p = *p + 1;
+  14|   std::printf("%d\", *p);
+  15|   return 0;
+  16| }
+
+===== [31] uid=expB:sample_B088 =====
+   9| #include <cstdio>
+  10| int main(){
+  11|   void (*fp)() = nullptr;
+  12|   fp();
+  13|   return 0;
+  14| }
+
+===== [32] uid=expB:sample_B090 =====
+   9| #include <cstdio>
+  10| struct S { void f(){ std::printf("ok\"); } };
+  11| int main(){
+  12|   S* s = nullptr;
+  13|   s->f();
+  14|   return 0;
+  15| }
+
+===== [33] uid=expC:sample_002 =====
+   1| #include <utility>
+   2| struct Bx { int val; };
+   3| int main(){
+   4|   Bx a{1};
+   5|   a = std::move(a);
+   6|   (void)a;
+   7|   return 0;
+   8| }
+
+===== [34] uid=expC:sample_014 =====
+   1| struct S{int v;};
+   2| S& h(){ S s{7}; return s; }
+   3| int main(){ (void)h(); return 0; }
+
+===== [35] uid=expC:sample_024 =====
+   1| #include <vector>
+   2| int main(){
+   3|   std::vector<int> v{1,2,3};
+   4|   std::vector<int> w = std::move(v);
+   5|   (void)v.size();
+   6|   return 0;
+   7| }
+
+===== [36] uid=expC:sample_034 =====
+   1| int main(){
+   2|   int* p = new int[16];
+   3|   if (true) return 0;
+   4|   delete[] p;
+   5|   return 0;
+   6| }
+
+===== [37] uid=expC:sample_038 =====
+   1| int main(){
+   2|   int* p = new int(10);
+   3|   delete[] p;
+   4|   return 0;
+   5| }
+
+===== [38] uid=expC:sample_049 =====
+   1| #include <mutex>
+   2| std::mutex m;
+   3| int worker(){
+   4|   m.lock();
+   5|   if (true) return -1;
+   6|   m.unlock();
+   7|   return 0;
+   8| }
+   9| int main(){ return worker(); }
+
+===== [39] uid=expC:sample_061 =====
+   1| #include <cstdio>
+   2| struct B { B(){ vf(); } virtual void vf(){ printf("B\"); } };
+   3| struct D : B { void vf() override { printf("D\"); } };
+   4| int main(){ D d; return 0; }
+
+===== [40] uid=expC:sample_070 =====
+   1| #include <cstdio>
+   2| struct B { virtual ~B(){ vf(); } virtual void vf(){ printf("B\"); } };
+   3| struct D : B { void vf() override { printf("D\"); } };
+   4| int main(){ D d; return 0; }
+
+===== [41] uid=expC:sample_088 =====
+   1| #include <cstdio>
+   2| struct B { virtual void vf(){ printf("B\"); } virtual ~B(){} };
+   3| struct D : B { void vf() override { printf("D\"); } };
+   4| int main(){
+   5|   B* p = new D;
+   6|   delete p;
+   7|   p->vf();
+   8|   return 0;
+   9| }
+
+===== [42] uid=expC:sample_107 =====
+   1| extern int y;
+   2| int x = y + 1;
+   5| int y = 5;
+   8| extern int x;
+   9| int main(){ (void)x; return 0; }
+
+===== [43] uid=expC:sample_110 =====
+   1| extern int y;
+   2| int x = y + 1;
+   5| int y = 5;
+   8| extern int x;
+   9| int main(){ (void)x; return 0; }
+
+===== [44] uid=expC:sample_111 =====
+   1| extern int y;
+   2| int x = y + 1;
+   5| int y = 5;
+   8| extern int x;
+   9| int main(){ (void)x; return 0; }
+
+===== [45] uid=expC:sample_128 =====
+   1| #include <climits>
+   2| int main(){
+   3|   int x = INT_MAX;
+   4|   x = x + 1;
+   5|   (void)x;
+   6|   return 0;
+   7| }
+
+===== [46] uid=expC:sample_146 =====
+   1| int main(){
+   2|   int a = 10;
+   3|   int r = a / 0;
+   4|   (void)r;
+   5|   return 0;
+   6| }
+
+===== [47] uid=expC:sample_149 =====
+   1| #include <cstdio>
+   2| float g(float* pf, int* pi){ *pi = 1; return *pf; }
+   3| int main(){
+   4|   float x = 2.0f;
+   5|   int r = (int)g(&x, (int*)&x);
+   6|   printf("%d\", r);
+   7|   return 0;
+   8| }
+
+===== [48] uid=expC:sample_150 =====
+   1| #include <cstdio>
+   2| float g(float* pf, int* pi){ *pi = 1; return *pf; }
+   3| int main(){
+   4|   float x = 2.0f;
+   5|   int r = (int)g(&x, (int*)&x);
+   6|   printf("%d\", r);
+   7|   return 0;
+   8| }
+
+===== [49] uid=expC:sample_169 =====
+   1| int main(){
+   2|   int n = 9;
+   3|   int a[5] = {0};
+   4|   for (int i = 0; i < n; ++i) a[i] = i;
+   5|   return 0;
+   6| }
+
+===== [50] uid=expC:sample_176 =====
+   1| int main(){
+   2|   int flag = 1;
+   3|   int* p = new int[4];
+   4|   if (flag) { delete[] p; }
+   5|   int v = p[0];
+   6|   (void)v;
+   7|   return 0;
+   8| }
+
+===== [51] uid=expC:sample_193 =====
+   1| int main(){
+   2|   int n = 8;
+   3|   int sum = 0;
+   4|   for (int i = 0; i <= n; ++i) sum += i;
+   5|   (void)sum;
+   6|   return 0;
+   7| }
+
+===== [52] uid=expC:sample_197 =====
+   1| int main(){
+   2|   double d = 3.999;
+   3|   int r = (int)d;
+   4|   (void)r;
+   5|   return 0;
+   6| }
+
+===== [53] uid=expD:D013 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::vector<int> v = {10, 20, 30, 40};
+   7|   auto it = v.begin() + 1;
+   8|   v.erase(v.begin());
+   9|   std::printf("%d\", *it);
+  10|   return 0;
+  11| }
+
+===== [54] uid=expD:D017 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::vector<int> v = {10, 20, 30, 40};
+   7|   auto it = v.begin() + 5;
+   8|   v.erase(v.begin());
+   9|   std::printf("%d\", *it);
+  10|   return 0;
+  11| }
+
+===== [55] uid=expD:D033 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| struct Holder {
+   6|   std::vector<int> v = {1, 2, 3};
+   7|   int read_bad() {
+   8|     auto it = v.begin();
+   9|     v.push_back(4);
+  10|     return *it;
+  11|   }
+  12| };
+  13| int main() {
+  14|   Holder h;
+  15|   std::printf("%d\", h.read_bad());
+  16|   return 0;
+  17| }
+
+===== [56] uid=expD:D035 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::vector<int> v = {1, 2, 3, 4, 5};
+   7|   auto it = v.begin() + 5;
+   8|   v.erase(v.begin());
+   9|   std::printf("%d\", *it);
+  10|   return 0;
+  11| }
+
+===== [57] uid=expD:D048 =====
+   3| #include <array>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::array<int, 3> a = {1, 2, 3};
+   7|   int x = a[4];
+   8|   std::printf("%d\", x);
+   9|   return 0;
+  10| }
+
+===== [58] uid=expD:D051 =====
+   3| #include <array>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::array<int, 3> a = {1, 2, 3};
+   7|   int x = a[7];
+   8|   std::printf("%d\", x);
+   9|   return 0;
+  10| }
+
+===== [59] uid=expD:D053 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::vector<bool> vb(3, false);
+   7|   auto bit = vb[1];
+   8|   for (int k = 0; k < 80; ++k) vb.push_back(true);
+   9|   bool b = bit;
+  10|   std::printf("%d\", (int)b);
+  11|   return 0;
+  12| }
+
+===== [60] uid=expD:D054 =====
+   3| #include <vector>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::vector<bool> vb(3, false);
+   7|   auto bit = vb[1];
+   8|   for (int k = 0; k < 88; ++k) vb.push_back(true);
+   9|   bool b = bit;
+  10|   std::printf("%d\", (int)b);
+  11|   return 0;
+  12| }
+
+===== [61] uid=expD:D088 =====
+   3| #include <string>
+   4| #include <cstdio>
+   5| int main() {
+   6|   std::string s = "abc";
+   7|   std::string t = s.substr(5, 3);
+   8|   std::printf("%s\", t.c_str());
+   9|   return 0;
+  10| }
+
+===== [62] uid=expD:D094 =====
+   3| #include <string>
+   4| #include <string_view>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+   8|   std::string_view sv(s.data(), s.size());
+   9|   s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+  10|   unsigned long sum = 0;
+  11|   for (char ch : sv) sum += (unsigned char)ch;
+  12|   std::printf("%lu\", sum);
+  13|   return 0;
+  14| }
+
+===== [63] uid=expD:D097 =====
+   3| #include <string>
+   4| #include <string_view>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+   8|   std::string_view sv(s.data(), s.size());
+   9|   s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+  10|   unsigned long sum = 0;
+  11|   for (char ch : sv) sum += (unsigned char)ch;
+  12|   std::printf("%lu\", sum);
+  13|   return 0;
+  14| }
+
+===== [64] uid=expD:D099 =====
+   3| #include <string>
+   4| #include <string_view>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::string s = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz";
+   8|   std::string_view sv(s.data(), s.size());
+   9|   s.append("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+  10|   unsigned long sum = 0;
+  11|   for (char ch : sv) sum += (unsigned char)ch;
+  12|   std::printf("%lu\", sum);
+  13|   return 0;
+  14| }
+
+===== [65] uid=expD:D126 =====
+   3| #include <vector>
+   4| #include <algorithm>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::vector<int> in(5, 1);
+   8|   std::vector<int> out(5);
+   9|   std::transform(in.begin(), in.end(), out.begin(), [](int x){ return x + 1; });
+  10|   std::printf("%zu\", out.size());
+  11|   return 0;
+  12| }
+
+===== [66] uid=expD:D127 =====
+   3| #include <vector>
+   4| #include <numeric>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::vector<double> v = {0.1, 0.2, 0.3};
+   8|   int sum = std::accumulate(v.begin(), v.end(), 0);
+   9|   std::printf("%d\", sum);
+  10|   return 0;
+  11| }
+
+===== [67] uid=expD:D128 =====
+   3| #include <vector>
+   4| #include <numeric>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::vector<double> v = {0.1, 0.2, 0.3};
+   8|   int sum = std::accumulate(v.begin(), v.end(), 0);
+   9|   std::printf("%d\", sum);
+  10|   return 0;
+  11| }
+
+===== [68] uid=expD:D130 =====
+   3| #include <vector>
+   4| #include <numeric>
+   5| #include <cstdio>
+   6| int main() {
+   7|   std::vector<double> v = {0.1, 0.2, 0.3};
+   8|   int sum = std::accumulate(v.begin(), v.end(), 0);
+   9|   std::printf("%d\", sum);
+  10|   return 0;
+  11| }
+
+===== [69] uid=expD:D151 =====
+   3| #include <memory>
+   4| #include <cstdio>
+   5| int main() {
+   6|   auto p = std::make_shared<int>(7);
+   7|   int* raw = p.get();
+   8|   delete raw;
+   9|   std::printf("%d\", *p);
+  10|   return 0;
+  11| }
+
+===== [70] uid=expD:D156 =====
+   3| #include <memory>
+   4| #include <cstdio>
+   5| struct Node {
+   6|   std::shared_ptr<Node> next;
+   7| };
+   8| int main() {
+   9|   auto a = std::make_shared<Node>();
+  10|   auto b = std::make_shared<Node>();
+  11|   a->next = b; b->next = a;
+  12|   std::printf("leak\");
+  13|   return 0;
+  14| }
+
+===== [71] uid=expD:D169 =====
+   3| #include <memory>
+   4| #include <cstdio>
+   5| int main() {
+   6|   int* raw = new int(1);
+   7|   std::shared_ptr<int> a(raw);
+   8|   std::shared_ptr<int> b(raw);
+   9|   std::printf("%d\", *a);
+  10|   return 0;
+  11| }
+
+===== [72] uid=expD:D175 =====
+   3| #include <functional>
+   4| #include <cstdio>
+   5| std::function<int()> make() {
+   6|   int x = 42;
+   7|   return [&x]() { return x + 5; };
+   8| }
+   9| int main() {
+  10|   auto f = make();
+  11|   std::printf("%d\", f());
+  12|   return 0;
+  13| }
+
+===== [73] uid=expD:D176 =====
+   3| #include <functional>
+   4| #include <cstdio>
+   5| std::function<int()> make() {
+   6|   int x = 42;
+   7|   return [&x]() { return x + 6; };
+   8| }
+   9| int main() {
+  10|   auto f = make();
+  11|   std::printf("%d\", f());
+  12|   return 0;
+  13| }
+
+===== [74] uid=expD:D178 =====
+   3| #include <functional>
+   4| #include <memory>
+   5| #include <cstdio>
+   6| struct Widget {
+   7|   int v = 7;
+   8|   std::function<int()> bind() { return [this]() { return v; }; }
+   9| };
+  10| int main() {
+  11|   std::function<int()> f;
+  12|   { auto w = std::make_unique<Widget>(); f = w->bind(); }
+  13|   std::printf("%d\", f());
+  14|   return 0;
+  15| }
+
+===== [75] uid=expE:sample_E004 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| struct Node { int v; Node* next; };
+  15| static Node* g_node = nullptr;
+  16| static std::atomic<bool> g_init{false}, go{false};
+  17| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  18| static Node* acquire_node(){
+  19|   if (g_init.load(std::memory_order_acquire)){
+  21|     if (g_init.load(std::memory_order_relaxed)) return g_node;
+  22|   }
+  23|   Node* n = new Node{7, nullptr};
+  24|   g_node = n;
+  25|   g_init.store(true, std::memory_order_release);
+  26|   return n;
+  27| }
+  28| int main(){
+  29|   std::thread t1([]{ wait_go(); std::printf("E004 v=%d\", acquire_node()->v); });
+  30|   std::thread t2([]{ wait_go(); std::printf("E004 v=%d\", acquire_node()->v); });
+  31|   go.store(true, std::memory_order_release);
+  32|   t1.join(); t2.join();
+  33|   return 0;
+  34| }
+
+===== [76] uid=expE:sample_E013 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::atomic<unsigned long long> stamp{0};
+  15| static std::atomic<bool> flag{false}, go{false};
+  16| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  17| static void producer(){
+  18|   wait_go();
+  20|   stamp.store(0xDEADBEEFULL, std::memory_order_relaxed);
+  21|   flag.store(true, std::memory_order_relaxed);
+  22| }
+  23| static void consumer(){
+  24|   wait_go();
+  25|   while(!flag.load(std::memory_order_relaxed)){}
+  26|   std::printf("E013 stamp=%llx\", stamp.load(std::memory_order_relaxed));
+  27| }
+  28| int main(){
+  29|   std::thread p(producer), c(consumer);
+  30|   go.store(true, std::memory_order_release);
+  31|   p.join(); c.join();
+  32|   return 0;
+  33| }
+
+===== [77] uid=expE:sample_E031 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::atomic<int> f1{0}, f2{0}, f3{0};
+  15| static std::atomic<bool> all_ready{false}, go{false};
+  16| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  17| static void producer(){
+  18|   wait_go();
+  19|   f1.store(10, std::memory_order_relaxed);
+  20|   f2.store(20, std::memory_order_relaxed);
+  21|   f3.store(30, std::memory_order_relaxed);
+  22|   all_ready.store(true, std::memory_order_release);
+  23| }
+  24| static void consumer(){
+  25|   wait_go();
+  26|   while(!all_ready.load(std::memory_order_acquire)){}
+  28|   std::printf("E031 f1=%d f2=%d f3=%d\",
+  29|               f1.load(std::memory_order_relaxed),
+  30|               f2.load(std::memory_order_relaxed),
+  31|               f3.load(std::memory_order_relaxed));
+  32| }
+  33| int main(){
+  34|   std::thread p(producer), c(consumer);
+  35|   go.store(true, std::memory_order_release);
+  36|   p.join(); c.join();
+  37|   return 0;
+  38| }
+
+===== [78] uid=expE:sample_E035 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static int cells[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+  15| static std::atomic<int> w_cursor{0}, r_cursor{0}, go{0};
+  16| static void wait_go(){ while(go.load(std::memory_order_acquire) == 0){} }
+  17| static void producer(){
+  18|   wait_go();
+  19|   for (int i = 0; i < 8; ++i){
+  20|     cells[i] = i + 500;
+  22|     w_cursor.store(i + 1, std::memory_order_relaxed);
+  23|   }
+  24| }
+  25| static void consumer(){
+  26|   wait_go();
+  28|   while (w_cursor.load(std::memory_order_relaxed) < 8){}
+  29|   std::printf("E035 c7=%d\", cells[7]);
+  30| }
+  31| int main(){
+  32|   std::thread p(producer), c(consumer);
+  33|   go.store(1, std::memory_order_release);
+  34|   p.join(); c.join();
+  35|   return 0;
+  36| }
+
+===== [79] uid=expE:sample_E052 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::atomic<int*> slot{nullptr};
+  15| static std::atomic<bool> ready{false}, go{false};
+  16| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  17| static void publish(){
+  18|   wait_go();
+  19|   int* h = new int(7);
+  20|   slot.store(h, std::memory_order_relaxed);
+  21|   ready.store(true, std::memory_order_release);
+  23|   delete h;
+  24| }
+  25| static void consume(){
+  26|   wait_go();
+  27|   while(!ready.load(std::memory_order_acquire)){}
+  29|   std::printf("E052 v=%d\", *slot.load(std::memory_order_relaxed));
+  30| }
+  31| int main(){
+  32|   std::thread a(publish), b(consume);
+  33|   go.store(true, std::memory_order_release);
+  34|   a.join(); b.join();
+  35|   return 0;
+  36| }
+
+===== [80] uid=expE:sample_E054 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::atomic<bool> busy{false};
+  15| static int critical_writes = 0;
+  16| static std::atomic<bool> go{false};
+  17| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  18| static void enter(){
+  19|   wait_go();
+  21|   busy.exchange(true, std::memory_order_acq_rel);
+  22|   critical_writes = critical_writes + 1;
+  23|   busy.store(false, std::memory_order_release);
+  24| }
+  25| int main(){
+  26|   std::thread a(enter), b(enter);
+  27|   go.store(true, std::memory_order_release);
+  28|   a.join(); b.join();
+  29|   std::printf("E054 writes=%d\", critical_writes);
+  30|   return 0;
+  31| }
+
+===== [81] uid=expE:sample_E055 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| struct Gate {
+  15|   std::atomic_flag f;
+  16|   int payload;
+  17|   Gate() : payload(0) {}
+  18| };
+  19| static Gate g;
+  20| static std::atomic<bool> go{false};
+  21| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  22| static void guard(int id){
+  23|   wait_go();
+  25|   while (g.f.test_and_set(std::memory_order_acquire)){}
+  26|   g.payload = id;
+  27|   g.f.clear(std::memory_order_release);
+  28| }
+  29| int main(){
+  30|   std::thread a(guard, 1), b(guard, 2);
+  31|   go.store(true, std::memory_order_release);
+  32|   a.join(); b.join();
+  33|   std::printf("E055 payload=%d\", g.payload);
+  34|   return 0;
+  35| }
+
+===== [82] uid=expE:sample_E059 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::atomic<bool>* g_at = nullptr;
+  15| static std::atomic<bool> escaped{false}, go{false};
+  16| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  17| static void publish_and_die(){
+  18|   wait_go();
+  22|   g_at = new std::atomic<bool>(true);
+  23|   escaped.store(true, std::memory_order_release);
+  24|   delete g_at;
+  25| }
+  26| static void worker(){
+  27|   wait_go();
+  28|   while(!escaped.load(std::memory_order_acquire)){}
+  30|   std::atomic<bool>* p = reinterpret_cast<std::atomic<bool>*>(g_at);
+  31|   std::printf("E059 v=%d\", (int)p->load(std::memory_order_relaxed));
+  32| }
+  33| int main(){
+  34|   std::thread a(publish_and_die), b(worker);
+  35|   go.store(true, std::memory_order_release);
+  36|   a.join(); b.join();
+  37|   return 0;
+  38| }
+
+===== [83] uid=expE:sample_E082 =====
+  11| #include <mutex>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::mutex m;
+  15| static int depth = 0;
+  16| static void inner(){
+  18|   std::lock_guard<std::mutex> g(m);
+  19|   depth++;
+  20| }
+  21| static void outer(){
+  22|   std::lock_guard<std::mutex> g(m);
+  23|   depth++;
+  24|   inner();
+  25| }
+  26| int main(){
+  27|   std::thread a(outer);
+  28|   a.join();
+  29|   std::printf("E082 depth=%d\", depth);
+  30|   return 0;
+  31| }
+
+===== [84] uid=expE:sample_E089 =====
+  11| #include <mutex>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| static std::mutex m1, m2;
+  15| static void f(){
+  16|   std::unique_lock<std::mutex> held(m1);
+  19|   std::lock(m1, m2);
+  20|   std::printf("E089 never\");
+  21| }
+  22| int main(){
+  23|   std::thread t(f);
+  24|   t.join();
+  25|   return 0;
+  26| }
+
+===== [85] uid=expE:sample_E095 =====
+  11| #include <mutex>
+  12| #include <atomic>
+  13| #include <thread>
+  14| #include <cstdio>
+  15| static std::mutex big, small;
+  16| static std::atomic<int> held{0};
+  17| static std::atomic<bool> go{false};
+  18| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  19| static void on_big_ready(){
+  21|   std::lock_guard<std::mutex> s(small);
+  22|   std::printf("E095 callback\");
+  23| }
+  24| static void big_path(){
+  25|   wait_go();
+  26|   std::lock_guard<std::mutex> b(big);
+  27|   held.fetch_add(1, std::memory_order_release);
+  28|   while (held.load(std::memory_order_acquire) < 2){}
+  29|   on_big_ready();
+  30| }
+  31| static void small_path(){
+  32|   wait_go();
+  33|   std::lock_guard<std::mutex> s(small);
+  34|   held.fetch_add(1, std::memory_order_release);
+  35|   while (held.load(std::memory_order_acquire) < 2){}
+  37|   std::lock_guard<std::mutex> b(big);
+  38|   std::printf("E095 small path\");
+  39| }
+  40| int main(){
+  41|   std::thread a(big_path), b(small_path);
+  42|   go.store(true, std::memory_order_release);
+  43|   a.join(); b.join();
+  44|   return 0;
+  45| }
+
+===== [86] uid=expE:sample_E099 =====
+  11| #include <mutex>
+  12| #include <condition_variable>
+  13| #include <atomic>
+  14| #include <thread>
+  15| #include <cstdio>
+  16| static std::mutex la, lb;
+  17| static std::condition_variable cva, cvb;
+  18| static bool left_done = false, right_done = false;
+  19| static std::atomic<bool> go{false};
+  20| static void wait_go(){ while(!go.load(std::memory_order_acquire)){} }
+  21| static void left(){
+  22|   wait_go();
+  23|   std::unique_lock<std::mutex> l(la);
+  25|   cva.wait(l, []{ return right_done; });
+  26|   left_done = true;
+  27|   cvb.notify_all();
+  28| }
+  29| static void right(){
+  30|   wait_go();
+  31|   std::unique_lock<std::mutex> l(lb);
+  33|   cvb.wait(l, []{ return left_done; });
+  34|   right_done = true;
+  35|   cva.notify_all();
+  36| }
+  37| int main(){
+  38|   std::thread a(left), b(right);
+  39|   go.store(true, std::memory_order_release);
+  40|   a.join(); b.join();
+  41|   return 0;
+  42| }
+
+===== [87] uid=expE:sample_E118 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| struct Cell { int v; Cell* next; };
+  15| static std::atomic<Cell*> head{nullptr};
+  16| static std::atomic<int> step{0};
+  17| static std::atomic<int> freed{0};
+  18| int main(){
+  19|   Cell* c1 = new Cell{1, nullptr};
+  20|   Cell* c2 = new Cell{2, c1};
+  21|   head.store(c2, std::memory_order_release);
+  22|   std::thread a([&]{
+  23|     Cell* h = head.load(std::memory_order_acquire);
+  24|     step.store(1, std::memory_order_release);
+  25|     while (step.load(std::memory_order_acquire) != 2){}
+  27|     Cell* nx = h->next;
+  28|     std::printf("E118 v=%d\", h->v);
+  29|     head.compare_exchange_strong(h, nx, std::memory_order_acq_rel, std::memory_order_acquire);
+  30|   });
+  31|   while (step.load(std::memory_order_acquire) != 1){}
+  32|   Cell* taken = head.exchange(nullptr, std::memory_order_acq_rel);
+  33|   delete taken;
+  34|   head.store(new Cell{9, nullptr});
+  35|   step.store(2, std::memory_order_release);
+  36|   a.join();
+  37|   delete taken;
+  38|   return 0;
+  39| }
+
+===== [88] uid=expE:sample_E132 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| struct Node { int v; int gen; Node* next; };
+  15| static Node arena[2];
+  16| static std::atomic<Node*> top{nullptr};
+  17| static std::atomic<int> step{0}, read_gen{0};
+  18| int main(){
+  19|   arena[0].v = 1; arena[0].gen = 100; arena[0].next = nullptr;
+  20|   top.store(&arena[0], std::memory_order_release);
+  21|   std::thread a([&]{
+  22|     Node* p = top.load(std::memory_order_acquire);
+  23|     step.store(1, std::memory_order_release);
+  24|     while (step.load(std::memory_order_acquire) != 2){}
+  27|     read_gen.store(p->gen, std::memory_order_relaxed);
+  28|     std::printf("E132 v=%d gen=%d\", p->v, p->gen);
+  29|   });
+  30|   while (step.load(std::memory_order_acquire) != 1){}
+  31|   top.store(nullptr, std::memory_order_release);
+  32|   arena[0].v = 2; arena[0].gen = 200;
+  33|   top.store(&arena[0], std::memory_order_release);
+  34|   step.store(2, std::memory_order_release);
+  35|   a.join();
+  36|   std::printf("E132 read_gen=%d\", read_gen.load());
+  37|   return 0;
+  38| }
+
+===== [89] uid=expE:sample_E139 =====
+  11| #include <atomic>
+  12| #include <thread>
+  13| #include <cstdio>
+  14| struct Block { int tag; int data; Block* next; };
+  15| static std::atomic<Block*> freelist{nullptr};
+  16| static std::atomic<Block*> published{nullptr};
+  17| static std::atomic<int> step{0};
+  18| int main(){
+  19|   Block* b1 = new Block{1, 111, nullptr};
+  20|   freelist.store(b1, std::memory_order_release);
+  21|   published.store(b1, std::memory_order_release);
+  22|   std::thread t([&]{
+  23|     Block* b = published.load(std::memory_order_acquire);
+  24|     step.store(1, std::memory_order_release);
+  25|     while (step.load(std::memory_order_acquire) != 2){}
+  28|     std::printf("E139 tag=%d data=%d\", b->tag, b->data);
+  29|   });
+  30|   while (step.load(std::memory_order_acquire) != 1){}
+  31|   Block* old = freelist.exchange(nullptr, std::memory_order_acq_rel);
+  32|   delete old;
+  33|   freelist.store(new Block{2, 222, nullptr});
+  34|   step.store(2, std::memory_order_release);
+  35|   t.join();
+  36|   return 0;
+  37| }
+
+===== [90] uid=expE:sample_E141 =====
+  11| #include <mutex>
+  12| #include <atomic>
+  13| #include <thread>
+  14| #include <chrono>
+  15| #include <cstdio>
+  16| static std::mutex m;
+  17| static long acc = 0;
+  18| static std::atomic<int> stage{0};
+  19| static void low_prio(){
+  20|   std::lock_guard<std::mutex> lk(m);
+  23|   stage.store(1, std::memory_order_release);
+  24|   for (long i = 0; i < 3000000; ++i) acc += i % 7;
+  25|   stage.store(2, std::memory_order_release);
+  26| }
+  27| static void high_prio(){
+  28|   while (stage.load(std::memory_order_acquire) < 1){}
+  30|   std::lock_guard<std::mutex> lk(m);
+  31|   acc += 1;
+  32|   stage.store(3, std::memory_order_release);
+  33| }
+  34| static void mid_prio(){
+  35|   while (stage.load(std::memory_order_acquire) < 1){}
+  36|   while (stage.load(std::memory_order_acquire) < 2){
+  38|     std::this_thread::yield();
+  39|   }
+  40| }
+  41| int main(){
+  42|   std::thread a(low_prio), b(high_prio), c(mid_prio);
+  43|   a.join(); b.join(); c.join();
+  44|   std::printf("E141 acc=%ld stage=%d\", acc, stage.load());
+  45|   return 0;
+  46| }
+
+===== [91] uid=expE:sample_E152 =====
+  11| #include <mutex>
+  12| #include <atomic>
+  13| #include <thread>
+  14| #include <chrono>
+  15| #include <cstdio>
+  16| static std::mutex log_lock;
+  17| static char logbuf[256];
+  18| static std::atomic<int> stage{0};
+  19| static void flush(){
+  20|   std::lock_guard<std::mutex> lk(log_lock);
+  21|   stage.store(1, std::memory_order_release);
+  23|   for (int k = 0; k < 3000; ++k){
+  24|     for (int i = 0; i < 256; ++i) logbuf[i] = 'a' + ((k + i) % 26);
+  25|     if ((k % 512) == 0) std::this_thread::sleep_for(std::chrono::microseconds(80));
+  26|   }
+  27|   stage.store(2, std::memory_order_release);
+  28| }
+  29| static void alert(){
+  30|   while (stage.load(std::memory_order_acquire) < 1){}
+  32|   std::lock_guard<std::mutex> lk(log_lock);
+  33|   logbuf[0] = 'Z';
+  34|   stage.store(3, std::memory_order_release);
+  35| }
+  36| static void tail(){
+  37|   while (stage.load(std::memory_order_acquire) < 1){}
+  40|   int sum = 0;
+  41|   for (int k = 0; k < 300000; ++k) sum += logbuf[k % 256];
+  42|   std::printf("E152 sum=%d\", sum);
+  43|   while (stage.load(std::memory_order_acquire) < 2){}
+  44| }
+  45| int main(){
+  46|   std::thread a(flush), b(alert), c(tail);
+  47|   a.join(); b.join(); c.join();
+  48|   std::printf("E152 logbuf0=%c\", logbuf[0]);
+  49|   return 0;
+  50| }
+
+===== [92] uid=expE:sample_E170 =====
+  11| #include <mutex>
+  12| #include <atomic>
+  13| #include <thread>
+  14| #include <cstdio>
+  15| static std::mutex key_lock;
+  16| static unsigned char key[32] = {0};
+  17| static std::atomic<int> stage{0};
+  18| static void sign(){
+  19|   std::lock_guard<std::mutex> lk(key_lock);
+  20|   stage.store(1, std::memory_order_release);
+  22|   for (int round = 0; round < 5000; ++round)
+  23|     for (int i = 0; i < 32; ++i) key[i] = (unsigned char)((key[i] * 31 + round) & 0xFF);
+  24|   stage.store(2, std::memory_order_release);
+  25| }
+  26| static void handshake(){
+  27|   while (stage.load(std::memory_order_acquire) < 1){}
+  29|   std::lock_guard<std::mutex> lk(key_lock);
+  30|   std::printf("E170 key0=%d\", key[0]);
+  31|   stage.store(3, std::memory_order_release);
+  32| }
+  33| int main(){
+  34|   std::thread a(sign), b(handshake);
+  35|   a.join(); b.join();
+  36|   return 0;
+  37| }
+
+===== [93] uid=expE:sample_E175 =====
+  11| #include <mutex>
+  12| #include <condition_variable>
+  13| #include <atomic>
+  14| #include <thread>
+  15| #include <cstdio>
+  16| static std::mutex m;
+  17| static std::condition_variable cv;
+  18| static bool ready = false;
+  19| static std::atomic<int> notified{0}, finished{0};
+  20| static void consumer(){
+  21|   std::unique_lock<std::mutex> lk(m);
+  22|   while (!ready) cv.wait(lk);
+  23|   finished.store(1, std::memory_order_release);
+  24| }
+  25| static void producer(){
+  32|   notified.store(1, std::memory_order_release);
+  33|   ready = true;
+  34|   cv.notify_all();
+  35| }
+  36| int main(){
+  37|   std::thread a(consumer), b(producer);
+  38|   a.join(); b.join();
+  39|   std::printf("E175 finished=%d\", finished.load());
+  40|   return 0;
+  41| }
+
+===== [94] uid=expE:sample_E186 =====
+  11| #include <mutex>
+  12| #include <condition_variable>
+  13| #include <atomic>
+  14| #include <thread>
+  15| #include <chrono>
+  16| #include <cstdio>
+  17| static std::mutex m;
+  18| static std::condition_variable cv;
+  19| static bool ready = false;
+  20| static std::atomic<int> waiting{0};
+  21| static void waiter(){
+  24|   auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(1);
+  25|   std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  26|   std::unique_lock<std::mutex> lk(m);
+  27|   waiting.store(1, std::memory_order_release);
+  28|   std::cv_status st = cv.wait_until(lk, deadline);
+  29|   bool ok = (st == std::cv_status::no_timeout);
+  30|   std::printf("E186 ok=%d ready=%d\", (int)ok, (int)ready);
+  31| }
+  32| static void setter(){
+  33|   while (waiting.load(std::memory_order_acquire) == 0){}
+  34|   std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  35|   {
+  36|     std::lock_guard<std::mutex> lk(m);
+  37|     ready = true;
+  38|   }
+  39|   cv.notify_all();
+  40| }
+  41| int main(){
+  42|   std::thread a(waiter), b(setter);
+  43|   a.join(); b.join();
+  44|   return 0;
+  45| }
+
+===== [95] uid=expE:sample_E200 =====
+  11| #include <mutex>
+  12| #include <condition_variable>
+  13| #include <atomic>
+  14| #include <thread>
+  15| #include <chrono>
+  16| #include <cstdio>
+  17| static std::mutex m;
+  18| static std::condition_variable cv;
+  19| static bool shutting_down = false;
+  20| static bool workers_stopped = false;
+  21| static std::atomic<int> finished{0};
+  22| static void worker(){
+  23|   std::unique_lock<std::mutex> lk(m);
+  24|   while (!shutting_down) cv.wait(lk);
+  27|   while (!workers_stopped) cv.wait(lk);
+  28|   finished.fetch_add(1, std::memory_order_release);
+  29| }
+  30| static void shutdown(){
+  31|   cv.notify_all();
+  32|   std::this_thread::sleep_for(std::chrono::milliseconds(2));
+  33|   {
+  34|     std::lock_guard<std::mutex> lk(m);
+  35|     shutting_down = true;
+  36|     workers_stopped = true;
+  37|   }
+  38|   cv.notify_all();
+  39| }
+  40| int main(){
+  41|   std::thread a(worker), b(worker), c(shutdown);
+  42|   a.join(); b.join(); c.join();
+  43|   std::printf("E200 finished=%d\", finished.load());
+  44|   return 0;
+  45| }
+
+===== [96] uid=expF:F013 =====
+   1| #include <cstdint>
+   2| #include <cstdio>
+   3| int main(){
+   4|   char buffer[64] = {0};
+   5|   int* p = reinterpret_cast<int*>(buffer + 6);
+   6|   int v = *p;
+   7|   (void)v;
+   8|   std::printf("ok\");
+   9|   return 0;
+  10| }
+
+===== [97] uid=expF:F029 =====
+   1| #include <type_traits>
+   2| #include <cstdio>
+   3| struct Payload { double x; };
+   4| int main(){
+   5|   std::aligned_storage<32, 4> buf;
+   6|   Payload* p = reinterpret_cast<Payload*>(&buf);
+   7|   p->x = 1.0;
+   8|   std::printf("%f\", p->x);
+   9|   return 0;
+  10| }
+
+===== [98] uid=expF:F057 =====
+   1| #include <cstdint>
+   2| #include <cstdio>
+   3| int main(){
+   4|   uint64_t v = 0x1122334455667788ULL;
+   5|   uint32_t lo = static_cast<uint32_t>(v);
+   6|   std::printf("%u\", lo);
+   7|   return 0;
+   8| }
+
+===== [99] uid=expF:F066 =====
+   1| #include <cstdint>
+   2| #include <cstdio>
+   3| int main(){
+   4|   unsigned char raw[8] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0, 0};
+   5|   uint16_t v = *reinterpret_cast<uint16_t*>(raw + 1);
+   6|   std::printf("%llu\", static_cast<unsigned long long>(v));
+   7|   return 0;
+   8| }
+
+===== [100] uid=expF:F069 =====
+   1| #include <cstdint>
+   2| #include <cstdio>
+   3| int main(){
+   4|   unsigned char raw[8] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0, 0};
+   5|   uint64_t v = *reinterpret_cast<uint64_t*>(raw + 1);
+   6|   std::printf("%llu\", static_cast<unsigned long long>(v));
+   7|   return 0;
+   8| }
+
+===== [101] uid=expF:F071 =====
+   1| #include <cstdio>
+   2| volatile int flag = 0;
+   3| int main(){
+   5|   flag = 1;
+   6|   while (flag != 0) { break; }
+   7|   std::printf("%d\", flag);
+   8|   return 0;
+   9| }
+
+===== [102] uid=expF:F084 =====
+   1| #include <cstdio>
+   2| struct Dev { int reg; void write(int v){ reg = v; } };
+   3| int main(){
+   4|   volatile Dev d{0};
+   5|   Dev& r = const_cast<Dev&>(d);
+   6|   r.write(7);
+   7|   std::printf("%d\", (int)d.reg);
+   8|   return 0;
+   9| }
+
+===== [103] uid=expF:F092 =====
+   1| #include <cstdio>
+   2| volatile int counter = 0;
+   3| int main(){
+   4|   counter = counter + 1;
+   5|   std::printf("%d\", counter);
+   6|   return 0;
+   7| }
+
+===== [104] uid=expF:F113 =====
+   1| #include <cstdio>
+   2| int main(){
+   3|   int x = 1;
+   4|   int y = x << 34;
+   5|   std::printf("%d\", y);
+   6|   return 0;
+   7| }
+
+===== [105] uid=expF:F115 =====
+   1| #include <cstdio>
+   2| int main(){
+   3|   int x = 1;
+   4|   int y = x << 36;
+   5|   std::printf("%d\", y);
+   6|   return 0;
+   7| }
+
+===== [106] uid=expF:F140 =====
+   1| #include <bitset>
+   2| #include <cstdio>
+   3| int main(){
+   4|   std::bitset<8> bs;
+   5|   bool b = bs[13];
+   6|   std::printf("%d\", (int)b);
+   7|   return 0;
+   8| }
+
+===== [107] uid=expF:F146 =====
+   1| #include <csignal>
+   2| #include <signal.h>
+   3| #include <cstdio>
+   4| static int shared = 0;
+   5| extern "C" void isr(int) { shared++; }
+   6| int main(){
+   7|   std::signal(SIGINT, isr);
+   8|   std::raise(SIGINT);
+   9|   std::printf("%d\", shared);
+  10|   return 0;
+  11| }
+
+===== [108] uid=expF:F156 =====
+   1| #include <csignal>
+   2| #include <signal.h>
+   3| #include <cstdio>
+   4| static long total = 0;
+   5| extern "C" void isr(int) { for (int k = 0; k < 1000; ++k) total += k; }
+   6| int main(){
+   7|   std::signal(SIGINT, isr);
+   8|   std::raise(SIGINT);
+   9|   std::printf("%ld\", total);
+  10|   return 0;
+  11| }
+
+===== [109] uid=expF:F172 =====
+   1| #include <cstdio>
+   2| int main(){
+   3|   register int r1 = 1;
+   4|   std::printf("%d\", r1);
+   5|   return 0;
+   6| }
+
+===== [110] uid=expF:F176 =====
+   1| #include <cstdio>
+   2| int main(){
+   3|   register int r5 = 5;
+   4|   std::printf("%d\", r5);
+   5|   return 0;
+   6| }
+
+===== [111] uid=expG:sample_G004 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <cstdint>
+  13| struct DtlsRecord {
+  14|     unsigned char* data;
+  15|     int            len;
+  16| };
+  18| static int dtls1_buffer_record(int current_epoch, int rec_epoch) {
+  20|     DtlsRecord* r = new DtlsRecord{ new unsigned char[512], 512 };
+  21|     std::memset(r->data, 0xAB, 512);
+  23|     if (rec_epoch != current_epoch) {
+  25|                      return -1;
+  26|     }
+  27|     std::printf("record buffered (epoch=%d, len=%d)\", rec_epoch, r->len);
+  28|     delete[] r->data;
+  29|     delete r;
+  30|     return 0;
+  31| }
+  33| int main() {
+  35|     for (int i = 0; i < 8; ++i) {
+  36|         if (dtls1_buffer_record(1, 2) != 0)
+  37|             std::printf("record dropped (leaked)\");
+  38|     }
+  39|     return 0;
+  40| }
+
+===== [112] uid=expG:sample_G005 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| struct HmFragment {
+  13|     unsigned char* frag;
+  14|     int            frag_len;
+  15| };
+  17| static void dtls1_hm_fragment_free(HmFragment* f) {
+  18|     if (!f) return;
+  19|     delete[] f->frag;
+  20|     delete f;
+  21| }
+  23| static int dtls1_process_fragment(bool crafted_error) {
+  24|     HmFragment* f = new HmFragment{ new unsigned char[256], 256 };
+  25|     std::memset(f->frag, 0, 256);
+  27|     if (crafted_error) {
+  28|         dtls1_hm_fragment_free(f);
+  29|         std::printf("fragment error path: freed once\");
+  31|     }
+  33|     dtls1_hm_fragment_free(f);
+  34|     return 0;
+  35| }
+  37| int main() {
+  38|     dtls1_process_fragment(true);
+  39|     return 0;
+  40| }
+
+===== [113] uid=expG:sample_G012 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| struct MDC2_CTX {
+  13|     int            num;
+  14|     unsigned char  data[16];
+  15| };
+  17| static int MDC2_Update(MDC2_CTX* c, const unsigned char* in, int inl) {
+  18|                  c->num += inl;
+  19|     if (c->num >= 0 && c->num <= 16)
+  20|         std::memcpy(c->data + c->num, in, (size_t)inl < 16u - (size_t)c->num ? (size_t)inl : 0);
+  21|     return 0;
+  22| }
+  24| int main() {
+  25|     MDC2_CTX ctx;
+  26|     ctx.num = 2147483640;
+  27|     unsigned char chunk[4] = {1, 2, 3, 4};
+  28|     volatile int inl = 100;
+  29|     MDC2_Update(&ctx, chunk, inl);
+  30|     std::printf("num=%d\", ctx.num);
+  31|     return 0;
+  32| }
+
+===== [114] uid=expG:sample_G013 =====
+   9| #include <cstdio>
+  10| #include <cstdint>
+  12| static bool within_bounds(const unsigned char* p, size_t plen, long long len) {
+  14|                  return (p + len) <= (p + plen);
+  15| }
+  17| int main() {
+  18|     unsigned char* heap_buf = new unsigned char[64];
+  20|     volatile long long len = 0x7FFFFFFFFFFFFFFFLL;
+  21|     bool pass = within_bounds(heap_buf, 64, len);
+  22|     std::printf("in_bounds=%d (回绕使越界长度通过边界检查)\", (int)pass);
+  23|     delete[] heap_buf;
+  24|     return 0;
+  25| }
+
+===== [115] uid=expG:sample_G015 =====
+   9| #include <cstdio>
+  11| struct Asn1Obj {
+  12|     int               tag;
+  13|     const Asn1Obj*    child;
+  14| };
+  16| static int asn1_parse_constructed(const Asn1Obj* o) {
+  17|     unsigned char pad[8];
+  18|     pad[0] = (unsigned char)o->tag;
+  19|     if (o->child)
+  20|                      return 1 + asn1_parse_constructed(o->child) + pad[0];
+  21|     return 0;
+  22| }
+  24| int main() {
+  26|     const int DEPTH = 2000000;
+  27|     Asn1Obj* head = new Asn1Obj{ 0x30, 0 };
+  28|     for (int i = 0; i < DEPTH; ++i)
+  29|         head = new Asn1Obj{ 0x30, head };
+  30|     std::printf("parse=%d\", asn1_parse_constructed(head));
+  31|     return 0;
+  32| }
+
+===== [116] uid=expG:sample_G016 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| enum GenNameType { GEN_DNS = 2, GEN_OTHERNAME = 4, GEN_EDIPARTY = 5 };
+  14| struct OtherName { int name_len; };
+  16| struct GENERAL_NAME {
+  17|     GenNameType type;
+  18|     union {
+  19|         OtherName*   otherName;
+  20|         const char*  dNSName;
+  21|     } d;
+  22| };
+  24| static int GENERAL_NAME_cmp(const GENERAL_NAME* a, const GENERAL_NAME* b) {
+  25|     if (a->type != b->type) return -1;
+  26|     switch (a->type) {
+  27|     case GEN_OTHERNAME:
+  28|         return a->d.otherName->name_len - b->d.otherName->name_len;
+  29|     case GEN_DNS:
+  30|         return std::strcmp(a->d.dNSName, b->d.dNSName);
+  31|     default:
+  32|         break;
+  33|     }
+  35|     return a->d.otherName->name_len - b->d.otherName->name_len;
+  36| }
+  38| int main() {
+  39|     GENERAL_NAME a{ GEN_EDIPARTY, {0} };
+  40|     GENERAL_NAME b{ GEN_EDIPARTY, {0} };
+  41|     std::printf("cmp=%d\", GENERAL_NAME_cmp(&a, &b));
+  42|     return 0;
+  43| }
+
+===== [117] uid=expG:sample_G018 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <cstdint>
+  13| static int punycode_decode(const char* in, size_t inlen, unsigned int* out, size_t out_cap) {
+  14|     size_t out_count = 0;
+  15|     size_t i = 0;
+  17|     while (i < inlen && in[i] != '-') {
+  18|                      out[out_count++] = (unsigned char)in[i];
+  19|         ++i;
+  20|     }
+  21|     if (i < inlen) ++i;
+  23|     for (; i < inlen; ++i)
+  24|         if (in[i] >= 'a' && in[i] <= 'z') ++out_count;
+  25|     return (int)out_count;
+  26| }
+  28| int main() {
+  29|     unsigned int out[8];
+  30|     char crafted[48];
+  31|     std::memset(crafted, 'a', 40);
+  32|     crafted[40] = '-';
+  33|     crafted[41] = 'x'; crafted[42] = '9'; crafted[43] = 'a'; crafted[44] = '\';
+  34|     int n = punycode_decode(crafted, 44, out, 8);
+  35|     std::printf("decoded=%d first=%u\", n, out[0]);
+  36|     return 0;
+  37| }
+
+===== [118] uid=expG:sample_G019 =====
+   9| #include <cstdio>
+  11| static unsigned int bn_mod_sqrt(unsigned int a, unsigned int p) {
+  12|     unsigned int y = a % p;
+  14|     for (;;) {
+  15|         if (y == 1) return 0;
+  16|                      y = (y * y) % p;
+  17|     }
+  18| }
+  20| int main() {
+  22|     std::printf("sqrt=%u\", bn_mod_sqrt(3, 15));
+  23|     return 0;
+  24| }
+
+===== [119] uid=expG:sample_G021 =====
+   9| #include <cstdio>
+  11| enum HsState { HS_CLIENT_HELLO_SENT, HS_SERVER_HELLO_DONE, HS_ESTABLISHED };
+  12| enum HsMsg { MSG_FINISHED = 16, MSG_CCS = 20 };
+  14| struct SslSession {
+  15|     HsState state;
+  16|     bool    ccs_seen;
+  17|     int     master_key_len;
+  18| };
+  20| static void ssl3_process_message(SslSession* s, int msg_type) {
+  21|     if (msg_type == MSG_CCS) {
+  23|         s->ccs_seen = true;
+  24|         s->master_key_len = 0;
+  25|         s->state = HS_ESTABLISHED;
+  26|     } else if (msg_type == MSG_FINISHED && s->state == HS_ESTABLISHED) {
+  27|         std::printf("finished accepted with key_len=%d\", s->master_key_len);
+  28|     }
+  29| }
+  31| int main() {
+  32|     SslSession s{ HS_CLIENT_HELLO_SENT, false, 48 };
+  33|     ssl3_process_message(&s, MSG_CCS);
+  34|     ssl3_process_message(&s, MSG_FINISHED);
+  35|     std::printf("state=%d key_len=%d (正确: CCS 应被拒绝, key_len=48)\",
+  36|                 (int)s.state, s.master_key_len);
+  37|     return 0;
+  38| }
+
+===== [120] uid=expG:sample_G026 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <string>
+  13| static const size_t TFTP_BUFFER_SIZE = 515;
+  15| static void tftp_send_first(const std::string& filename) {
+  16|     char buffer[TFTP_BUFFER_SIZE];
+  17|     size_t name_len = filename.size();
+  18|     if (name_len > TFTP_BUFFER_SIZE - 4) {
+  19|         std::memcpy(buffer + 2, filename.c_str(), TFTP_BUFFER_SIZE - 4);
+  20|         name_len = TFTP_BUFFER_SIZE - 4;
+  21|     } else {
+  22|         std::memcpy(buffer + 2, filename.c_str(), name_len);
+  23|     }
+  24|     buffer[0] = 0; buffer[1] = 1;
+  25|                  size_t send_size = 2 + filename.size() + 1;
+  26|     char* sendbuf = new char[send_size];
+  27|     std::memcpy(sendbuf, buffer, send_size);
+  28|     std::printf("tftp rrq sent %zu bytes, head=%c%c\", send_size, sendbuf[0], sendbuf[1]);
+  29|     delete[] sendbuf;
+  30| }
+  32| int main() {
+  33|     tftp_send_first(std::string(600, 'a'));
+  34|     return 0;
+  35| }
+
+===== [121] uid=expG:sample_G035 =====
+   9| #include <cstdio>
+  10| #include <string>
+  12| struct SmbRequest {
+  13|     std::string path;
+  14| };
+  16| struct SmbSession {
+  17|     const char* tree;
+  18| };
+  20| static void smb_first_request(SmbSession* s) {
+  21|     SmbRequest* r = new SmbRequest;
+  22|     r->path = "//server/share";
+  23|     s->tree = r->path.c_str();
+  24|                  delete r;
+  25| }
+  27| static void smb_second_request(SmbSession* s) {
+  28|     std::printf("tree=%s\", s->tree);
+  29| }
+  31| int main() {
+  32|     SmbSession s{ 0 };
+  33|     smb_first_request(&s);
+  34|     smb_second_request(&s);
+  35|     return 0;
+  36| }
+
+===== [122] uid=expG:sample_G041 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <string>
+  13| static const char* k_machine_env[] = {
+  14|     "USER=alice", "HOME=/home/alice", "SECRET_TOKEN=s3cr3t-value", 0
+  15| };
+  17| static std::string telnet_send_new_env(const char* user_opt) {
+  19|     std::string payload = "NEW_ENV:";
+  20|     payload += user_opt;
+  22|     for (int i = 0; k_machine_env[i]; ++i) {
+  23|         payload += ";";
+  24|         payload += k_machine_env[i];
+  25|     }
+  26|     return payload;
+  27| }
+  29| int main() {
+  30|     std::string sent = telnet_send_new_env("TERM=xterm");
+  31|     std::printf("TELNET 发送: %s\", sent.c_str());
+  32|     std::printf("(正确行为: 仅发送 TERM=xterm, SECRET_TOKEN 不应离开本机)\");
+  33|     return 0;
+  34| }
+
+===== [123] uid=expG:sample_G051 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <cstdint>
+  13| struct RtreeNode {
+  14|     unsigned char* data;
+  15|     int            data_len;
+  16|     int            n_cell;
+  17| };
+  19| static double rtreenode_read_coord(const RtreeNode* n, int cell, int dim) {
+  21|     size_t off = sizeof(int) + (size_t)cell * 32 + (size_t)dim * 8;
+  22|     double v;
+  24|     std::memcpy(&v, n->data + off, sizeof(v));
+  25|     return v;
+  26| }
+  28| int main() {
+  30|     RtreeNode n;
+  31|     n.data_len = 8 + 2 * 32;
+  32|     n.n_cell = 9;
+  33|     n.data = new unsigned char[n.data_len];
+  34|     std::memset(n.data, 0x3F, n.data_len);
+  35|     std::memcpy(n.data, &n.n_cell, sizeof(int));
+  36|     for (int c = 0; c < n.n_cell; ++c)
+  37|         std::printf("cell %d coord0=%f\", c, rtreenode_read_coord(&n, c, 0));
+  38|     delete[] n.data;
+  39|     return 0;
+  40| }
+
+===== [124] uid=expG:sample_G057 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <cstdint>
+  13| static const int PNG_MAX_PALETTE_LENGTH = 256;
+  15| struct PngInfo {
+  16|     unsigned char  palette[PNG_MAX_PALETTE_LENGTH * 3];
+  17|     int            num_palette;
+  18| };
+  20| static void png_set_PLTE(PngInfo* info, const unsigned char* chunk, int chunk_len) {
+  21|     int num = chunk_len / 3;
+  23|     std::memcpy(info->palette, chunk, (size_t)num * 3);
+  24|     info->num_palette = num;
+  25| }
+  27| int main() {
+  29|     unsigned char* chunk = new unsigned char[1200];
+  30|     std::memset(chunk, 0x7F, 1200);
+  31|     PngInfo info;
+  32|     std::memset(&info, 0, sizeof(info));
+  33|     png_set_PLTE(&info, chunk, 1200);
+  34|     std::printf("num_palette=%d\", info.num_palette);
+  35|     delete[] chunk;
+  36|     return 0;
+  37| }
+
+===== [125] uid=expG:sample_G058 =====
+   9| #include <cstdio>
+  10| #include <cstdint>
+  12| static void png_check_chunk_length(unsigned int length, unsigned int height, unsigned int idat_limit) {
+  14|                  int32_t hh = (int32_t)height + 7;
+  15|     int32_t denom = (int32_t)((hh & 0x7fffffffL) / (int32_t)height + 1L);
+  16|     unsigned int row_factor = idat_limit / (unsigned int)denom;
+  18|     unsigned int blocks = length / row_factor;
+  19|     std::printf("chunk length check: %u blocks of %u (hh=%d)\", blocks, row_factor, hh);
+  20| }
+  22| int main() {
+  24|     png_check_chunk_length(0x7FFFFFF4u, 0x7FFFFFFCu, 0x40000000u);
+  25|     return 0;
+  26| }
+
+===== [126] uid=expG:sample_G071 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| static const char* k_cwd_prefix = "/very/deeply/nested/directory/prefix/that/is/quite/long/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  14| static char* realpath_mirror(const char* rel_path, char* resolved, size_t dest_cap) {
+  15|     size_t prefix_len = std::strlen(k_cwd_prefix);
+  16|     size_t rel_len = std::strlen(rel_path);
+  17|     char* dest_end = resolved + dest_cap;
+  19|     char* p = dest_end - rel_len - 1 - prefix_len;
+  20|     std::memcpy(p, k_cwd_prefix, prefix_len);
+  21|     std::memcpy(p + prefix_len, rel_path, rel_len);
+  22|     return p;
+  23| }
+  25| int main() {
+  26|     char* resolved = new char[256];
+  27|     realpath_mirror("/etc/passwd", resolved, 256);
+  28|     delete[] resolved;
+  29|     return 0;
+  30| }
+
+===== [127] uid=expG:sample_G074 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  11| #include <string>
+  12| #include <vector>
+  14| static std::vector<std::string> g_executed;
+  16| static bool bash_import_function(const char* env_value) {
+  17|     if (std::strncmp(env_value, "() {", 4) != 0) return false;
+  18|     const char* body_end = std::strstr(env_value, "};");
+  19|     if (!body_end) return false;
+  21|     g_executed.push_back(std::string("define func: ") + std::string(env_value + 4, body_end - env_value - 4));
+  23|     const char* trailing = body_end + 2;
+  24|     if (*trailing)
+  25|         g_executed.push_back(std::string("EXECUTE: ") + (trailing + 1));
+  26|     return true;
+  27| }
+  29| int main() {
+  30|     bash_import_function("() { :; }; echo pwned; cat /etc/shadow");
+  31|     for (const std::string& e : g_executed)
+  32|         std::printf("%s\", e.c_str());
+  33|     std::printf("(正确行为: 只注册函数体, 尾随命令必须被丢弃)\");
+  34|     return 0;
+  35| }
+
+===== [128] uid=expG:sample_G080 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| struct SockCommon {
+  13|     int family;
+  14|     int state;
+  15| };
+  17| struct SockInet : SockCommon {
+  18|     int ports[4];
+  19| };
+  21| struct SockBluetooth : SockCommon {
+  22|     int bdaddr[6];
+  23|     int extra[8];
+  24| };
+  26| static SockBluetooth* sk_clone_lock(const SockCommon* proto) {
+  27|     SockBluetooth* nb = new SockBluetooth;
+  28|     std::memset(nb, 0, sizeof(*nb));
+  29|                  *nb = *static_cast<const SockBluetooth*>(proto);
+  30|     return nb;
+  31| }
+  33| int main() {
+  34|     SockInet src{ 2, 1, { 80, 443, 0, 0 } };
+  35|     SockBluetooth* cloned = sk_clone_lock(&src);
+  36|     std::printf("cloned family=%d\", cloned->family);
+  37|     delete cloned;
+  38|     return 0;
+  39| }
+
+===== [129] uid=expG:sample_G083 =====
+   9| #include <cstdio>
+  10| #include <thread>
+  12| struct HdlcBuf {
+  13|     bool busy;
+  14|     int  len;
+  15| };
+  17| static HdlcBuf* g_active = new HdlcBuf{ true, 128 };
+  18| static HdlcBuf* g_free_list = 0;
+  20| static void n_hdlc_flush(bool writer) {
+  22|     if (g_active->busy && writer) {
+  23|         HdlcBuf* b = g_active;
+  24|         g_active = 0;
+  25|         delete b;
+  26|     } else if (g_active) {
+  27|         delete g_active;
+  28|         g_active = 0;
+  29|     }
+  30| }
+  32| int main() {
+  33|     std::thread a([]{ for (int i = 0; i < 100000; ++i) if (!g_active) g_active = new HdlcBuf{ true, 128 }; n_hdlc_flush(true); });
+  34|     std::thread b([]{ for (int i = 0; i < 100000; ++i) { if (g_active) n_hdlc_flush(false); } });
+  35|     a.join();
+  36|     b.join();
+  37|     std::printf("done\");
+  38|     return 0;
+  39| }
+
+===== [130] uid=expG:sample_G086 =====
+   9| #include <cstdio>
+  10| #include <cstdint>
+  12| static long g_op_count = 0;
+  14| static unsigned int mont_mul_nonct(unsigned int a, unsigned int b, unsigned int n) {
+  15|     unsigned int r = 0;
+  16|     for (int i = 0; i < 32; ++i) {
+  18|         if ((b >> i) & 1u) { r = (r + a) % n; g_op_count += 3; }
+  19|         else               g_op_count += 1;
+  20|         a = (a + a) % n;
+  21|     }
+  22|     return r;
+  23| }
+  25| int main() {
+  26|     unsigned int n = 0xFFFFFFFBu;
+  27|     g_op_count = 0;
+  28|     mont_mul_nonct(1234567u, 0x55555555u, n);
+  29|     long ops1 = g_op_count;
+  30|     g_op_count = 0;
+  31|     mont_mul_nonct(1234567u, 0xFFFFFFFFu, n);
+  32|     long ops2 = g_op_count;
+  33|     std::printf("ops(k1)=%ld ops(k2)=%ld 差异=%ld (应恒等: 常量时间缺失)\",
+  34|                 ops1, ops2, ops2 - ops1);
+  35|     return 0;
+  36| }
+
+===== [131] uid=expG:sample_G088 =====
+   9| #include <cstdio>
+  10| #include <vector>
+  12| struct H2Stream {
+  13|     int  id;
+  14|     bool reset_pending;
+  15| };
+  17| static std::vector<H2Stream*> g_open_streams;
+  19| static void h2_on_incoming_stream(int id, bool invalid_request) {
+  20|     H2Stream* s = new H2Stream{ id, false };
+  21|     g_open_streams.push_back(s);
+  22|     if (invalid_request) {
+  24|         s->reset_pending = true;
+  25|         g_open_streams.push_back(new H2Stream{ id + 1000000, false });
+  26|     }
+  27| }
+  29| int main() {
+  31|     for (int i = 0; i < 10000; ++i)
+  32|         h2_on_incoming_stream(i, true);
+  33|     std::printf("open_streams=%zu (正确行为: 服务端应限流, 例如 <= 100)\", g_open_streams.size());
+  34|     for (H2Stream* s : g_open_streams) delete s;
+  35|     return 0;
+  36| }
+
+===== [132] uid=expG:sample_G092 =====
+   9| #include <cstdio>
+  10| #include <cstring>
+  12| static void json_parse_string(const char* cur, const char* end) {
+  13|     if (*cur != '\') return;
+  14|     ++cur;
+  15|                  while (*cur && *cur != '\') ++cur;
+  16|     ++cur;
+  17|     std::printf("string parsed len=%ld\", (long)(cur - end));
+  18| }
+  20| int main() {
+  22|     char* in = new char[4]{ '\', 'a', 'b', 'c' };
+  23|     json_parse_string(in, in + 4);
+  24|     delete[] in;
+  25|     return 0;
+  26| }
+
+===== [133] uid=expG:sample_G094 =====
+   9| #include <cstdio>
+  11| enum XMLError {
+  12|     XML_SUCCESS = 0,
+  13|     XML_NO_ATTRIBUTE, XML_WRONG_ATTRIBUTE_TYPE, XML_ERROR_FILE_NOT_FOUND,
+  14|     XML_ERROR_FILE_COULD_NOT_BE_OPENED, XML_ERROR_FILE_READ_ERROR,
+  15|     XML_ERROR_PARSING_ELEMENT, XML_ERROR_PARSING_ATTRIBUTE,
+  16|     XML_ERROR_PARSING_TEXT, XML_ERROR_PARSING_CDATA, XML_ERROR_PARSING_COMMENT,
+  17|     XML_ERROR_PARSING_DECLARATION, XML_ERROR_PARSING_UNKNOWN,
+  18|     XML_ERROR_EMPTY_DOCUMENT, XML_ERROR_PARSING, XML_ERROR_PARSING_X,
+  19|     XML_ERROR_ELEMENT_MISMATCH, XML_ERROR_PARSING_ROOT_ELEMENT,
+  20|     XML_ERROR_PARSING_DOCUMENT, XML_ERROR_COUNT
+  22| };
+  24| static const char* _errorNames[19] = {
+  25|     "XML_SUCCESS", "XML_NO_ATTRIBUTE", "XML_WRONG_ATTRIBUTE_TYPE",
+  26|     "XML_ERROR_FILE_NOT_FOUND", "XML_ERROR_FILE_COULD_NOT_BE_OPENED",
+  27|     "XML_ERROR_FILE_READ_ERROR", "XML_ERROR_PARSING_ELEMENT",
+  28|     "XML_ERROR_PARSING_ATTRIBUTE", "XML_ERROR_PARSING_TEXT",
+  29|     "XML_ERROR_PARSING_CDATA", "XML_ERROR_PARSING_COMMENT",
+  30|     "XML_ERROR_PARSING_DECLARATION", "XML_ERROR_PARSING_UNKNOWN",
+  31|     "XML_ERROR_EMPTY_DOCUMENT", "XML_ERROR_PARSING", "XML_ERROR_PARSING_X",
+  32|     "XML_ERROR_ELEMENT_MISMATCH", "XML_ERROR_PARSING_ROOT_ELEMENT",
+  33|     "XML_ERROR_PARSING_DOCUMENT"
+  34| };
+  36| static const char* ErrorIDToName(XMLError errorID) {
+  37|                  return _errorNames[errorID];
+  38| }
+  40| int main() {
+  42|     XMLError err = XML_ERROR_COUNT;
+  43|     std::printf("error name=%s\", ErrorIDToName(err));
+  44|     return 0;
+  45| }
+
+===== [134] uid=expG:sample_G095 =====
+   9| #include <cstdio>
+  10| #include <cstdlib>
+  12| static bool query_unsigned_attribute(const char* value, unsigned* out) {
+  13|     char* end = 0;
+  15|     unsigned long v = std::strtoul(value, &end, 10);
+  16|     if (end == value) return false;
+  17|     *out = (unsigned)v;
+  18|     return true;
+  19| }
+  21| int main() {
+  23|     unsigned parsed = 0;
+  24|     bool ok = query_unsigned_attribute("10000000000", &parsed);
+  25|     std::printf("ok=%d parsed=%u (期望: 报错或 4294967295, 实际: 1410065408)\",
+  26|                 (int)ok, parsed);
+  27|     return 0;
+  28| }
+
+===== [135] uid=expG:sample_G099 =====
+   9| #include <cstdio>
+  10| #include <string>
+  11| #include <utility>
+  13| struct ArgMapper {
+  14|     const std::string& map(const std::string& s) { return s; }
+  15|     const std::string& map(int) { static const std::string empty; return empty; }
+  16| };
+  18| template <typename T>
+  19| void format_value(T&& val) {
+  21|     const auto& arg = ArgMapper().map(std::forward<T>(val));
+  22|     std::printf("format: %s\", arg.c_str());
+  23| }
+  25| int main() {
+  26|     std::string s = "hello";
+  27|     format_value(s);
+  28|     format_value(std::string("temp"));
+  29|     return 0;
+  30| }
+
+===== [136] uid=holdout:h14 =====
+   2| #define ODR_VALUE 1
+   3| #include "_atom_inline_odr_shared.h"
+   5| int tu_a_value() { return odr_fn(); }
+   6| int tu_a_stable() { return stable_fn(); }
+
+===== [137] uid=holdout:h27 =====
+   1| int main(){int* p=new int(1); delete p; delete p; return 0;}
+
+===== [138] uid=holdout:h34 =====
+  40| extern "C" int printf(const char *, ...);
+  43| int w_sf_a = 0;
+  44| int w_sf_b = 0;
+  45| int w_tf_a = 0;
+  46| int w_tf_b = 0;
+  49| int s_p_a = 0;
+  50| int s_p_b = 0;
+  51| int s_sf_a = 0;
+  52| int s_sf_b = 0;
+  53| int s_f_a = 0;
+  54| int s_f_b = 0;
+  55| volatile int s_v_a = 0;
+  56| volatile int s_v_b = 0;
+  57| int s_o_a = 0;
+  58| int s_o_b = 0;
+  61| __attribute__((noinline)) void set_all_flags(int v)
+  62| {
+  63|     s_p_b = v;
+  64|     s_sf_b = v;
+  65|     s_f_b = v;
+  66|     s_v_b = v;
+  67|     s_o_b = v;
+  69|     s_p_a = 7;
+  70|     s_sf_a = 8;
+  71|     s_f_a = 9;
+  72|     s_v_a = 10;
+  73|     s_o_a = 11;
+  74|     w_sf_a = 1;
+  75|     w_tf_a = 1;
+  76| }
+  79| __attribute__((noinline)) int writer_signal_fence()
+  80| {
+  81|     w_sf_a = 1;
+  82|     __atomic_signal_fence(__ATOMIC_SEQ_CST);
+  83|     w_sf_b = 2;
+  84|     return w_sf_a + w_sf_b;
+  85| }
+  88| __attribute__((noinline)) int writer_thread_fence()
+  89| {
+  90|     w_tf_a = 1;
+  91|     __atomic_thread_fence(__ATOMIC_SEQ_CST);
+  92|     w_tf_b = 2;
+  93|     return w_tf_a + w_tf_b;
+  94| }
+  97| __attribute__((noinline)) int spin_plain()
+  98| {
+  99|     while (!s_p_b) {
+ 100|     }
+ 101|     return s_p_a;
+ 102| }
+ 105| __attribute__((noinline)) int spin_signal_fence()
+ 106| {
+ 107|     while (!s_sf_b) {
+ 108|         __atomic_signal_fence(__ATOMIC_SEQ_CST);
+ 109|     }
+ 110|     return s_sf_a;
+ 111| }
+ 114| __attribute__((noinline)) int spin_with_fence()
+ 115| {
+ 116|     while (!s_f_b) {
+ 117|         __atomic_thread_fence(__ATOMIC_SEQ_CST);
+ 118|     }
+ 119|     return s_f_a;
+ 120| }
+ 123| __attribute__((noinline)) int spin_volatile()
+ 124| {
+ 125|     unsigned bound = 1000000;
+ 126|     while (!s_v_b && --bound > 0) {
+ 127|     }
+ 128|     return s_v_a;
+ 129| }
+ 132| __attribute__((noinline)) int spin_fence_outside()
+ 133| {
+ 134|     __atomic_signal_fence(__ATOMIC_SEQ_CST);
+ 135|     while (!s_o_b) {
+ 136|     }
+ 137|     return s_o_a;
+ 138| }
+ 140| int main()
+ 141| {
+ 142|     set_all_flags(1);
+ 143|     int r_p = spin_plain();
+ 144|     int r_sf = spin_signal_fence();
+ 145|     int r_f = spin_with_fence();
+ 146|     int r_v = spin_volatile();
+ 147|     int r_o = spin_fence_outside();
+ 148|     int r_wsf = writer_signal_fence();
+ 149|     int r_wtf = writer_thread_fence();
+ 151|     printf("spin_plain_ret=%d|spin_signal_fence_ret=%d|spin_with_fence_ret=%d|spin_volatile_ret=%d\",
+ 152|            r_p, r_sf, r_f, r_v);
+ 153|     printf("spin_fence_outside_ret=%d|writer_signal_fence_ret=%d|writer_thread_fence_ret=%d\",
+ 154|            r_o, r_wsf, r_wtf);
+ 155|     printf("functions_present=7|spin_volatile_engaged=%d\", (r_v != 0) ? 1 : 0);
+ 156|     return 0;
+ 157| }
+
+===== [139] uid=holdout:h40 =====
+  15| #include <cstdio>
+  16| #include <memory>
+  17| #include <vector>
+  19| namespace {
+  20| volatile int g_scoped_dtor = 0;
+  21| volatile int g_cycle_dtor  = 0;
+  22| volatile int g_owned_dtor  = 0;
+  26| volatile int g_cycle_ctor  = 0;
+  28| struct Scoped {
+  29|     int id = 0;
+  30|     ~Scoped() { g_scoped_dtor = g_scoped_dtor + 1; }
+  31| };
+  32| struct Node {
+  33|     std::shared_ptr<Node> next;
+  34|     Node() { g_cycle_ctor = g_cycle_ctor + 1; }
+  35|     ~Node() { g_cycle_dtor = g_cycle_dtor + 1; }
+  36| };
+  37| struct Owned {
+  38|     int id = 0;
+  39|     ~Owned() { g_owned_dtor = g_owned_dtor + 1; }
+  40| };
+  42| std::vector<std::shared_ptr<Owned>>& registry() {
+  43|     static std::vector<std::shared_ptr<Owned>> r;
+  44|     return r;
+  45| }
+  47| __attribute__((noinline)) void run_scoped() { Scoped s{1}; (void)s; }
+  49| __attribute__((noinline)) void run_cycle() {
+  50|     auto a = std::make_shared<Node>();
+  51|     auto b = std::make_shared<Node>();
+  52|     a->next = b;
+  53|     b->next = a;
+  54| }
+  56| __attribute__((noinline)) void run_owned() {
+  57|     registry().push_back(std::make_shared<Owned>());
+  58| }
+  59| }
+  61| int main() {
+  62|     run_scoped();
+  63|     run_cycle();
+  64|     run_owned();
+  66|     std::printf("scoped_dtor_count=%d\", static_cast<int>(g_scoped_dtor));
+  67|     std::printf("cycle_dtor_count=%d\", static_cast<int>(g_cycle_dtor));
+  68|     std::printf("owned_dtor_count=%d\", static_cast<int>(g_owned_dtor));
+  69|     std::printf("owned_registry_size=%zu\", registry().size());
+  75|     std::printf("scoped_is_clean=%d\", g_scoped_dtor == 1 ? 1 : 0);
+  76|     std::printf("cycle_allocated=%d\", static_cast<int>(g_cycle_ctor));
+  77|     std::printf("cycle_destroyed=%d\", static_cast<int>(g_cycle_dtor));
+  78|     std::printf("cycle_live_objects=%d\", static_cast<int>(g_cycle_ctor - g_cycle_dtor));
+  79|     return 0;
+  80| }
+
+===== [140] uid=holdout:h43 =====
+   4| #include <cstdio>
+   6| int* leaked = nullptr;
+   8| void f() {
+   9|     int x = 5;
+  10|     leaked = &x;
+  11| }
+  13| int main() {
+  14|     f();
+  15|     *leaked = 10;
+  16|     std::printf("leaked = %d\", *leaked);
+  17|     return 0;
+  18| }
+
+===== [141] uid=holdout:h50 =====
+   2| #include <cstddef>
+   4| int main() {
+   5|     int* p = new int[100];
+   6|     (void)p;
+   7|     return 0;
+   8| }
+
+===== [142] uid=holdout:h58 =====
+   1| #include <thread>
+   2| int g = 0;
+   3| void inc(){ for(int i=0;i<100000;++i) ++g; }
+   4| int main(){ std::thread a(inc), b(inc); a.join(); b.join(); }
+
+===== [143] uid=holdout:h7 =====
+  15| #include <cstdio>
+  16| #include <memory>
+  17| #include <vector>
+  19| namespace {
+  20| volatile int g_scoped_dtor = 0;
+  21| volatile int g_cycle_dtor  = 0;
+  22| volatile int g_owned_dtor  = 0;
+  26| volatile int g_cycle_ctor  = 0;
+  28| struct Scoped {
+  29|     int id = 0;
+  30|     ~Scoped() { g_scoped_dtor = g_scoped_dtor + 1; }
+  31| };
+  32| struct Node {
+  33|     std::shared_ptr<Node> next;
+  34|     Node() { g_cycle_ctor = g_cycle_ctor + 1; }
+  35|     ~Node() { g_cycle_dtor = g_cycle_dtor + 1; }
+  36| };
+  37| struct Owned {
+  38|     int id = 0;
+  39|     ~Owned() { g_owned_dtor = g_owned_dtor + 1; }
+  40| };
+  42| std::vector<std::shared_ptr<Owned>>& registry() {
+  43|     static std::vector<std::shared_ptr<Owned>> r;
+  44|     return r;
+  45| }
+  47| __attribute__((noinline)) void run_scoped() { Scoped s{1}; (void)s; }
+  49| __attribute__((noinline)) void run_cycle() {
+  50|     auto a = std::make_shared<Node>();
+  51|     auto b = std::make_shared<Node>();
+  52|     a->next = b;
+  53|     b->next = a;
+  54| }
+  56| __attribute__((noinline)) void run_owned() {
+  57|     registry().push_back(std::make_shared<Owned>());
+  58| }
+  59| }
+  61| int main() {
+  62|     run_scoped();
+  63|     run_cycle();
+  64|     run_owned();
+  66|     std::printf("scoped_dtor_count=%d\", static_cast<int>(g_scoped_dtor));
+  67|     std::printf("cycle_dtor_count=%d\", static_cast<int>(g_cycle_dtor));
+  68|     std::printf("owned_dtor_count=%d\", static_cast<int>(g_owned_dtor));
+  69|     std::printf("owned_registry_size=%zu\", registry().size());
+  75|     std::printf("scoped_is_clean=%d\", g_scoped_dtor == 1 ? 1 : 0);
+  76|     std::printf("cycle_allocated=%d\", static_cast<int>(g_cycle_ctor));
+  77|     std::printf("cycle_destroyed=%d\", static_cast<int>(g_cycle_dtor));
+  78|     std::printf("cycle_live_objects=%d\", static_cast<int>(g_cycle_ctor - g_cycle_dtor));
+  79|     return 0;
+  80| }
+
+===== [144] uid=holdout:h8 =====
+   8| #include <iostream>
+   9| #include <cstdlib>
+  11| volatile long g_allocs = 0;
+  12| volatile long g_dtors = 0;
+  13| void* operator new(size_t n) { g_allocs = g_allocs + 1; return std::malloc(n); }
+  14| void operator delete(void* p) noexcept { std::free(p); }
+  15| void operator delete(void* p, size_t) noexcept { std::free(p); }
+  17| struct Buggy {
+  18|     int* data;
+  19|     Buggy() : data(new int(42)) {}
+  20|     ~Buggy() { g_dtors = g_dtors + 1; }
+  21| };
+  23| struct Correct {
+  24|     int* data;
+  25|     Correct() : data(new int(42)) {}
+  26|     ~Correct() { g_dtors = g_dtors + 1; }
+  27|     Correct(const Correct& o) : data(new int(*o.data)) {}
+  28|     Correct& operator=(const Correct& o) { *data = *o.data; return *this; }
+  29| };
+  31| int main() {
+  32|     long a0 = g_allocs, d0 = g_dtors;
+  33|     bool same_buggy = false;
+  34|     long allocs_buggy = 0, dtors_buggy = 0;
+  35|     {
+  36|         Buggy a;
+  37|         Buggy b = a;
+  38|         same_buggy = (b.data == a.data);
+  39|         allocs_buggy = g_allocs - a0;
+  40|     }
+  41|     dtors_buggy = g_dtors - d0;
+  43|     bool same_correct = false;
+  44|     long allocs_correct = 0, dtors_correct = 0;
+  45|     {
+  46|         Correct c;
+  47|         Correct d = c;
+  48|         same_correct = (d.data == c.data);
+  49|         allocs_correct = g_allocs - a0 - allocs_buggy;
+  50|         long dd0 = g_dtors;
+  51|         (void)dd0;
+  53|     }
+  54|     dtors_correct = g_dtors - d0 - dtors_buggy;
+  56|     std::cout << "buggy  : allocs=" << allocs_buggy << " same_ptr=" << (same_buggy ? 1 : 0)
+  57|               << " dtor_runs=" << dtors_buggy << " (one buffer, two dtors)\";
+  58|     std::cout << "correct: allocs=" << allocs_correct << " same_ptr=" << (same_correct ? 1 : 0)
+  59|               << " dtor_runs=" << dtors_correct << " (two buffers, two dtors)\";
+  60|     return 0;
+  61| }
+

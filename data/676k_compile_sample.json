@@ -1,0 +1,1879 @@
+{
+ "schema": "queyi-audit-676k-compile-sample/v1",
+ "generated_by": "tools/audit_676k_compile.py",
+ "seed": 6761,
+ "fraction": 0.2,
+ "n_population": 1147,
+ "n_sampled": 230,
+ "n_files": 233,
+ "per_batch": {
+  "corpus": {
+   "n": 64,
+   "k": 13
+  },
+  "expA": {
+   "n": 100,
+   "k": 20
+  },
+  "expB": {
+   "n": 94,
+   "k": 19
+  },
+  "expC": {
+   "n": 200,
+   "k": 40
+  },
+  "expD": {
+   "n": 200,
+   "k": 40
+  },
+  "expE": {
+   "n": 200,
+   "k": 40
+  },
+  "expF": {
+   "n": 149,
+   "k": 30
+  },
+  "expG": {
+   "n": 99,
+   "k": 20
+  },
+  "holdout": {
+   "n": 41,
+   "k": 8
+  }
+ },
+ "sampled": [
+  {
+   "uid": "corpus:d3-01",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-07",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-25",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-26",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-27",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3-33",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3e-04",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3e-13",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-06",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-07",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-13",
+   "batch": "corpus",
+   "defect_type": "API",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-14",
+   "batch": "corpus",
+   "defect_type": "API",
+   "files": []
+  },
+  {
+   "uid": "corpus:d3f-16",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "files": []
+  },
+  {
+   "uid": "expA:sample_001",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_001.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_003",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_003.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_004",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_004.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_008",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_008.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_009",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_009.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_011",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_011.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_013",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_013.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_020",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "files": [
+    "data/holdout_expansion/expA/sample_020.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_031",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "files": [
+    "data/holdout_expansion/expA/sample_031.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_033",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "files": [
+    "data/holdout_expansion/expA/sample_033.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_040",
+   "batch": "expA",
+   "defect_type": "out_of_bounds",
+   "files": [
+    "data/holdout_expansion/expA/sample_040.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_055",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "files": [
+    "data/holdout_expansion/expA/sample_055.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_057",
+   "batch": "expA",
+   "defect_type": "null_pointer_deref",
+   "files": [
+    "data/holdout_expansion/expA/sample_057.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_060",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "data/holdout_expansion/expA/sample_060.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_069",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "data/holdout_expansion/expA/sample_069.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_075",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "data/holdout_expansion/expA/sample_075.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_077",
+   "batch": "expA",
+   "defect_type": "uninitialized_read",
+   "files": [
+    "data/holdout_expansion/expA/sample_077.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_081",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "files": [
+    "data/holdout_expansion/expA/sample_081.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_086",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "files": [
+    "data/holdout_expansion/expA/sample_086.cpp"
+   ]
+  },
+  {
+   "uid": "expA:sample_097",
+   "batch": "expA",
+   "defect_type": "undefined_behavior",
+   "files": [
+    "data/holdout_expansion/expA/sample_097.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B004",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "files": [
+    "data/holdout_expansion/expB/sample_B004.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B013",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "files": [
+    "data/holdout_expansion/expB/sample_B013.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B019",
+   "batch": "expB",
+   "defect_type": "data_race",
+   "files": [
+    "data/holdout_expansion/expB/sample_B019.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B021",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "data/holdout_expansion/expB/sample_B021.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B024",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "data/holdout_expansion/expB/sample_B024.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B036",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "data/holdout_expansion/expB/sample_B036.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B037",
+   "batch": "expB",
+   "defect_type": "integer_overflow",
+   "files": [
+    "data/holdout_expansion/expB/sample_B037.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B041",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "files": [
+    "data/holdout_expansion/expB/sample_B041.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B057",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "files": [
+    "data/holdout_expansion/expB/sample_B057.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B060",
+   "batch": "expB",
+   "defect_type": "resource_leak",
+   "files": [
+    "data/holdout_expansion/expB/sample_B060.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B063",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "data/holdout_expansion/expB/sample_B063.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B065",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "data/holdout_expansion/expB/sample_B065.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B072",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "data/holdout_expansion/expB/sample_B072.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B079",
+   "batch": "expB",
+   "defect_type": "type_punning",
+   "files": [
+    "data/holdout_expansion/expB/sample_B079.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B083",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "data/holdout_expansion/expB/sample_B083.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B087",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "data/holdout_expansion/expB/sample_B087.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B090",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "data/holdout_expansion/expB/sample_B090.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B092",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "data/holdout_expansion/expB/sample_B092.cpp"
+   ]
+  },
+  {
+   "uid": "expB:sample_B100",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "files": [
+    "data/holdout_expansion/expB/sample_B100.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_006",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "data/holdout_expansion/expC/sample_006.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_008",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "data/holdout_expansion/expC/sample_008.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_025",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "files": [
+    "data/holdout_expansion/expC/sample_025.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_033",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_033.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_034",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_034.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_045",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_045.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_050",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_050.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_052",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_052.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_053",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_053.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_054",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_054.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_058",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_058.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_060",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "files": [
+    "data/holdout_expansion/expC/sample_060.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_061",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_061.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_062",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_062.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_066",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_066.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_069",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_069.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_072",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_072.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_075",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_075.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_076",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_076.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_079",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_079.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_081",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_081.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_083",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_083.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_088",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "files": [
+    "data/holdout_expansion/expC/sample_088.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_092",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_092.h",
+    "data/holdout_expansion/expC/sample_092_a.cpp",
+    "data/holdout_expansion/expC/sample_092_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_094",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_094.h",
+    "data/holdout_expansion/expC/sample_094_a.cpp",
+    "data/holdout_expansion/expC/sample_094_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_096",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_096.h",
+    "data/holdout_expansion/expC/sample_096_a.cpp",
+    "data/holdout_expansion/expC/sample_096_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_100",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_100_a.cpp",
+    "data/holdout_expansion/expC/sample_100_a.h",
+    "data/holdout_expansion/expC/sample_100_b.cpp",
+    "data/holdout_expansion/expC/sample_100_b.h",
+    "data/holdout_expansion/expC/sample_100_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_107",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_107_a.cpp",
+    "data/holdout_expansion/expC/sample_107_b.cpp",
+    "data/holdout_expansion/expC/sample_107_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_116",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "files": [
+    "data/holdout_expansion/expC/sample_116_a.cpp",
+    "data/holdout_expansion/expC/sample_116_a.h",
+    "data/holdout_expansion/expC/sample_116_b.cpp",
+    "data/holdout_expansion/expC/sample_116_b.h",
+    "data/holdout_expansion/expC/sample_116_main.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_125",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "data/holdout_expansion/expC/sample_125.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_128",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "data/holdout_expansion/expC/sample_128.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_131",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "data/holdout_expansion/expC/sample_131.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_140",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "data/holdout_expansion/expC/sample_140.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_145",
+   "batch": "expC",
+   "defect_type": "optimization_dependent",
+   "files": [
+    "data/holdout_expansion/expC/sample_145.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_166",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_166.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_171",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_171.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_185",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_185.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_190",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_190.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_195",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_195.cpp"
+   ]
+  },
+  {
+   "uid": "expC:sample_199",
+   "batch": "expC",
+   "defect_type": "conditional_trigger",
+   "files": [
+    "data/holdout_expansion/expC/sample_199.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D003",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D003.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D013",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D013.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D015",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D015.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D016",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D016.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D020",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D020.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D021",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D021.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D031",
+   "batch": "expD",
+   "defect_type": "iterator_invalidation",
+   "files": [
+    "data/holdout_expansion/expD/sample_D031.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D038",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D038.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D045",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D045.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D050",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D050.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D057",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D057.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D058",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D058.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D064",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D064.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D068",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D068.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D069",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D069.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D076",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D076.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D082",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D082.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D083",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D083.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D085",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D085.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D092",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D092.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D095",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D095.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D098",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "files": [
+    "data/holdout_expansion/expD/sample_D098.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D122",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "data/holdout_expansion/expD/sample_D122.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D123",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "data/holdout_expansion/expD/sample_D123.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D124",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "data/holdout_expansion/expD/sample_D124.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D129",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "data/holdout_expansion/expD/sample_D129.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D139",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "files": [
+    "data/holdout_expansion/expD/sample_D139.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D144",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D144.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D156",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D156.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D157",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D157.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D162",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D162.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D166",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D166.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D170",
+   "batch": "expD",
+   "defect_type": "smart_pointer",
+   "files": [
+    "data/holdout_expansion/expD/sample_D170.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D171",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D171.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D177",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D177.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D179",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D179.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D180",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D180.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D187",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D187.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D188",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D188.cpp"
+   ]
+  },
+  {
+   "uid": "expD:D199",
+   "batch": "expD",
+   "defect_type": "lambda_capture",
+   "files": [
+    "data/holdout_expansion/expD/sample_D199.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E002",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E002.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E008",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E008.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E010",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E010.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E013",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E013.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E019",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E019.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E020",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E020.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E035",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E035.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E036",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E036.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E040",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "files": [
+    "data/holdout_expansion/expE/sample_E040.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E043",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E043.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E045",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E045.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E052",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E052.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E057",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E057.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E071",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E071.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E073",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E073.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E075",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "files": [
+    "data/holdout_expansion/expE/sample_E075.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E076",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E076.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E082",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E082.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E083",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E083.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E090",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E090.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E091",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E091.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E093",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E093.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E105",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "files": [
+    "data/holdout_expansion/expE/sample_E105.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E117",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E117.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E118",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E118.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E120",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E120.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E121",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E121.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E124",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E124.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E126",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E126.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E129",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E129.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E135",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E135.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E140",
+   "batch": "expE",
+   "defect_type": "aba_problem",
+   "files": [
+    "data/holdout_expansion/expE/sample_E140.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E143",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "data/holdout_expansion/expE/sample_E143.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E147",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "data/holdout_expansion/expE/sample_E147.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E155",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "files": [
+    "data/holdout_expansion/expE/sample_E155.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E182",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "data/holdout_expansion/expE/sample_E182.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E185",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "data/holdout_expansion/expE/sample_E185.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E187",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "data/holdout_expansion/expE/sample_E187.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E192",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "data/holdout_expansion/expE/sample_E192.cpp"
+   ]
+  },
+  {
+   "uid": "expE:sample_E195",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "files": [
+    "data/holdout_expansion/expE/sample_E195.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F008",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "data/holdout_expansion/expF/sample_F008.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F011",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "data/holdout_expansion/expF/sample_F011.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F013",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "data/holdout_expansion/expF/sample_F013.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F014",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "data/holdout_expansion/expF/sample_F014.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F015",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "files": [
+    "data/holdout_expansion/expF/sample_F015.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F036",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "data/holdout_expansion/expF/sample_F036.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F049",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "data/holdout_expansion/expF/sample_F049.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F069",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "files": [
+    "data/holdout_expansion/expF/sample_F069.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F076",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F076.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F082",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F082.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F085",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F085.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F092",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F092.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F099",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F099.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F101",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F101.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F104",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "files": [
+    "data/holdout_expansion/expF/sample_F104.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F106",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F106.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F116",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F116.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F118",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F118.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F120",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F120.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F124",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F124.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F134",
+   "batch": "expF",
+   "defect_type": "bit_operation",
+   "files": [
+    "data/holdout_expansion/expF/sample_F134.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F146",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "files": [
+    "data/holdout_expansion/expF/sample_F146.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F161",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "files": [
+    "data/holdout_expansion/expF/sample_F161.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F172",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F172.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F175",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F175.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F176",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F176.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F179",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F179.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F181",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F181.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F183",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F183.cpp"
+   ]
+  },
+  {
+   "uid": "expF:F192",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "files": [
+    "data/holdout_expansion/expF/sample_F192.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G005",
+   "batch": "expG",
+   "defect_type": "double_free",
+   "files": [
+    "data/holdout_expansion/expG/sample_G005.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G011",
+   "batch": "expG",
+   "defect_type": "integer_overflow",
+   "files": [
+    "data/holdout_expansion/expG/sample_G011.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G017",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "data/holdout_expansion/expG/sample_G017.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G021",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "files": [
+    "data/holdout_expansion/expG/sample_G021.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G023",
+   "batch": "expG",
+   "defect_type": "null_deref",
+   "files": [
+    "data/holdout_expansion/expG/sample_G023.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G027",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "data/holdout_expansion/expG/sample_G027.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G029",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "data/holdout_expansion/expG/sample_G029.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G038",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "data/holdout_expansion/expG/sample_G038.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G044",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "files": [
+    "data/holdout_expansion/expG/sample_G044.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G047",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "files": [
+    "data/holdout_expansion/expG/sample_G047.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G050",
+   "batch": "expG",
+   "defect_type": "stack_overflow_write",
+   "files": [
+    "data/holdout_expansion/expG/sample_G050.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G052",
+   "batch": "expG",
+   "defect_type": "null_deref",
+   "files": [
+    "data/holdout_expansion/expG/sample_G052.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G058",
+   "batch": "expG",
+   "defect_type": "division_by_zero",
+   "files": [
+    "data/holdout_expansion/expG/sample_G058.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G065",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "files": [
+    "data/holdout_expansion/expG/sample_G065.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G076",
+   "batch": "expG",
+   "defect_type": "state_machine",
+   "files": [
+    "data/holdout_expansion/expG/sample_G076.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G078",
+   "batch": "expG",
+   "defect_type": "use_after_free",
+   "files": [
+    "data/holdout_expansion/expG/sample_G078.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G084",
+   "batch": "expG",
+   "defect_type": "race_condition",
+   "files": [
+    "data/holdout_expansion/expG/sample_G084.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G089",
+   "batch": "expG",
+   "defect_type": "resource_exhaustion",
+   "files": [
+    "data/holdout_expansion/expG/sample_G089.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G098",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "files": [
+    "data/holdout_expansion/expG/sample_G098.cpp"
+   ]
+  },
+  {
+   "uid": "expG:sample_G099",
+   "batch": "expG",
+   "defect_type": "compiler_warning",
+   "files": [
+    "data/holdout_expansion/expG/sample_G099.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h1",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "Examples/atoms/_atom_data_race.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h25",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "data/cards_665/fixtures/ig-14.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h26",
+   "batch": "holdout",
+   "defect_type": "memory",
+   "files": [
+    "data/cards_665/fixtures/h26.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h34",
+   "batch": "holdout",
+   "defect_type": "memory-order",
+   "files": [
+    "Examples/atoms/_atom_fence_vs_atomic.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h40",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "Examples/atoms/_atom_leak_detection.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h46",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "Appendix/ub/ub_vptr_corruption.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h55",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "Appendix/ub/ub_alignment_violation.cpp"
+   ]
+  },
+  {
+   "uid": "holdout:h56",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "files": [
+    "Examples/_ch14_ubsan.cpp"
+   ]
+  }
+ ]
+}

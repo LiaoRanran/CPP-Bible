@@ -1,0 +1,2976 @@
+{
+ "schema": "queyi-audit-676k-source/v1",
+ "generated_by": "tools/audit_676k_source.py",
+ "seed": 6761,
+ "n": 74,
+ "format_check": {
+  "n_bad": 0,
+  "bad": []
+ },
+ "api_status_counts": {
+  "ok": 74
+ },
+ "url_status_counts": {
+  "200": 74
+ },
+ "concept_verdict_counts": {
+  "match": 60,
+  "partial": 14
+ },
+ "concept_verdict_counts_sampled20": {
+  "partial": 5,
+  "match": 15
+ },
+ "sampled_20": [
+  "sample_G002",
+  "sample_G004",
+  "sample_G007",
+  "sample_G011",
+  "sample_G013",
+  "sample_G016",
+  "sample_G030",
+  "sample_G031",
+  "sample_G032",
+  "sample_G038",
+  "sample_G039",
+  "sample_G042",
+  "sample_G044",
+  "sample_G046",
+  "sample_G059",
+  "sample_G062",
+  "sample_G093",
+  "sample_G094",
+  "sample_G095",
+  "sample_G096"
+ ],
+ "rows": [
+  {
+   "sample_id": "sample_G001",
+   "file": "sample_G001.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2014-0160",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 TLS/DTLS 网络层，心跳请求包硬编码在 main 中构造，保留『信任 payload_length、按声明长度 memcpy』的核心缺陷",
+   "trigger_condition": "心跳载荷长度字段声明 65535，实际载荷仅 1 字节",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The (1) TLS and (2) DTLS implementations in OpenSSL 1.0.1 before 1.0.1g do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information from process memory via crafted packets that trigger a buffer over-read, as demonstrated by reading private keys, related to d1_both.c and t1_lib.c, aka the Heartbleed bug.",
+   "published": "2014-04-07T22:55:03.893",
+   "vuln_status": "Analyzed",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0571,
+    "shared": [
+     "dtls",
+     "tls"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "over-read",
+     "buffer over-read",
+     "process memory"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G002",
+   "file": "sample_G002.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2014-3508",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3508",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 OID 解码逻辑，保留『分配的文本缓冲不保证 NUL 结尾』核心缺陷，调用方按 C 字符串使用",
+   "trigger_condition": "OID pretty-print 返回不含 NUL 的精确长度缓冲，调用方 printf 按字符串读越界",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The OBJ_obj2txt function in crypto/objects/obj_dat.c in OpenSSL 0.9.8 before 0.9.8zb, 1.0.0 before 1.0.0n, and 1.0.1 before 1.0.1i, when pretty printing is used, does not ensure the presence of '\\0' characters, which allows context-dependent attackers to obtain sensitive information from process stack memory by reading output from X509_name_oneline, X509_name_print_ex, and unspecified other functions.",
+   "published": "2014-08-13T23:55:07.497",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "does not",
+     "allows"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G003",
+   "file": "sample_G003.json",
+   "defect_type": "null_deref",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2014-3571",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3571",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 DTLS 网络层与重传队列，保留『一条读路径释放/置空消息对象后另一读路径仍解引用』的核心缺陷",
+   "trigger_condition": "DTLS 握手消息在缓冲读路径被释放后，超时读路径仍解引用该指针",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "OpenSSL before 0.9.8zd, 1.0.0 before 1.0.0p, and 1.0.1 before 1.0.1k allows remote attackers to cause a denial of service (NULL pointer dereference and application crash) via a crafted DTLS message that is processed with a different read operation for the handshake header than for the handshake body, related to the dtls1_get_record function in d1_pkt.c and the ssl3_read_n function in s3_pkt.c.",
+   "published": "2015-01-09T02:59:01.287",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0357,
+    "shared": [
+     "dtls"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "null pointer",
+     "dereference",
+     "crash",
+     "null"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G004",
+   "file": "sample_G004.json",
+   "defect_type": "memory_leak",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-0206",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0206",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 DTLS 网络层，epoch 判定用参数硬编码，保留『为下一 epoch 缓冲记录时错误路径不释放 rdata』核心缺陷",
+   "trigger_condition": "重复收到下一 epoch 的重复记录（8 次），每次缓冲路径都走错误返回",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Memory leak in the dtls1_buffer_record function in d1_pkt.c in OpenSSL 1.0.0 before 1.0.0p and 1.0.1 before 1.0.1k allows remote attackers to cause a denial of service (memory consumption) by sending many duplicate records for the next epoch, leading to failure of replay detection.",
+   "published": "2015-01-09T02:59:12.117",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.04,
+    "shared": [
+     "epoch"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "memory leak"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G005",
+   "file": "sample_G005.json",
+   "defect_type": "double_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2014-3505",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-3505",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 DTLS 网络层，保留『错误路径释放 fragment 后公共清理路径再次释放』核心缺陷",
+   "trigger_condition": "crafted DTLS 握手分片触发错误路径，随后公共清理再次 free",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Double free vulnerability in d1_both.c in the DTLS implementation in OpenSSL 0.9.8 before 0.9.8zb, 1.0.0 before 1.0.0n, and 1.0.1 before 1.0.1i allows remote attackers to cause a denial of service (application crash) via crafted DTLS packets that trigger an error condition.",
+   "published": "2014-08-13T23:55:07.343",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0476,
+    "shared": [
+     "dtls"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "double free"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G006",
+   "file": "sample_G006.json",
+   "defect_type": "type_confusion",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-0286",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0286",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 ASN.1 解码层，boolean/整数共用 union 的类型混淆按 CVE 描述（invalid read operation）直接构造",
+   "trigger_condition": "两个 BOOLEAN 类型的 ASN1_TYPE 比较，整数按指针解释后解引用",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The ASN1_TYPE_cmp function in crypto/asn1/a_type.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a does not properly perform boolean-type comparisons, which allows remote attackers to cause a denial of service (invalid read operation and application crash) via a crafted X.509 certificate to an endpoint that uses the certificate-verification feature.",
+   "published": "2015-03-19T22:59:04.677",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 4,
+    "jaccard": 0.1333,
+    "shared": [
+     "boolean",
+     "invalid",
+     "operation",
+     "read"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "denial of service",
+     "does not",
+     "allows",
+     "not properly"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G007",
+   "file": "sample_G007.json",
+   "defect_type": "null_deref",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-0288",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0288",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 X.509 解码层，『证书无 SubjectPublicKeyInfo → 公钥指针为 NULL』按 CVE 描述直接构造",
+   "trigger_condition": "传入不含公钥字段的证书，转换路径未检查 NULL 即解引用",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The X509_to_X509_REQ function in crypto/x509/x509_req.c in OpenSSL before 0.9.8zf, 1.0.0 before 1.0.0r, 1.0.1 before 1.0.1m, and 1.0.2 before 1.0.2a might allow attackers to cause a denial of service (NULL pointer dereference and application crash) via an invalid certificate key.",
+   "published": "2015-03-19T22:59:06.880",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0455,
+    "shared": [
+     "null"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "null pointer",
+     "dereference",
+     "crash",
+     "null"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G008",
+   "file": "sample_G008.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-1789",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1789",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离证书时间比较外围逻辑，保留『按固定位数解析 ASN1_TIME 而不校验 crafted 长度字段』核心缺陷",
+   "trigger_condition": "ASN1_TIME 长度字段被 crafted 为 2，解析仍按固定 4 位读年/月 → 读越界",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The X509_cmp_time function in crypto/x509/x509_vfy.c in OpenSSL before 0.9.8zg, 1.0.0 before 1.0.0s, 1.0.1 before 1.0.1n, and 1.0.2 before 1.0.2b allows remote attackers to cause a denial of service (out-of-bounds read and application crash) via a crafted length field in ASN1_TIME data, as demonstrated by an attack against a server that supports client authentication with a custom verification callback.",
+   "published": "2015-06-12T19:59:02.507",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0625,
+    "shared": [
+     "asn1_time",
+     "crafted"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "out-of-bounds read",
+     "out-of-bound",
+     "out-of-bounds"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G009",
+   "file": "sample_G009.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-2176",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2176",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 EBCDIC 转换层，保留『高位字节触发转义分支时向前多读一字节且不检查边界』核心缺陷",
+   "trigger_condition": "名字串最后一个字节是高位字节（crafted EBCDIC 数据），转义分支读 name[len]",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The X509_NAME_oneline function in crypto/x509/x509_obj.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to obtain sensitive information from process stack memory or cause a denial of service (buffer over-read) via crafted EBCDIC ASN.1 data.",
+   "published": "2016-05-05T01:59:06.340",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.04,
+    "shared": [
+     "ebcdic"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "over-read",
+     "buffer over-read"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G010",
+   "file": "sample_G010.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-2105",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2105",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 base64 编码主体，保留『输出长度按 5*n/4+1 用 int 计算』核心缺陷，输入长度由运行时变量给出",
+   "trigger_condition": "输入数据量接近 2^29，5*n 乘法发生 int 溢出",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Integer overflow in the EVP_EncodeUpdate function in crypto/evp/encode.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (heap memory corruption) via a large amount of binary data.",
+   "published": "2016-05-05T01:59:01.200",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G011",
+   "file": "sample_G011.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-2106",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2106",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离加解密主体，保留『inl + block_size 有符号溢出且缺少溢出检查』核心缺陷（修复版本加入 inl+bl<inl 检查）",
+   "trigger_condition": "输入长度 inl = INT_MAX-15，块大小 16，inl+bl 有符号溢出",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Integer overflow in the EVP_EncryptUpdate function in crypto/evp/evp_enc.c in OpenSSL before 1.0.1t and 1.0.2 before 1.0.2h allows remote attackers to cause a denial of service (heap memory corruption) via a large amount of data.",
+   "published": "2016-05-05T01:59:02.217",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G012",
+   "file": "sample_G012.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-6303",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-6303",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 MDC2 哈希主体，保留『ctx->num += inl 用 int 累加』核心缺陷，后续越界写按 CVE 描述为 OOB write",
+   "trigger_condition": "多次 Update 累加使 ctx->num 越过 INT_MAX",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Integer overflow in the MDC2_Update function in crypto/mdc2/mdc2dgst.c in OpenSSL before 1.1.0 allows remote attackers to cause a denial of service (out-of-bounds write and application crash) or possibly have unspecified other impact via unknown vectors.",
+   "published": "2016-09-16T05:59:13.363",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0645,
+    "shared": [
+     "mdc2",
+     "write"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G013",
+   "file": "sample_G013.json",
+   "defect_type": "pointer_overflow",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2016-2177",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2177",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离协议解析层，保留『用指针算术做堆缓冲边界检查且长度攻击者可控』核心模式，长度字段由运行时变量给出",
+   "trigger_condition": "包长字段为 LLONG_MAX，p + len 指针算术回绕 → 边界检查被绕过",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "OpenSSL through 1.0.2h incorrectly uses pointer arithmetic for heap-buffer boundary checks, which might allow remote attackers to cause a denial of service (integer overflow and application crash) or possibly have unspecified other impact by leveraging unexpected malloc behavior, related to s3_srvr.c, ssl_sess.c, and t1_lib.c.",
+   "published": "2016-06-20T01:59:02.087",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": null,
+    "jaccard": null,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G014",
+   "file": "sample_G014.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-3731",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-3731",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 ChaCha20-Poly1305 主体，保留『tag 指针在长度检查之前计算』核心缺陷，截断包长度硬编码",
+   "trigger_condition": "截断的 AEAD 包 len=5 < tag_len=16，tag 指针指向缓冲区之前 → 前向越界读",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "If an SSL/TLS server or client is running on a 32-bit host, and a specific cipher is being used, then a truncated packet can cause that server or client to perform an out-of-bounds read, usually resulting in a crash. For OpenSSL 1.1.0, the crash can be triggered when using CHACHA20/POLY1305; users should upgrade to 1.1.0d. For Openssl 1.0.2, the crash can be triggered when using RC4-MD5; users who have not disabled that algorithm should update to 1.0.2k.",
+   "published": "2017-05-04T19:29:00.353",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0606,
+    "shared": [
+     "chacha20",
+     "poly1305"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "out-of-bounds read",
+     "out-of-bound",
+     "out-of-bounds"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G015",
+   "file": "sample_G015.json",
+   "defect_type": "stack_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2018-0739",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-0739",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 ASN.1 具体结构（PKCS7 等），保留『递归定义的构造类型解析无深度限制』核心缺陷，嵌套输入在 main 中构造",
+   "trigger_condition": "200 万层嵌套的 ASN.1 构造类型 → 递归解析耗尽调用栈",
+   "id_format_ok": true,
+   "cve_year": 2018,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Constructed ASN.1 types with a recursive definition (such as can be found in PKCS7) could eventually exceed the stack given malicious input with excessive recursion. This could result in a Denial Of Service attack. There are no such structures used within SSL/TLS that come from untrusted sources so this is considered safe. Fixed in OpenSSL 1.1.0h (Affected 1.1.0-1.1.0g). Fixed in OpenSSL 1.0.2o (Affected 1.0.2b-1.0.2n).",
+   "published": "2018-03-27T21:29:00.673",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0606,
+    "shared": [
+     "asn",
+     "pkcs7"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "denial of service",
+     "excessive"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G016",
+   "file": "sample_G016.json",
+   "defect_type": "null_deref",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2020-1971",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-1971",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 X.509 GENERAL_NAME 全部实际类型，只保留 EDIPartyName 分支缺失 + other 联合成员为 NULL 的核心缺陷",
+   "trigger_condition": "两个 EDIPARTYNAME 类型的 GENERAL_NAME 比较 → otherName 未分配为 NULL → 解引用",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The X.509 GeneralName type is a generic type for representing different types of names. One of those name types is known as EDIPartyName. OpenSSL provides a function GENERAL_NAME_cmp which compares different instances of a GENERAL_NAME to see if they are equal or not. This function behaves incorrectly when both GENERAL_NAMEs contain an EDIPARTYNAME. A NULL pointer dereference and a crash may occur leading to a possible denial of service attack. OpenSSL itself uses the GENERAL_NAME_cmp function for two purposes: 1) Comparing CRL distribution point names between an available CRL and a CRL distribution point embedded in an X509 certificate 2) When verifying that a timestamp response token signer matches the timestamp authority name (exposed via the API functions TS_RESP_verify_response and TS_RESP_verify_token) If an attacker can control both items being compared then that attacker could trigger a crash. For example if the attacker can trick a client or server into checking a malicious certificate against a malicious CRL then this may occur. Note that some applications automatically download CRLs based on a URL embedded in a certificate. This checking happens prior to the signatures o",
+   "published": "2020-12-08T16:15:11.730",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0349,
+    "shared": [
+     "edipartyname",
+     "general_name",
+     "null"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "null pointer",
+     "dereference",
+     "crash",
+     "null"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G017",
+   "file": "sample_G017.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2021-3712",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3712",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 ASN1_STRING 全部用途，保留『内部 (data,len) 存储不含 NUL、比较路径误用 strlen』核心缺陷",
+   "trigger_condition": "ASN1_STRING 内容 4 字节无 NUL，比较按 strlen 处理 → 读越界",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "ASN.1 strings are represented internally within OpenSSL as an ASN1_STRING structure which contains a buffer holding the string data and a field holding the buffer length. This contrasts with normal C strings which are repesented as a buffer for the string data which is terminated with a NUL (0) byte. Although not a strict requirement, ASN.1 strings that are parsed using OpenSSL's own \"d2i\" functions (and other similar parsing functions) as well as any string whose value has been set with the ASN1_STRING_set() function will additionally NUL terminate the byte array in the ASN1_STRING structure. However, it is possible for applications to directly construct valid ASN1_STRING structures which do not NUL terminate the byte array by directly setting the \"data\" and \"length\" fields in the ASN1_STRING array. This can also happen by using the ASN1_STRING_set0() function. Numerous OpenSSL functions that print ASN.1 data have been found to assume that the ASN1_STRING byte array will be NUL terminated, even though this is not guaranteed for strings that have been directly constructed. Where an application requests an ASN.1 structure to be printed, and where that ASN.1 structure contains ASN1_S",
+   "published": "2021-08-24T15:15:09.533",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0441,
+    "shared": [
+     "asn1_string",
+     "data",
+     "nul"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "buffer"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G018",
+   "file": "sample_G018.json",
+   "defect_type": "stack_overflow_write",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2022-3602",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-3602",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 X.509 name constraint 检查链路，保留 punycode 解码『输出循环缺少边界检查』核心缺陷（修复版加入 out==out_max 判断）",
+   "trigger_condition": "crafted X.509 punycode 名字带超长 literal 前缀（40 字节 > 输出缓冲 8）",
+   "id_format_ok": true,
+   "cve_year": 2022,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A buffer overrun can be triggered in X.509 certificate verification, specifically in name constraint checking. Note that this occurs after certificate chain signature verification and requires either a CA to have signed the malicious certificate or for the application to continue certificate verification despite failure to construct a path to a trusted issuer. An attacker can craft a malicious email address to overflow four attacker-controlled bytes on the stack. This buffer overflow could result in a crash (causing a denial of service) or potentially remote code execution. Many platforms implement stack overflow protections which would mitigate against the risk of remote code execution. The risk may be further mitigated based on stack layout for any given platform/compiler. Pre-announcements of CVE-2022-3602 described this issue as CRITICAL. Further analysis based on some of the mitigating factors described above have led this to be downgraded to HIGH. Users are still encouraged to upgrade to a new version as soon as possible. In a TLS client, this can be triggered by connecting to a malicious server. In a TLS server, this can be triggered if the server requests client authenticat",
+   "published": "2022-11-01T18:15:10.983",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0225,
+    "shared": [
+     "constraint",
+     "name"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "buffer overflow",
+     "overrun"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G020",
+   "file": "sample_G020.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2015-1793",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1793",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离证书解码/签名验证，以等价链构建状态机镜像『alternate chain 中 untrusted 证书未查 Basic Constraints cA』核心缺陷",
+   "trigger_condition": "叶子证书由攻击者自签的 FakeRoot 签发，FakeRoot 非 CA 且不在信任库",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The X509_verify_cert function in crypto/x509/x509_vfy.c in OpenSSL 1.0.1n, 1.0.1o, 1.0.2b, and 1.0.2c does not properly process X.509 Basic Constraints cA values during identification of alternative certificate chains, which allows remote attackers to spoof a Certification Authority role and trigger unintended certificate verifications via a valid leaf certificate.",
+   "published": "2015-07-09T19:17:00.093",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0645,
+    "shared": [
+     "basic",
+     "constraints"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "does not"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G021",
+   "file": "sample_G021.json",
+   "defect_type": "state_machine",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2014-0224",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0224",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 TLS 记录层与密码套件，以等价握手状态机镜像『CCS 消息不检查当前状态即处理』核心缺陷",
+   "trigger_condition": "在 ClientHello 之后、ServerHelloDone 之前注入 ChangeCipherSpec",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "OpenSSL before 0.9.8za, 1.0.0 before 1.0.0m, and 1.0.1 before 1.0.1h does not properly restrict processing of ChangeCipherSpec messages, which allows man-in-the-middle attackers to trigger use of a zero-length master key in certain OpenSSL-to-OpenSSL communications, and consequently hijack sessions or obtain sensitive information, via a crafted TLS handshake, aka the \"CCS Injection\" vulnerability.",
+   "published": "2014-06-05T21:55:07.817",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0667,
+    "shared": [
+     "ccs",
+     "tls"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "handshake"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G022",
+   "file": "sample_G022.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2015-0204",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0204",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 RSA 密钥交换主体，以等价交换参数检查状态机镜像『服务器提供 export 弱密钥未被拒绝』核心缺陷",
+   "trigger_condition": "客户端请求普通套件，服务器却返回 512 位 export RSA 临时密钥",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The ssl3_get_key_exchange function in s3_clnt.c in OpenSSL before 0.9.8zd, 1.0.0 before 1.0.0p, and 1.0.1 before 1.0.1k allows remote SSL servers to conduct RSA-to-EXPORT_RSA downgrade attacks and facilitate brute-force decryption by offering a weak ephemeral RSA key in a noncompliant role, related to the \"FREAK\" issue.  NOTE: the scope of this CVE is only client code based on OpenSSL, not EXPORT_RSA issues associated with servers or other TLS implementations.",
+   "published": "2015-01-09T02:59:10.287",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0256,
+    "shared": [
+     "rsa"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "allows"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G023",
+   "file": "sample_G023.json",
+   "defect_type": "null_deref",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2021-3449",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3449",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 TLSv1.2 重协商全流程，保留『重协商 ClientHello 缺 signature_algorithms 扩展时保存指针为 NULL 仍被解引用』核心缺陷",
+   "trigger_condition": "重协商 ClientHello 省略 signature_algorithms 扩展 → sig_algs 为 NULL",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "An OpenSSL TLS server may crash if sent a maliciously crafted renegotiation ClientHello message from a client. If a TLSv1.2 renegotiation ClientHello omits the signature_algorithms extension (where it was present in the initial ClientHello), but includes a signature_algorithms_cert extension then a NULL pointer dereference will result, leading to a crash and a denial of service attack. A server is only vulnerable if it has TLSv1.2 and renegotiation enabled (which is the default configuration). OpenSSL TLS clients are not impacted by this issue. All OpenSSL 1.1.1 versions are affected by this issue. Users of these versions should upgrade to OpenSSL 1.1.1k. OpenSSL 1.0.2 is not impacted by this issue. Fixed in OpenSSL 1.1.1k (Affected 1.1.1-1.1.1j).",
+   "published": "2021-03-25T15:15:13.450",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 4,
+    "jaccard": 0.0909,
+    "shared": [
+     "clienthello",
+     "null",
+     "signature_algorithms",
+     "tlsv1"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "null pointer",
+     "dereference",
+     "crash",
+     "null"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G024",
+   "file": "sample_G024.json",
+   "defect_type": "race_condition",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-1791",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1791",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 SSL 连接层，保留『多线程客户端并发处理 NewSessionTicket 时会话对象无锁替换/释放』核心竞争",
+   "trigger_condition": "两个线程同时处理 NewSessionTicket：无锁读写共享会话指针与成员",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Race condition in the ssl3_get_new_session_ticket function in ssl/s3_clnt.c in OpenSSL before 0.9.8zg, 1.0.0 before 1.0.0s, 1.0.1 before 1.0.1n, and 1.0.2 before 1.0.2b, when used for a multi-threaded client, allows remote attackers to cause a denial of service (double free and application crash) or possibly have unspecified other impact by providing a NewSessionTicket during an attempt to reuse a ticket that had been obtained earlier.",
+   "published": "2015-06-12T19:59:04.397",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0606,
+    "shared": [
+     "newsessionticket",
+     "ssl"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "race condition"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G026",
+   "file": "sample_G026.json",
+   "defect_type": "stack_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-1000100",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000100",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 TFTP 传输层，文件名硬编码为 600 字节，保留『文件名被截断但缓冲区尺寸仍按未截断长度使用』核心缺陷",
+   "trigger_condition": "TFTP URL 文件名 600 字节 > 515 缓冲，发送尺寸仍按 600 计算 → 栈越界读 89 字节",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When doing a TFTP transfer and curl/libcurl is given a URL that contains a very long file name (longer than about 515 bytes), the file name is truncated to fit within the buffer boundaries, but the buffer size is still wrongly updated to use the untruncated length. This too large value is then used in the sendto() call, making curl attempt to send more data than what is actually put into the buffer. The endto() function will then read beyond the end of the heap based buffer. A malicious HTTP(S) server could redirect a vulnerable libcurl-using client to a crafted TFTP URL (if the client hasn't restricted which protocols it allows redirects to) and trick it to send private memory contents to a remote server over UDP. Limit curl's redirect protocols with --proto-redir and libcurl's with CURLOPT_REDIR_PROTOCOLS.",
+   "published": "2017-10-05T01:29:04.057",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0143,
+    "shared": [
+     "tftp"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "buffer",
+     "beyond the end",
+     "wrongly",
+     "allows",
+     "wrong"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G027",
+   "file": "sample_G027.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2019-3823",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-3823",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 SMTP 传输层，响应缓冲硬编码为 3 字节堆分配，保留『按固定 5 字节模式读且忽略 len』核心缺陷",
+   "trigger_condition": "SMTP 响应缓冲 3 字节且无 NUL，endofresp 仍按固定 5 字节扫描",
+   "id_format_ok": true,
+   "cve_year": 2019,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "libcurl versions from 7.34.0 to before 7.64.0 are vulnerable to a heap out-of-bounds read in the code handling the end-of-response for SMTP. If the buffer passed to `smtp_endofresp()` isn't NUL terminated and contains no character ending the parsed number, and `len` is set to 5, then the `strtol()` call reads beyond the allocated buffer. The read contents will not be returned to the caller.",
+   "published": "2019-02-06T20:29:00.400",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0606,
+    "shared": [
+     "len",
+     "smtp"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "out-of-bounds read",
+     "out-of-bound",
+     "out-of-bounds"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G028",
+   "file": "sample_G028.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-8816",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-8816",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 NTLM 编码主体，保留『32 位平台上用户名/域/密码长度按 int 累加』核心缺陷，长度由运行时变量给出",
+   "trigger_condition": "用户名/域/密码各 2^29 字节，长度和乘 2 溢出 int",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The NTLM authentication feature in curl and libcurl before 7.57.0 on 32-bit platforms allows attackers to cause a denial of service (integer overflow and resultant buffer overflow, and application crash) or possibly have unspecified other impact via vectors involving long user and password fields.",
+   "published": "2017-11-29T18:29:00.300",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0345,
+    "shared": [
+     "ntlm"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G029",
+   "file": "sample_G029.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2018-16890",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-16890",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 NTLM 握手流程，type-2 消息硬编码为 32 字节堆缓冲，保留『target 长度/偏移字段未校验即 memcpy』核心缺陷",
+   "trigger_condition": "type-2 消息 target_info_len=1000，消息实际仅 32 字节 → 读越界",
+   "id_format_ok": true,
+   "cve_year": 2018,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "libcurl versions from 7.36.0 to before 7.64.0 is vulnerable to a heap buffer out-of-bounds read. The function handling incoming NTLM type-2 messages (`lib/vauth/ntlm.c:ntlm_decode_type2_target`) does not validate incoming data correctly and is subject to an integer overflow vulnerability. Using that overflow, a malicious or broken NTLM server could trick libcurl to accept a bad length + offset combination that would lead to a buffer read out-of-bounds.",
+   "published": "2019-02-06T20:29:00.243",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0556,
+    "shared": [
+     "ntlm",
+     "type"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "out-of-bounds read",
+     "out-of-bound",
+     "out-of-bounds"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G030",
+   "file": "sample_G030.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2019-5436",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5436",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 TFTP 传输层，服务器选项响应硬编码，保留『blksize 大于接收缓冲时直接 memcpy』核心缺陷（修复版将 blksize 上限设为 512）",
+   "trigger_condition": "服务器响应 blksize=1024，接收缓冲固定 512 → 堆越界写 512 字节",
+   "id_format_ok": true,
+   "cve_year": 2019,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A heap buffer overflow in the TFTP receiving code allows for DoS or arbitrary code execution in libcurl versions 7.19.4 through 7.64.1.",
+   "published": "2019-05-28T19:29:06.127",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0667,
+    "shared": [
+     "tftp"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "heap buffer overflow",
+     "buffer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G031",
+   "file": "sample_G031.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2023-38545",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 SOCKS5 握手状态机，主机名硬编码 20000 字节，保留『主机名超限未校验即整段拷贝进固定堆缓冲』核心缺陷",
+   "trigger_condition": "代理远程解析路径下主机名 20000 字节 > 16KB 请求缓冲 → 堆越界写约 4KB",
+   "id_format_ok": true,
+   "cve_year": 2023,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "This flaw makes curl overflow a heap based buffer in the SOCKS5 proxy\nhandshake.\n\nWhen curl is asked to pass along the host name to the SOCKS5 proxy to allow\nthat to resolve the address instead of it getting done by curl itself, the\nmaximum length that host name can be is 255 bytes.\n\nIf the host name is detected to be longer, curl switches to local name\nresolving and instead passes on the resolved address only. Due to this bug,\nthe local variable that means \"let the host resolve the name\" could get the\nwrong value during a slow SOCKS5 handshake, and contrary to the intention,\ncopy the too long host name to the target buffer instead of copying just the\nresolved address there.\n\nThe target buffer being a heap based buffer, and the host name coming from the\nURL that curl has been told to operate with.",
+   "published": "2023-10-18T04:15:11.077",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0172,
+    "shared": [
+     "socks5"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G032",
+   "file": "sample_G032.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2018-1000122",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000122",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 RTSP 传输层，RTP interleaved 帧硬编码 2 字节，保留『检测到 '$' 后按固定偏移读 4 字节头而不检查剩余长度』核心缺陷",
+   "trigger_condition": "帧缓冲仅 2 字节('$' + 1 字节)，RTP 头按固定偏移读第 3/4 字节 → 堆越界读",
+   "id_format_ok": true,
+   "cve_year": 2018,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A buffer over-read exists in curl 7.20.0 to and including curl 7.58.0 in the RTSP+RTP handling code that allows an attacker to cause a denial of service or information leakage",
+   "published": "2018-03-14T18:29:00.373",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.1111,
+    "shared": [
+     "rtp",
+     "rtsp"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "over-read",
+     "buffer over-read"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G033",
+   "file": "sample_G033.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-1000257",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000257",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 IMAP FETCH 响应解析，行缓冲硬编码 4 字节，保留『size=0 时仍向数据指针写入终结符』核心缺陷",
+   "trigger_condition": "IMAP FETCH 响应声明 0 字节数据，deliver_data 仍写 datap[0]='\\0'，而 datap 已指向缓冲区末尾",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "An IMAP FETCH response line indicates the size of the returned data, in number of bytes. When that response says the data is zero bytes, libcurl would pass on that (non-existing) data with a pointer and the size (zero) to the deliver-data function. libcurl's deliver-data function treats zero as a magic number and invokes strlen() on the data to figure out the length. The strlen() is called on a heap based buffer that might not be zero terminated so libcurl might read beyond the end of it into whatever memory lies after (or just crash) and then deliver that to the application as if it was actually downloaded.",
+   "published": "2017-10-31T21:29:00.203",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0682,
+    "shared": [
+     "fetch",
+     "imap",
+     "size"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "buffer",
+     "beyond the end"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G034",
+   "file": "sample_G034.json",
+   "defect_type": "use_after_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2021-22945",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22945",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 MQTT 传输层与断连状态机，保留『断连释放缓冲后指针未置空，后续发送再次使用并再次释放』核心缺陷",
+   "trigger_condition": "向 MQTT 服务器发送数据时服务器断连，断连释放 pending 缓冲后仍被使用",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When sending data to an MQTT server, libcurl <= 7.73.0 and 7.78.0 could in some circumstances erroneously keep a pointer to an already freed memory area and both use that again in a subsequent call to send data and also free it *again*.",
+   "published": "2021-09-23T13:15:08.690",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0476,
+    "shared": [
+     "mqtt"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "freed",
+     "erroneously keep"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G035",
+   "file": "sample_G035.json",
+   "defect_type": "use_after_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2026-3805",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-3805",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 SMB 传输层，保留官方公告描述的『第二次请求使用指向已释放内存的数据指针』核心缺陷，share 树指针挂在会话上",
+   "trigger_condition": "第一个 SMB 请求把指向请求内部数据的指针存入会话，请求销毁后第二个请求仍使用该指针",
+   "id_format_ok": true,
+   "cve_year": 2026,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When doing a second SMB request to the same host again, curl would wrongly use\na data pointer pointing into already freed memory.",
+   "published": "2026-03-11T11:16:00.967",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0625,
+    "shared": [
+     "smb"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "pointer pointing into already",
+     "freed"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G036",
+   "file": "sample_G036.json",
+   "defect_type": "double_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2026-8925",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-8925",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 GSASL 认证流程，保留官方公告描述的『GSASL 上下文被清理两次且中间未清空指针』核心缺陷",
+   "trigger_condition": "SASL 认证错误重试路径对同一上下文调用两次 cleanup，中间未置 NULL",
+   "id_format_ok": true,
+   "cve_year": 2026,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The curl logic that works with SASL authentication could end up cleaning up\nthe GSASL context *twice* without clearing the pointer in between, making it\n`free()` the same pointer twice.",
+   "published": "2026-07-03T07:16:24.950",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0588,
+    "shared": [
+     "gsasl"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "twice"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G038",
+   "file": "sample_G038.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-7407",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-7407",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 curl 工具 write-out 全部变量类型，保留『变量解析循环缺少缓冲区终止检查』核心缺陷",
+   "trigger_condition": "--write-out 参数以未闭合的 %{ 结尾，变量扫描越过堆缓冲",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The ourWriteOut function in tool_writeout.c in curl 7.53.1 might allow physically proximate attackers to obtain sensitive information from process memory in opportunistic circumstances by reading a workstation screen during use of a --write-out argument ending in a '%' character, which leads to a heap-based buffer over-read.",
+   "published": "2017-04-03T20:59:00.247",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0968,
+    "shared": [
+     "curl",
+     "out",
+     "write"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "over-read",
+     "buffer over-read",
+     "process memory"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G039",
+   "file": "sample_G039.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-7167",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7167",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离转义主体，保留『最坏情况下分配尺寸按 int 计算 len+3*2+1』核心缺陷，输入长度由运行时变量给出",
+   "trigger_condition": "输入字符串长度接近 INT_MAX，+7 分配计算有符号溢出",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Multiple integer overflows in the (1) curl_escape, (2) curl_easy_escape, (3) curl_unescape, and (4) curl_easy_unescape functions in libcurl before 7.50.3 allow attackers to have unspecified impact via a string of length 0xffffffff, which triggers a heap-based buffer overflow.",
+   "published": "2016-10-07T14:59:08.100",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "integer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G040",
+   "file": "sample_G040.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2021-22876",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22876",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 HTTP 传输层，保留『自动填充 Referer 时不剥离 URL 中的用户凭据』核心缺陷",
+   "trigger_condition": "URL 含 user:password@ 前缀，自动 Referer 未剥离凭据直接发送",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "curl 7.1.1 to and including 7.75.0 is vulnerable to an \"Exposure of Private Personal Information to an Unauthorized Actor\" by leaking credentials in the HTTP Referer: header. libcurl does not strip off user credentials from the URL when automatically populating the Referer: HTTP request header field in outgoing HTTP requests, and therefore risks leaking sensitive data to the server that is the target of the second HTTP request.",
+   "published": "2021-04-01T18:15:12.823",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0938,
+    "shared": [
+     "http",
+     "referer",
+     "url"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "does not"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G041",
+   "file": "sample_G041.json",
+   "defect_type": "info_leak",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2021-22898",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22898",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 TELNET 传输层，保留『NEW_ENV 选项解析器把非用户指定的环境变量一并发送』核心缺陷",
+   "trigger_condition": "-t NEW_ENV 选项解析时把本机环境变量值(含敏感数据)一并装入发送缓冲",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "curl 7.7 through 7.76.1 suffers from an information disclosure when the `-t` command line option, known as `CURLOPT_TELNETOPTIONS` in libcurl, is used to send variable=content pairs to TELNET servers. Due to a flaw in the option parser for sending NEW_ENV variables, libcurl could be made to pass on uninitialized data from a stack based buffer to the server, resulting in potentially revealing sensitive internal information to the server using a clear-text network protocol.",
+   "published": "2021-06-11T16:15:11.043",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.05,
+    "shared": [
+     "new_env",
+     "telnet"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "information disclosure"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G042",
+   "file": "sample_G042.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2020-8284",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8284",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 FTP 控制通道，PASV 响应硬编码，保留『信任服务器提供的 PASV IP/端口回连』核心缺陷",
+   "trigger_condition": "恶意服务器在 PASV 响应中提供攻击者 IP:port，curl 回连该地址",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A malicious server can use the FTP PASV response to trick curl 7.73.0 and earlier into connecting back to a given IP address and port, and this way potentially make curl extract information about services that are otherwise private and not disclosed, for example doing port scanning and service banner extractions.",
+   "published": "2020-12-14T20:15:13.903",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.069,
+    "shared": [
+     "ftp",
+     "pasv"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "trick",
+     "malicious"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G043",
+   "file": "sample_G043.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2020-8177",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8177",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 HTTP 下载流程，Content-Disposition 硬编码，保留『-J 使用服务器提供文件名时不做覆盖检查』核心缺陷",
+   "trigger_condition": "服务器返回 Content-Disposition filename 指向已存在的本地文件 → 被覆盖",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "curl 7.20.0 through 7.70.0 is vulnerable to improper restriction of names for files and other resources that can lead too overwriting a local file when the -J flag is used.",
+   "published": "2020-12-14T20:15:13.497",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "improper"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G044",
+   "file": "sample_G044.json",
+   "defect_type": "state_machine",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2022-32221",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32221",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离连接复用层，保留『同一 handle 先做 PUT(读回调) 再 POST(POSTFIELDS) 时错误调用读回调』核心状态缺陷",
+   "trigger_condition": "同一 handle 先 PUT(读回调) 再 POST(POSTFIELDS)，发送阶段错误调用读回调",
+   "id_format_ok": true,
+   "cve_year": 2022,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When doing HTTP(S) transfers, libcurl might erroneously use the read callback (`CURLOPT_READFUNCTION`) to ask for data to send, even when the `CURLOPT_POSTFIELDS` option has been set, if the same handle previously was used to issue a `PUT` request which used that callback. This flaw may surprise the application and cause it to misbehave and either send off the wrong data or use memory after free or similar in the subsequent `POST` request. The problem exists in the logic for a reused handle when it is changed from a PUT to a POST.",
+   "published": "2022-12-05T22:15:10.343",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0698,
+    "shared": [
+     "handle",
+     "post",
+     "put"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "erroneously",
+     "wrong"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G045",
+   "file": "sample_G045.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2015-3148",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3148",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 Negotiate 认证流程，保留『连接复用不检查认证身份一致性』核心缺陷",
+   "trigger_condition": "user1 完成 Negotiate 认证后，user2 的请求错误复用该已认证连接",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "cURL and libcurl 7.10.6 through 7.41.0 do not properly re-use authenticated Negotiate connections, which allows remote attackers to connect as other users via a request.",
+   "published": "2015-04-24T14:59:11.000",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0714,
+    "shared": [
+     "negotiate"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "allows",
+     "not properly"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G046",
+   "file": "sample_G046.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2023-27534",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27534",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 SFTP 传输层，保留『~ 前缀被错误展开导致路径穿越』核心缺陷",
+   "trigger_condition": "SFTP 路径首段以 ~ 开头且含 /../，被展开到用户主目录之外",
+   "id_format_ok": true,
+   "cve_year": 2023,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A path traversal vulnerability exists in curl <8.0.0 SFTP implementation causes the tilde (~) character to be wrongly replaced when used as a prefix in the first path element, in addition to its intended use as the first element to indicate a path relative to the user's home directory. Attackers can exploit this flaw to bypass filtering or execute arbitrary code by crafting a path like /~2/foo while accessing a server with a specific user.",
+   "published": "2023-03-30T20:15:07.427",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0278,
+    "shared": [
+     "sftp"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "wrongly",
+     "bypass",
+     "wrong"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G047",
+   "file": "sample_G047.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2020-8286",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8286",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 TLS/OCSP 主体，保留『OCSP 响应校验不足 → 撤销状态检查失效』核心缺陷",
+   "trigger_condition": "OCSP 响应状态字段异常，检查函数仍返回证书有效",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "curl 7.41.0 through 7.73.0 is vulnerable to an improper check for certificate revocation due to insufficient verification of the OCSP response.",
+   "published": "2020-12-14T20:15:14.043",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0769,
+    "shared": [
+     "ocsp"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "improper"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G048",
+   "file": "sample_G048.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2022-27780",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27780",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 URL 解析器全流程，保留『主机名部分百分号编码分隔符被错误解码』核心缺陷",
+   "trigger_condition": "主机名含 %2F，解码后 URL 与解析时被视为不同主机",
+   "id_format_ok": true,
+   "cve_year": 2022,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The curl URL parser wrongly accepts percent-encoded URL separators like '/'when decoding the host name part of a URL, making it a *different* URL usingthe wrong host name when it is later retrieved.For example, a URL like `http://example.com%2F127.0.0.1/`, would be allowed bythe parser and get transposed into `http://example.com/127.0.0.1/`. This flawcan be used to circumvent filters, checks and more.",
+   "published": "2022-06-02T14:15:44.267",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0312,
+    "shared": [
+     "url"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "wrongly",
+     "wrong"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G049",
+   "file": "sample_G049.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2016-7141",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-7141",
+   "project": "curl",
+   "commit": "",
+   "simplification": "剥离 NSS/PEM 后端，保留『连接复用未校验客户端证书状态 → 认证被劫持』核心缺陷",
+   "trigger_condition": "新连接未配置客户端证书，复用了此前从文件加载证书的连接",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "curl and libcurl before 7.50.2, when built with NSS and the libnsspem.so library is available at runtime, allow remote attackers to hijack the authentication of a TLS connection by leveraging reuse of a previously loaded client certificate from file for a connection for which no certificate has been set, a different vulnerability than CVE-2016-5420.",
+   "published": "2016-10-03T21:59:08.300",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0357,
+    "shared": [
+     "nss"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "vulnerability"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G050",
+   "file": "sample_G050.json",
+   "defect_type": "stack_overflow_write",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-3416",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-3416",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite SQL 引擎，保留『浮点转换的 width/precision 未按缓冲容量截断』核心缺陷",
+   "trigger_condition": "SQL 中 %.200000f 的巨量宽度 → 输出循环越过 100 字节缓冲",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The sqlite3VXPrintf function in printf.c in SQLite before 3.8.9 does not properly handle precision and width values during floating-point conversions, which allows context-dependent attackers to cause a denial of service (integer overflow and stack-based buffer overflow) or possibly have unspecified other impact via large integers in a crafted printf function call in a SELECT statement.",
+   "published": "2015-04-24T17:59:02.363",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.0833,
+    "shared": [
+     "precision",
+     "sqlite",
+     "width"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "stack-based buffer overflow",
+     "buffer overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G051",
+   "file": "sample_G051.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2019-8457",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-8457",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite rtree 模块，保留『单元数与节点缓冲大小不一致时循环读越界』核心缺陷",
+   "trigger_condition": "rtree 节点缓冲仅含 2 个单元，头部声明的单元数为 9 → 循环读越界",
+   "id_format_ok": true,
+   "cve_year": 2019,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "SQLite3 from 3.6.0 to and including 3.27.2 is vulnerable to heap out-of-bound read in the rtreenode() function when handling invalid rtree tables.",
+   "published": "2019-05-30T16:29:01.840",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0714,
+    "shared": [
+     "rtree"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "out-of-bound read",
+     "out-of-bound"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G052",
+   "file": "sample_G052.json",
+   "defect_type": "null_deref",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2020-11655",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11655",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite 窗口函数引擎，保留『畸形窗口函数查询时 AggInfo 初始化被跳过但调用方继续使用』核心缺陷",
+   "trigger_condition": "畸形窗口函数查询 → AggInfo 初始化失败(列为 NULL)但后续遍历仍解引用",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "SQLite through 3.31.1 allows attackers to cause a denial of service (segmentation fault) via a malformed window-function query because the AggInfo object's initialization is mishandled.",
+   "published": "2020-04-09T03:15:11.363",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.1111,
+    "shared": [
+     "agginfo",
+     "sqlite"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "segmentation fault"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G053",
+   "file": "sample_G053.json",
+   "defect_type": "use_after_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2020-11656",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-11656",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite ALTER TABLE 引擎，保留『token 内容释放后错误路径仍引用』核心缺陷",
+   "trigger_condition": "ALTER TABLE RENAME 失败路径先释放 token.z，错误消息构造仍引用 t->z",
+   "id_format_ok": true,
+   "cve_year": 2020,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "In SQLite through 3.31.1, the ALTER TABLE implementation has a use-after-free, as demonstrated by an ORDER BY clause that belongs to a compound SELECT statement.",
+   "published": "2020-04-09T03:15:11.410",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.2143,
+    "shared": [
+     "alter",
+     "sqlite",
+     "table"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "use-after-free"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G054",
+   "file": "sample_G054.json",
+   "defect_type": "integer_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2022-35737",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-35737",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite C API 字符串层，保留『字符串长度按 int 累加』核心缺陷，长度由运行时变量给出",
+   "trigger_condition": "字符串参数达数十亿字节，nUsed += n 的 int 累加溢出",
+   "id_format_ok": true,
+   "cve_year": 2022,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "SQLite 1.0.12 through 3.39.x before 3.39.2 sometimes allows an array-bounds overflow if billions of bytes are used in a string argument to a C API.",
+   "published": "2022-08-03T06:15:07.690",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.1538,
+    "shared": [
+     "api",
+     "sqlite"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G055",
+   "file": "sample_G055.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-10989",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-10989",
+   "project": "sqlite",
+   "commit": "",
+   "simplification": "剥离 SQLite rtree 模块与数据库 I/O，保留『undersized blob 按头部声明的单元数读取』核心缺陷",
+   "trigger_condition": "rtree blob 仅 8 字节，头部声明的维度/单元数要求读 64 字节 → 越界读",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The getNodeSize function in ext/rtree/rtree.c in SQLite through 3.19.3, as used in GDAL and other products, mishandles undersized RTree blobs in a crafted database, leading to a heap-based buffer over-read or possibly unspecified other impact.",
+   "published": "2017-07-07T12:29:00.197",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.125,
+    "shared": [
+     "rtree",
+     "sqlite",
+     "undersized"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "over-read",
+     "buffer over-read"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G057",
+   "file": "sample_G057.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2015-8126",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2015-8126",
+   "project": "libpng",
+   "commit": "",
+   "simplification": "剥离 PNG 解码器，PLTE chunk 硬编码为 1200 字节，保留『palette 数量未校验上限即 memcpy』核心缺陷（修复版校验 num > PNG_MAX_PALETTE_LENGTH）",
+   "trigger_condition": "PLTE chunk 声明 400 项(1200 字节) > 256 项上限 → 拷贝越界 1KB",
+   "id_format_ok": true,
+   "cve_year": 2015,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Multiple buffer overflows in the (1) png_set_PLTE and (2) png_get_PLTE functions in libpng before 1.0.64, 1.1.x and 1.2.x before 1.2.54, 1.3.x and 1.4.x before 1.4.17, 1.5.x before 1.5.24, and 1.6.x before 1.6.19 allow remote attackers to cause a denial of service (application crash) or possibly have unspecified other impact via a small bit-depth value in an IHDR (aka image header) chunk in a PNG image.",
+   "published": "2015-11-13T03:59:05.917",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0588,
+    "shared": [
+     "chunk",
+     "png"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "buffer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G058",
+   "file": "sample_G058.json",
+   "defect_type": "division_by_zero",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2018-13785",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-13785",
+   "project": "libpng",
+   "commit": "",
+   "simplification": "剥离 PNG 解码器，保留官方公告描述的『row_factor 错误计算导致整数溢出与除零』核心缺陷（使用与原始 pngrutil.c 相同的 row_factor 公式）",
+   "trigger_condition": "IHDR 高度 h=0x7FFFFFFC，row_factor 公式中 h+7 有符号溢出",
+   "id_format_ok": true,
+   "cve_year": 2018,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "In libpng 1.6.34, a wrong calculation of row_factor in the png_check_chunk_length function (pngrutil.c) may trigger an integer overflow and resultant divide-by-zero while processing a crafted PNG file, leading to a denial of service.",
+   "published": "2018-07-09T13:29:00.443",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.15,
+    "shared": [
+     "png",
+     "pngrutil",
+     "row_factor"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "divide-by-zero"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G059",
+   "file": "sample_G059.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2023-4863",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4863",
+   "project": "libwebp",
+   "commit": "",
+   "simplification": "剥离 WebP VP8L 解码器，保留 Huffman 表构建『码长分布合法性未校验 → 表项写入越过分配大小』核心缺陷（与原始 BuildHuffmanTable 填表逻辑同构）",
+   "trigger_condition": "crafted 码长分布: 5 个长度为 2 的码 → 需写 20 项 > 分配的 16 项表",
+   "id_format_ok": true,
+   "cve_year": 2023,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Heap buffer overflow in libwebp in Google Chrome prior to 116.0.5845.187 and libwebp 1.3.2 allowed a remote attacker to perform an out of bounds memory write via a crafted HTML page. (Chromium security severity: Critical)",
+   "published": "2023-09-12T15:15:24.327",
+   "vuln_status": "Analyzed",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "heap buffer overflow",
+     "buffer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G062",
+   "file": "sample_G062.json",
+   "defect_type": "use_after_free",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2016-4658",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-4658",
+   "project": "libxml2",
+   "commit": "",
+   "simplification": "剥离 libxml2 XPointer 解析器，保留『namespace 节点进入 range 后被释放又复用』核心缺陷",
+   "trigger_condition": "XPointer range 含 namespace 节点，节点被释放后仍保留在结果集并被访问",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "xpointer.c in libxml2 before 2.9.5 (as used in Apple iOS before 10, OS X before 10.12, tvOS before 10, and watchOS before 3, and other products) does not forbid namespace nodes in XPointer ranges, which allows remote attackers to execute arbitrary code or cause a denial of service (use-after-free and memory corruption) via a crafted XML document.",
+   "published": "2016-09-25T10:59:02.343",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.1071,
+    "shared": [
+     "libxml2",
+     "namespace",
+     "xpointer"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "use-after-free"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G063",
+   "file": "sample_G063.json",
+   "defect_type": "stack_overflow_write",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2017-9047",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-9047",
+   "project": "libxml2",
+   "commit": "",
+   "simplification": "剥离 libxml2 校验器，保留『len=strlen(buf) 后第二次追加分支未按剩余空间收缩 size』核心缺陷（与 issue 中引用的 valid.c 逻辑同构）",
+   "trigger_condition": "元素内容名 60 字节 + 子内容再追加 → 第二次写入越过 64 字节缓冲",
+   "id_format_ok": true,
+   "cve_year": 2017,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A buffer overflow was discovered in libxml2 20904-GITv2.9.4-16-g0741801. The function xmlSnprintfElementContent in valid.c is supposed to recursively dump the element content definition into a char buffer 'buf' of size 'size'. The variable len is assigned strlen(buf). If the content->type is XML_ELEMENT_CONTENT_ELEMENT, then (i) the content->prefix is appended to buf (if it actually fits) whereupon (ii) content->name is written to the buffer. However, the check for whether the content->name actually fits also uses 'len' rather than the updated buffer length strlen(buf). This allows us to write about \"size\" many bytes beyond the allocated memory. This vulnerability causes programs that use libxml2, such as PHP, to crash.",
+   "published": "2017-05-18T06:29:00.403",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 6,
+    "jaccard": 0.1132,
+    "shared": [
+     "buf",
+     "len",
+     "libxml2",
+     "size",
+     "strlen",
+     "valid"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "buffer overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G064",
+   "file": "sample_G064.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2021-23017",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-23017",
+   "project": "nginx",
+   "commit": "",
+   "simplification": "剥离 nginx DNS 解析器与网络层，保留『名字解压时 '.' 偏移差一 → 1 字节越界写』核心缺陷（与官方描述 CWE-193 off-by-one 一致）",
+   "trigger_condition": "crafted DNS 名总长恰等于目的缓冲大小 → 终止符写到 dst[cap]",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A security issue in nginx resolver was identified, which might allow an attacker who is able to forge UDP packets from the DNS server to cause 1-byte memory overwrite, resulting in worker process crash or potential other impact.",
+   "published": "2021-06-01T13:15:07.853",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0667,
+    "shared": [
+     "dns",
+     "nginx"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "overwrite"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G065",
+   "file": "sample_G065.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2019-11034",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11034",
+   "project": "php",
+   "commit": "",
+   "simplification": "剥离 PHP EXIF 扩展，IFD 数据硬编码 100 字节，保留『value_offset+byte_count 未按文件大小校验』核心缺陷",
+   "trigger_condition": "IFD 条目 value_offset=90、byte_count=64，文件缓冲仅 100 字节 → 读越界 54 字节",
+   "id_format_ok": true,
+   "cve_year": 2019,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When processing certain files, PHP EXIF extension in versions 7.1.x below 7.1.28, 7.2.x below 7.2.17 and 7.3.x below 7.3.4 can be caused to read past allocated buffer in exif_process_IFD_TAG function. This may lead to information disclosure or crash.",
+   "published": "2019-04-18T17:29:00.883",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0909,
+    "shared": [
+     "exif",
+     "php"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "read past"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G066",
+   "file": "sample_G066.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2019-11036",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11036",
+   "project": "php",
+   "commit": "",
+   "simplification": "剥离 PHP EXIF 扩展，保留『components 计数参与偏移计算且未按文件大小校验』核心缺陷（与 11034 同函数不同触发路径）",
+   "trigger_condition": "IFD 条目 components=100000 → 偏移 8+200000 远超 64 字节缓冲 → 野指针读",
+   "id_format_ok": true,
+   "cve_year": 2019,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "When processing certain files, PHP EXIF extension in versions 7.1.x below 7.1.29, 7.2.x below 7.2.18 and 7.3.x below 7.3.5 can be caused to read past allocated buffer in exif_process_IFD_TAG function. This may lead to information disclosure or crash.",
+   "published": "2019-05-03T20:29:00.357",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.1,
+    "shared": [
+     "exif",
+     "php"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "read past"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G068",
+   "file": "sample_G068.json",
+   "defect_type": "info_leak",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2016-0777",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0777",
+   "project": "openssh",
+   "commit": "",
+   "simplification": "剥离 roaming 协议层，保留『服务器请求重传时按整个缓冲区而非剩余未确认字节发送』核心缺陷",
+   "trigger_condition": "服务器请求重传：应只发 offset 之后的 16 字节，实际把含私钥残留的整个 64 字节缓冲发出",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The resend_bytes function in roaming_common.c in the client in OpenSSH 5.x, 6.x, and 7.x before 7.1p2 allows remote servers to obtain sensitive information from process memory by requesting transmission of an entire buffer, as demonstrated by reading a private key.",
+   "published": "2016-01-14T22:59:01.140",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "sensitive information"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G072",
+   "file": "sample_G072.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "cve",
+   "src_id": "CVE-2021-3156",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3156",
+   "project": "sudo",
+   "commit": "",
+   "simplification": "剥离 sudo 命令行解析，保留『user_args 按原始长度分配、转义拷贝时反斜杠翻倍』核心缺陷（与原始 set_cmnd 循环同构）",
+   "trigger_condition": "sudoedit -s 参数含 100 个反斜杠：分配按 strlen+1，写入时每个反斜杠占 2 槽 → 溢出",
+   "id_format_ok": true,
+   "cve_year": 2021,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "Sudo before 1.9.5p2 contains an off-by-one error that can result in a heap-based buffer overflow, which allows privilege escalation to root via \"sudoedit -s\" and a command-line argument that ends with a single backslash character.",
+   "published": "2021-01-26T21:15:12.987",
+   "vuln_status": "Analyzed",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0417,
+    "shared": [
+     "sudo"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "heap-based buffer overflow",
+     "buffer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G074",
+   "file": "sample_G074.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2014-6271",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-6271",
+   "project": "bash",
+   "commit": "",
+   "simplification": "剥离 bash 词法/执行主体，以等价导入解析器镜像『函数定义之后的尾随字符串被继续执行』核心缺陷",
+   "trigger_condition": "环境变量值 '() { :; }; echo pwned' → 尾随 'echo pwned' 被当作命令执行",
+   "id_format_ok": true,
+   "cve_year": 2014,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "GNU Bash through 4.3 processes trailing strings after function definitions in the values of environment variables, which allows remote attackers to execute arbitrary code via a crafted environment, as demonstrated by vectors involving the ForceCommand feature in OpenSSH sshd, the mod_cgi and mod_cgid modules in the Apache HTTP Server, scripts executed by unspecified DHCP clients, and other situations in which setting the environment occurs across a privilege boundary from Bash execution, aka \"ShellShock.\"  NOTE: the original fix for this issue was incorrect; CVE-2014-7169 has been assigned to cover the vulnerability that is still present after the incorrect fix.",
+   "published": "2014-09-24T18:48:04.477",
+   "vuln_status": "Analyzed",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0169,
+    "shared": [
+     "bash"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "incorrect"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G075",
+   "file": "sample_G075.json",
+   "defect_type": "state_machine",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2018-10933",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10933",
+   "project": "libssh",
+   "commit": "",
+   "simplification": "剥离 libssh 分组加密/传输层，以等价服务端状态机镜像『未认证即可处理 CHANNEL_OPEN』核心缺陷",
+   "trigger_condition": "认证完成前客户端发送 SSH_MSG_CHANNEL_OPEN(90) → 通道被创建",
+   "id_format_ok": true,
+   "cve_year": 2018,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "A vulnerability was found in libssh's server-side state machine before versions 0.7.6 and 0.8.4. A malicious client could create channels without first performing authentication, resulting in unauthorized access.",
+   "published": "2018-10-17T12:29:00.650",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0476,
+    "shared": [
+     "libssh"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "state"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G076",
+   "file": "sample_G076.json",
+   "defect_type": "state_machine",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2023-48795",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2023-48795",
+   "project": "openssh",
+   "commit": "",
+   "simplification": "剥离 SSH 二进制分组层，以等价序号/前缀校验状态机镜像『非预期包推进序号使 EXT_INFO 前缀校验失效』核心缺陷",
+   "trigger_condition": "MITM 注入额外 KEXINIT 包后转发被截断的协商 → 客户端认为 EXT_INFO 完整到达",
+   "id_format_ok": true,
+   "cve_year": 2023,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "The SSH transport protocol with certain OpenSSH extensions, found in OpenSSH before 9.6 and other products, allows remote attackers to bypass integrity checks such that some packets are omitted (from the extension negotiation message), and a client and server may consequently end up with a connection for which some security features have been downgraded or disabled, aka a Terrapin attack. This occurs because the SSH Binary Packet Protocol (BPP), implemented by these extensions, mishandles the handshake phase and mishandles use of sequence numbers. For example, there is an effective attack against SSH's use of ChaCha20-Poly1305 (and CBC with Encrypt-then-MAC). The bypass occurs in chacha20-poly1305@openssh.com and (if CBC is used) the -etm@openssh.com MAC algorithms. This also affects Maverick Synergy Java SSH API before 3.1.0-SNAPSHOT, Dropbear through 2022.83, Ssh before 5.1.1 in Erlang/OTP, PuTTY before 0.80, AsyncSSH before 2.14.2, golang.org/x/crypto before 0.17.0, libssh before 0.10.6, libssh2 through 1.11.0, Thorn Tech SFTP Gateway before 3.4.6, Tera Term before 5.1, Paramiko before 3.4.0, jsch before 0.2.15, SFTPGo before 2.5.6, Netgate pfSense Plus through 23.09.1, Netgate ",
+   "published": "2023-12-18T16:15:10.897",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0112,
+    "shared": [
+     "ssh"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "handshake",
+     "protocol"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G077",
+   "file": "sample_G077.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2016-5385",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5385",
+   "project": "php",
+   "commit": "",
+   "simplification": "剥离 CGI 层与 HTTP 客户端，保留『HTTP_PROXY 环境变量来自客户端可注入的 Proxy 头且被直接信任』核心缺陷",
+   "trigger_condition": "客户端发送 Proxy: attacker.example 头 → CGI 环境出现 HTTP_PROXY → 出站请求被劫持",
+   "id_format_ok": true,
+   "cve_year": 2016,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "PHP through 7.0.8 does not attempt to address RFC 3875 section 4.1.18 namespace conflicts and therefore does not protect applications from the presence of untrusted client data in the HTTP_PROXY environment variable, which might allow remote attackers to redirect an application's outbound HTTP traffic to an arbitrary proxy server via a crafted Proxy header in an HTTP request, as demonstrated by (1) an application that makes a getenv('HTTP_PROXY') call or (2) a CGI configuration of PHP, aka an \"httpoxy\" issue.",
+   "published": "2016-07-19T02:00:17.773",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 4,
+    "jaccard": 0.0952,
+    "shared": [
+     "cgi",
+     "http",
+     "http_proxy",
+     "proxy"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "does not"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G087",
+   "file": "sample_G087.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "cve",
+   "src_id": "CVE-2022-2097",
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-2097",
+   "project": "openssl",
+   "commit": "",
+   "simplification": "剥离 OCB 主体，按 CVE 描述（部分数据未被加密）保留『非完整块尾部未加密』核心缺陷",
+   "trigger_condition": "20 字节输入: 前 16 字节加密, 尾部 4 字节明文残留",
+   "id_format_ok": true,
+   "cve_year": 2022,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": 1,
+   "official_desc": "AES OCB mode for 32-bit x86 platforms using the AES-NI assembly optimised implementation will not encrypt the entirety of the data under some circumstances. This could reveal sixteen bytes of data that was preexisting in the memory that wasn't written. In the special case of \"in place\" encryption, sixteen bytes of the plaintext would be revealed. Since OpenSSL does not support OCB based cipher suites for TLS and DTLS, they are both unaffected. Fixed in OpenSSL 3.0.5 (Affected 3.0.0-3.0.4). Fixed in OpenSSL 1.1.1q (Affected 1.1.1-1.1.1p).",
+   "published": "2022-07-05T11:15:08.340",
+   "vuln_status": "Modified",
+   "state": null,
+   "created_at": null,
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 1,
+    "jaccard": 0.0233,
+    "shared": [
+     "ocb"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "does not"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G090",
+   "file": "sample_G090.json",
+   "defect_type": "heap_underflow",
+   "expected_verdict": "catch",
+   "src_type": "github_issue",
+   "src_id": "nlohmann/json#5647",
+   "url": "https://github.com/nlohmann/json/issues/5647",
+   "project": "nlohmann/json",
+   "commit": "",
+   "simplification": "剥离 JSON 库类型层，用 vector<int> 数组镜像 issue 中引用的 operator[] 代码路径（resize(idx+1) 回绕 + operator[](SIZE_MAX) 前向越界写）",
+   "trigger_condition": "operator[](SIZE_MAX)：idx+1 回绕为 0 → resize(0) 清空数组 → v[SIZE_MAX] 写到缓冲区之前 1 元素",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "operator[](size_type) with SIZE_MAX empties the array and writes out of bounds :: ### Description\n\nThe non-const `operator[](size_type idx)` clears the array and then writes before the start of its buffer when `idx` is the largest `size_type` value. This index is easy to produce by accident, for example `j[v.size() - 1]` with an empty `v`.\n\n[`include/nlohmann/json.hpp#L2838`](https://github.com/nlohmann/json/blob/633de8e44bbbc29383d72f8c920343ea5d1eaa21/include/nlohmann/json.hpp#L2838):\n\n```cpp\nif (idx >= m_data.m_value.array->size())\n{\n    ...\n    m_data.m_value.array->resize(idx + 1);   // idx + 1 wraps to 0 for idx == SIZE_MAX\n    ...\n}\nreturn m_data.m_value.array->operator[](idx);   // out of bounds on the now empty vector\n```\n\nFor `idx == SIZE_MAX`, `idx + 1` is `0`, so `resize(0)` erases all elements, and `operator[](SIZE_MAX)` then addresses `begin() + SIZE_MAX`, which is one element *before* the buffer. The assignment writes there. In an optimized build without sanitizers this silently empties the array and corrupts the heap. For every other too-large index (for example `SIZE_MAX - 1`), `resize()` throws `std::length_error` and the array stays unchanged.\n\nThe [`operator[]` ",
+   "published": null,
+   "vuln_status": null,
+   "state": "closed",
+   "created_at": "2026-09-29T17:52:28Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 6,
+    "jaccard": 0.087,
+    "shared": [
+     "idx",
+     "json",
+     "operator",
+     "resize",
+     "size_max",
+     "vector"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "out of bounds",
+     "buffer"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G093",
+   "file": "sample_G093.json",
+   "defect_type": "heap_overflow",
+   "expected_verdict": "catch",
+   "src_type": "github_issue",
+   "src_id": "leethomason/tinyxml2#1065",
+   "url": "https://github.com/leethomason/tinyxml2/issues/1065",
+   "project": "tinyxml2",
+   "commit": "",
+   "simplification": "按 issue 中引用的原始代码（DynArray<T,INITIAL_SIZE>::EnsureCapacity: cap*2 无运行时保护 + memcpy）直接镜像，只剥离 XML 解析层",
+   "trigger_condition": "EnsureCapacity(cap=2^63/T)：cap*2 溢出 → 分配极小 → memcpy 大尺寸 → 堆越界写",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "Security: Integer Overflow and Heap Buffer Overflow in DynArray::EnsureCapacity :: Description:\nI am developing a static analysis engine called Lumos, based on the Z3 theorem prover. It flagged a potential security vulnerability in tinyxml2.h.\nLocation:\nIn DynArray<T, INITIAL_SIZE>::EnsureCapacity(size_t cap) (around line 450-470).\nThe Problem:\nThe code calculates new allocation size as follows:\ncpp\nconst size_t newAllocated = cap * 2;\n\nThe safety of this operation is only guarded by:\ncpp\nTIXMLASSERT( cap <= SIZE_MAX / 2 / sizeof(T));\n\nSince TIXMLASSERT is removed in Release builds, there is no runtime protection. If cap is large enough (e.g., via a specially crafted XML), newAllocated will overflow, leading to:\nA very small memory allocation.\nA large memcpy operation into that small buffer:\nmemcpy( newMem, _mem, sizeof(T) * _size );\nThis results in a Heap Buffer Overflow.\nSuggested Fix:\nAdd a runtime check that persists in release builds:\ncpp\nif (cap > SIZE_MAX / 2 / sizeof(T)) {\n    // Return error or handle gracefully\n}",
+   "published": null,
+   "vuln_status": null,
+   "state": "open",
+   "created_at": "2026-02-15T17:10:49Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 6,
+    "jaccard": 0.08,
+    "shared": [
+     "cap",
+     "dynarray",
+     "ensurecapacity",
+     "initial_size",
+     "memcpy",
+     "xml"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "heap buffer overflow",
+     "buffer overflow",
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G094",
+   "file": "sample_G094.json",
+   "defect_type": "global_overflow",
+   "expected_verdict": "catch",
+   "src_type": "github_issue",
+   "src_id": "leethomason/tinyxml2#923",
+   "url": "https://github.com/leethomason/tinyxml2/issues/923",
+   "project": "tinyxml2",
+   "commit": "",
+   "simplification": "按 issue 引用的原始代码路径直接镜像（_errorNames 数组 19 项, errorID 可达 XML_ERROR_COUNT=19 → _errorNames[errorID] 越界读）",
+   "trigger_condition": "errorID == XML_ERROR_COUNT(19)：_errorNames[19] 越过 19 元素全局数组",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "ERROR: AddressSanitizer: global-buffer-overflow in function ErrorIDToName :: Instrument [Futag](https://github.com/ispras/Futag) found this error with [tinyxml2 version 9.0.0 ](https://github.com/leethomason/tinyxml2/archive/refs/tags/9.0.0.tar.gz) and in current version.\r\n\r\nhttps://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.cpp#L2501-L2507\r\n\r\n**errorID** is a variable of XMLError type, which can receive value from XML_SUCCESS (0) to XML_ERROR_COUNT (19)\r\nhttps://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.h#L523-L545\r\n\r\nThe _errorNames array has 19 elements (from 0 to 18) and was defined here:\r\nhttps://github.com/leethomason/tinyxml2/blob/e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a/tinyxml2.cpp#L2136-L2156\r\n\r\nSo, when  **errorID** gets XML_ERROR_COUNT  value, error occurs at instruction `const char* errorName = _errorNames[errorID]; ` \r\n\r\nThe generated fuzzing wrapper is attached below.\r\n[ErrorIDToName1.cpp.zip](https://github.com/leethomason/tinyxml2/files/9914409/ErrorIDToName1.cpp.zip)\r\n",
+   "published": null,
+   "vuln_status": null,
+   "state": "open",
+   "created_at": "2022-11-01T22:46:57Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.05,
+    "shared": [
+     "_errornames",
+     "errorid",
+     "xml_error_count"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "overflow",
+     "buffer"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G095",
+   "file": "sample_G095.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "github_issue",
+   "src_id": "leethomason/tinyxml2#728",
+   "url": "https://github.com/leethomason/tinyxml2/issues/728",
+   "project": "tinyxml2",
+   "commit": "",
+   "simplification": "剥离 XML 解析层，按 issue 报告的确切行为（输入 10000000000 → 返回 1410065408 而非错误/饱和）镜像无溢出检查的无符号解析",
+   "trigger_condition": "QueryUnsignedAttribute 解析 10000000000（超过 uint32 范围）→ 静默截断为 1410065408",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "Bad overflow management in QueryUnsignedAttribute :: When I try to parse 10 000 000 000 (hex : 2 540B E400) with QueryUnsignedAttribute I get 1 410 065 408 (hex : 540B E400).\r\n\r\nI was expecting 4 294 967 295 (hex : FFFF FFFF), max value for uint32_t (unsigned int) or better XML_ERROR.\r\n\r\nI think this is really dangerous, no ?\r\n\r\nNote : I work on a Linux Lubuntu 64 Bits / G++ compiler.\r\n\r\nThanks for all the work done on this beautiful library.",
+   "published": null,
+   "vuln_status": null,
+   "state": "open",
+   "created_at": "2018-12-20T09:35:48Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 0,
+    "jaccard": 0.0,
+    "shared": []
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "overflow"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G096",
+   "file": "sample_G096.json",
+   "defect_type": "heap_overread",
+   "expected_verdict": "catch",
+   "src_type": "github_issue",
+   "src_id": "open-source-parsers/jsoncpp#1682",
+   "url": "https://github.com/open-source-parsers/jsoncpp/issues/1682",
+   "project": "jsoncpp",
+   "commit": "",
+   "simplification": "剥离 jsoncpp Reader 全流程，按 issue『Root Cause』一节引用的 getLocationLineAndColumn 循环直接镜像（CR 为最后一个字节时无条件 peek *current）",
+   "trigger_condition": "输入以单个 CR(0x0d) 结尾且产生解析错误：错误定位循环在 current==end_ 后仍读 *current",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "Heap-Buffer-Overflow READ in jsoncpp `getLocationLineAndColumn` (CR at end of input) — reachable from openscreen Cast `ReceiverMessage` parser :: # Heap-Buffer-Overflow READ in jsoncpp `getLocationLineAndColumn` (CR at end of input) — reachable from openscreen Cast `ReceiverMessage` parser\n\n## Summary\n\n`Json::OurReader::getLocationLineAndColumn` at\n`third_party/jsoncpp/source/src/lib_json/json_reader.cpp:1820-1840`\nwalks the input buffer character-by-character to compute a `(line,\ncolumn)` pair for an error token. Inside the loop, when the current\nbyte is `\\r` (carriage return), the code unconditionally peeks at\n`*current` to check for a following `\\n` — without first re-testing\nthe `current != end_` loop guard. If the CR byte is the **last** byte\nof the input buffer, `current++` advances `current` to `end_`, and the\npeek at line 1828 reads one byte past the heap allocation.\n\nTrigger is a single attacker-supplied byte (`0x0d`) delivered to any\n`Json::CharReader::parse(begin, end, …)` call where the document\nends in CR and parsing produces at least one error (so\n`getFormattedErrorMessages` runs over the error list). On a bare CR\ninput, jsoncpp records a parse error whose token posit",
+   "published": null,
+   "vuln_status": null,
+   "state": "closed",
+   "created_at": "2026-04-30T15:18:08Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 4,
+    "jaccard": 0.0494,
+    "shared": [
+     "current",
+     "getlocationlineandcolumn",
+     "jsoncpp",
+     "peek"
+    ]
+   },
+   "concept": {
+    "verdict": "partial",
+    "hits": [
+     "overflow",
+     "buffer"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G097",
+   "file": "sample_G097.json",
+   "defect_type": "use_after_free",
+   "expected_verdict": "catch",
+   "src_type": "github_issue",
+   "src_id": "open-source-parsers/jsoncpp#1623",
+   "url": "https://github.com/open-source-parsers/jsoncpp/issues/1623",
+   "project": "jsoncpp",
+   "commit": "",
+   "simplification": "按 issue 中的 POC 代码直接镜像（Reader::parse 保存指向输入串的指针，输入串析构后 getFormattedErrorMessages 读回）",
+   "trigger_condition": "parse 失败保存指向 doc 的 token 指针，doc 析构后 getFormattedErrorMessages 读已释放内存",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "[bug] UAF via `parse` -> `getFormattedErrorMessages` :: Hi, there is a potential bug in `Json::Reader::parse` where it stores dangling pointers to the string, read back during `getFormattedErrorMessages`.\n\nThis bug was reproduced on https://github.com/open-source-parsers/jsoncpp/commit/ca98c98457b1163cca1f7d8db62827c115fec6d1.\n\n### Description\n\nWhen invoking `Reader::parse`, it may store dangling pointers into the provided input string. These strings can be read back, e.g. by `getFormattedErrorMessages` which will cause a UAF if the original string is deallocated or goes out of scope.\n\nCurrently `Reader::parse` doesn't mention this dependency on the lifetime of the string in its documentation, so it may be a bit of a footgun for users.\n\n### Patch Suggestions\n\n**Option 1: copy string**\nIf it's possible, you can copy either the whole input string or just the parts you need for error messages (rather than storing dangling pointers). For the latter choice, you only get additional runtime overhead in error cases (which might be acceptable).\n\n**Option 2: document**\nAlternatively, if option 1 is too cumbersome, you could simply document this dependency somewhere in `Reader::parse`, so its",
+   "published": null,
+   "vuln_status": null,
+   "state": "closed",
+   "created_at": "2025-10-29T13:16:24Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 3,
+    "jaccard": 0.037,
+    "shared": [
+     "getformattederrormessages",
+     "parse",
+     "reader"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "dangling pointer"
+    ]
+   }
+  },
+  {
+   "sample_id": "sample_G098",
+   "file": "sample_G098.json",
+   "defect_type": "logic_error",
+   "expected_verdict": "miss",
+   "src_type": "github_issue",
+   "src_id": "open-source-parsers/jsoncpp#1545",
+   "url": "https://github.com/open-source-parsers/jsoncpp/issues/1545",
+   "project": "jsoncpp",
+   "commit": "",
+   "simplification": "按 issue 报告的确切行为（[2^64, 2^64+2^11] 范围返回 0 而非抛异常）镜像经 double 转换的 uint64 解析路径",
+   "trigger_condition": "解析 18446744073709551616 (2^64)：double 往返精度丢失 + 越界 float→uint64 转换（x86 硬件产生不定值）",
+   "id_format_ok": true,
+   "api_status": "ok",
+   "api_http": 200,
+   "total_results": null,
+   "official_desc": "Uint64 overflow doesn't always throws exception  :: **Describe the bug**\r\nWhen trying to read values as uint64, for numbers that are in uint64 range are working properly. Numbers above range but between [2^64,2^64+2^11] return 0. Numbers above 2^64+2^11 throws an exception.\r\n\r\n**To Reproduce**\r\nCode for example:\r\n\r\n```\r\n#include <iostream>\r\n#include <jsoncpp/json/json.h>\r\n#include <jsoncpp/json/reader.h>\r\n#include <jsoncpp/json/value.h>\r\n\r\n\r\nint main() {\r\n    //std::string uint64Str = \"1234\"; // any number in range [0, 2**64-1] works correctly (prints uint64Str)\r\n    //std::string uint64Str = \"18446744073709551615\"; // any number in range [0, 2**64-1] works correctly, including 2**64-1 (prints uint64Str)\r\n    //std::string uint64Str = \"18446744073709551616\"; //max uint64 + 1 print 0\r\n    //std::string uint64Str = \"18446744073709551617\"; //max uint64 + 2 print 0\r\n    // ...\r\n    //std::string uint64Str = \"18446744073709553663\"; //max uint64 + 2048 print 0\r\n    //std::string uint64Str = \"18446744073709553664\"; //max uint64 + 2049 print 0\r\n    std::string uint64Str = \"18446744073709553665\"; //max uint64 + 2050 (or more) throws instance of 'Json::LogicError' what():  double out of UInt",
+   "published": null,
+   "vuln_status": null,
+   "state": "closed",
+   "created_at": "2024-07-02T14:09:26Z",
+   "api_error": null,
+   "url_status": 200,
+   "match": {
+    "overlap": 2,
+    "jaccard": 0.0408,
+    "shared": [
+     "double",
+     "uint64"
+    ]
+   },
+   "concept": {
+    "verdict": "match",
+    "hits": [
+     "logic"
+    ]
+   }
+  }
+ ]
+}
