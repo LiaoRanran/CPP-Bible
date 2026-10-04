@@ -12,11 +12,11 @@
 
 | 项 | 值 |
 |----|----|
-| **论文版本** | **v1.2 (677a)** |
-| **基于** | v1.1 (673c) 的全部数字 + **676m 数据修复（H1/H2/M1–M5）+ A5 重算** 的终修 |
-| **677a 性质** | **纯表述修订**（framing revision + engineering cleanup）。**不做新实验、不产生新数字、不改科学结论** |
-| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.2/677a） |
-| **中文对照稿** | `research/paper_shturl.md`（标题版本已同步为 v1.2 · 677a） |
+| **论文版本** | **v1.3 (677d)** |
+| **基于** | v1.2 (677a) 的表述修订 + **677b（clone-aware A5 + cluster bootstrap）+ 677c（非退化池 + 多 baseline + operator 算法化）的实验结果并入** |
+| **677d 性质** | **论文合并批次**（把已完成实验并入论文与投稿材料）：**不做新实验**、不重跑 detect、不改 677b/677c 产物；正文 ≤9 页、摘要 ≤250 词不变 |
+| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.3/677d） |
+| **中文对照稿** | `research/paper_shturl.md`（标题版本已同步为 v1.3 · 677d） |
 
 > **文件名为什么不改**：`queyi_neurips2027_v1.1.tex` 被 `build.ps1`、`arxiv_submission/`、
 > `tools/verify_paper_numbers.py` 等多个脚本硬引用。677a 只改**内部版本号**（文件头 + 正文），
@@ -34,6 +34,8 @@
 | 三臂对照 Δ（+80.5 / +45.3 / +73.2 / +40.6 pp）、精确 McNemar | **672h + 673u** | `data/current_numbers.json::comparisons` | `python tools/baseline_670a.py` |
 | 对照 FPR **0.0%** (0/11) | **673u** | `data/current_numbers.json` | 同上（`wunsequenced` 恒 catch 缺陷修复后重算） |
 | **A5 全量**：FD 54.6% vs Random 30.6%（Δ **+24.0pp**，CI [+20.5, +27.5]，p=2.3×10⁻⁴¹）／vs Static 24.7%（+29.9pp）；并列分析 Δ=**0.0pp**；n=566 | **676f**（经 **676m** 重算复核，主端点**逐位不变**） | `data/a5_676f_results.json`、`data/a5_676f_detection_matrix.json` | `python tools/...`（见 `data/676m_A5重算报告.md`） |
+| **A5 clone-aware 稳健性 + cluster bootstrap**：三种切分 Δ **+23.0~+26.7pp**（p ≤ 4.1×10⁻²⁹）；并列仍 −0.53~+0.00pp；**有效 n≈133–140（deff ≈4.05–4.26）**；Δ 的 CI 宽 **1.78–2.10×**；克隆泄漏量化（64.5% 评估样本有同族 sibling） | **677b** | `data/677b_a5_results_{family_random,family_stratified,strict_stratified}.json`、`data/677b_cluster_bootstrap.json`、`data/677b_clone_families.json` | `python tools/analyze_677b_clone_aware.py --stage all` |
+| **A5 非退化池 + 多 baseline + operator 算法化**：严格池 k=1/2/3 显著（最优 **+11.31pp**，p=6.02×10⁻⁸）；k=4 归零 = **选集碰撞 0.2**；退化贡献 **+24.03pp（单点）/+12.81pp（对均值）**；frequency≡fd；full vs fd_only 3/14 档（+1.41pp, p=0.302） | **677c** | `data/677c_a5_nondegenerate_results.json`、`data/677c_baseline_results.json`、`data/677c_evolution_operator_results.json` | `python tools/analyze_677c_nondegenerate.py --stage all` |
 | **盲区地图**：1147 × 8，catch 707 / miss 440 ⇒ 盲区 **38.4%**；**18/70** 类型 >50% 盲；6 资产并集 61.6% vs 最佳单资产 35.6% | **676g** | `data/blindspot_676g_stats.json` | `python data/blindspot_676g_analysis.py` |
 | **检测器深度 Benchmark**：asan 58.5% … linker 1.3%；8 资产并集 94.21%；穷举最佳 k=4 = 92.58% | **676l** | `data/676l_benchmark_results.json` | 见 `data/676l_检测器Benchmark总报告.md` |
 | **数据质量**：重复 0 / 近克隆 103 对 / 模板克隆率 62.2% / κ=0.77,0.69,0.71 / 编译抽检 217/217 / 真实来源 74/74 | **676k + 676m** | `data/676k_*.json`、`data/676m_sample_manifest_corrected.json` | 见 `data/676m_总报告.md` |
@@ -55,9 +57,9 @@
 
 | 文件 | 版本 | 状态 |
 |------|------|------|
-| `research/latex/queyi_neurips2027_v1.1.tex` | **v1.2 (677a)** | ✅ current |
-| `research/paper_shturl.md` | **v1.2 (677a)** | ✅ current（677a 已替换 675a 的 A5 旧数字 / 标注历史） |
-| `research/latex/queyi_neurips2027_v1.1.pdf` | v1.2 (677a) | ✅ 由 677a 重新编译 |
+| `research/latex/queyi_neurips2027_v1.1.tex` | **v1.3 (677d)** | ✅ current（677d 并入 677b/677c 结果；正文 8 页 + 参考文献起于第 9 页） |
+| `research/paper_shturl.md` | **v1.3 (677d)** | ✅ current（677d 已同步 A5 四条限制与 §7.6/§7.7/§9） |
+| `research/latex/queyi_neurips2027_v1.1.pdf` | v1.3 (677d) | ✅ 由 677d 重新编译 |
 | `research/latex/queyi_refs.bib` | 673c | ✅ current（677a **未新增引用**，避免未定义引用） |
 | `research/latex/neurips_2025.sty` | 2025（第三方） | ⚠️ **placeholder，禁止修改**；2027 CFP 发布后迁移 |
 
@@ -65,14 +67,14 @@
 
 | 文件 | 版本 | 状态 |
 |------|------|------|
-| `research/cover_letter.md` | **v1.2 (677a)**（原 676j） | ✅ current（E&D 命名 + 双盲政策已更新） |
-| `research/latex/cover_letter.tex` | **v1.2 (677a)** | ✅ current（与 md 孪生版同步） |
-| `research/rebuttal_prep.md` | **v1.2 (677a)**（原 676j） | ✅ current（A5 旧数字已标注 superseded） |
-| `research/response_template.md` | **v1.2 (677a)**（原 676f） | ✅ current（盲区 18/70 已对齐、e-value 标注 exploratory） |
-| `research/latex/response_template.tex` | **v1.2 (677a)** | ✅ current（677a 续批按 `response_template.md` 重写；原为 v0.x 旧稿） |
+| `research/cover_letter.md` | **v1.3 (677d)**（原 677a） | ✅ current（E&D 命名 + 双盲政策 + 677b/677c 结果已并入） |
+| `research/latex/cover_letter.tex` | **v1.3 (677d)** | ✅ current（与 md 孪生版同步） |
+| `research/rebuttal_prep.md` | **v1.3 (677d)**（原 677a） | ✅ current（新增 0bis-2 与 Q16–Q18：有效样本量 / 退化资产 / 模板泄漏） |
+| `research/response_template.md` | **v1.3 (677d)**（原 677a） | ✅ current（A5 段并入 677b/677c，孪生 tex 已同步） |
+| `research/latex/response_template.tex` | **v1.3 (677d)** | ✅ current（与 md 孪生版逐条对齐） |
 | `research/submission_checklist.md` | 673k + **677a 政策横幅** | ⚠️ 历史清单（产物指向 v1.0 时代）；D&B 政策已标注过时 |
-| `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` | **v1.2 (677a)** | ✅ current（v1.1 tex 的逐字节拷贝，677a 续批已同步） |
-| `research/latex/arxiv_submission/README.txt` | **v1.2 (677a)** | ✅ current（677a repack 记录；676m 记录标 superseded） |
+| `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` | **v1.3 (677d)** | ✅ current（v1.1 tex 的逐字节拷贝，677d 已同步） |
+| `research/latex/arxiv_submission/README.txt` | **v1.3 (677d)** | ✅ current（677d repack 记录；677a/676m 记录标 superseded） |
 | `research/latex/queyi_neurips2027.tex` | 旧 canonical（build.ps1 引用） | 🔴 **未同步**（与 v1.1 差 ~1900 行，非逐字节拷贝；需专门决定命运） |
 
 ### 3.3 数据与规范
@@ -83,6 +85,8 @@
 | `data/holdout_expansion/DATASHEET.md` | **677a**（基于 676m） | ✅ current（Composition 明确三类 provenance） |
 | `data/current_numbers.json` | 672h | ✅ current |
 | `data/a5_676f_results.json` | 676f（676m 复核） | ✅ current |
+| `data/677b_clone_families.json`、`data/677b_split_*.json`、`data/677b_a5_results_*.json`、`data/677b_cluster_bootstrap.json` | **677b** | ✅ current（A5 稳健性/有效样本量的权威产物） |
+| `data/677c_a5_nondegenerate_results.json`、`data/677c_baseline_results.json`、`data/677c_evolution_operator_results.json`、`data/677c_asset_pools.json` | **677c** | ✅ current（非退化池/多 baseline/operator 的权威产物） |
 | `data/blindspot_676g_stats.json` | 676g | ✅ current |
 
 ### 3.4 Superseded（保留但不引用）
@@ -133,9 +137,25 @@
 | **677c**（非退化池 + 多 Baseline + Evolution Operator） | **已提交**（`f2a4c442`），仅新增 `data/677c_*` 与 `tools/*_677c*.py` | 无：与 677a 的文件**零交集**（已核 `git show --name-only`） |
 | **677b**（clone-family-aware A5 + cluster bootstrap） | **已提交**（`92482d4f` + `3e6e6044` 回填），仅新增 `data/677b_*` 与 `tools/analyze_677b_clone_aware.py` | 无：与 677a 的文件**零交集**；其主端点稳健、并列仍归零、有效样本量 ≈133–140 |
 
-> ⚠️ **677b/677c 的实验数字尚未并入论文**：`VERSION.md` §2 的数字来源表仍以 672h/673u/676f/676g/676l/676m 为准。
-> 677b/677c 的结果若进入正文，需由后续"论文更新"批次同时更新本文件、论文、cover letter 与数据卡——
-> **不得只改论文**（这正是 677a 要消灭的版本分裂）。677b 已给出 `data/677b_论文更新建议.md`，可直接作为该批次的输入。
+> ✅ **677b/677c 的实验数字已由 677d 并入论文**（2026-10-04）：本文件、英文稿、中文稿、cover letter、
+> rebuttal_prep、response_template（.md/.tex）、arXiv 包**同时更新**——按 677a 的纪律，**不存在"只改论文"的版本分裂**。
+
+## 5ter. 677d 变更清单（v1.2 → v1.3，全部为"并入既有实验结果"，无新实验）
+
+| # | 文件 | 变更 |
+|---|---|---|
+| 1 | `research/latex/queyi_neurips2027_v1.1.tex` | 文件头版本行 → v1.3 (677d)；**主文**：E4 段 + 稳健性句（clone-aware +23.0~+26.7pp / 有效 n≈133–140 / 非退化池 k≤3 +11.31pp、k=4 选集碰撞）、Analysis(5)、Threats（effective sample size + degenerate 贡献 +12pp）、Conclusion（"中心结果 = 方向性：选择效应 ≈+7~12pp"）、方法 §Failure-driven loop 指向可执行 $E$、Future work (iii) 改写；**附录**：新增 **`Clone-aware re-split and cluster bootstrap (677b)`** 与 **`Non-degenerate pools, baselines and an executable operator (677c)`** 两段、app:formal 新增 **`Evolution operator: executable form (677c)`**（score 四分量 + 两处坍缩披露 + 3/14 不显著）、Power 段与威胁附录补有效样本量、Claims 表两行补证据 |
+| 2 | `research/paper_shturl.md` | 标题 → v1.3 · 677d；新增"本稿说明（677d）"块；§5.1.1 克隆率限定由"只披露"升级为"已控制 + 有效 n 已量化"；§5.3/§6.2 表与四条限制（原三条 + 新增 ④ 克隆泄漏已排除）；§6.2 本节性质；§7.6 实际读到的结果与红线；§7.7/§7.9/§9 证据边界与未来工作 |
+| 3 | `research/cover_letter.md` / `research/latex/cover_letter.tex` | 贡献 3 改"full-scale falsification experiment, **with its robustness measured**"（+23.0~+26.7pp / 有效 n≈133–140 / 选择效应 ≈+7–12pp）；局限段补有效 n；数字基线加 677b/677c 权威产物；版本号 → v1.3 |
+| 4 | `research/rebuttal_prep.md` | 新增 **0bis-2（677d 态势表）**；Q1 补"**What 677b/677c add**"整段与路线图；新增 **Q16（有效样本量）/ Q17（退化资产与选集碰撞）/ Q18（模板泄漏）**；附录 A 弹药库更新 |
+| 5 | `research/response_template.md` / `.tex` | 同步 A5 数字与两条新增复核（孪生版一致）；A5"on the core-mechanism falsification experiment"段与样本量段改写 |
+| 6 | `research/latex/arxiv_submission/` | 用新主 tex 覆盖（逐字节）+ README.txt 追加 677d repack 记录 |
+| 7 | `data/677d_合并计划.md` / `data/677d_论文合并报告.md` | 新增（本批计划与总报告） |
+
+**核心数字（v1.3 口径，"并排"是硬要求）**：
+`A5 主端点 +24.0pp（全池，k=4）` **必须与** `非退化池选择效应 ≈+7~12pp（k≤3 显著，k=4 为选集碰撞）` 同句出现；
+任何 A5 区间须注明 **有效 n≈133–140（deff ≈4.05–4.26）** 与 **1.78–2.10× 放宽**；
+`clone-aware 重切分后主端点与并列归零均不变` ⇒ **模板泄漏已排除**（不是"未检验"）。
 
 ## 6. 677a 的诚实边界
 

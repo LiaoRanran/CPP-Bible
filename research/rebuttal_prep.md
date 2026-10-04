@@ -21,12 +21,25 @@
 
 > **口径纪律不变**：A5 矩阵是 **1 回合**、头条率 82.9%/62.5% 是 **3 回合（任一回合 catch ⇒ catch）**，两套数字**不得相减或比较**。下方 §1 表中标注「**⚠️ 已被 676f 取代**」的行仅作审计轨迹保留（**引用 A5 一律以 0bis 与 Q1 为准**）。
 
+## 0bis-2 · 态势更新（677d，2026-10-04）——677b/677c 并入后引用 A5 前必读
+
+| 项目 | **677d 现值（677b/677c 复核后）** | 出处 |
+|---|---|---|
+| clone-aware 稳健性（677b） | 1137 样本 → **474 个全对凝聚家族 / 420 个连通分量**；strict 变体**克隆对跨 split = 0**；原 split 泄漏：**147/474 家族跨 split、64.5%（365/566）评估样本在派生侧有同族 sibling、1553/3124 对判克隆跨 split** | `data/677b_clone_aware_A5总报告.md` |
+| clone-aware 重算 | 主端点 **+26.71 / +23.02 / +25.70pp**（三种切分），并列 k=4 **+0.00 / −0.53 / +0.00pp** ⇒ **不是泄漏的产物** | `data/677b_a5_comparison_table.md` |
+| **有效样本量（关键新增）** | 家族级 cluster bootstrap（2000 次）：**设计效应 ≈4.05–4.26 ⇒ 有效 n≈133–140**（名义 566）；Δ 的 cluster CI **[+16.6,+30.4] / [+18.3,+33.4]pp**（宽度 **1.78–2.10×** 普通 CI，均不含 0）；full-refit（随机臂抽样也计入）下 **Δ≤0 比例 2.2–3.0%** | `data/677b_cluster_bootstrap.json`、`data/677b_ci_comparison.md` |
+| 非退化池（677c） | Pool A（5 资产，≥5% catch 且 unknown<30%）：**k=1/2/3 显著**（k=1 **+11.31pp**，p=6.02×10⁻⁸；对 2000 次均值 +12.26pp；k=2/3 +7.42pp）；**k=4 Δ=0 是选集碰撞（1/C(5,4)=0.2）**；该池 `uninterpretable` **不触发**（Pool B/C 含 `linker` 仍触发） | `data/677c_a5_comparison.md` |
+| 退化资产贡献 | k=4 主预算：**+24.03pp（单点）/ +12.81pp（对均值）** ⇒ **机制层面选择效应 ≈+7~12pp** | `data/677c_a5_comparison.md` §4 |
+| Evolution operator | `score=w1·failure+w2·novel−w3·cost−w4·redundancy`，`a*=argmax`；**literal novel≡failure**、**frequency≡FD**（均为规格/实现的已知坍缩）；full 优于 676f FD 的档位 **3/14**（k=4 最好 +1.41pp，p=0.302 **不显著**） | `data/677c_operator_design_report.md` |
+
+> **答询纪律（677d）**：① 主端点**必须与"非退化池 Δ"并排报**（+24.0pp 与 +7~12pp 同时出现）；② 引用任何 A5 区间都要说明**已按有效 n≈133–140 放宽 ~2×**；③ **k=|A|−1 的 0 是选集碰撞**（概率 1/C(5,4)），**不是机制反证**；④ **仍不得写 "FD > Random"**。
+
 ## 0 · 使用纪律（三步走）
 
 1. **三段式**：每问都写成 `Concede（承认点） / Already addressed（已做修订） / Plan（未来工作）`。英文段落可直接粘贴进 rebuttal；中文是策略提示，不投出去。
 2. **数字只能来自 artifact**：rebuttal 引入的每个数字都必须可回溯到仓库产物（`current_numbers.json` / `reveal_update_672h.json` / **`a5_676f_results.json`**（取代 `a5_673p.json`）/ `data/blindspot_676g_stats.json` / `data/673r_A5实验报告.md`）。红线：**不把未做的实验写成已做**，也**不把已被推翻的旧数字继续当弹药**。
 3. **诚实优先**：凡是论文已自认的缺口（标签零复核、scope 0/26、历史钉定不完整）**以及新出现的受限结果**（A5 主端点显著**但**触发预注册 `uninterpretable`、效应落在池构成层面），rebuttal 一律先说"我们同意 / 我们主动登记"，再给已落地修订，最后给路线图——**不要辩护式反驳**。评审对"承认 + 已修 + 路线"的接受度远高于"辩解"。
-4. **态势会随并行批次变化（本批已发生三次）**：本仓库多 Agent 并行。**673r 在预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"；随后 **673u 修掉 `wunsequenced` 恒 catch**，又把 A5 变成"**主端点显著但触发 `uninterpretable`**"；**676f 把 A5 扩到全量池（1137 样本 / 评估 566）**，主端点以 p≈10⁻⁴¹ 显著、幅度回归 +24.0pp、并列分析仍归零，并首次钉住选择效应 ≈+7~11pp。Q1、附录 A 与「0bis 态势更新」已按**最新产物**重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
+4. **态势会随并行批次变化（本批已发生四次）**：本仓库多 Agent 并行。**673r 在预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"；随后 **673u 修掉 `wunsequenced` 恒 catch**，又把 A5 变成"**主端点显著但触发 `uninterpretable`**"；**676f 把 A5 扩到全量池（1137 样本 / 评估 566）**，主端点以 p≈10⁻⁴¹ 显著、幅度回归 +24.0pp、并列分析仍归零；**677b/677c（677d 并入论文）**进一步排除克隆家族泄漏（clone-aware 后 +23.0~+26.7pp 不变）、给出 **有效 n≈133–140**，并把选择效应钉在 **≈+7~12pp**（非退化池 k≤3 显著、k=4 为选集碰撞）。Q1、附录 A 与「0bis / 0bis-2 态势更新」已按**最新产物**重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
 
 ## 1 · 评审已知事实（写 rebuttal 时的事实底座）
 
@@ -60,17 +73,19 @@
 
 ## Q1 · "核心主张（failure-driven 优于同预算随机）检验了吗？结果如何？"
 
-> **态势已变三次，以最新为准（2026-10-04，676f）**：A5 **已在全量样本上重跑**——**1137 样本 × 8 资产 = 9096 次真实 `detect`**（派生 571 / 评估 566，k=4）。主端点 **Δ(FD−Random) = +24.03pp**（p=2.3×10⁻⁴¹，CI [+20.51, +27.55]，b=136/c=0），但**预注册的并列分析仍在 k=4 上归零（Δ=0.00pp，p=1.0）** ⇒ 仍触发 `uninterpretable`，只能答"**方向证据，不是确认性结论**"。旧值（105 样本：holdout +55.0pp / corpus +43.8pp）**作废**（不同样本池，禁止相减）。**论文正文的 A5 段落须由 676h 按 `data/676f_论文更新位置清单.md` 整段改写**（不是换几个数）。
+> **态势已变四次，以最新为准（2026-10-04，677d = 676f + 677b + 677c）**：A5 **已在全量样本上重跑**——**1137 样本 × 8 资产 = 9096 次真实 `detect`**（派生 571 / 评估 566，k=4）。主端点 **Δ(FD−Random) = +24.03pp**（p=2.3×10⁻⁴¹，CI [+20.51, +27.55]，b=136/c=0），但**预注册的并列分析仍在 k=4 上归零（Δ=0.00pp，p=1.0）** ⇒ 仍触发 `uninterpretable`，只能答"**方向证据，不是确认性结论**"。旧值（105 样本：holdout +55.0pp / corpus +43.8pp）**作废**（不同样本池，禁止相减）。**论文正文的 A5 段落须由 676h 按 `data/676f_论文更新位置清单.md` 整段改写**（不是换几个数）。
 
 **Concede.** A5 has now run **at full scale**: **1137 samples × 8 assets = 9096 real `detect` calls** (one round; derivation 571 / evaluation 566), with failure-hits estimated *only* on the disjoint derivation split, so FD is a genuine predictor rather than a post-hoc accounting of its own catches. At the pre-registered budget $k{=}4$ over the full 8-asset pool: FD **54.59\% (309/566)** vs Random **30.57\% (173/566)** vs Static **24.74\% (140/566)**; **Δ(FD−Random) = +24.03pp, CI [+20.51, +27.55], exact McNemar p = 2.3×10⁻⁴¹** (b=136, c=0; h=0.49) and **Δ(FD−Static) = +29.86pp, p = 1.9×10⁻³¹** (h=0.62). FD strictly beats the single-seed draw in **97.6\%** of 2000 resamples. The expansion also **closes the old power gap**: $n{=}566$ far exceeds the $n{\approx}138$ paired requirement, so magnitudes are now readable — the +55/+44pp of the $n{=}20/16$ pilot regressed to **+24.0pp**, which is the expected effect-size shrinkage under a 10× larger sample, *not* a sign reversal (significance rose ~12 orders of magnitude).
 
 **Why it is still not a superiority claim (three limits, all written into the paper).** (i) **Pool composition, not selection.** The single-seed Random draw at $k{=}4$ is `{wunsequenced, cross-compile, tsan, compile-time}` — **two of its four slots are zero-information assets** (constant `unknown`; they catch nothing), while the failure-driven ranking avoids them by construction; in the **pre-registered parallel analysis** over the 5 non-degenerate candidates the $k{=}4$ Δ **collapses to 0.00pp (p = 1.0, b = c = 0)** — both arms select the *same* four assets — **triggering our pre-registered `uninterpretable` clause**. The +24pp therefore mostly says "don't waste budget on assets that cannot inform", which is weaker than "failure-driven selection is smarter". **However**, the parallel analysis *is* significantly positive at $k{=}1/2/3$ (**+11.31 / +7.42 / +7.42pp, p ≤ 7.7×10⁻⁵**), which for the first time **pins the selection effect at ≈ +7–11pp**: real, but small. (ii) **Instability.** Single-cell verdicts carry a measured **~5\%** run-to-run flip rate (369 clean re-tested cells → 18 flips; 3-round modal check on concurrent samples, 4/80 flipped at least once), so every one-round number is noisy. (iii) We therefore write **no** "FD > Random" sentence; the $k$-sweep stays exploratory (main pool Δ>0 with $p \le 1.7\times10^{-18}$ for $k{=}1..7$; $k{=}8$ is degenerate).
 
+**What 677b/677c add (2026-10-04; both already in the paper).** Two follow-up analyses close the two objections a referee is most likely to raise against the paragraph above. **(1) Template leakage (677b).** Our samples are not independent: normalized-structure hashing plus token-Jaccard ($\ge0.85$) and structural cosine ($\ge0.90$) group the 1137 samples into **474 template families** (420 connected components), and under the *original* split **64.5\% of evaluation samples (365/566) had a family sibling in the derivation split** (1553 of 3124 clone pairs crossed it). Re-splitting at the family level (three strategies, including the strict connected-component variant with **zero** clone pairs crossing) leaves the main endpoint **unchanged within noise** ($\Delta$ = **+26.71 / +23.02 / +25.70pp**, $p \le 4.1\times10^{-29}$) and the parallel analysis still $\approx 0$ ($+0.00/-0.53/+0.00$pp) — **so neither result is an artefact of leakage**. What it does change is the *interval*: resampling families (2000 replicates) gives a design effect of **≈4.05–4.26**, i.e. an **effective $n \approx 133$–$140$** rather than 566, and $\Delta$ cluster CIs of **[+16.6, +30.4]** and **[+18.3, +33.4]pp** (1.78–2.10× wider than the independent-sample CI, still excluding 0). With the random arm also re-drawn per replicate (full-refit), the lower bound reaches 0 ($\Delta \le 0$ in 2.2–3.0\% of replicates) — **which is exactly why we keep the claim directional**. **(2) Degenerate assets and set collision (677c).** On the strict non-degenerate pool (5 assets, **no** pre-registered degenerate asset) FD still beats Random at **$k = 1/2/3$** (best $k{=}1$: 33.04\% vs 21.73\%, $\Delta$ **+11.31pp**, $p{=}6.0\times10^{-8}$; **+12.26pp** against the 2000-draw mean; $+7.42$pp at $k{=}2/3$), while the $k{=}4$ zero is a **set collision** — both arms must draw the same four of five (probability $1/\binom54{=}0.2$) — **not evidence against the mechanism**; the pool's `uninterpretable` clause therefore does **not** trigger. Quantifying the composition share: the degenerate assets are worth **+24.03pp** of the single-point $\Delta$ at $k{=}4$ (**+12.81pp** against the mean), leaving an **isolated selection effect of ≈ +7–12pp**. Finally, making the evolution operator $E$ executable (score = $w_1$·failure $+ w_2$·novel $− w_3$·cost $− w_4$·redundancy) buys **falsifiability, not recall**: the full operator beats the 676f FD selection in only **3/14** (pool, $k$) tiers (best case $+1.41$pp, $p{=}0.302$, **not significant**), and we disclose two specification collapses (**novel ≡ failure** under the literal definition, **frequency ≡ FD**).
+
 **What changed, and why we report it as a strength rather than a patch.** The 673u fix turned `wunsequenced` from a *constant catch* (the hit predicate matched the option name inside MinGW's own "unrecognized option" error) into `unknown`; **the headline rates 82.9\% / 62.5\% are bit-identical before and after**, and the only other change is that the **control false-positive count drops from 2/11 to 0/11**. We publish the fix, its regression tests, and its consequences rather than silently repairing the table. **676f adds the ~5\% instability as a first-class limitation of the same kind** — measured, registered, and carried into the paper.
 
-**Roadmap.** (1) The power gap is **closed**; what remains is a **non-degenerate pool with $1 < k < |A|-1$** so the two arms can actually differ; (2) run A0–A4; (3) upgrade single-round cell verdicts to **multi-round modal** verdicts (the instability is now measured, not assumed); (4) keep the round caliber explicit: this matrix is **1 round** while the 82.9\%/62.5\% headline is **3 rounds (any-round catch ⇒ catch)**, so the two must **not** be subtracted or compared.
+**Roadmap.** (1) The power gap is **closed** and the non-degenerate pool **has now run** (677c: significant at $k\le3$, the $k{=}|A|{-}1$ zero is a set collision); what remains is (2) **A0–A4**; (3) upgrade single-round cell verdicts to **multi-round modal** verdicts (the instability is now measured, not assumed); (4) keep the round caliber explicit: this matrix is **1 round** while the 82.9\%/62.5\% headline is **3 rounds (any-round catch ⇒ catch)**, so the two must **not** be subtracted or compared; (5) report A5 intervals at the **cluster** width (effective $n\approx133$–$140$; 677b) from now on.
 
-> 中文要点：Q1 现在是"**全量重跑、主端点以 p≈10⁻⁴¹ 显著、但被自己的预注册条款降级为方向证据**"。答法四步：(1) 先亮全量数字（+24.03pp / 2.3e-41 / CI [+20.51,+27.55]，b=136/c=0；vs Static +29.86pp / 1.9e-31；2000 次里 97.6%）；(2) **主动交代池构成效应**——单点 Random 抽到 2 个零信息资产、并列分析 k=4 Δ 掉回 0.00pp 触发 `uninterpretable`，故**不宣称 superiority**；但并列 k=1~3 显著（+11.31/+7.42/+7.42pp）⇒ **首次钉住选择效应 ≈+7~11pp**；(3) 说明让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11→0/11），并主动登记 **~5% 跑间不稳定**；(4) 路线图 = 非退化池 1<k<|A|-1 + A0–A4 + 多回合众数。**全程不得出现 "FD > Random"。**
+> 中文要点：Q1 现在是"**全量重跑、主端点以 p≈10⁻⁴¹ 显著、但被自己的预注册条款降级为方向证据**"。答法五步：(1) 先亮全量数字（+24.03pp / 2.3e-41 / CI [+20.51,+27.55]，b=136/c=0；vs Static +29.86pp / 1.9e-31；2000 次里 97.6%）；(2) **主动交代池构成效应**——单点 Random 抽到 2 个零信息资产、并列分析 k=4 Δ 掉回 0.00pp 触发 `uninterpretable`，故**不宣称 superiority**；但**非退化池** k=1~3 显著（+11.31/+7.42/+7.42pp）⇒ 选择效应**≈+7~12pp**，且 k=4 的 0 是**选集碰撞**（1/C(5,4)=0.2）不是机制反证；(3) **主动交出代价**——clone-aware 重切分后主端点不变（泄漏已排除），但按家族 bootstrap 的**有效 n≈133–140**、区间 ×1.78–2.10（full-refit 下界贴 0）；(4) 说明让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11→0/11），并主动登记 **~5% 跑间不稳定**；(5) 路线图 = A0–A4 + 多回合众数。**全程不得出现 "FD > Random"。**
 
 ## Q2 · "82.9% 不是 blind：41 个 holdout 里只有 21 个是严格盲的。"
 
@@ -234,11 +249,41 @@
 
 > 中文要点：这一问测的是"你会不会把扩样当成绩"。答案必须是否定的，并且要展示"我们连 H4 失败都登记了"。这与 Q2 同源，但角度不同：Q2 问 blind，Q15 问"数字变大是否等于变强"。
 
+## Q16 · "有效样本量到底是多少？（样本是模板克隆，566 是虚的。）"
+
+**Concede.** 正确的批评，且我们已量化。1137 个样本不是独立的：归一化结构哈希 + token Jaccard（≥0.85）+ 结构层余弦（≥0.90）把它们聚成 **474 个模板家族**（420 个连通分量），**75.4% 的样本落在多成员家族里**；原 split 下 **64.5%（365/566）评估样本在派生侧有同族 sibling**。
+
+**Already addressed (677b).** 我们把切分改成**按家族整体**（三种策略，含 strict 变体：连通分量为单位、**克隆对跨 split = 0**），主端点 **不变**（+26.71 / +23.02 / +25.70pp，p ≤ 4.1×10⁻²⁹），并列仍 ≈0 ⇒ **泄漏不是结论的驱动因素**；并按家族做 **2000 次 cluster bootstrap**：设计效应 **≈4.05–4.26** ⇒ **有效 n ≈133–140**（名义 566），Δ 的 cluster CI **[+16.6,+30.4] / [+18.3,+33.4]pp**（比普通 CI 宽 **1.78–2.10×**，均不含 0）。诚实补充：full-refit（把随机臂的抽样也计入）下区间下界贴 0（Δ≤0 比例 2.2–3.0%）——这正是我们把结论停在**方向证据**的原因。
+
+**Plan.** 论文的 Threats 段与所有 A5 区间将统一按 **cluster 宽度**报告（有效 n≈133–140）；下一步是**扩样 + 去克隆后的有效样本量达标**，以及多回合取众数（逐格 ~5% 跑间不稳定）。
+
+> 中文要点：这一问的杀伤力在于"你的 n 是虚的"。答法：(1) 承认→(2) 说清我们**已经做了 clone-aware 重切分并把结论复核了一遍**（不是承诺，是已完成）→(3) 主动给出**有效 n≈133–140 与 2× 放宽的 CI**，并且**承认 full-refit 下下界贴 0**（这换来的是"把方向证据的定位守住"的可信度）。
+
+## Q17 · "退化资产一剔除结论就没了——这是不是说明整个效应是假的？"
+
+**Concede.** 剔除 3 个退化资产后，**k=4** 的 FD-vs-Random Δ 确实归零（p=1.0）。但我们认为正确的读法不是"效应是假的"，而是"**$k=|A|-1$ 时两臂必然抽同一组资产**"。
+
+**Already addressed (677c).** 在严格非退化池（5 资产，无预注册退化资产）上：(i) **k=1/2/3 仍显著**（最优 k=1：FD 33.04% vs Random 21.73%，Δ **+11.31pp**，p=6.0×10⁻⁸；对 2000 次均值 **+12.26pp**；k=2/3 = +7.42pp）；(ii) **k=4 归零是选集碰撞**——五选四只有 5 种组合，两臂抽到同一组的概率 **1/C(5,4)=0.2**，且该池"两臂选集相同"是**结构必然**，与选择策略优劣无关；(iii) 该池的预注册 `uninterpretable` 条款**不触发**（Pool B/C 含 `linker`（catch 0.88%）仍触发，我们也照报）；(iv) 退化资产的贡献被量化：k=4 主预算上 **+24.03pp（单点）/ +12.81pp（对均值）** ⇒ **机制层面的选择效应 ≈ +7–12pp**。
+
+**Our position.** 我们**同时**报 +24.0pp（全池）与 +7–12pp（非退化池），并把后者称为**机制层面估计**；**不**把 +24pp 说成"选择更聪明"，也**不**因为 k=4 归零就说机制被否证。
+
+> 中文要点：核心是**把"归零"重新解释为"选集碰撞"并给出概率 0.2**——这是可检验的算术事实，比争论定性更有力；同时**主动把 +24pp 拆成 +12pp 池构成 + 7~12pp 选择效应**，展现"我比你更早说出效应更小"。
+
+## Q18 · "62.2% 的模板克隆率会不会导致训练/评估泄漏？（template-family leakage）"
+
+**Concede.** 这是对我们最实质的一击，我们原稿只**披露**未**控制**。
+
+**Already addressed (677b).** 现在是"披露 + 控制 + 量化"：**(a) 控制**——派生/评估切分改为按克隆家族整体切分（474 家族；strict 变体 = 420 连通分量，克隆对跨 split = **0**）；**(b) 复核**——主端点 **+23.0~+26.7pp 不变**、并列 k=4 **仍归零**（−0.53~+0.00pp）⇒ **两个结果都不是泄漏的产物**；**(c) 量化**——原 split 的泄漏规模：**147/474 家族跨 split、736 条样本、1553/3124 对判克隆跨 split、64.5% 评估样本有同族 sibling**；**(d) 代价**——有效 n 从 566 降到 **≈133–140**（见 Q16）。
+
+**Plan.** 论文 §5.1.1 的克隆率披露条目已从"只披露、不修复"升级为"已做泄漏控制 + 有效样本量已量化"；下一步是把**家族单位**写进预注册规范（任何派生/评估切分先声明分裂单位，并把"克隆对跨 split = 0"写成可核验红线）。
+
+> 中文要点：不要辩解"克隆率是数据构造的固有属性"，直接**展示我们做了控制并复核了结论**（这是最强的回应），然后**主动交出代价**（有效 n≈133–140）——审稿人衡量的是"你是不是自己先发现了并诚实登记"。
+
 ---
 
 ## 附录 A · 一句话弹药库（One-line armory）
 
-- **A5（676f 全量，权威）**：**已跑且主端点以 p≈10⁻⁴¹ 显著**（1137 样本 × 8 资产 = **9096 次真实 detect**，派生 571 / 评估 566，k=4：FD 54.59% (309/566) vs Random 30.57% (173/566)，Δ **+24.03pp**，CI [+20.51,+27.55]，p=**2.3×10⁻⁴¹**，b=136/c=0，h=0.49；vs Static 24.74%，Δ **+29.86pp**，p=1.9×10⁻³¹；2000 次分布中 FD 严格更优 **97.6%**）。**但并列分析仍在 k=4 触发预注册 `uninterpretable`**（剔除退化资产后 Δ=**0.00pp**，p=1.0）⇒ **方向证据，不宣称 superiority**；并列 k=1~3 显著（+11.31/+7.42/+7.42pp）⇒ **选择效应首次钉在 ≈+7~11pp**。**三条限制**：① 池构成效应（+24pp 主要是"不浪费预算"）② 逐格 ~5% 跑间不稳定 ③ **不得写 "FD > Random"**。让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11 → 0/11）。旧值（holdout +55.0pp / corpus +43.8pp，105 样本）**作废**。
+- **A5（676f 全量 + 677b/677c 复核，权威）**：**已跑且主端点以 p≈10⁻⁴¹ 显著**（1137 样本 × 8 资产 = **9096 次真实 detect**，派生 571 / 评估 566，k=4：FD 54.59% (309/566) vs Random 30.57% (173/566)，Δ **+24.03pp**，CI [+20.51,+27.55]，p=**2.3×10⁻⁴¹**，b=136/c=0，h=0.49；vs Static 24.74%，Δ **+29.86pp**，p=1.9×10⁻³¹；2000 次分布中 FD 严格更优 **97.6%**）。**但并列分析仍在 k=4 触发预注册 `uninterpretable`**（剔除退化资产后 Δ=**0.00pp**，p=1.0）⇒ **方向证据，不宣称 superiority**。**677c**：严格非退化池（5 资产）上 **k=1/2/3 仍显著**（最优 +11.31pp，p=6.0×10⁻⁸），**k=4 归零是选集碰撞（1/C(5,4)=0.2）不是机制反证**；退化资产贡献 k=4 的 **+24.03pp（单点）/+12.81pp（对均值）** ⇒ **选择效应 ≈ +7~12pp**。**677b**：clone-aware 重切分（474 家族 / strict 420 分量、克隆对跨越=0）后**主端点与并列归零均不变** ⇒ 泄漏**已排除**；家族级 cluster bootstrap ⇒ **有效 n≈133–140**、Δ 的 CI 宽 **1.78–2.10×**（[+16.6,+30.4] / [+18.3,+33.4]pp）。**四条限制**：① 池构成效应（+24pp 含 +12pp 池构成）② 逐格 ~5% 跑间不稳定 ③ **不得写 "FD > Random"** ④ 区间须按有效 n 读宽。让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11 → 0/11）。旧值（holdout +55.0pp / corpus +43.8pp，105 样本）**作废**。
 - **能力边界（676g）**：**1147 × 8** 矩阵；检出 **61.6%**、盲区 **38.4%**、**18/70** 类 >50%；家族金字塔 memory 15.2% → link/ODR 67.7%；单资产最高 asan 35.6% vs 六资产并集 61.6% ⇒ **38.4% 是组合天花板**。**不得读作"系统漏报率"**（是资产池能力边界，分母是含难例配额的 1147 个缺陷样本）。
 - **测量不稳定（676f）**：逐格 **~5%** 跑间翻转（无竞争重测 369 格 → 18 翻；并发 3 轮抽检 4/80）⇒ 单回合数字带噪声，历史 105×8 矩阵同受影响；路线图 = 多回合众数。
 - **blind**：只有 21 个样本严格盲；主估计量是 **81.0% (17/21)**，扩样值 82.9% (34/41) 明标含 20 个 reveal 后并入。

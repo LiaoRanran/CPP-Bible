@@ -1,10 +1,15 @@
 # NeurIPS 2027 Datasets & Benchmarks — Submission Checklist（v1.0 定稿 + v1.1 投稿准备）
 
+> **⚠️ 677d 版本更新（2026-10-04）**：当前 version of record 为 **v1.3 (677d)** ——
+> `research/latex/queyi_neurips2027_v1.1.tex`（内部版本号 v1.3）。677d 把 **677b/677c 的实验结果并入**
+> 论文与投稿材料（A5 clone-aware 稳健性 + 家族级 cluster bootstrap 有效 n≈133–140；非退化池
+> k≤3 显著、k=4 为选集碰撞）。**本清单只登记流程政策，不含 A5 数字**，故无数字需同步；权威口径见
+> `research/latex/VERSION.md` §5ter（677d 变更清单）。
+>
 > **⚠️ 677a 政策更新（2026-10-04）**：Track 名自 2026 年起为 **E&D（Evaluations & Datasets，原 D&B）**，
 > 且**通常要求双盲**（不再是"单盲/双盲自选"）。本清单早于该政策，下文所有 "D&B 允许单盲或双盲" 的表述
 > **均已过时**；权威口径见 `research/latex/VERSION.md` 与 `research/cover_letter.md`。
-> 本清单的产物指向仍为 v1.0 时代的文件；**当前 version of record 是
-> `research/latex/queyi_neurips2027_v1.1.tex`（内部版本号 v1.2）**。
+> 本清单的产物指向仍为 v1.0 时代的文件。
 
 > **目标**：NeurIPS 2027 E&D（当前最新官方模板为 2026 版；2027 CFP 未发布）。
 > **产物（673a 定稿）**：`research/latex/queyi_neurips2027_v1.0.tex`（+ `queyi_refs.bib`、`neurips_2025.sty`）、

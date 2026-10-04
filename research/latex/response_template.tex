@@ -45,11 +45,17 @@ Every number below is recomputed from a landed artifact.
         \textbf{82.9\%} (34/41), corpus \textbf{62.5\%} (40/64), control FPR \textbf{0.0\%} (0/11) ---
         an early draft reported 2 control false positives caused by a constant-catch detector bug
         (fixed in 673u); the headline rates are bit-identical before and after.
-  \item \textbf{A5 has run at full scale} (1137 samples $\times$ 8 assets = 9096 real \texttt{detect}
-        calls; derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%} vs Random \textbf{30.6\%}
-        ($\Delta$ \textbf{+24.0pp}, $p{=}2.3\times10^{-41}$) vs Static \textbf{24.7\%} (+29.9pp); the
+  \item \textbf{A5 has run at full scale and has been re-checked} (1137 samples $\times$ 8 assets =
+        9096 real \texttt{detect} calls; derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%}
+        vs Random \textbf{30.6\%} ($\Delta$ \textbf{+24.0pp}, $p{=}2.3\times10^{-41}$) vs Static
+        \textbf{24.7\%} (+29.9pp); the
         pre-registered parallel analysis collapses to $\Delta$ \textbf{0.0pp} $\Rightarrow$
-        \textbf{direction-only}, not ``FD $>$ Random''.
+        \textbf{direction-only}, not ``FD $>$ Random''. \textbf{677c} (degenerate-free pool, 5 assets):
+        $k{=}1$--3 stay significant (best \textbf{+11.31pp}, $p{=}6.0\times10^{-8}$) and the $k{=}4$
+        zero is a \textbf{set collision} ($1/\mathrm{C}(5,4){=}0.2$), leaving a selection effect of
+        $\approx$\,\textbf{+7--12pp}. \textbf{677b} (clone-family re-split): the endpoint is unchanged
+        (+23.0 to +26.7pp), so template leakage is excluded, but a family-level cluster bootstrap gives
+        an \textbf{effective $n\approx133$--$140$} (all A5 intervals $\times1.78$--$2.10$).
   \item New \textbf{detector capability-boundary map} (676g): 1147$\times$8 matrix, detection 61.6\%,
         blind spot \textbf{38.4\%}, \textbf{18/70} types $>$50\% blind; a measured $\sim$5\%
         run-to-run flip rate is registered alongside it.
@@ -136,9 +142,12 @@ $\Delta$ \textbf{0.0pp} ($p{=}1.0$), triggering the \texttt{uninterpretable} cla
 Measurable sizes are holdout $n{=}41$ and corpus $n{=}64$; $\pm$5pp of CI half-width needs
 $n{=}236/378$ ($\pm$10pp needs 61/97); a $\Delta{=}15$pp paired contrast needs $n\approx103$--173.
 We therefore report \textbf{direction, intervals and effect sizes}, and explicitly refuse to report
-magnitude \textbf{for the two headline rates}. For the budget-matched A5 contrast the power gap is
-now \textbf{closed}: A5 ran at $n{=}566$ ($\gg$ the $n\approx138$ paired requirement), so what
-remains is a \textbf{non-degenerate pool with $1<k<|A|-1$}, not more samples.
+magnitude \textbf{for the two headline rates}. For the budget-matched A5 contrast the nominal power
+gap is now \textbf{closed}: A5 ran at $n{=}566$ ($\gg$ the $n\approx138$ paired requirement) --- but
+a family-level cluster bootstrap (677b) puts the \textbf{effective} $n$ at $\approx$133--140
+(design effect $\approx$4.2), i.e. at the lower end of the pre-registered window, so all A5
+intervals are reported $1.78$--$2.10\times$ wider; what remains is running A0--A4 and multi-round
+(modal) verdicts, not more samples. The \textbf{non-degenerate pool has now run} (677c).
 \chg{Abstract; \S Statistical; Appendix (sample-size table).}
 
 \rev{McNemar significance rests on an extreme structure ($c{=}0$).}
@@ -223,10 +232,29 @@ the pre-registered 5\% rule adds a third (\texttt{linker}, 0.88\% catch rate), s
 pre-registered parallel analysis (5 candidates) the $\Delta$ \textbf{collapses to 0.0pp}
 ($p{=}1.0$) while the \textbf{Static gap grows to +30.6pp} ($p{=}8.1\times10^{-34}$). The parallel
 analysis is significant at $k{=}1$--3 (+11.31/+7.42/+7.42pp), pinning the \emph{selection} effect at
-$\approx$\,+7--11pp; that sweep is exploratory. We therefore write no ``FD $>$ Random'' sentence.
-Roadmap: the power gap is closed; what remains is a \textbf{non-degenerate pool with $1<k<|A|-1$}
-and running A0--A4. Separately we publish the capability-boundary map (38.4\% blind spot,
-18/70 types $>$50\% blind) and a measured $\sim$5\% run-to-run flip rate as first-class limitations.
+$\approx$\,+7--12pp; that sweep is exploratory. We therefore write no ``FD $>$ Random'' sentence.
+\textbf{Two follow-up analyses are now in the paper (677b/677c).} \emph{Template leakage (677b):}
+the samples are not independent (1137 samples $\to$ \textbf{474 template families}; 420 connected
+components), and under the original split \textbf{64.5\%} of evaluation samples had a family sibling
+in the derivation split; re-splitting at the family level (three strategies, the strict one with
+\emph{zero} clone pairs crossing) leaves the endpoint unchanged (+23.0 to +26.7pp,
+$p\le4.1\times10^{-29}$) and the parallel analysis at $\approx$0, but a family-level cluster
+bootstrap gives a design effect $\approx$4.1--4.3, i.e. an \textbf{effective $n\approx133$--$140$} and
+$\Delta$ cluster CIs of $[+16.6,+30.4]$ and $[+18.3,+33.4]$pp ($1.78$--$2.10\times$ wider, still
+excluding 0); with the random arm re-drawn too, the lower bound reaches 0 ($\Delta\le0$ in
+2.2--3.0\% of replicates) --- which is why the claim stays directional. \emph{Degenerate assets
+(677c):} on the strict non-degenerate pool (5 assets) the effect \emph{survives} at $k{=}1$--3 (best
+$k{=}1$: 33.04\% vs 21.73\%, \textbf{+11.31pp}, $p{=}6.0\times10^{-8}$); the $k{=}4$ zero is a
+\textbf{set collision} (both arms must draw the same four of five, probability $0.2$), and the
+degenerate assets account for \textbf{+24.03pp} of the single-point $k{=}4$ $\Delta$
+(\textbf{+12.81pp} against the mean), leaving an isolated selection effect of
+$\approx$\,\textbf{+7--12pp}. We now report $+24.0$pp (full pool) and $+7$--$12$pp (degenerate-free)
+side by side.
+Roadmap: the power gap is closed and the \textbf{non-degenerate pool has run}; what remains is
+running A0--A4, multi-round (modal) verdicts, and reporting A5 intervals at the cluster width
+(effective $n\approx133$--$140$). Separately we publish the capability-boundary map (38.4\% blind
+spot, 18/70 types $>$50\% blind) and a measured $\sim$5\% run-to-run flip rate as first-class
+limitations.
 
 \section*{High-frequency questions}
 

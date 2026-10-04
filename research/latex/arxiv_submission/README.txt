@@ -12,12 +12,44 @@ Compile
   tectonic -X compile queyi_neurips2027_v1.1.tex        # verified: tectonic 0.17.0
   # or: pdflatex queyi_neurips2027_v1.1 && bibtex queyi_neurips2027_v1.1 && pdflatex x2
 
-Verified build (2026-10-04, 677a repack)
+Verified build (2026-10-04, 677d repack)   <-- CURRENT
 ----------------------------------------
-  total pages        32
+  total pages        33
   main text          content ends on page 8; References start on page 9
                      (\label{page:endmain} sits AFTER \clearpage, so the .aux reports 9 --
                      this is the off-by-one convention the repo quality gate reads)
+  abstract           246 words (gate limit 250)
+  undefined refs     none (0 undefined citations / 0 undefined \ref)
+  quality gate       6/6 PASS (page limit, undefined refs, section labels, \ref resolution,
+                     abstract word count, registered-placeholder scan)
+  independent build  verified from a clean copy in a scratch directory (tectonic 0.17.0,
+                     exit 0, 0 engine errors, 0 undefined refs)
+  anonymity          checked: 0 identity traces (no names, no local paths, \author = Anonymous)
+
+What changed in this repack (677d)
+----------------------------------
+- Paper-merge batch: the 677b/677c experiment results are folded into the paper and the
+  submission materials (no new experiments; detector/samples/question set untouched).
+- A5: main endpoint (+24.0pp, full pool) is now reported SIDE BY SIDE with the
+  degenerate-free selection effect (approx +7-12pp): clone-family re-split (474 families /
+  420 components, zero clone pairs crossing) leaves the endpoint unchanged (+23.0 to +26.7pp,
+  p <= 4.1e-29) -> template leakage excluded; a family-level cluster bootstrap gives
+  design effect ~4.2, i.e. EFFECTIVE n ~133-140 (nominal 566) and 1.78-2.10x wider intervals.
+- Appendices: new paragraphs "Clone-aware re-split and cluster bootstrap (677b)" and
+  "Non-degenerate pools, baselines and an executable operator (677c)"; the evolution operator
+  now has an executable score function (w1*failure + w2*novel - w3*cost - w4*redundancy) with
+  two disclosed collapses (literal novel == failure; frequency == FD) and a non-significant
+  ablation (full vs frequency-only: best case +1.41pp, p=0.302, 3/14 tiers).
+- Main text: E4 robustness sentence, Analysis (5), Threats (effective sample size + the
+  ~+12pp degenerate-asset share), Conclusion ("central empirical result is directional"),
+  Future Work (non-degenerate pool now run; A0-A4 and multi-round verdicts remain).
+- Main text held at 8 pages of content by compressing (not deleting) prose; appendix grew by
+  one page.
+
+Verified build (2026-10-04, 677a repack, superseded by the 677d repack above)
+---------------------------------------------------------------------------
+  total pages        32
+  main text          content ends on page 8; References start on page 9
   abstract           246 words (gate limit 250)
   undefined refs     none (0 undefined citations / 0 undefined \ref)
   anonymity          checked: 0 identity traces (no names, no local paths, \author = Anonymous)
