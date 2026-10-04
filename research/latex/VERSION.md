@@ -124,18 +124,18 @@
 
 ---
 
-## 5bis. 并发批次状态（提交时 `git status` 实况）
+## 5bis. 并发批次状态（677a 各次提交时 `git status` / `git log` 实况）
 
-本仓库多 Agent 并行。677a 提交时观察到：
+本仓库多 Agent 并行。677a 三次提交期间观察到：
 
 | 批次 | 状态 | 对本 version of record 的影响 |
 |---|---|---|
-| **677b**（clone-aware A5） | 工作树中有未跟踪产物（`data/677b_*.json` / `data/677b_*.md` / `tools/analyze_677b_clone_aware.py`），**未提交** | 无：677a **未** add 这些文件 |
-| **677c**（非退化池 + 多 Baseline + Evolution Operator） | **已提交**（`f2a4c442`），仅新增 `data/677c_*` 与 `tools/*_677c*.py` | 无：677c 与 677a 的 11 个文件**零交集**（已核 `git show --name-only f2a4c442`） |
+| **677c**（非退化池 + 多 Baseline + Evolution Operator） | **已提交**（`f2a4c442`），仅新增 `data/677c_*` 与 `tools/*_677c*.py` | 无：与 677a 的文件**零交集**（已核 `git show --name-only`） |
+| **677b**（clone-family-aware A5 + cluster bootstrap） | **已提交**（`92482d4f` + `3e6e6044` 回填），仅新增 `data/677b_*` 与 `tools/analyze_677b_clone_aware.py` | 无：与 677a 的文件**零交集**；其主端点稳健、并列仍归零、有效样本量 ≈133–140 |
 
 > ⚠️ **677b/677c 的实验数字尚未并入论文**：`VERSION.md` §2 的数字来源表仍以 672h/673u/676f/676g/676l/676m 为准。
 > 677b/677c 的结果若进入正文，需由后续"论文更新"批次同时更新本文件、论文、cover letter 与数据卡——
-> **不得只改论文**（这正是 677a 要消灭的版本分裂）。
+> **不得只改论文**（这正是 677a 要消灭的版本分裂）。677b 已给出 `data/677b_论文更新建议.md`，可直接作为该批次的输入。
 
 ## 6. 677a 的诚实边界
 
