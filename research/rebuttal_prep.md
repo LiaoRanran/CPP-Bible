@@ -1,16 +1,31 @@
 # 673s · Rebuttal 预演（Rebuttal Preparation）
 
-- 批次：673s（论文卓越打磨 —— rebuttal 预演）
+- 批次：673s（论文卓越打磨 —— rebuttal 预演）；**676j 已同步最新态势（A5 全量 676f + 盲区地图 676g，见下方「态势更新」）**
 - 仓库：`C:\CodeLearnling\note\note\C++\CPP-Bible`
 - 目标稿件：`research/latex/queyi_neurips2027_v1.1.tex`（英文稿）+ `research/paper_shturl.md`（中文稿）
-- 权威数字源：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）、`data/experiments/reveal_update_672h.json`、`data/experiments/a5_673p.json`
+- 权威数字源：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）、`data/experiments/reveal_update_672h.json`、`data/a5_676f_results.json`（**A5 全量重跑，取代 `a5_673p.json`**）、`data/blindspot_676g_stats.json`（**检测器能力边界地图**）
+
+## 0bis · 态势更新（676j，2026-10-04）——引用 A5 前必读
+
+| 项目 | **676j 现值（权威，来自 676f/676g）** | 被取代的旧值 | 出处 |
+|---|---|---|---|
+| A5 样本规模 | **1137 总样本；571 派生 / 566 评估**（去重 10 条；planted=false 74） | 105（21/48 → 20/16） | `data/a5_676f_results.json::sample_stats` |
+| A5 主端点（k=4，全 8 资产池） | FD **54.6% (309/566)** vs Random **30.6% (173/566)** vs Static **24.7% (140/566)** | 90.0%/35.0%/10.0%（holdout） | 同上 `primary_main_8candidates.by_k[k=4]` |
+| Δ(FD−Random) | **+24.0pp** CI [+20.5, +27.5]，p=**2.3×10⁻⁴¹**，h=0.49，b=136/c=0 | +55.0pp，p=9.8×10⁻⁴ | 同上 `paired_tests.fd_vs_random` |
+| Δ(FD−Static) | **+29.9pp** CI [+25.2, +34.5]，p=**1.9×10⁻³¹**，h=0.62 | corpus +43.8pp（p=0.039） | 同上 `paired_tests.fd_vs_static` |
+| **并列分析（剔除 2 个退化资产）** | FD-vs-Random **掉回 0.0pp（p=1.0）**；FD-vs-Static **增至 +30.6pp（p=8.1×10⁻³⁴）** | 旧版仅报 holdout 掉 0、corpus +31.3pp（p=0.125） | 同上 `co_primary_excl_degenerate` |
+| 退化资产 | `wunsequenced`、`compile-time`：1137/1137 全 `unknown`（0 catch） | 同 | 同上 `asset_diagnostics.full_pool` |
+| **能力边界（676g，新贡献）** | n=**1147**：catch 707 / miss 440 ⇒ **盲区比 38.4%**；6 资产并集 61.6% vs 最佳单资产 35.6%（asan）；**18/70** 类型 >50% 盲；家族金字塔 memory 15.2% → link/ODR 67.7%；planted=true 41.0% [38.0,44.1] vs false 21.6% [13.8,32.3]；TSan 3/180 不稳定 | 无（新增） | `data/blindspot_676g_stats.json` |
+| 可复现性入口 | `REPRODUCE.md` + `bash docker/paper/run_all.sh`（fail-loud）；种子审计 `tools/seed_audit_676h.py`：实验类未固定种子 **0** | 无 | 仓库根 / `data/676h_seed_audit.json` |
+
+> **口径纪律不变**：A5 矩阵是 **1 回合**、头条率 82.9%/62.5% 是 **3 回合（任一回合 catch ⇒ catch）**，两套数字**不得相减或比较**。下方 §1 表中标注「**⚠️ 已被 676f 取代**」的行仅作审计轨迹保留（**引用 A5 一律以 0bis 与 Q1 为准**）。
 
 ## 0 · 使用纪律（三步走）
 
 1. **三段式**：每问都写成 `Concede（承认点） / Already addressed（已做修订） / Plan（未来工作）`。英文段落可直接粘贴进 rebuttal；中文是策略提示，不投出去。
 2. **数字只能来自 artifact**：rebuttal 引入的每个数字都必须可回溯到仓库产物（`current_numbers.json` / `reveal_update_672h.json` / `a5_673p.json::real_attribution` / `data/673r_A5实验报告.md`）。红线：**不把未做的实验写成已做**，也**不把已被推翻的旧数字继续当弹药**。
 3. **诚实优先**：凡是论文已自认的缺口（标签零复核、scope 0/26、历史钉定不完整）**以及新出现的受限结果**（A5 主端点显著**但**触发预注册 `uninterpretable`、效应落在池构成层面），rebuttal 一律先说"我们同意 / 我们主动登记"，再给已落地修订，最后给路线图——**不要辩护式反驳**。评审对"承认 + 已修 + 路线"的接受度远高于"辩解"。
-4. **态势会随并行批次变化（本批已发生两次）**：本仓库多 Agent 并行。**673r 在预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"；随后 **673u 修掉 `wunsequenced` 恒 catch**，又把 A5 变成"**主端点显著但触发 `uninterpretable`**"。Q1 与附录 A 已按**最新产物**重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
+4. **态势会随并行批次变化（本批已发生三次）**：本仓库多 Agent 并行。**673r 在预案写作期间提交**，把 A5 从"未跑（BLOCKED）"变成"已跑且主端点不显著"；随后 **673u 修掉 `wunsequenced` 恒 catch**，又把 A5 变成"**主端点显著但触发 `uninterpretable`**"；**676f 把 A5 扩到全量池（1137 样本 / 评估 566）**，主端点以 p≈10⁻⁴¹ 显著、幅度回归 +24.0pp、并列分析仍归零，并首次钉住选择效应 ≈+7~11pp。Q1、附录 A 与「0bis 态势更新」已按**最新产物**重写。任何 rebuttal 预案在发出前**必须重新核对 HEAD 与最新产物**。
 
 ## 1 · 评审已知事实（写 rebuttal 时的事实底座）
 
@@ -24,10 +39,10 @@
 | random† proxy | 9.8% / 21.9%（**instrument-level proxy，非真 B3**） | 同上 `random_proxy` |
 | Δ(static→FD) | +80.5pp / +45.3pp | 同上 |
 | exact McNemar | p ≤ 3.0×10⁻⁸（最低下界（Δ）≥ 28.6pp） | 同上 |
-| **A5 真实逐资产对照（673r 建矩阵 / 673u 重跑）** | 主预算 k=4、全 8 资产池：holdout FD **90.0% (18/20)** vs Random **35.0% (7/20)** vs Static 10.0%，Δ=**+55.0pp** CI [+33.2, +76.8] **p=9.8×10⁻⁴**（b=11/c=0，h=1.23）；corpus FD **81.3% (13/16)** vs **37.5%**，Δ=**+43.8pp** CI [+13.9, +73.6] **p=0.039**（b=8/c=1，h=0.93）⇒ **主端点首次显著**（`primary_pass` ✓ / `secondary_pass` ✓） | `a5_673p.json::real_attribution`、`673u_wunsequenced修复报告.md` §5 |
-| A5 2000 次重采样分布 | FD **严格更优 93.75%（holdout）/ 95.8%（corpus）**；holdout 均值 55.0% SD 23.4pp；corpus 均值 53.7% SD 16.0pp | 同上 |
-| **A5 并列分析（剔除退化资产）⇒ 关键限制** | holdout（5 候选）Δ **掉回 0.0pp（p=1.0）⇒ 触发预注册 `uninterpretable`**；corpus（6 候选）Δ=+31.3pp CI [+2.7, +59.8] 同号但 **p=0.125 不显著** | 同上 |
-| A5 退化资产（池构成效应的来源） | holdout：`wunsequenced`、`compile-time`、`cross-compile`；corpus：`wunsequenced`、`compile-time`（均 0% catch ⇒ 零信息常量）——主分析里 Random 抽到它们 ⇒ **一半预算花在零信息资产上** | 同上 |
+| **A5 真实逐资产对照（673r 建矩阵 / 673u 重跑）——⚠️ 已被 676f 全量重跑取代，见上方 0bis 与 Q1** | 主预算 k=4、全 8 资产池：holdout FD **90.0% (18/20)** vs Random **35.0% (7/20)** vs Static 10.0%，Δ=**+55.0pp** CI [+33.2, +76.8] **p=9.8×10⁻⁴**（b=11/c=0，h=1.23）；corpus FD **81.3% (13/16)** vs **37.5%**，Δ=**+43.8pp** CI [+13.9, +73.6] **p=0.039**（b=8/c=1，h=0.93）⇒ **主端点首次显著**（`primary_pass` ✓ / `secondary_pass` ✓） | `a5_673p.json::real_attribution`、`673u_wunsequenced修复报告.md` §5 |
+| A5 2000 次重采样分布（673u 旧值；⚠️ 已被 676f 的 97.6% 取代） | FD **严格更优 93.75%（holdout）/ 95.8%（corpus）**；holdout 均值 55.0% SD 23.4pp；corpus 均值 53.7% SD 16.0pp | 同上 |
+| **A5 并列分析（剔除退化资产）⇒ 关键限制**（⚠️ 已被 676f 取代，见 0bis） | holdout（5 候选）Δ **掉回 0.0pp（p=1.0）⇒ 触发预注册 `uninterpretable`**；corpus（6 候选）Δ=+31.3pp CI [+2.7, +59.8] 同号但 **p=0.125 不显著** | 同上 |
+| A5 退化资产（池构成效应的来源）（⚠️ 已被 676f 取代：全量池重算为 `{compile-time, wunsequenced, linker}`） | holdout：`wunsequenced`、`compile-time`、`cross-compile`；corpus：`wunsequenced`、`compile-time`（均 0% catch ⇒ 零信息常量）——主分析里 Random 抽到它们 ⇒ **一半预算花在零信息资产上** | 同上 |
 | A5 口径警告 | 本矩阵 = **1 回合**；82.9%/62.5% 头条 = **3 回合**（任一回合 catch ⇒ catch）⇒ **两套数字不得相减或比较** | `673r_A5实验报告.md` §3.1 / `673u` §3 |
 | **`wunsequenced` 缺陷修复（673u）** | 恒 catch → 恒 `unknown`（检测器不可用）；**头条率 82.9% / 62.5% 逐位不变**；对照假阳性 **18.2% (2/11) → 0.0% (0/11)** | `673u_wunsequenced修复报告.md` §0 / §3 |
 | 派生集探索（**replay 口径**，exploratory） | holdout FD 85.0% (17/20) vs random 10.0% (2/20)；corpus 87.5% (14/16) vs 37.5% (6/16)——**replay 口径、非确证；与真实口径不同，不得混用** | `a5_673p.json::exploratory_derivation_split` |
@@ -36,21 +51,21 @@
 
 ---
 
-# Part I · Q1–Q5（14 点评审的主问题）
+# Part I · Q1–Q5（14 点评审的主问题）+ Q5b（局限总表）
 
 ## Q1 · "核心主张（failure-driven 优于同预算随机）检验了吗？结果如何？"
 
-> **态势已变两次，以最新为准（2026-10-03）**：A5 **已跑**（673r 建成真实矩阵）；`wunsequenced` 恒 catch 缺陷修复后（673u）**主端点首次显著**——holdout Δ **+55.0pp**（p=9.8×10⁻⁴）、corpus Δ **+43.8pp**（p=0.039）。**但 holdout 触发预注册 `uninterpretable` 条款**（剔除退化资产的并列分析里 Δ 掉回 0.0pp）⇒ 只能答"**方向证据，不是确认性结论**"。**论文正文已在 675a 同步更新**（§6 E4 / §7 / §10 / 附录，正文不再有 "A5 not run"）。
+> **态势已变三次，以最新为准（2026-10-04，676f）**：A5 **已在全量样本上重跑**——**1137 样本 × 8 资产 = 9096 次真实 `detect`**（派生 571 / 评估 566，k=4）。主端点 **Δ(FD−Random) = +24.03pp**（p=2.3×10⁻⁴¹，CI [+20.51, +27.55]，b=136/c=0），但**预注册的并列分析仍在 k=4 上归零（Δ=0.00pp，p=1.0）** ⇒ 仍触发 `uninterpretable`，只能答"**方向证据，不是确认性结论**"。旧值（105 样本：holdout +55.0pp / corpus +43.8pp）**作废**（不同样本池，禁止相减）。**论文正文的 A5 段落须由 676h 按 `data/676f_论文更新位置清单.md` 整段改写**（不是换几个数）。
 
-**Concede.** A5 has now been run, and its pre-registered main endpoint is **significant for the first time**—but it does **not** license "failure-driven beats same-budget random", and we say so in the paper. Real per-asset attribution: 105 samples × 8 assets = **840 real `detect` calls**; failure-hits are estimated on a **disjoint derivation split** (holdout n=21 / corpus n=48) and evaluated on the held-out split (holdout n=20 / corpus n=16), so FD is a genuine *predictor*, not a post-hoc accounting of its own catches. At the pre-registered budget k=4 over the full 8-asset pool: **holdout FD 90.0% (18/20) vs Random 35.0% (7/20) vs Static 10.0%**, **Δ(FD−Random) = +55.0pp, CI [+33.2, +76.8], exact McNemar p = 9.8×10⁻⁴** (b=11, c=0; h=1.23); **corpus 81.3% (13/16) vs 37.5%**, **Δ = +43.8pp, CI [+13.9, +73.6], p = 0.039** (b=8, c=1; h=0.93). FD strictly beats the single-seed draw in **93.75% / 95.8%** of 2000 resamples, and the pre-registered decision table reads `primary_pass` ✓ / `secondary_pass` ✓.
+**Concede.** A5 has now run **at full scale**: **1137 samples × 8 assets = 9096 real `detect` calls** (one round; derivation 571 / evaluation 566), with failure-hits estimated *only* on the disjoint derivation split, so FD is a genuine predictor rather than a post-hoc accounting of its own catches. At the pre-registered budget $k{=}4$ over the full 8-asset pool: FD **54.59\% (309/566)** vs Random **30.57\% (173/566)** vs Static **24.74\% (140/566)**; **Δ(FD−Random) = +24.03pp, CI [+20.51, +27.55], exact McNemar p = 2.3×10⁻⁴¹** (b=136, c=0; h=0.49) and **Δ(FD−Static) = +29.86pp, p = 1.9×10⁻³¹** (h=0.62). FD strictly beats the single-seed draw in **97.6\%** of 2000 resamples. The expansion also **closes the old power gap**: $n{=}566$ far exceeds the $n{\approx}138$ paired requirement, so magnitudes are now readable — the +55/+44pp of the $n{=}20/16$ pilot regressed to **+24.0pp**, which is the expected effect-size shrinkage under a 10× larger sample, *not* a sign reversal (significance rose ~12 orders of magnitude).
 
-**Why it is still not a superiority claim (three limits, all written into the paper).** (i) **Pool composition, not selection.** Random's k=4 draw contains two *degenerate* assets (`wunsequenced`, `compile-time`—constant `unknown`; they catch nothing), so half its budget buys zero information, while the failure-driven ranking avoids them by construction; in the **pre-registered parallel analysis** that excludes degenerate assets, the holdout Δ **collapses to 0.0pp (p = 1.0, b = c = 0)**, **triggering our pre-registered `uninterpretable` clause**. The +55pp therefore mostly says "don't waste budget on assets that cannot inform"—true, but weaker than "failure-driven selection is smarter". (Corpus does not trigger the clause: parallel Δ = +31.3pp, CI [+2.7, +59.8], same sign, but p = 0.125—not significant.) (ii) **Power.** n = 20/16 ≪ 138, so magnitudes stay interval-reads; a ±5pp half-width would need n = 236/378. (iii) We therefore write **no** "FD > Random" sentence; the k-sweep (holdout p ≤ 9.8×10⁻⁴ for k=1..5, p = 0.0156 at k=6/7; corpus p = 0.039 at k=4, 0.070 at k=2, 0.063 at k=5) is exploratory.
+**Why it is still not a superiority claim (three limits, all written into the paper).** (i) **Pool composition, not selection.** The single-seed Random draw at $k{=}4$ is `{wunsequenced, cross-compile, tsan, compile-time}` — **two of its four slots are zero-information assets** (constant `unknown`; they catch nothing), while the failure-driven ranking avoids them by construction; in the **pre-registered parallel analysis** over the 5 non-degenerate candidates the $k{=}4$ Δ **collapses to 0.00pp (p = 1.0, b = c = 0)** — both arms select the *same* four assets — **triggering our pre-registered `uninterpretable` clause**. The +24pp therefore mostly says "don't waste budget on assets that cannot inform", which is weaker than "failure-driven selection is smarter". **However**, the parallel analysis *is* significantly positive at $k{=}1/2/3$ (**+11.31 / +7.42 / +7.42pp, p ≤ 7.7×10⁻⁵**), which for the first time **pins the selection effect at ≈ +7–11pp**: real, but small. (ii) **Instability.** Single-cell verdicts carry a measured **~5\%** run-to-run flip rate (369 clean re-tested cells → 18 flips; 3-round modal check on concurrent samples, 4/80 flipped at least once), so every one-round number is noisy. (iii) We therefore write **no** "FD > Random" sentence; the $k$-sweep stays exploratory (main pool Δ>0 with $p \le 1.7\times10^{-18}$ for $k{=}1..7$; $k{=}8$ is degenerate).
 
-**What changed, and why we report it as a strength rather than a patch.** The table only became readable after we fixed a **detector-unavailability defect**: `wunsequenced` was a *constant catch*—the local MinGW g++ 13.1 does not recognise `-Wunsequenced`, and the hit predicate matched the option name inside the compiler's own error message. Recording that as `catch` was wrong; it is now `unknown` (no support, no refutation), which is precisely the four-state discipline the paper argues for. **The headline rates 82.9% / 62.5% are bit-identical before and after the fix**, and the only other change is that the **control false-positive count drops from 2/11 (18.2%) to 0/11 (0.0%)**—those two were artifacts of the bug. We publish the fix, its regression tests, and its consequences rather than silently repairing the table.
+**What changed, and why we report it as a strength rather than a patch.** The 673u fix turned `wunsequenced` from a *constant catch* (the hit predicate matched the option name inside MinGW's own "unrecognized option" error) into `unknown`; **the headline rates 82.9\% / 62.5\% are bit-identical before and after**, and the only other change is that the **control false-positive count drops from 2/11 to 0/11**. We publish the fix, its regression tests, and its consequences rather than silently repairing the table. **676f adds the ~5\% instability as a first-class limitation of the same kind** — measured, registered, and carried into the paper.
 
-**Roadmap.** (1) Expand to n≥138—the only design that can separate the selection-strategy effect from the pool-composition effect (see `data/673s_扩样方案.md`); (2) run A0–A4; (3) keep the round caliber explicit: this matrix is **1 round** while the 82.9%/62.5% headline is **3 rounds (any-round catch ⇒ catch)**, so the two must **not** be subtracted or compared.
+**Roadmap.** (1) The power gap is **closed**; what remains is a **non-degenerate pool with $1 < k < |A|-1$** so the two arms can actually differ; (2) run A0–A4; (3) upgrade single-round cell verdicts to **multi-round modal** verdicts (the instability is now measured, not assumed); (4) keep the round caliber explicit: this matrix is **1 round** while the 82.9\%/62.5\% headline is **3 rounds (any-round catch ⇒ catch)**, so the two must **not** be subtracted or compared.
 
-> 中文要点：Q1 现在是"**跑了、主端点首次显著、但被自己的预注册条款降级为方向证据**"。答法四步：(1) 先亮显著数字（+55.0pp / 9.8×10⁻⁴、+43.8pp / 0.039，含 b/c 与 2000 次分布 93.75%/95.8%）；(2) **主动交代池构成效应**——Random 抽到两个退化常量资产、并列分析 Δ 掉回 0.0pp 触发 `uninterpretable`，故**不宣称 superiority**；(3) 说明让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11→0/11），把它讲成"四态纪律的自我执行"而非补丁；(4) 路线图 = 扩到 n≥138（唯一能分离两效应的设计）+ 跑 A0–A4。**全程不得出现 "FD > Random"。**
+> 中文要点：Q1 现在是"**全量重跑、主端点以 p≈10⁻⁴¹ 显著、但被自己的预注册条款降级为方向证据**"。答法四步：(1) 先亮全量数字（+24.03pp / 2.3e-41 / CI [+20.51,+27.55]，b=136/c=0；vs Static +29.86pp / 1.9e-31；2000 次里 97.6%）；(2) **主动交代池构成效应**——单点 Random 抽到 2 个零信息资产、并列分析 k=4 Δ 掉回 0.00pp 触发 `uninterpretable`，故**不宣称 superiority**；但并列 k=1~3 显著（+11.31/+7.42/+7.42pp）⇒ **首次钉住选择效应 ≈+7~11pp**；(3) 说明让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11→0/11），并主动登记 **~5% 跑间不稳定**；(4) 路线图 = 非退化池 1<k<|A|-1 + A0–A4 + 多回合众数。**全程不得出现 "FD > Random"。**
 
 ## Q2 · "82.9% 不是 blind：41 个 holdout 里只有 21 个是严格盲的。"
 
@@ -92,6 +107,24 @@
 
 > 中文要点：新颖性答辩的关键不是"我是第一个"，而是"我把哪三件事**显式分离**了、演化的对象具体是什么"。用"更窄但更清晰"换"更大但更脆"的 claim。E9 的定位（互补缺陷区间，非全面优于）必须在这一问里重申，否则会被连环追问。
 
+## Q5b · 局限（Limitations）：能力边界 / 测量不稳定 / 标注 / 平台
+
+> **为什么单列**：676f（A5 全量）与 676g（盲区地图）同时把四条**系统级**局限推到台前；它们分属**外部效度 / 测量精度 / 构造效度 / 可复现性**四个不同维度，不是"样本量小"的同义反复。原 Q5 是新颖性问，故本条目单列；评审若问"你们最大的弱点是什么"，用这一条正面回答。（本条目即 676j 规格中"Q5（局限性）"的落点。）
+
+**Concede.** 我们主动承认四条一级局限，且已全部写入论文 / artifact：
+
+1. **检测器能力边界（676g，硬数据）**：全量 **1147 样本 × 8 资产**矩阵上，样本级检出 **61.6%（707/1147）**、**盲区 38.4%（440 全 miss，0 纯 unknown）**；**18/70** 缺陷类型盲区 >50%（死锁 94.3%、volatile 误用 92.9%、端序 89.3%、优先级反转 73.3%、跨 TU UB 70.0%…）；家族金字塔从 memory **15.2%**（n=171）单调升到 link/ODR **67.7%**（n=31）。⇒ 运行时检测器只抓**物理层**错误（内存 / UB / 竞争），语义 / 设计层错误是**结构性盲区**；单资产最高仅 asan **35.6%**，六资产并集 **61.6%** ⇒ **38.4% 是任何资产组合都无法覆盖的天花板**。
+2. **逐格判定 ~5% 跑间不稳定（676f 自证，一级局限）**：无竞争条件下重测 369 格有 **18 格翻转（4.9%）**；并发样本 3 轮抽检 **4/80** 出现过翻转；与并发批次交叉核对 1047 格有 42 格不一致（4.0%）。⇒ 每个"单回合"数字都带噪声，**673r 的 105×8 历史矩阵同样受影响**。
+3. **planted=true 占比高（外部效度受限）**：A5 池 **1063/1137 = 93.5%** 为植入缺陷（676g 口径 1009/1147 = 88.0%）；唯一的真实缺陷子集是 expG 的 **74 条 planted=false**，其中仅 **34 条**落在评估集 ⇒ 其 Δ=+29.41pp（p=1.95×10⁻³）只能读**方向 + 区间**，不能读幅度。
+4. **单标注者、无 κ（构造效度）**：标签由单一标注者产出，**第二标注者 = 0、IRR 未计算**（登记为 T17，对召回数最大的威胁）；已预注册 25% 双标注 + κ<0.6 全复核。
+5. **平台依赖（可复现性）**：盲区率与检出率都是**本机工具链**的测量（WSL g++ 13.3 / MinGW g++ 13.1 / clang++ 22.1.8）；x86 容忍未对齐、单机无法暴露端序错误（89.3% 盲）、优先级反转在通用调度器上不发生（73.3% 盲）⇒ 换 ARM / 原生 Linux / MSan，比例会变。
+
+**Already addressed.** 论文侧：(a) 盲区地图以 **T20「检测器能力边界」** 新增进 Threats（`data/676g_论文更新建议.md`，含复算命令）；(b) 不稳定率进入 §E4 与摘要，**单回合 vs 三回合口径已明标**；(c) planted 比例与 expG n=34 已在外部效度段**同句声明**；(d) T17 单标注者已列为首要威胁；(e) 环境依赖已升级为 **fail-loud**：`REPRODUCE.md` + `docker/paper/run_all.sh` 在错误环境下**抛错**而非静默降级（旧的 35.0%→10.0% 静默掉分已封堵）。artifact 侧：每个数字都带 `denominator` / `caliber`；盲区率同时给**批次生成口径**与**676g 检测器矩阵口径**（如死锁 5.7% 挂起观测 vs 94.3% 检测器），并禁止两口径相减 / 混用。
+
+**Plan.** (1) 资产池补短板：MSan 类未初始化读检测（20/20 全盲）、死锁 / 活性 oracle（31/35 死锁样本零 sanitizer 报告）、把 float-cast-overflow / pointer-overflow 纳入固定 `-fsanitize=undefined` 口径（两个**配置缺口**已对照实验证实检查存在但未启用，见 NF-3 / NF-4）；(2) 单回合 → **多回合众数**判定（不稳定率已量化，升级不再是"假设"）；(3) 把「挂起观测」与「检测器判定」拆成两条独立证据通道、两套口径；(4) 平台矩阵化复测（ARM / 原生 Linux）；(5) 预注册的双标注复核（含 κ 阈值）先行。
+
+> 中文要点：这一条是"你最大的弱点是什么"的正面回答。四条局限**分属四个不同维度**（外部效度 / 测量精度 / 构造效度 / 可复现性），比"样本量小"有力得多。**盲区地图必须带口径**（检测器矩阵口径 ≠ 批次生成口径），**不稳定率必须主动报**（本批自证的一级局限），**planted=false 只有 34 条进评估集**不能当幅度用。**全程不得把 38.4% 说成"系统漏报率"**——它是资产池能力边界，不是系统失败率。
+
 ---
 
 # Part II · 额外 10 问（可预期追问）
@@ -130,9 +163,9 @@
 
 **Concede.** We agree: n=41/64 measurable is small, CIs are wide (a ≈12pp half-width), and we explicitly forbid reading magnitudes as exact ("read direction first, magnitude second").
 
-**Already addressed.** The paper carries the recomputed power table (`tab:samplesize`): Δ=15pp needs n≈138 (paired, ψ=0.4) / ≈170 per group (independent); ±10pp needs n≈104; ±5pp needs n≈236/378. The pre-registered rule is *if the difference CI crosses 0 the mechanism does not hold*, and all four Δ CIs are strictly positive (lowest bound **28.6pp**). McNemar's small-sample fragility is stated: significance rests on the extreme **c=0** structure, and a few reverse pairs would inflate p quickly — indeed E9 supplies 8 reverse pairs against static tools on corpus, where FD only **ties** cppcheck (Δ=+7.8pp, CI crosses 0).
+**Already addressed.** The paper carries the recomputed power table (`tab:samplesize`): Δ=15pp needs n≈138 (paired, ψ=0.4) / ≈170 per group (independent); ±10pp needs n≈104; ±5pp needs n≈236/378. The pre-registered rule is *if the difference CI crosses 0 the mechanism does not hold*, and all four Δ CIs are strictly positive (lowest bound **28.6pp**). McNemar's small-sample fragility is stated: significance rests on the extreme **c=0** structure, and a few reverse pairs would inflate p quickly — indeed E9 supplies 8 reverse pairs against static tools on corpus, where FD only **ties** cppcheck (Δ=+7.8pp, CI crosses 0). Separately, the **A5 budget-matched contrast has now reached n=566** (1137-sample pool; derivation 571 / evaluation 566), i.e. **past the n≈138 paired requirement** — the old "n too small" objection no longer applies to A5 (it applies to the two headline rates, which stay at n=41/64).
 
-**Plan.** Expansion toward n≥138 is future work item (i); the target is stated in the same units the criticism uses (n, not adjectives). We would rather report a wide CI than a narrow claim.
+**Plan.** The expansion target is **met for the A5 contrast** (n=566 ≫ 138); what remains is a **non-degenerate pool with 1 < k < |A|−1** (Q1) plus multi-round modal verdicts (Q5b). The two headline rates remain n=41/64 and are still read as direction. We would rather report a wide CI than a narrow claim.
 
 > 中文要点：**主动报出功效表**是这一问的杀手锏——评审说"样本小"，你若先给出"我们算过需要多少 n"就赢了。务必带 E9 的 8 个 reverse pairs 与 corpus 打平，证明我们不是只挑赢的场子报。
 
@@ -152,7 +185,7 @@
 
 **Already addressed.** This is stated as an *observed* failure (not a residual): Analysis (2), the Threats table (Temporal/External layers), and the Claim Boundary's "Not reproducible" row. The `app:humanize` section documents why WSL is required (MinGW-w64 has no UBSan runtime; macOS lacks `setarch`) and the CRLF/437-file hash-drift incident.
 
-**Plan.** A **fail-loud environment self-check** in the reproduction scripts (raise on wrong environment instead of degrading silently), plus explicit macOS / Windows-native non-reproducibility statements, is future-work item (vii). We do not claim the numbers reproduce anywhere but in the declared environment.
+**Plan.** The **fail-loud environment self-check has now landed**: `REPRODUCE.md` + `docker/paper/run_all.sh` raise on a wrong environment instead of degrading silently (so a replicator can no longer obtain 10\% and write it up with a green guard); explicit macOS / Windows-native non-reproducibility statements ship alongside. The remaining item is to make the *guard* re-run detectors (so caliber/measurement divergence cannot stay green). We still do not claim the numbers reproduce anywhere but in the declared environment — and Q5b adds that even *inside* it, single-cell verdicts carry a measured ~5\% run-to-run flip rate.
 
 > 中文要点：这是"可复现性"最硬的一击。诚实答法：**"我们的复现是条件复现"**——然后给出 fail-loud 自检这一具体修法。注意别把 35.0→10.0 说成"小问题"，它是一条能毁掉整篇论文的复现链。
 
@@ -200,7 +233,9 @@
 
 ## 附录 A · 一句话弹药库（One-line armory）
 
-- **A5**：**已跑且主端点首次显著**（holdout Δ **+55.0pp**，CI [+33.2,+76.8]，p=9.8×10⁻⁴，b=11/c=0；corpus Δ **+43.8pp**，CI [+13.9,+73.6]，p=0.039，b=8/c=1；105×8 真判定矩阵，840 次真实 detect；2000 次分布中 FD 严格更优 93.75%/95.8%）。**但 holdout 触发预注册 `uninterpretable`**（剔除退化资产的并列分析 Δ=0.0pp，p=1.0）⇒ **方向证据，不宣称 superiority**。**三条限制**：① 池构成效应（+55pp 主要是"不浪费预算"）② n=20/16 ≪ 138 ③ **不得写 "FD > Random"**。让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11 → 0/11）。
+- **A5（676f 全量，权威）**：**已跑且主端点以 p≈10⁻⁴¹ 显著**（1137 样本 × 8 资产 = **9096 次真实 detect**，派生 571 / 评估 566，k=4：FD 54.59% (309/566) vs Random 30.57% (173/566)，Δ **+24.03pp**，CI [+20.51,+27.55]，p=**2.3×10⁻⁴¹**，b=136/c=0，h=0.49；vs Static 24.74%，Δ **+29.86pp**，p=1.9×10⁻³¹；2000 次分布中 FD 严格更优 **97.6%**）。**但并列分析仍在 k=4 触发预注册 `uninterpretable`**（剔除退化资产后 Δ=**0.00pp**，p=1.0）⇒ **方向证据，不宣称 superiority**；并列 k=1~3 显著（+11.31/+7.42/+7.42pp）⇒ **选择效应首次钉在 ≈+7~11pp**。**三条限制**：① 池构成效应（+24pp 主要是"不浪费预算"）② 逐格 ~5% 跑间不稳定 ③ **不得写 "FD > Random"**。让表可读的前提是修了 `wunsequenced` 恒 catch（**头条率逐位不变**，FPR 2/11 → 0/11）。旧值（holdout +55.0pp / corpus +43.8pp，105 样本）**作废**。
+- **能力边界（676g）**：**1147 × 8** 矩阵；检出 **61.6%**、盲区 **38.4%**、**18/70** 类 >50%；家族金字塔 memory 15.2% → link/ODR 67.7%；单资产最高 asan 35.6% vs 六资产并集 61.6% ⇒ **38.4% 是组合天花板**。**不得读作"系统漏报率"**（是资产池能力边界，分母是含难例配额的 1147 个缺陷样本）。
+- **测量不稳定（676f）**：逐格 **~5%** 跑间翻转（无竞争重测 369 格 → 18 翻；并发 3 轮抽检 4/80）⇒ 单回合数字带噪声，历史 105×8 矩阵同受影响；路线图 = 多回合众数。
 - **blind**：只有 21 个样本严格盲；主估计量是 **81.0% (17/21)**，扩样值 82.9% (34/41) 明标含 20 个 reveal 后并入。
 - **Belnap**：`(support, refutation)`；`pass=(1,0)`…`contradict=(1,1)`；detector availability 是独立 metadata；我们不声称编码新颖。
 - **auditability**：当前状态成立；历史钉定不完整（452 事件无 ruleset hash）；路线图 = hash 入账本 + guard 重跑探测器 + fail-loud 自检。
@@ -213,6 +248,8 @@
 
 ## 附录 A′ · ✅ 论文正文已同步（**675a 完成**）
 
+> ⚠️ **676f 已再次更新 A5**（105 → 1137 样本）⇒ 下表 675a 记录的 A5 数字（+55.0/+43.8pp、n=20/16）**已作废**，正文 A5 段落须由 676h 按 `data/676f_论文更新位置清单.md` **整段改写**（不是换几个数）。本附录保留为历史审计轨迹；**引用 A5 一律以 0bis 与 Q1 为准**。
+
 `queyi_neurips2027_v1.1.tex` 的 A5 段落**已在 675a 改写完毕**（不再是 BLOCKED / not run）：
 
 | 位置 | 现状 |
@@ -220,7 +257,7 @@
 | Abstract | "the A5 budget-matched control now **runs**, with a significant main endpoint (+55.0pp / 9.8×10⁻⁴; +43.8pp / 0.039) that is nonetheless **direction-only**: the holdout effect is pool composition … triggering our pre-registered `uninterpretable` clause" |
 | §6 E4（正文） | "**E4 — Ablation A5 (run): the budget-matched control**"，含设计、主端点、池构成效应、并列分析 Δ=0.0pp、三条限制 |
 | §7 (5) | "The A5 budget-matched control has now run … but the holdout effect is **pool composition** … so 'FD beats same-budget random' stays **directional**" |
-| §10 Evidence boundary + Future work | 不支持项加入 "FD beats same-budget random"（因池构成 collapse）；未来工作首位改为 "**confirm A5 by expanding to n≥138**" |
+| §10 Evidence boundary + Future work | 不支持项加入 "FD beats same-budget random"（因池构成 collapse）；未来工作首位改为 "**confirm A5 by expanding to n≥138**"（⚠️ **676f 已达成**：n=566 ≫ 138；余留项改为非退化池 + 多回合众数，见 Q1/Q5b） |
 | 表 `tab:e4` | A5 行已填入结果（+55.0pp / +43.8pp + `uninterpretable`） |
 | 附录（claim 表 / validity 矩阵 / E4 全文） | 均已更新（含完整 A5 数字、并列分析、退化资产、$k$ 扫描） |
 | 中文稿 `paper_shturl.md` | 同步完成（摘要、§5.2/§5.3、§6.2、§7.6、§7.9、§9.2、§9.3、附录） |

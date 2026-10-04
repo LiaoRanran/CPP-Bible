@@ -2,17 +2,19 @@
 
 > **用法**：引用审稿人原话（`Reviewer:`），再给回复（`Response:`），并标出改动位置（`Change:`）。
 > **纪律**：不辩解、不回避；**承认的缺口原样承认**（与论文立场一致）。
-> **数字基线**：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）。**回复中不得出现未落盘数字。**
+> **数字基线**：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）+ `data/a5_676f_results.json`（A5 全量）+ `data/blindspot_676g_stats.json`（盲区地图）。**回复中不得出现未落盘数字。**
 
 ---
 
 ## Summary of changes（修订摘要，按实际改动填）
 
-- 同步全部数字至 **672h/673u** 权威源（holdout **82.9%** (34/41)、corpus **62.5%** (40/64)、**对照 FPR 0.0% (0/11)**——旧值 18.2% (2/11) 系 `wunsequenced` 恒 catch 缺陷所致，673u 已修复，头条率逐位不变）。
-- 随机臂在 672h 为**仪器级代理**（真 B3 仅在 672g 的旧分母 21/48 上跑过）；**Static 臂仍为口径重分箱**。
+- 同步全部数字至 **672h/673u/676f/676g** 权威源（holdout **82.9%** (34/41)、corpus **62.5%** (40/64)、**对照 FPR 0.0% (0/11)**——一个早期草案曾报 2 例对照假阳性，系 `wunsequenced` 恒 catch 缺陷所致，673u 已修复，头条率逐位不变）。
+- **A5 已在全量池上跑完**（1137 样本 × 8 资产 = 9096 次真实 detect；派生 571 / 评估 566，k=4）：FD **54.6%** vs Random **30.6%**（Δ **+24.0pp**，p=2.3×10⁻⁴¹）vs Static **24.7%**（+29.9pp）；并列分析 k=4 仍归零（Δ=0.0pp，p=1.0）⇒ **direction-only**，**不是** "FD > Random"。
+- 新增 **检测器能力边界地图**（676g）：1147×8 矩阵，检出 **61.6%**、盲区 **38.4%**、**18/70** 类 >50%；**逐格 ~5% 跑间不稳定**（676f 自证）一并登记。
+- 随机臂在 672h 为**仪器级代理**；A5 的全量预算匹配对照已补上，**Static 臂仍为口径重分箱**。
 - 全部率值补 Clopper–Pearson 95% CI；配对对比补精确 McNemar + Cohen's $h$ + Δ CI。
 - 明确 `UNVERIFIED` 协议（缺依赖时报未验证，不报误导性低分）。
-- 新增/强化威胁：LLM 通道不可信（prompt injection）、小样本投毒、peeking。
+- 新增/强化威胁：LLM 通道不可信（prompt injection）、小样本投毒、peeking、检测器能力边界（T20）。
 - 补引用：Cohen (1988)、Connor (1987)、Belnap (1977)、CELEUS、QuickCheck/Hypothesis/KLEE。
 
 ---
@@ -20,7 +22,7 @@
 ## Reviewer 1
 
 **R1.1** `Reviewer: "The paper claims a new evaluation paradigm, but the empirical support is thin."`
-**Response:** We agree the first submission was thin on baselines. The revised version reports a **same-sample three-arm contrast**: failure-driven (FD) vs. a static caliber arm vs. a **random-proxy arm** (the *true* B3 ran once at 672g on the older $n=21/48$; its rerun on the expanded samples is registered as open), recomputed by a single script from landed artifacts.
+**Response:** We agree the first submission was thin on baselines. The revised version reports a **same-sample three-arm contrast**: failure-driven (FD) vs. a static caliber arm vs. a **random-proxy arm**, recomputed by a single script from landed artifacts. Separately, the **budget-matched control (A5) has now run at full scale** (1137 samples × 8 assets = 9096 real `detect` calls; derivation 571 / evaluation 566): FD **54.6%** vs Random **30.6%** (Δ **+24.0pp**, exact McNemar **p=2.3×10⁻⁴¹**, b=136/c=0) and vs Static **24.7%** (+29.9pp) — but the pre-registered parallel analysis collapses to Δ **0.0pp**, so we register it as **direction-only**, not a superiority claim (see "On A5" below).
 - FD holdout **82.9%** (34/41) vs. Static **2.4%** (1/41) vs. Random **9.8%** (4/41);
   FD corpus **62.5%** (40/64) vs. Static **17.2%** (11/64) vs. Random **21.9%** (14/64).
 - Exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; all four paired $\Delta$ CIs strictly positive ($\Delta$ lower bound $\ge$ **28.6pp**); e-values up to $2.5\times10^{8}$.
@@ -28,7 +30,7 @@
 **Change:** §Experiments (Table E1, E5); §Claim Boundary.
 
 **R1.2** `Reviewer: "Why is mutation score not treated as defect detection?"`
-**Response:** Because they measure different things. Internal mutation core is **96.5%** (110/114; all-scope **81.8%**, 130/159), while external corpus measurable recall is **62.5%** (40/64; 52.6% all-sample). We cite Just et al. (FSE 2014), who show mutants are correlated with, but not equivalent to, real faults, and we keep mutation as an **internal self-justification metric only**.
+**Response:** Because they measure different things. Internal mutation core is **96.5%** (110/114; all-scope **81.8%**, 130/159) — *a repair is in progress (676i: 96.5% → 97.3%), so this reply keeps 96.5% until that lands* — while external corpus measurable recall is **62.5%** (40/64; 52.6% all-sample). We cite Just et al. (FSE 2014), who show mutants are correlated with, but not equivalent to, real faults, and we keep mutation as an **internal self-justification metric only**.
 **Change:** §Analysis item 4; §Threats (Construct).
 
 **R1.3** `Reviewer: "The static arm is weak; is this a straw man?"`
@@ -48,7 +50,7 @@
 **Change:** §Related Work (positioning table); §Experiments (ablation protocol).
 
 **R2.3** `Reviewer: "The paper says the random baseline is blocked — then how do you claim an advantage over random?"`
-**Response:** The random arm in the current version is an **instrument-level proxy** (holdout **9.8%** (4/41), corpus **21.9%** (14/64); exact McNemar $p=1.9\times10^{-9}$ / $3.0\times10^{-8}$; Cohen's $h=1.65$ / $0.85$). The **true** B3 was wired through the split-repo `select_assets` interface and run at 672g, but only on the older $n=21/48$; after the 672h expansion it has not been rerun. We therefore report a **directional** conclusion, not a controlled magnitude, and register the rerun as future work.
+**Response:** The random arm in the **headline two-rate contrast** is an **instrument-level proxy** (holdout **9.8%** (4/41), corpus **21.9%** (14/64); exact McNemar $p=1.9\times10^{-9}$ / $3.0\times10^{-8}$; Cohen's $h=1.65$ / $0.85$). The blocker is now **resolved**: the budget-matched random control (**A5**) has been run at full scale — 1137 samples × 8 assets, FD **54.6%** vs Random **30.6%**, Δ **+24.0pp** (exact McNemar **p=2.3×10⁻⁴¹**, b=136/c=0). We still report a **directional** conclusion rather than a controlled magnitude, but the reason has changed: it is no longer "the arm is missing" but that the effect is **pool composition** — the pre-registered parallel analysis collapses to Δ **0.0pp (p=1.0)**, triggering the `uninterpretable` clause (see "On A5").
 **Change:** §Experiments (Table E1/E5); §Analysis (§7.2); §Threats (External).
 
 ---
@@ -56,7 +58,7 @@
 ## Reviewer 3
 
 **R3.1** `Reviewer: "Small sample sizes undermine the statistical claims."`
-**Response:** We agree, and we now say so in the abstract and §Claim Boundary rather than in a footnote. The measurable sizes are holdout **$n=41$** and corpus **$n=64$**; $\pm$5pp of CI half-width needs $n=236/378$ ($\pm$10pp needs 61/97); a $\Delta=15$pp paired contrast needs $n\approx103$–173, an independent one $\approx170$ per group. We therefore report **direction, intervals and effect sizes**, and explicitly refuse to report magnitude. Sample expansion to **$n\ge138$** (the paired $\Delta=15$pp design; $n\ge100$ is the looser ±10pp bound) is the first item of future work.
+**Response:** We agree, and we now say so in the abstract and §Claim Boundary rather than in a footnote. The measurable sizes are holdout **$n=41$** and corpus **$n=64$**; $\pm$5pp of CI half-width needs $n=236/378$ ($\pm$10pp needs 61/97); a $\Delta=15$pp paired contrast needs $n\approx103$–173, an independent one $\approx170$ per group. We therefore report **direction, intervals and effect sizes**, and explicitly refuse to report magnitude **for the two headline rates**. For the budget-matched A5 contrast the power gap is now **closed**: A5 has been run at **n=566** (≫ the $n\approx138$ paired requirement; see "On A5"), so its magnitude is readable; what remains for A5 is a **non-degenerate pool with $1<k<|A|-1$**, not more samples.
 **Change:** Abstract; §Statistical (§7.3); Appendix (sample-size table).
 
 **R3.2** `Reviewer: "McNemar significance rests on an extreme structure (c=0)."`
@@ -64,7 +66,7 @@
 **Change:** §Statistical (Table E5 note); §Threats (Statistical).
 
 **R3.3** `Reviewer: "Minor: terminology is inconsistent."`
-**Response:** Fixed. We use "detector" throughout; `unknown` and `miss` are kept strictly separate; `Random†` keeps its dagger as an **instrument-level proxy** (the *true* B3 ran once at 672g on the older $n=21/48$—it is *not* the reported arm at 672h).
+**Response:** Fixed. We use "detector" throughout; `unknown` and `miss` are kept strictly separate; `Random†` keeps its dagger as an **instrument-level proxy** (the *true* budget-matched B3 now also runs at full scale as A5 — 1137 samples, Δ +24.0pp, p=2.3×10⁻⁴¹ — but the dagger marks that the **reported headline arm** is still the proxy, not that the arm is missing).
 **Change:** Whole manuscript.
 
 ---
@@ -72,10 +74,10 @@
 ## Standard reusable replies
 
 ### On "sample size is too small"
-We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width needs $n=236/378$; $\Delta=15$pp paired needs $n\approx103$–173. We report **direction** ($\Delta$ lower bound $\ge$ **28.6pp**; exact McNemar $p\le3.0\times10^{-8}$) and **refuse to report magnitude**. Expansion to **$n\ge138$** is the first future-work item, with a written plan.
+We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width needs $n=236/378$; $\Delta=15$pp paired needs $n\approx103$–173. We report **direction** ($\Delta$ lower bound $\ge$ **28.6pp**; exact McNemar $p\le3.0\times10^{-8}$) and **refuse to report magnitude** for the two headline rates. For the budget-matched A5 contrast the expansion has **already happened** ($n=566 \gg 138$), so the remaining limitation there is pool geometry, not power.
 
 ### On "the baseline is not strong enough"
-Partly correct, and we label precisely. The **static arm is a caliber re-binning**, not a re-run of a real static detector (split-repo `detect_static` still missing) — this is marked and excluded from conclusions. The **random arm is an instrument-level proxy**; the true B3 ran only at 672g on the older denominator. We register the missing `detect_static` and the B3 rerun as **open items** rather than substituting an approximation.
+Partly correct, and we label precisely. The **static arm is a caliber re-binning**, not a re-run of a real static detector (split-repo `detect_static` still missing) — this is marked and excluded from conclusions. The **random arm in the headline two-rate contrast is an instrument-level proxy**; the *true* budget-matched control (**A5**) has now been **run at full scale** (1137 samples; Δ +24.0pp, p=2.3×10⁻⁴¹), so that item is no longer open — it is reported as **direction-only** because its effect is pool composition. The missing `detect_static` remains an **open item** rather than being substituted by an approximation.
 
 ### On "why not evaluate on SWE-bench"
 Because our object of study is not code repair but **verification of knowledge claims**. SWE-bench measures whether a model can patch an issue; we measure whether a claim is true under an explicit boundary triple. Adapting SWE-bench would change the construct (Construct validity). We cite the SWE-bench contamination line as **motivation** for external-sample-first design.
@@ -98,7 +100,7 @@ The main text is compressed to the E&D 9-page target (references and appendix ex
 We agree and now say so explicitly in §7 (Threats to Validity), where we name **unreviewed labels** as the **single largest validity threat** to the recall numbers. The 41 holdout + 64 corpus labels were authored by a single annotator and have **no** second-annotator check yet (IRR = 0). We have pre-registered a remediation protocol: a two-annotator re-label of a **random 25% subsample** (10/41 holdout, 16/64 corpus) with the original annotator blinded to the second; agreement measured by **Cohen's κ**, and if κ < 0.6 on any layer we escalate to a **100% re-review** of that layer by a third party. Every disagreement is adjudicated and re-fed into the detection-rate recomputation; the before/after rate delta is reported as a validity residual. This protocol is specified in §7 and will be executed before any claim of "verified" status. Until it runs, all detection rates carry this unresolved residual.
 
 ### On "A5 / the core-mechanism falsification experiment"
-A5 (random-budget control) has now **run**: its pre-registered main endpoint is **significant for the first time** — holdout FD 90.0% (18/20) vs. Random 35.0% (7/20), Δ **+55.0pp** (CI [+33.2, +76.8], exact McNemar p=9.8×10⁻⁴, b=11/c=0); corpus 81.3% (13/16) vs. 37.5%, Δ **+43.8pp** (p=0.039, b=8/c=1). **But it does not license "FD beats Random":** the holdout effect is **pool composition** — Random's draw spends half its budget on degenerate (constant-`unknown`) assets, and in the pre-registered *parallel* analysis that excludes them the Δ **collapses to 0.0pp (p=1.0), triggering our `uninterpretable` clause**. With n=20/16 ≪ 138 the result is **direction-only**; we write no "FD > Random" sentence. The table became readable only after we fixed a `wunsequenced` constant-catch defect (headline rates **unchanged**; control FPR 2/11 → **0/11**). Roadmap: confirm A5 by expanding to **n ≥ 138** — the only design separating selection from pool composition.
+A5 (random-budget control) has now **run at full scale** (1137 samples; derivation 571 / evaluation **566 ≫ 138**): at k=4 over the full 8-asset pool, FD **54.6% (309/566)** vs. Random **30.6% (173/566)** vs. Static **24.7% (140/566)**; Δ(FD−Random) **+24.0pp** (CI [+20.5, +27.5], exact McNemar **p=2.3×10⁻⁴¹**, b=136/c=0, h=0.49) and Δ(FD−Static) **+29.9pp** (p=1.9×10⁻³¹); FD is strictly better than the single-seed draw in **97.6%** of 2000 resamples. **But it still does not license "FD beats Random":** the effect is **pool composition** — 2 of 8 assets (`wunsequenced`, `compile-time`) are constant-`unknown` over all 1137 samples, so half of Random's budget is spent on zero-information assets; in the pre-registered *parallel* analysis excluding them the **Δ collapses to 0.0pp (p=1.0)** while the **Static gap grows to +30.6pp (p=8.1×10⁻³⁴)** — i.e. what A5 identifies is "do not fund assets that cannot inform," **and the `uninterpretable` clause is triggered again**. The parallel analysis is nonetheless significant at k=1–3 (+11.31/+7.42/+7.42pp), pinning the *selection* effect at **≈ +7–11pp**. We therefore still write no "FD > Random" sentence. Roadmap (changed): the power gap is **closed**; what remains is a **non-degenerate pool with 1 < k < |A|−1** so that the two arms can actually differ. Separately, we now publish a **capability-boundary map** of our own instrument (1147 samples; blind-spot ratio **38.4%**; **18 of 70** types >50% blind; family gradient memory 15.2% → link/ODR 67.7%), so every recall number is explicitly scoped to the *visible* region — and we register a measured **~5% run-to-run flip rate** on single-cell verdicts as a first-class limitation.
 
 ## 落款
 
@@ -106,7 +108,7 @@ A5 (random-budget control) has now **run**: its pre-registered main endpoint is 
 
 ---
 
-## 高频审稿问题（5 条，672h 版）
+## 高频审稿问题（5 条，676f 版）
 
 ### Q1. Sample size is still small (41/64)
 We agree and say so up front. Measurable $n=41$ (holdout) / $n=64$ (corpus); $\pm$5pp half-width
@@ -114,7 +116,9 @@ needs $n=236/378$, and a $\Delta=15$pp paired contrast needs $n\approx103$–173
 add an **e-process** layer: cumulative e-values multiply per item and stay anytime-valid, so the
 expansion protocol does not need re-calibration; measured e-values reach $2.5\times10^{8}$ for the
 static contrast, far above the threshold of 20. We report **direction** and **refuse to report
-magnitude**; expansion is the first future-work item.
+magnitude** for the two headline rates. For the budget-matched A5 contrast the expansion has
+**already happened** ($n=566 \gg 138$; Δ +24.0pp, p=2.3×10⁻⁴¹), so the remaining limit there is
+pool geometry, not power.
 
 ### Q2. The LLM arm result contradicts your expectation
 Correct, and we register it as a **negative result**. GLM-4 caught 12/12 errors (vs. FD's 6/12 on the
