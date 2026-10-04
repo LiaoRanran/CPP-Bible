@@ -22,406 +22,406 @@
       "block": 49,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch12_buildsystems.md",
       "block": 20,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch12_buildsystems.md",
       "block": 21,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch14_debugging.md",
       "block": 11,
       "reason": "GUARDED_COMPILE",
       "note": "需 -DTRACK_LEAK 等附加宏",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch18_buildconfig.md",
       "block": 13,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch19_variables.md",
       "block": 14,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch23_namespace_adl.md",
       "block": 27,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch26_lambda.md",
       "block": 15,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 5,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 13,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 17,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch28_lifetime_ub.md",
       "block": 55,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch29_friend.md",
       "block": 15,
       "reason": "INTENTIONAL_ERROR",
       "note": "教学用故意错误块",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch35_memory_layout.md",
       "block": 6,
       "reason": "POSIX",
       "note": "mmap 演示依赖 <sys/mman.h>，MinGW/Windows 不可编译（Linux 可编）",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch35_memory_layout.md",
       "block": 14,
       "reason": "POSIX",
       "note": "fork()/COW 演示依赖 <sys/wait.h>，MinGW/Windows 不可编译",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch39_raii_rule.md",
       "block": 34,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch39_raii_rule.md",
       "block": 53,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 6,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 15,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 21,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 22,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 23,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 25,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 29,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 37,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch44_memory_pool.md",
       "block": 38,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch65_type_traits.md",
       "block": 32,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch96_sorting.md",
       "block": 4,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch108_memory_order.md",
       "block": 18,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch117_copy_elision.md",
       "block": 6,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch118_modules.md",
       "block": 5,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch118_modules.md",
       "block": 10,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch118_modules.md",
       "block": 24,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch118_modules.md",
       "block": 25,
       "reason": "MODULE",
       "note": "C++20 模块示例，需模块编译管线(-fmodules)；单块语法检查不支持模块语义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch126_msstl.md",
       "block": 19,
       "reason": "MSVC",
       "note": "MSVC 专属 API/宏(_MSC_VER)，非 GCC/Clang 可编译；MinGW 环境下必然 FAIL",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch126_msstl.md",
       "block": 32,
       "reason": "MSVC",
       "note": "MSVC 专属 API/宏(_MSC_VER)，非 GCC/Clang 可编译；MinGW 环境下必然 FAIL",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch128_boost.md",
       "block": 1,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch129_qt.md",
       "block": 11,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch131_fmt_spdlog.md",
       "block": 1,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch131_fmt_spdlog.md",
       "block": 2,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch131_fmt_spdlog.md",
       "block": 8,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch135_patterns_intro.md",
       "block": 11,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch136_creational.md",
       "block": 23,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch138_behavioral.md",
       "block": 2,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch142_ecs.md",
       "block": 41,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch144_style.md",
       "block": 11,
       "reason": "MULTI_FILE",
       "note": "示例引用同章/外部 .cpp/.h，需多文件联合编译；单块隔离审计不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch145_naming_api.md",
       "block": 42,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch145_naming_api.md",
       "block": 53,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch145_naming_api.md",
       "block": 57,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch146_error_handling.md",
       "block": 58,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义(divide_error_code 在 #blk57 定义, 本块调用)",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch150_testing.md",
       "block": 6,
       "reason": "EXT_LIB",
       "note": "依赖未分发的第三方库(boost/Qt/fmt/spdlog/gtest)，环境未安装不可编",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch159_threadpool.md",
       "block": 40,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch160_mempool.md",
       "block": 6,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch160_mempool.md",
       "block": 14,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch160_mempool.md",
       "block": 20,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch161_logger.md",
       "block": 2,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch161_logger.md",
       "block": 19,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     },
     {
       "file": "ch161_logger.md",
       "block": 32,
       "reason": "CROSS_BLOCK",
       "note": "符号在前序块定义",
-      "expiry": "on_full_compile_pass"
+      "expiry": "2026-11-10"
     }
   ],
   "audited_at": "2026-08-14",
@@ -429,6 +429,6 @@
   "exempt_count": 58,
   "expiry_policy": "all_exemptions_cleared_when_full_compile_pass",
   "expiry_note": "当 Book/ 全量 cpp 块编译通过(零豁免)时，本清单全部清零；在此之前每条豁免均需随内容变更复审。exempt_audit.py 逐块重编验证有效性，DRIFT(INTENTIONAL_ERROR 变 PASS)/MISSING(块号漂移)必阻断，STALE(豁免失效)WARN。",
-  "last_audited": "2026-10-03",
-  "audited_by": "674c DEBT-001 A方案执行（exempt_audit.py 逐块重编 58/58 仍有效）"
+  "last_audited": "2026-10-04",
+  "audited_by": "676i DEBT-001 延期执行：58 条 expiry on_full_compile_pass → 2026-11-10（清零条件不变，仅延展到期日）；exempt_audit.py 58/58 仍有效"
 }
