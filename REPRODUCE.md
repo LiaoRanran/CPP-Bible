@@ -113,12 +113,21 @@ python tools/llm_arm_672i.py              # E7 LLM 裁判臂（需 API key）
 ## 5. 论文数字 vs 权威源（本批新增的两个审计工具）
 
 ```bash
-python tools/verify_paper_numbers.py      # 输出 data/676h_number_audit.{json,md}
-python tools/seed_audit_676h.py           # 输出 data/676h_seed_audit.{json,md}
+python tools/verify_paper_numbers.py      # 数字→权威源：118 检察 / 113 一致 / 0 硬伤
+python tools/recompute_a5_676f.py         # 从原始 verdict 矩阵**独立重算** A5 与 676g 盲区
+python tools/data_integrity_676h.py       # 1137 样本清单：去重/切分/planted 不变式 + md5 重算
+python tools/seed_audit_676h.py           # 种子登记：实验类未固定种子须为 0
 ```
 
-`verify_paper_numbers.py` 退出码 1 表示存在**硬不一致**（某个源里的值在论文里找不到），
-0 表示全部一致；`seed_audit_676h.py` 退出码 1 表示有实验类脚本未固定种子。
+- `verify_paper_numbers.py` 退出码 1 表示存在**硬不一致**（某个源里的值在论文里找不到）。
+- `recompute_a5_676f.py` 不读结果文件里的率，直接从 `data/a5_676f_detection_matrix.json` 与
+  `data/blindspot_676g_detection_matrix.json` 重算：FD 309/566、Random 173/566、Static 140/566、
+  full-pool 340/566，并列分析 Δ(FD−Random)=0.00pp、Δ(FD−Static)=+30.57pp，盲区比 0.3836、
+  并集 61.6%——任一不符即非零退出。
+- `data_integrity_676h.py` 重算 md5 与 `data/676f_pipeline.py::_md5_files` 同口径（文件名 + 字节，
+  排序）；当前一致 1080 条、跳过 57 条（内联代码 / 语料文件不在库内）、失配 0；
+  清单指纹 `sha256[:16] = c9f51f51bc96f034`。
+- `seed_audit_676h.py` 退出码 1 表示有实验类脚本未固定种子（当前为 0）。
 
 ---
 
@@ -135,6 +144,11 @@ tectonic -X compile queyi_neurips2027_v1.1.tex
 - 编译 log 里不得出现 `undefined`（引用缺失）或 `??`（`\ref` 落空）。
 
 ---
+
+```bash
+python tools/recompute_a5_676f.py    # A5 全量 + 676g 盲区：从 1137×8 / 1147×8 原始矩阵重算
+python tools/data_integrity_676h.py  # 数据完整性：清单不变式 + md5 重算（零失配）
+```
 
 ## 7. 已知不可复现 / 不可一键复现（fail-loud 清单，不掩饰）
 

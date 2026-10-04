@@ -1129,6 +1129,11 @@ Seed & Used by & Recorded in \\
 \bottomrule
 \end{tabular}
 \end{center}
+Three audit tools make the numbers themselves checkable: \texttt{verify\_paper\_numbers.py}
+(every claim $\to$ authoritative artifact), \texttt{recompute\_a5\_676f.py} (recomputes the A5 arms
+and the 676g blind-spot statistics \emph{directly from the raw verdict matrices}, without reading the
+reported rates) and \texttt{data\_integrity\_676h.py} (1137-sample manifest invariants plus md5
+recomputation; \textbf{1080 recomputed, 0 mismatched}, 57 skipped as inline/out-of-repo).
 Zero experiment-class scripts use randomness without a fixed seed
 (\texttt{data/676h\_seed\_audit.json::summary.experiment\_unseeded $= 0$}). The 676f split is
 deterministic: within each $(source\_batch, defect\_group)$ stratum, order by

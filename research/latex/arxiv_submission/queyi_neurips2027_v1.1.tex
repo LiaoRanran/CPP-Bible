@@ -735,7 +735,7 @@ artifacts and are the source of the abstract's layered read.
 \label{tab:e4}
 \centering
 \footnotesize
-\begin{tabular}{@{}clp{3.3cm}p{3.6cm}l@{}}
+\begin{tabular}{@{}clp{2.9cm}p{3.1cm}p{4.7cm}@{}}
 \toprule
 ID & Remove/change & Hypothesis & Primary metric & Result \\
 \midrule
@@ -1084,11 +1084,13 @@ python tools/external_corpus_reveal_665.py  # pre-expansion caliber 35.0%  (requ
 python tools/mutation_test_656.py           # core 96.5% / all 81.8%
 python tools/counterfactual_extend_665.py   # F1=1.0
 python tools/run_658_gate.py                # L0 5/5
-# post-672h authority numbers: holdout 82.9% (34/41), corpus measurable 62.5% (40/64), FPR 0.0% (0/11)
-python -c "import json;d=json.load(open('data/experiments/reveal_update_671a.json',encoding='utf-8'));print(json.dumps(d['pending_for_671b'],ensure_ascii=False,indent=2))"
+# post-672h authority: holdout 82.9% (34/41), corpus measurable 62.5% (40/64), FPR 0.0% (0/11)
+python -c "import json;d=json.load(open('data/experiments/reveal_update_671a.json', \
+  encoding='utf-8'));print(json.dumps(d['pending_for_671b'],ensure_ascii=False,indent=2))"
 # Verifier Coverage: denominator 42, numerator 31 -> 73.8% [58.0, 86.1]
 python tools/counts_659.py --json           # atoms_real = 42 (denominator authority)
-python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(cp_interval(31,42))"
+python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval; \
+  print(cp_interval(31,42))"
 # consistency
 python -c "import sys;sys.path.insert(0,'tools');import gate_engine;print(len(gate_engine.RULES))"  # 67
 wc -l data/authority/decision_event_v2_ledger.jsonl  # 452
@@ -1127,6 +1129,11 @@ Seed & Used by & Recorded in \\
 \bottomrule
 \end{tabular}
 \end{center}
+Three audit tools make the numbers themselves checkable: \texttt{verify\_paper\_numbers.py}
+(every claim $\to$ authoritative artifact), \texttt{recompute\_a5\_676f.py} (recomputes the A5 arms
+and the 676g blind-spot statistics \emph{directly from the raw verdict matrices}, without reading the
+reported rates) and \texttt{data\_integrity\_676h.py} (1137-sample manifest invariants plus md5
+recomputation; \textbf{1080 recomputed, 0 mismatched}, 57 skipped as inline/out-of-repo).
 Zero experiment-class scripts use randomness without a fixed seed
 (\texttt{data/676h\_seed\_audit.json::summary.experiment\_unseeded $= 0$}). The 676f split is
 deterministic: within each $(source\_batch, defect\_group)$ stratum, order by
@@ -1424,7 +1431,7 @@ compile-time & 0 & 0.0\% & \textbf{100\%} & \textbf{degenerate} \\
 
 \paragraph{Main endpoint ($k{=}4$, pre-registered full 8-asset pool, $n{=}566$ evaluation).}
 \begin{center}\footnotesize
-\begin{tabular}{@{}llrl@{}}
+\begin{tabular}{@{}p{2.7cm}p{3.3cm}p{2.2cm}p{3.9cm}@{}}
 \toprule
 Arm & assets drawn & recall (CP 95\%) & vs FD \\
 \midrule
