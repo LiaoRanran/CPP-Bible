@@ -1,0 +1,190 @@
+{
+  "schema": "queyi-690-review-opinion-matrix/v1",
+  "batch": "690",
+  "generated_for": "critical digestion of three rounds of external review",
+  "paper_version_reviewed": "research/latex/queyi_neurips2027_v1.1.tex",
+  "version_fingerprint_method": "four fingerprint opinions (TODO placeholder / 18-70 residual / E[J]=kd/n / Who-Grades-Self-Evolving) all present in v1.1 (2120 lines) and absent from v1.0 (1038 lines)",
+  "critical_caveat": "opinion text is a SECOND-HAND paraphrase from the task card; verbatim reviewer quotes are NOT available. Numeric claims quoted by the reviewer were independently recomputed where possible.",
+  "severity_scale": ["fatal", "major", "minor", "trivial_or_unrated"],
+  "decision_scale": ["accept", "partial_accept", "contest", "reject"],
+  "categories": [
+    "evolution_narrative",
+    "plus24pp_interpretation",
+    "statistical_method",
+    "real_world_experiment",
+    "annotation",
+    "environment",
+    "merkle_provenance",
+    "related_work",
+    "svcomp_positioning",
+    "formula_symbol",
+    "writing_structure",
+    "length",
+    "positioning_contribution_tier",
+    "submission_strategy",
+    "long_term_direction"
+  ],
+  "opinion_count": 43,
+  "severity_histogram": {"fatal": 6, "major": 16, "minor": 9, "trivial_or_unrated": 12},
+  "matrix": [
+    {
+      "category": "evolution_narrative",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-01"]},
+      "round2": {"mentioned": true, "severity": "major", "ids": ["R2-08"]},
+      "round3": {"mentioned": true, "severity": "major", "ids": ["R3-04"]},
+      "cross_round_consistency": "consistent",
+      "note": "All three rounds converge: evolution payoff unproven. R2 and R3 shift the question from 'prove gain' to 'prove governance value'.",
+      "verdict_lean": "partial_accept"
+    },
+    {
+      "category": "plus24pp_interpretation",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-02"]},
+      "round2": {"mentioned": true, "severity": "major", "ids": ["R2-09"]},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "consistent",
+      "note": "R2 asks for p-value and effective n of the +7~12pp mechanism-level effect - i.e. it treats the mechanism effect as real but under-documented.",
+      "verdict_lean": "partial_accept"
+    },
+    {
+      "category": "statistical_method",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-03", "R1-16", "R1-17"]},
+      "round2": {"mentioned": true, "severity": "major", "ids": ["R2-02", "R2-03", "R2-04", "R2-10"]},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "consistent_and_escalating",
+      "note": "Most concrete and most actionable category. R2 elevates TOST from suggestion to main analysis. Already executed by 689 in-flight (p_TOST=0.0643 at +/-10pp).",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "real_world_experiment",
+      "round1": {"mentioned": true, "severity": "major", "ids": ["R1-04", "R1-18"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": true, "severity": "minor", "ids": ["R3-10"]},
+      "cross_round_consistency": "DOWNGRADED_by_round3",
+      "note": "TENSION T-01: R1 treats original-project CVE validation as important; R3 ranks it FOURTH out of five directions.",
+      "verdict_lean": "contest"
+    },
+    {
+      "category": "annotation",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-05"]},
+      "round2": {"mentioned": true, "severity": null, "ids": ["R2-07"]},
+      "round3": {"mentioned": true, "severity": null, "ids": ["R3-03", "R3-07"]},
+      "cross_round_consistency": "consistent_and_escalated_to_top_priority",
+      "note": "TENSION T-02: R1 calls single-annotator 'the strongest objection'; R3 ranks independent human labels as priority #1. Both agree it is the binding constraint.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "environment",
+      "round1": {"mentioned": false, "severity": null, "ids": []},
+      "round2": {"mentioned": true, "severity": "fatal", "ids": ["R2-01", "R2-11"]},
+      "round3": {"mentioned": true, "severity": null, "ids": ["R3-02", "R3-03", "R3-07", "R3-08"]},
+      "cross_round_consistency": "EMERGED_in_round2",
+      "note": "Absent from R1 entirely. R2 elevates to one of three formal components; R3 ranks #2. This is the category where the review most exceeds our own framing.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "merkle_provenance",
+      "round1": {"mentioned": true, "severity": "major", "ids": ["R1-06"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "single_round_only",
+      "note": "Raised once, never repeated, never escalated. Paper L614-615 ALREADY contains the exact limiting formulation the reviewer asks for. Likely a communication gap, not a science gap.",
+      "verdict_lean": "reject_with_evidence"
+    },
+    {
+      "category": "related_work",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-10"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": true, "severity": "major", "ids": ["R3-09"]},
+      "cross_round_consistency": "consistent_across_rounds",
+      "note": "INDEPENDENTLY VERIFIED REAL: DeepFact arXiv 2603.05912 (ACL 2026, co-evolving benchmarks+agents, 'audit-then-score'); BabelJudge arXiv 2606.22329 (LLM-judge reliability, 4 failure modes); CodeJudgeBench arXiv 2507.10535 (26 judge models on code tasks). Who Grades the Grader / Self-Evolving Agents ARE already cited in v1.1. DeepFact is NOT in the bib - genuine novelty gap.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "svcomp_positioning",
+      "round1": {"mentioned": true, "severity": "minor", "ids": ["R1-11"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "single_round_only",
+      "note": "Only R1, minor severity, never repeated. Low cost to address defensively.",
+      "verdict_lean": "partial_accept"
+    },
+    {
+      "category": "formula_symbol",
+      "round1": {"mentioned": true, "severity": "minor", "ids": ["R1-07"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "single_round_only",
+      "note": "FACT CHECK: E[J]=kd/n is the exact mean of a hypergeometric distribution and is CORRECT. The reviewer's formula claim is wrong on that point. BUT a real adjacent defect exists: the paper says the linear model is 'validated across three pools' when the d=0 pool has model prediction 0 vs observed +3.06pp, and c is undefined there - so it is calibrated on 2 of 3 pools.",
+      "verdict_lean": "reject_formula_contest_overstatement"
+    },
+    {
+      "category": "writing_structure",
+      "round1": {"mentioned": true, "severity": "fatal", "ids": ["R1-09", "R1-08", "R1-13"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": false, "severity": null, "ids": []},
+      "cross_round_consistency": "single_round_only_but_two_are_CONFIRMED_TRUE",
+      "note": "HIGHEST-CONFIDENCE FINDINGS OF THE WHOLE BATCH. Independently reproduced: L721-725 contain five {{TODO_ablation_A0..A4}} placeholders; L890 still says '18/70 types' while L1835 says '13/34 types'. Both are real, both are in the submitted version, both are trivially fixable, and 687's consistency table missed them.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "length",
+      "round1": {"mentioned": true, "severity": "minor", "ids": ["R1-12", "R1-19"]},
+      "round2": {"mentioned": true, "severity": null, "ids": ["R2-07"]},
+      "round3": {"mentioned": true, "severity": null, "ids": ["R3-06"]},
+      "cross_round_consistency": "consistent",
+      "note": "R3 reframes length as a RISK ('doing too much') rather than a defect. This is the sharpest strategic point in the whole review: 676-688 may have produced 12 batches of material the 9-page main text cannot properly absorb.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "positioning_contribution_tier",
+      "round1": {"mentioned": true, "severity": "minor", "ids": ["R1-14"]},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": true, "severity": null, "ids": ["R3-03"]},
+      "cross_round_consistency": "consistent",
+      "note": "687-A already merged submodular formalization into Method rather than demoting it. Partially pre-empted.",
+      "verdict_lean": "partial_accept"
+    },
+    {
+      "category": "submission_strategy",
+      "round1": {"mentioned": true, "severity": "major", "ids": ["R1-20"]},
+      "round2": {"mentioned": true, "severity": null, "ids": ["R2-07", "R2-12"]},
+      "round3": {"mentioned": true, "severity": "major", "ids": ["R3-06"]},
+      "cross_round_consistency": "consistent",
+      "note": "Prediction drift: R1 Weak Reject -> R2 'Borderline/Weak Accept after restructure' -> R3 'good case touches Solid Accept'. The acceptance bar is NOT stable across rounds; see tensions doc T-04.",
+      "verdict_lean": "accept"
+    },
+    {
+      "category": "long_term_direction",
+      "round1": {"mentioned": false, "severity": null, "ids": []},
+      "round2": {"mentioned": false, "severity": null, "ids": []},
+      "round3": {"mentioned": true, "severity": null, "ids": ["R3-01", "R3-02", "R3-03", "R3-05", "R3-07", "R3-11"]},
+      "cross_round_consistency": "round3_only",
+      "note": "Round 3 is strategic advice, not review. Must be handled with a different decision rule than R1: long-term direction advice is evaluated against OUR goals, not against reviewer preferences.",
+      "verdict_lean": "contest_and_select"
+    },
+    {
+      "category": "information_theory_goodhart",
+      "round1": {"mentioned": false, "severity": null, "ids": []},
+      "round2": {"mentioned": true, "severity": null, "ids": []},
+      "round3": {"mentioned": true, "severity": "minor", "ids": ["R3-11"]},
+      "cross_round_consistency": "TENSION_T-03",
+      "note": "R2 says theory is correct but should not become the science; R3 says the information-theoretic Goodhart unification is busywork and should be dropped. 'Useless' vs 'harmful' is a real contradiction.",
+      "verdict_lean": "partial_accept_now_drop_never_claim"
+    }
+  ],
+  "tensions_index": ["T-01", "T-02", "T-03", "T-04", "T-05", "T-06", "T-07"],
+  "independently_verified_external_works": [
+    {"name": "DeepFact", "id": "arXiv 2603.05912 / aclanthology 2026.acl-long.1586", "verified": true, "in_our_bib": false, "relevance": "co-evolving benchmarks AND agents, 'audit-then-score' - closest novelty threat"},
+    {"name": "BabelJudge", "id": "arXiv 2606.22329", "verified": true, "in_our_bib": false, "relevance": "LLM-as-a-judge reliability audit, four failure modes incl. context/verbosity bias - closest method threat to the environment-aware protocol"},
+    {"name": "CodeJudgeBench", "id": "arXiv 2507.10535", "verified": true, "in_our_bib": false, "relevance": "26 judge models on code generation/repair/test-generation - the standard we would be compared against"},
+    {"name": "JudgeSense", "id": "github.com/rohithreddybc/judgeSense", "verified": "repo exists, peer-review status UNCONFIRMED", "in_our_bib": false, "relevance": "judge reliability benchmark; treat as weak/preprint evidence"},
+    {"name": "Who Grades the Grader?", "id": "zhang2026whogrades", "verified": true, "in_our_bib": true, "relevance": "already cited in v1.1 related work"},
+    {"name": "Self-Evolving Agents with Anytime-Valid Certificates", "id": "sengupta2026anytimevalid", "verified": true, "in_our_bib": true, "relevance": "already cited in v1.1 related work"}
+  ],
+  "unverifiable_by_this_batch": [
+    "verbatim reviewer wording (no raw review text available)",
+    "reviewer weighting of each objection (which objection drove the Weak Reject)",
+    "whether round-2 and round-3 reviewers saw the same version as round-1",
+    "JudgeSense peer-review status"
+  ]
+}
