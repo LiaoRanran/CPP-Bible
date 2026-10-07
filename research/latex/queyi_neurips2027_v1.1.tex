@@ -2061,4 +2061,88 @@ re-scoring the old one.
 \item (ix) Backfill semantic scope (0/26).
 \end{itemize}
 
+\section{Real-World Validation (683)}
+\label{app:realworld683}
+\textbf{Benchmark.} We reconstruct 110 real C++ defects (RW-001--RW-110) from 30+ upstream
+projects (OpenSSL, glibc, curl, nginx, Apache httpd, OpenSSH, libxml2, zlib, libpng, libwebp,
+FreeType, libtiff, expat, ImageMagick, FFmpeg, Chromium/V8, WebKit, Firefox, SQLite, PostgreSQL,
+Redis, protobuf, Boost, Qt, Godot, the Linux kernel, sudo, polkit, FreeBSD, and others).
+Every entry carries a traceable source: \textbf{110/110} sample CVEs were verified online via the
+NVD API v2.0 (113 unique CVEs queried, all found; raw API responses frozen in-repo), and NVD
+references yielded fix-commit links for 22 entries, issue links for 7, and PR links for 8.
+Each defect ships as a single-file minimal reconstruction ($<$200 lines) that compiles with
+g++ and is fed through \emph{the same} 8-asset pipeline as the synthetic corpus: identical hit
+predicates (byte-identical to \texttt{holdout\_reveal\_661.detect}'s SAN branches), dual
+$-O0$/$-O2$, and the same unknown-is-never-a-miss rule.
+\textbf{Detectability (OR over 8 assets).} $59.09\%$ (65/110; unknown $=0$ at the OR level).
+Per-asset: \texttt{asan} $49.09\%$, \texttt{tsan} $22.73\%$, \texttt{cross-compile} $20.0\%$,
+\texttt{ubsan} $18.18\%$, \texttt{compiler-warn} $4.55\%$, \texttt{linker} $0\%$ (all 110
+reconstructions are single-translation-unit; the linker asset has no trigger surface on this
+corpus --- registered as a scope fact, not a failure), and the two constant-unknown assets are
+excluded as everywhere. 27 of the 65 catches (41.5\%) are \emph{solo} catches (exactly one
+asset fires), directly quantifying complementarity.
+\textbf{Real vs.\ synthetic.} The OR rate is statistically indistinguishable from the synthetic
+corpus ($59.09\%$ vs.\ $61.64\%$; two-proportion $z=-0.52$, $p=0.60$, Cohen's $h=0.052$;
+independent samples, \emph{not} paired, so no McNemar). The informative structure is per-asset
+and per-type: \texttt{asan} is \emph{stronger} on the real corpus ($+13.52$\,pp, $p=0.005$) and
+so is \texttt{cross-compile} ($+9.36$\,pp, $p=0.003$), while \texttt{compiler-warn} is weaker
+($-7.92$\,pp, $p=0.014$). Removing logic/hang-semantics types ($n=31$, OR $3.23\%$) leaves 79
+memory-safety defects at OR $81.01\%$. Within this caliber, ``real defects are harder'' is
+\emph{not} supported by our data; what changes with the corpus is the type \emph{mix}.
+\textbf{Honesty statement.} The PoCs are source-derived reconstructions, not original project
+context (build systems and cross-module dependencies are simplified); the classifier into the
+34-type vocabulary is author-assigned (disagreement $\kappa=0.73$ in the 682 second pass);
+45 miss cases are dissected by cause in the in-repo failure-case report (detector capability
+blind spots vs.\ configuration gaps vs.\ observation-caliber limits such as timeouts on hang
+classes). Machine-readable artifacts: \texttt{data/683\_real\_world\_benchmark.json},
+\texttt{data/683\_real\_world\_detection\_matrix.json},
+\texttt{data/683\_real\_world\_candidates\_verified.json}, and the 110 PoCs under
+\texttt{data/real\_world/}.
+
+\section{Operator Ablation (All 16 Configurations) (683)}
+\label{app:operator683}
+\textbf{Design.} The evolution operator's score is a weighted sum of four components
+(failure coverage, novelty, cost, redundancy). We enumerate \emph{all} $2^4$ on/off
+configurations with equal weights, plus 16 exploratory \texttt{unique}-novelty variants, and
+run seven baselines (random single-point, static, FD top-$k$, frequency, greedy, oracle,
+information gain) in the same budget sweep, reusing the frozen 676f matrix and the 673p
+statistical primitives (no new measurements).
+\textbf{Results (Pool~A, $k=4$, evaluation set $n=566$).} Set-cover greedy reaches $56.0071\%$,
+equal to the oracle ceiling; the operator with $w_{\text{failure}}{=}1$ (fd\_only) also reaches
+$56.0071\%$ --- and this is not a coincidence: \textbf{fd\_only is mathematically the residual-
+coverage greedy}, verified as an exact selection identity in \textbf{14/14} (pool, $k$) blocks.
+The full four-component equal-weight configuration selects the same asset set (also
+$56.0071\%$). FD top-$k$ (the 676f baseline), frequency, information gain and the pre-registered
+random single point all land at $54.5936\%$; static at $24.03\%$. The literal
+novelty component is provably equivalent to failure coverage (the weight-shift identity
+$(w_f,w_n)\equiv(w_f{+}w_n,0)$ holds in 14/14 blocks); the \texttt{unique} variant does move the
+selection in 11/14 blocks, confirming it as a genuine (if exploratory) repair.
+\textbf{Positioning (no over-claim).} The mechanism is textbook set-cover greedy under a
+four-state verdict discipline --- an \emph{incremental + governance} contribution, not a new
+algorithmic theory. What the framework adds is: the fail-closed verdict caliber (unavailable
+detectors are \texttt{unknown}, never \texttt{miss} --- worth $\approx$23\,pp of measured rate
+when violated), a deterministic and fully traceable operator (ties broken by id; every step
+auditable), and this exhaustive ablative evidence itself. Machine-readable artifacts:
+\texttt{data/683\_operator\_ablation.json}, \texttt{data/683\_baseline\_comparison.json}.
+
+\section{Toolchain Sensitivity (683)}
+\label{app:toolchain683}
+\textbf{Cross-compiler (same platform).} We re-run the asan/ubsan arms of a stratified
+200-sample subset with Ubuntu clang++~18.1.3 and compare against the frozen 676g matrix
+(WSL g++~13.3; identical hit predicates, dual $-O0$/$-O2$). Agreement is $93.5\%$ for both
+assets ($\kappa=0.864$ for asan, $0.843$ for ubsan); clang is $+1.0$\,pp more sensitive on
+asan and $+2.0$\,pp on ubsan. The maximum per-asset difference ($2.0$\,pp) stays far below
+the pre-committed disclosure threshold (any $>10$\,pp gap must be flagged in Limitations),
+so toolchain sensitivity does not threaten the conclusions --- stated with the numbers rather
+than as an assertion.
+\textbf{Cross-platform (Windows native vs.\ WSL).} For 50 concurrency-class samples we compile
+and run natively on Windows (MinGW g++~13.1, no sanitizers available there): $48/50$ exit
+normally, $2/50$ crash with an access violation, $0$ hang; the WSL-side TSan catches $21/50$.
+Native Windows tooling therefore cannot replace the sanitizer arms --- a boundary we record
+explicitly instead of papering over.
+\textbf{Unavailable tooling (honestly registered).} MSVC is absent from the execution
+environment, and MinGW clang++~22.1 cannot link the ASan runtime
+(\texttt{libclang\_rt.asan\_dynamic} is missing), so neither contributes any number to this
+table; both attempts are logged in the batch's sensitivity report.
+
 \end{document}
