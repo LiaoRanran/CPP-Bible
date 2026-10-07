@@ -1,0 +1,988 @@
+{
+ "schema": "queyi-682-inconsistency-rootcause/v1",
+ "generated_by": "tools/relabel_682.py rootcause",
+ "summary": {
+  "n_inconsistent": 76,
+  "n_in_677b_family": 63,
+  "n_family_multi": 42,
+  "n_ai_type_present_in_family": 3,
+  "frac_ai_type_present_in_family": 0.0714,
+  "n_family_type_pure": 35,
+  "frac_family_type_impure": 0.1667,
+  "hypothesis": "若不一致样本所在克隆家族内**存在**原标注 == AI 判定的成员，则支持「同源代码被跨类型复制、标记行未随类型改写」的克隆传播假设；家族类型不纯 = 同一代码结构被标注为多种类型（676k 亦记录过跨 defect_type 家族）。"
+ },
+ "cases": [
+  {
+   "sample_id": "D044",
+   "in_family": true,
+   "family_id": "F0120",
+   "family_size": 11,
+   "family_defect_types": [
+    "stl_container_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "stl_container_ub",
+   "ai": "out_of_bounds",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D047",
+   "in_family": true,
+   "family_id": "F0120",
+   "family_size": 11,
+   "family_defect_types": [
+    "stl_container_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "stl_container_ub",
+   "ai": "out_of_bounds",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D048",
+   "in_family": true,
+   "family_id": "F0120",
+   "family_size": 11,
+   "family_defect_types": [
+    "stl_container_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "stl_container_ub",
+   "ai": "out_of_bounds",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D055",
+   "in_family": true,
+   "family_id": "F0122",
+   "family_size": 4,
+   "family_defect_types": [
+    "stl_container_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "stl_container_ub",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "D080",
+   "in_family": true,
+   "family_id": "F0127",
+   "family_size": 3,
+   "family_defect_types": [
+    "string_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "string_ub",
+   "ai": "out_of_bounds",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D123",
+   "in_family": true,
+   "family_id": "F0135",
+   "family_size": 5,
+   "family_defect_types": [
+    "algorithm_misuse"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "algorithm_misuse",
+   "ai": "out_of_bounds",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D134",
+   "in_family": true,
+   "family_id": "F0133",
+   "family_size": 8,
+   "family_defect_types": [
+    "algorithm_misuse"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "algorithm_misuse",
+   "ai": "iterator_invalidation",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D154",
+   "in_family": true,
+   "family_id": "F0141",
+   "family_size": 4,
+   "family_defect_types": [
+    "smart_pointer"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "smart_pointer",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D155",
+   "in_family": true,
+   "family_id": "F0141",
+   "family_size": 4,
+   "family_defect_types": [
+    "smart_pointer"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "smart_pointer",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "D157",
+   "in_family": true,
+   "family_id": "F0141",
+   "family_size": 4,
+   "family_defect_types": [
+    "smart_pointer"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "smart_pointer",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F049",
+   "in_family": true,
+   "family_id": "F0276",
+   "family_size": 3,
+   "family_defect_types": [
+    "endianness"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "endianness",
+   "ai": "strict_aliasing",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F057",
+   "in_family": true,
+   "family_id": "F0278",
+   "family_size": 3,
+   "family_defect_types": [
+    "endianness"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "endianness",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F059",
+   "in_family": true,
+   "family_id": "F0278",
+   "family_size": 3,
+   "family_defect_types": [
+    "endianness"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "endianness",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F113",
+   "in_family": true,
+   "family_id": "F0072",
+   "family_size": 6,
+   "family_defect_types": [
+    "bit_operation",
+    "other_ub"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": true,
+   "original": "bit_operation",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F115",
+   "in_family": true,
+   "family_id": "F0072",
+   "family_size": 6,
+   "family_defect_types": [
+    "bit_operation",
+    "other_ub"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": true,
+   "original": "bit_operation",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F116",
+   "in_family": true,
+   "family_id": "F0289",
+   "family_size": 5,
+   "family_defect_types": [
+    "bit_operation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "bit_operation",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F121",
+   "in_family": true,
+   "family_id": "F0290",
+   "family_size": 5,
+   "family_defect_types": [
+    "bit_operation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "bit_operation",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "F143",
+   "in_family": true,
+   "family_id": "F0287",
+   "family_size": 7,
+   "family_defect_types": [
+    "interrupt_safety",
+    "volatile_misuse"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": false,
+   "original": "interrupt_safety",
+   "ai": "data_race",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F146",
+   "in_family": true,
+   "family_id": "F0287",
+   "family_size": 7,
+   "family_defect_types": [
+    "interrupt_safety",
+    "volatile_misuse"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": false,
+   "original": "interrupt_safety",
+   "ai": "data_race",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F161",
+   "in_family": true,
+   "family_id": "F0297",
+   "family_size": 4,
+   "family_defect_types": [
+    "interrupt_safety"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "interrupt_safety",
+   "ai": "data_race",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F162",
+   "in_family": true,
+   "family_id": "F0297",
+   "family_size": 4,
+   "family_defect_types": [
+    "interrupt_safety"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "interrupt_safety",
+   "ai": "data_race",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F183",
+   "in_family": true,
+   "family_id": "F0299",
+   "family_size": 4,
+   "family_defect_types": [
+    "register_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "register_ub",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "F185",
+   "in_family": true,
+   "family_id": "F0299",
+   "family_size": 4,
+   "family_defect_types": [
+    "register_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "register_ub",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "d3-23",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "memory_safety"
+  },
+  {
+   "sample_id": "d3e-01",
+   "in_family": false,
+   "original": "integer_overflow",
+   "ai": "other_ub"
+  },
+  {
+   "sample_id": "d3e-10",
+   "in_family": false,
+   "original": "bit_operation",
+   "ai": "other_ub"
+  },
+  {
+   "sample_id": "d3e-12",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "stl_container_ub"
+  },
+  {
+   "sample_id": "d3e-20",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "smart_pointer"
+  },
+  {
+   "sample_id": "d3f-07",
+   "in_family": false,
+   "original": "bit_operation",
+   "ai": "other_ub"
+  },
+  {
+   "sample_id": "d3f-13",
+   "in_family": false,
+   "original": "logic_error",
+   "ai": "other_ub"
+  },
+  {
+   "sample_id": "d3f-14",
+   "in_family": false,
+   "original": "logic_error",
+   "ai": "other_ub"
+  },
+  {
+   "sample_id": "h24",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "volatile_misuse"
+  },
+  {
+   "sample_id": "h25",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "memory_safety"
+  },
+  {
+   "sample_id": "h43",
+   "in_family": false,
+   "original": "other_ub",
+   "ai": "memory_leak"
+  },
+  {
+   "sample_id": "h53",
+   "in_family": false,
+   "original": "memory_safety",
+   "ai": "memory_leak"
+  },
+  {
+   "sample_id": "h54",
+   "in_family": false,
+   "original": "memory_safety",
+   "ai": "memory_leak"
+  },
+  {
+   "sample_id": "sample_012",
+   "in_family": true,
+   "family_id": "F0079",
+   "family_size": 2,
+   "family_defect_types": [
+    "move_semantics"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "move_semantics",
+   "ai": "lambda_capture",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_034",
+   "in_family": true,
+   "family_id": "F0089",
+   "family_size": 1,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_039",
+   "in_family": true,
+   "family_id": "F0093",
+   "family_size": 2,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_safety",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_040",
+   "in_family": true,
+   "family_id": "F0091",
+   "family_size": 4,
+   "family_defect_types": [
+    "legacy_UB",
+    "legacy_sanitizer",
+    "raii_violation"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_safety",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_041",
+   "in_family": true,
+   "family_id": "F0092",
+   "family_size": 2,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_safety",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_043",
+   "in_family": true,
+   "family_id": "F0094",
+   "family_size": 6,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "virtual_function",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_050",
+   "in_family": true,
+   "family_id": "F0095",
+   "family_size": 4,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_056",
+   "in_family": true,
+   "family_id": "F0096",
+   "family_size": 4,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_058",
+   "in_family": true,
+   "family_id": "F0097",
+   "family_size": 4,
+   "family_defect_types": [
+    "raii_violation"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "raii_violation",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "sample_094",
+   "in_family": true,
+   "family_id": "F0023",
+   "family_size": 3,
+   "family_defect_types": [
+    "undefined_behavior"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "other_ub",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_191",
+   "in_family": true,
+   "family_id": "F0109",
+   "family_size": 6,
+   "family_defect_types": [
+    "conditional_trigger"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "out_of_bounds",
+   "ai": "logic_error",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B021",
+   "in_family": true,
+   "family_id": "F0031",
+   "family_size": 5,
+   "family_defect_types": [
+    "integer_overflow"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "integer_overflow",
+   "ai": "volatile_misuse",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B030",
+   "in_family": true,
+   "family_id": "F0038",
+   "family_size": 1,
+   "family_defect_types": [
+    "integer_overflow"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "integer_overflow",
+   "ai": "volatile_misuse",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B061",
+   "in_family": true,
+   "family_id": "F0054",
+   "family_size": 4,
+   "family_defect_types": [
+    "other_ub",
+    "type_punning"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "alignment",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B062",
+   "in_family": true,
+   "family_id": "F0055",
+   "family_size": 5,
+   "family_defect_types": [
+    "type_punning"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "alignment",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B075",
+   "in_family": true,
+   "family_id": "F0061",
+   "family_size": 1,
+   "family_defect_types": [
+    "type_punning"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "strict_aliasing",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B077",
+   "in_family": true,
+   "family_id": "F0063",
+   "family_size": 1,
+   "family_defect_types": [
+    "type_punning"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "strict_aliasing",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_B078",
+   "in_family": true,
+   "family_id": "F0064",
+   "family_size": 1,
+   "family_defect_types": [
+    "type_punning"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "sample_B099",
+   "in_family": true,
+   "family_id": "F0060",
+   "family_size": 2,
+   "family_defect_types": [
+    "other_ub",
+    "type_punning"
+   ],
+   "family_type_pure": false,
+   "ai_type_present_in_family": true,
+   "original": "type_punning",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "sample_E054",
+   "in_family": true,
+   "family_id": "F0176",
+   "family_size": 2,
+   "family_defect_types": [
+    "atomic_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "atomic_ub",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E070",
+   "in_family": true,
+   "family_id": "F0190",
+   "family_size": 2,
+   "family_defect_types": [
+    "atomic_ub"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "atomic_ub",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E104",
+   "in_family": true,
+   "family_id": "F0211",
+   "family_size": 1,
+   "family_defect_types": [
+    "deadlock"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E109",
+   "in_family": true,
+   "family_id": "F0213",
+   "family_size": 1,
+   "family_defect_types": [
+    "deadlock"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "memory_leak",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_E145",
+   "in_family": true,
+   "family_id": "F0236",
+   "family_size": 1,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E148",
+   "in_family": true,
+   "family_id": "F0238",
+   "family_size": 2,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "string_ub",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_E155",
+   "in_family": true,
+   "family_id": "F0242",
+   "family_size": 1,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "interrupt_safety",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_E156",
+   "in_family": true,
+   "family_id": "F0237",
+   "family_size": 2,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E157",
+   "in_family": true,
+   "family_id": "F0238",
+   "family_size": 2,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "memory_order",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_E167",
+   "in_family": true,
+   "family_id": "F0247",
+   "family_size": 1,
+   "family_defect_types": [
+    "lock_priority_inversion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "deadlock",
+   "ai": "data_race",
+   "method": "marker_line"
+  },
+  {
+   "sample_id": "sample_G002",
+   "in_family": true,
+   "family_id": "F0304",
+   "family_size": 1,
+   "family_defect_types": [
+    "heap_overread"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "out_of_bounds",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G016",
+   "in_family": true,
+   "family_id": "F0318",
+   "family_size": 1,
+   "family_defect_types": [
+    "null_deref"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "null_pointer_deref",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G022",
+   "in_family": true,
+   "family_id": "F0324",
+   "family_size": 1,
+   "family_defect_types": [
+    "logic_error"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "logic_error",
+   "ai": "other_ub",
+   "method": "fallback"
+  },
+  {
+   "sample_id": "sample_G024",
+   "in_family": true,
+   "family_id": "F0326",
+   "family_size": 1,
+   "family_defect_types": [
+    "race_condition"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "data_race",
+   "ai": "double_free",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G040",
+   "in_family": true,
+   "family_id": "F0342",
+   "family_size": 1,
+   "family_defect_types": [
+    "logic_error"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "logic_error",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G048",
+   "in_family": true,
+   "family_id": "F0350",
+   "family_size": 1,
+   "family_defect_types": [
+    "logic_error"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "logic_error",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G071",
+   "in_family": true,
+   "family_id": "F0372",
+   "family_size": 1,
+   "family_defect_types": [
+    "heap_underflow"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "out_of_bounds",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G074",
+   "in_family": true,
+   "family_id": "F0375",
+   "family_size": 1,
+   "family_defect_types": [
+    "logic_error"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "logic_error",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G077",
+   "in_family": true,
+   "family_id": "F0378",
+   "family_size": 1,
+   "family_defect_types": [
+    "logic_error"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "logic_error",
+   "ai": "string_ub",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G080",
+   "in_family": true,
+   "family_id": "F0381",
+   "family_size": 1,
+   "family_defect_types": [
+    "type_confusion"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "type_punning",
+   "ai": "out_of_bounds",
+   "method": "source_body"
+  },
+  {
+   "sample_id": "sample_G083",
+   "in_family": true,
+   "family_id": "F0384",
+   "family_size": 1,
+   "family_defect_types": [
+    "race_condition"
+   ],
+   "family_type_pure": true,
+   "ai_type_present_in_family": false,
+   "original": "data_race",
+   "ai": "double_free",
+   "method": "source_body"
+  }
+ ],
+ "honest_notes": [
+  "家族归属来自 677b（complete-linkage @0.85，只覆盖 A5 的 1137 样本）；holdout/corpus 的少数样本可能不在家族表内（cases 已用 in_family=false 标出）。",
+  "本分析不给任何样本下「谁对」的结论——那是 D4 的 LLM 深读与人工裁决范围。"
+ ]
+}

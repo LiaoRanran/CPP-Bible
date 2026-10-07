@@ -1,0 +1,222 @@
+{
+ "schema": "queyi-682-kappa/v1",
+ "generated_by": "tools/relabel_682.py kappa",
+ "annotator": "AI second pass (source-evidence annotator; not human IAA)",
+ "n": 287,
+ "kappa_defect_type": {
+  "n": 287,
+  "po": 0.735192,
+  "pe": 0.031165,
+  "kappa": 0.726674,
+  "labels": [
+   "algorithm_misuse",
+   "alignment",
+   "atomic_ub",
+   "bit_operation",
+   "condition_variable",
+   "cross_tu_ub",
+   "data_race",
+   "deadlock",
+   "double_free",
+   "endianness",
+   "integer_overflow",
+   "interrupt_safety",
+   "iterator_invalidation",
+   "lambda_capture",
+   "linker_odr",
+   "logic_error",
+   "memory_leak",
+   "memory_order",
+   "memory_safety",
+   "move_semantics",
+   "null_pointer_deref",
+   "other_ub",
+   "out_of_bounds",
+   "raii_violation",
+   "register_ub",
+   "smart_pointer",
+   "stl_container_ub",
+   "strict_aliasing",
+   "string_ub",
+   "type_punning",
+   "uninitialized_read",
+   "use_after_free",
+   "virtual_function",
+   "volatile_misuse"
+  ]
+ },
+ "kappa_expected_verdict": {
+  "n": 287,
+  "po": 0.71777,
+  "pe": 0.498343,
+  "kappa": 0.437405,
+  "labels": [
+   "catch",
+   "miss"
+  ]
+ },
+ "kappa_planted": {
+  "n": 287,
+  "po": 0.95122,
+  "pe": 0.769064,
+  "kappa": 0.788771,
+  "labels": [
+   false,
+   true
+  ]
+ },
+ "kappa_severity": {
+  "n": 262,
+  "po": 0.541985,
+  "pe": 0.456413,
+  "kappa": 0.157421,
+  "labels": [
+   "high",
+   "low",
+   "medium"
+  ]
+ },
+ "ai_vs_detector_hit_rate": 0.703833,
+ "confidence": {
+  "mean": 0.808,
+  "min": 0.4,
+  "max": 0.9
+ },
+ "per_ai_type": {
+  "algorithm_misuse": {
+   "n": 7,
+   "agree": 7
+  },
+  "alignment": {
+   "n": 10,
+   "agree": 8
+  },
+  "atomic_ub": {
+   "n": 10,
+   "agree": 10
+  },
+  "bit_operation": {
+   "n": 5,
+   "agree": 5
+  },
+  "condition_variable": {
+   "n": 8,
+   "agree": 8
+  },
+  "cross_tu_ub": {
+   "n": 5,
+   "agree": 5
+  },
+  "data_race": {
+   "n": 10,
+   "agree": 5
+  },
+  "deadlock": {
+   "n": 4,
+   "agree": 4
+  },
+  "double_free": {
+   "n": 8,
+   "agree": 6
+  },
+  "endianness": {
+   "n": 5,
+   "agree": 5
+  },
+  "integer_overflow": {
+   "n": 9,
+   "agree": 9
+  },
+  "interrupt_safety": {
+   "n": 4,
+   "agree": 3
+  },
+  "iterator_invalidation": {
+   "n": 10,
+   "agree": 9
+  },
+  "lambda_capture": {
+   "n": 9,
+   "agree": 8
+  },
+  "linker_odr": {
+   "n": 7,
+   "agree": 7
+  },
+  "logic_error": {
+   "n": 3,
+   "agree": 2
+  },
+  "memory_leak": {
+   "n": 20,
+   "agree": 8
+  },
+  "memory_order": {
+   "n": 15,
+   "agree": 9
+  },
+  "memory_safety": {
+   "n": 9,
+   "agree": 4
+  },
+  "move_semantics": {
+   "n": 7,
+   "agree": 7
+  },
+  "null_pointer_deref": {
+   "n": 6,
+   "agree": 6
+  },
+  "other_ub": {
+   "n": 22,
+   "agree": 6
+  },
+  "out_of_bounds": {
+   "n": 18,
+   "agree": 12
+  },
+  "register_ub": {
+   "n": 5,
+   "agree": 5
+  },
+  "smart_pointer": {
+   "n": 6,
+   "agree": 5
+  },
+  "stl_container_ub": {
+   "n": 6,
+   "agree": 5
+  },
+  "strict_aliasing": {
+   "n": 9,
+   "agree": 6
+  },
+  "string_ub": {
+   "n": 16,
+   "agree": 7
+  },
+  "uninitialized_read": {
+   "n": 7,
+   "agree": 7
+  },
+  "use_after_free": {
+   "n": 7,
+   "agree": 7
+  },
+  "virtual_function": {
+   "n": 9,
+   "agree": 8
+  },
+  "volatile_misuse": {
+   "n": 11,
+   "agree": 8
+  }
+ },
+ "reference_676k": {
+  "defect_type_canon_kappa": 0.773385,
+  "defect_type_raw_kappa": 0.588221,
+  "expected_verdict_kappa": 0.688992,
+  "planted_kappa": 0.708477,
+  "note": "676k 是 AI 盲化双标注（n=131）；682 是 AI 第二标注（n=287）"
+ }
+}
