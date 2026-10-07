@@ -1,0 +1,709 @@
+{
+ "schema": "queyi-683-realworld-type-matrix/v1",
+ "generated_at": "2026-10-07T19:48:51+08:00",
+ "assets": [
+  "asan",
+  "ubsan",
+  "tsan",
+  "compiler-warn",
+  "wunsequenced",
+  "cross-compile",
+  "linker",
+  "compile-time"
+ ],
+ "types": {
+  "data_race": {
+   "n": 4,
+   "or": {
+    "n": 4,
+    "catch": 3,
+    "unknown": 0,
+    "miss": 1,
+    "catch_rate_pct": 75.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 4,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 3,
+     "catch_rate_pct": 25.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 4,
+     "catch": 3,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 75.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 4,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 4,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 3,
+     "catch_rate_pct": 25.0,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 4,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "double_free": {
+   "n": 2,
+   "or": {
+    "n": 2,
+    "catch": 2,
+    "unknown": 0,
+    "miss": 0,
+    "catch_rate_pct": 100.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 2,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 50.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 2,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 2,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 2,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 2,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 2,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 50.0,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 2,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 2,
+     "catch": 0,
+     "unknown": 2,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "integer_overflow": {
+   "n": 14,
+   "or": {
+    "n": 14,
+    "catch": 10,
+    "unknown": 0,
+    "miss": 4,
+    "catch_rate_pct": 71.43,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 14,
+     "catch": 6,
+     "unknown": 1,
+     "miss": 7,
+     "catch_rate_pct": 42.86,
+     "unknown_rate_pct": 7.14
+    },
+    "ubsan": {
+     "n": 14,
+     "catch": 8,
+     "unknown": 1,
+     "miss": 5,
+     "catch_rate_pct": 57.14,
+     "unknown_rate_pct": 7.14
+    },
+    "tsan": {
+     "n": 14,
+     "catch": 4,
+     "unknown": 1,
+     "miss": 9,
+     "catch_rate_pct": 28.57,
+     "unknown_rate_pct": 7.14
+    },
+    "compiler-warn": {
+     "n": 14,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 13,
+     "catch_rate_pct": 7.14,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 14,
+     "catch": 0,
+     "unknown": 14,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 14,
+     "catch": 3,
+     "unknown": 0,
+     "miss": 11,
+     "catch_rate_pct": 21.43,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 14,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 14,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 14,
+     "catch": 0,
+     "unknown": 14,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "logic_error": {
+   "n": 31,
+   "or": {
+    "n": 31,
+    "catch": 1,
+    "unknown": 0,
+    "miss": 30,
+    "catch_rate_pct": 3.23,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 31,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 31,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 30,
+     "catch_rate_pct": 3.23,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 31,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 31,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 31,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 1,
+     "miss": 30,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 3.23
+    },
+    "linker": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 31,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 31,
+     "catch": 0,
+     "unknown": 31,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "memory_leak": {
+   "n": 1,
+   "or": {
+    "n": 1,
+    "catch": 1,
+    "unknown": 0,
+    "miss": 0,
+    "catch_rate_pct": 100.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 1,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 0,
+     "catch_rate_pct": 100.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 1,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 1,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 1,
+     "catch": 0,
+     "unknown": 1,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "null_pointer_deref": {
+   "n": 6,
+   "or": {
+    "n": 6,
+    "catch": 6,
+    "unknown": 0,
+    "miss": 0,
+    "catch_rate_pct": 100.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 6,
+     "catch": 6,
+     "unknown": 0,
+     "miss": 0,
+     "catch_rate_pct": 100.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 6,
+     "catch": 6,
+     "unknown": 0,
+     "miss": 0,
+     "catch_rate_pct": 100.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 6,
+     "catch": 6,
+     "unknown": 0,
+     "miss": 0,
+     "catch_rate_pct": 100.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 6,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 5,
+     "catch_rate_pct": 16.67,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 6,
+     "catch": 0,
+     "unknown": 6,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 6,
+     "catch": 1,
+     "unknown": 0,
+     "miss": 5,
+     "catch_rate_pct": 16.67,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 6,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 6,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 6,
+     "catch": 0,
+     "unknown": 6,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "out_of_bounds": {
+   "n": 38,
+   "or": {
+    "n": 38,
+    "catch": 32,
+    "unknown": 0,
+    "miss": 6,
+    "catch_rate_pct": 84.21,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 38,
+     "catch": 31,
+     "unknown": 0,
+     "miss": 7,
+     "catch_rate_pct": 81.58,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 38,
+     "catch": 5,
+     "unknown": 0,
+     "miss": 33,
+     "catch_rate_pct": 13.16,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 38,
+     "catch": 5,
+     "unknown": 0,
+     "miss": 33,
+     "catch_rate_pct": 13.16,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 38,
+     "catch": 3,
+     "unknown": 0,
+     "miss": 35,
+     "catch_rate_pct": 7.89,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 38,
+     "catch": 0,
+     "unknown": 38,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 38,
+     "catch": 10,
+     "unknown": 0,
+     "miss": 28,
+     "catch_rate_pct": 26.32,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 38,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 38,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 38,
+     "catch": 0,
+     "unknown": 38,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "type_punning": {
+   "n": 4,
+   "or": {
+    "n": 4,
+    "catch": 0,
+    "unknown": 0,
+    "miss": 4,
+    "catch_rate_pct": 0.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 4,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 4,
+     "catch": 0,
+     "unknown": 4,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  },
+  "use_after_free": {
+   "n": 10,
+   "or": {
+    "n": 10,
+    "catch": 10,
+    "unknown": 0,
+    "miss": 0,
+    "catch_rate_pct": 100.0,
+    "unknown_rate_pct": 0.0
+   },
+   "per_asset": {
+    "asan": {
+     "n": 10,
+     "catch": 8,
+     "unknown": 0,
+     "miss": 2,
+     "catch_rate_pct": 80.0,
+     "unknown_rate_pct": 0.0
+    },
+    "ubsan": {
+     "n": 10,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 10,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "tsan": {
+     "n": 10,
+     "catch": 7,
+     "unknown": 0,
+     "miss": 3,
+     "catch_rate_pct": 70.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compiler-warn": {
+     "n": 10,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 10,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "wunsequenced": {
+     "n": 10,
+     "catch": 0,
+     "unknown": 10,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    },
+    "cross-compile": {
+     "n": 10,
+     "catch": 6,
+     "unknown": 0,
+     "miss": 4,
+     "catch_rate_pct": 60.0,
+     "unknown_rate_pct": 0.0
+    },
+    "linker": {
+     "n": 10,
+     "catch": 0,
+     "unknown": 0,
+     "miss": 10,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0
+    },
+    "compile-time": {
+     "n": 10,
+     "catch": 0,
+     "unknown": 10,
+     "miss": 0,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0
+    }
+   }
+  }
+ }
+}
