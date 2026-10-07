@@ -1,0 +1,235 @@
+{
+ "schema": "queyi-683-cross-toolchain/v1",
+ "generated_at": "2026-10-07T20:20:59+08:00",
+ "environment": {
+  "clang_wsl": "Ubuntu clang 18.1.3",
+  "gxx_wsl": "g++ 13.3.0",
+  "gxx_win": "MinGW g++ 13.1.0",
+  "mingw_clang_note": "MinGW clang 22.1 ASan 不可用（缺 libclang_rt.asan_dynamic）——尝试记录，不上报检出数字",
+  "msvc": "本机不存在（诚实登记）"
+ },
+ "b1": {
+  "n": 200,
+  "per_asset": {
+   "asan": {
+    "n": 200,
+    "agree": 187,
+    "agree_pct": 93.5,
+    "kappa": 0.864,
+    "gxx_catch": 65,
+    "clang_catch": 67,
+    "gxx_catch_pct": 32.5,
+    "clang_catch_pct": 33.5,
+    "delta_pp_clang_minus_gxx": 1.0,
+    "n_diff": 13,
+    "diffs": [
+     {
+      "uid": "expE:sample_E032",
+      "defect_type": "memory_order",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=1) ================================================================= ==7896==ERROR: LeakSanitizer: detected memory leaks  Direct leak of 4 byte"
+     },
+     {
+      "uid": "expE:sample_E051",
+      "defect_type": "atomic_ub",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) E051 v=31104; -O2(rc=0) E051 v=32419"
+     },
+     {
+      "uid": "expF:F176",
+      "defect_type": "register_ub",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_ex; -O2 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_e"
+     },
+     {
+      "uid": "expG:sample_G066",
+      "defect_type": "out_of_bounds",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) ================================================================= ==18587==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x506000"
+     },
+     {
+      "uid": "expA:sample_001",
+      "defect_type": "use_after_free",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) ================================================================= ==23619==ERROR: AddressSanitizer: heap-use-after-free on address 0x5030000"
+     },
+     {
+      "uid": "expC:sample_114",
+      "defect_type": "linker_odr",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:clang++: warning: treating 'c-header' input as 'c++-header' ; -O2 编译失败:clang++: warning: treating 'c-header' input as 'c++-header'"
+     },
+     {
+      "uid": "expE:sample_E060",
+      "defect_type": "atomic_ub",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) 无输出; -O2(rc=0) 无输出"
+     },
+     {
+      "uid": "expF:F143",
+      "defect_type": "interrupt_safety",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) 1; -O2(rc=0) 1"
+     },
+     {
+      "uid": "expD:D027",
+      "defect_type": "iterator_invalidation",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) ================================================================= ==27365==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000"
+     },
+     {
+      "uid": "expC:sample_005",
+      "defect_type": "move_semantics",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) 无输出; -O2(rc=0) 无输出"
+     },
+     {
+      "uid": "expD:D038",
+      "defect_type": "stl_container_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) AddressSanitizer:DEADLYSIGNAL ================================================================= ==29585==ERROR: AddressSanitizer: SEGV on un"
+     },
+     {
+      "uid": "expD:D077",
+      "defect_type": "string_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) ================================================================= ==30292==ERROR: AddressSanitizer: heap-use-after-free on address 0x5040000"
+     },
+     {
+      "uid": "expF:F200",
+      "defect_type": "register_ub",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_ex; -O2 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_e"
+     }
+    ]
+   },
+   "ubsan": {
+    "n": 200,
+    "agree": 187,
+    "agree_pct": 93.5,
+    "kappa": 0.8434,
+    "gxx_catch": 48,
+    "clang_catch": 52,
+    "gxx_catch_pct": 24.0,
+    "clang_catch_pct": 26.0,
+    "delta_pp_clang_minus_gxx": 2.0,
+    "n_diff": 13,
+    "diffs": [
+     {
+      "uid": "expG:sample_G060",
+      "defect_type": "out_of_bounds",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=1) UndefinedBehaviorSanitizer:DEADLYSIGNAL ==4982==ERROR: UndefinedBehaviorSanitizer: SEGV on unknown address 0x7ffc9b32f234 (pc 0x61dba0a3bcde"
+     },
+     {
+      "uid": "expD:D044",
+      "defect_type": "stl_container_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=0) 73745 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/stl_vector.h:1131:9: runtime error: reference binding to addre"
+     },
+     {
+      "uid": "expD:D016",
+      "defect_type": "iterator_invalidation",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=0) 0 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/stl_iterator.h:1091:16: runtime error: reference binding to addres"
+     },
+     {
+      "uid": "expG:sample_G064",
+      "defect_type": "out_of_bounds",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) resolved=www.example-x.com; -O2(rc=0) resolved=www.example-x.com"
+     },
+     {
+      "uid": "expF:F176",
+      "defect_type": "register_ub",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_ex; -O2 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_e"
+     },
+     {
+      "uid": "expD:D050",
+      "defect_type": "stl_container_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=0) -1180524086 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/array:209:9: runtime error: reference binding to address 0x7f"
+     },
+     {
+      "uid": "expC:sample_114",
+      "defect_type": "linker_odr",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:clang++: warning: treating 'c-header' input as 'c++-header' ; -O2 编译失败:clang++: warning: treating 'c-header' input as 'c++-header'"
+     },
+     {
+      "uid": "expE:sample_E060",
+      "defect_type": "atomic_ub",
+      "gxx": "catch",
+      "clang": "miss",
+      "clang_note": "-O0(rc=0) 无输出; -O2(rc=0) 无输出"
+     },
+     {
+      "uid": "expD:D038",
+      "defect_type": "stl_container_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=1) /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/stl_iterator.h:1091:16: runtime error: reference binding to null poi"
+     },
+     {
+      "uid": "expD:D047",
+      "defect_type": "stl_container_ub",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=0) 0 /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/stl_vector.h:1131:9: runtime error: reference binding to address 0"
+     },
+     {
+      "uid": "expG:sample_G090",
+      "defect_type": "out_of_bounds",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O0(rc=134) /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/bits/stl_vector.h:1131:34: runtime error: addition of unsigned offset t"
+     },
+     {
+      "uid": "expF:F200",
+      "defect_type": "register_ub",
+      "gxx": "miss",
+      "clang": "unknown",
+      "clang_note": "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_ex; -O2 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_e"
+     },
+     {
+      "uid": "expA:sample_029",
+      "defect_type": "out_of_bounds",
+      "gxx": "miss",
+      "clang": "catch",
+      "clang_note": "-O2(rc=0) /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/holdout_expansion/expA/sample_029.cpp:7:11: runtime error: load of address 0x5a986371d414 "
+     }
+    ]
+   }
+  }
+ },
+ "b2": {
+  "n": 50,
+  "windows_hang": 0,
+  "windows_crash": 2,
+  "windows_normal": 48,
+  "windows_compile_error": 0,
+  "wsl_tsan_catch_676g": 21,
+  "note": "Windows 侧为无 sanitizer 的裸运行观测（挂起/崩溃/正常）；WSL 侧 tsan 判定取自 676g（Linux 专属工具链）"
+ }
+}

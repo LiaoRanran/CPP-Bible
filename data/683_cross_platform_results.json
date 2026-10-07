@@ -1,0 +1,21 @@
+{
+ "schema": "queyi-683-cross-platform/v1",
+ "generated_at": "2026-10-07T20:20:59+08:00",
+ "source": "tools/cross_toolchain_683.py --stage b2 + report（b1 见 683_cross_toolchain_results.json）",
+ "environment": {
+  "clang_wsl": "Ubuntu clang 18.1.3",
+  "gxx_wsl": "g++ 13.3.0",
+  "gxx_win": "MinGW g++ 13.1.0",
+  "mingw_clang_note": "MinGW clang 22.1 ASan 不可用（缺 libclang_rt.asan_dynamic）——尝试记录，不上报检出数字",
+  "msvc": "本机不存在（诚实登记）"
+ },
+ "b2": {
+  "n": 50,
+  "windows_hang": 0,
+  "windows_crash": 2,
+  "windows_normal": 48,
+  "windows_compile_error": 0,
+  "wsl_tsan_catch_676g": 21,
+  "note": "Windows 侧为无 sanitizer 的裸运行观测（挂起/崩溃/正常）；WSL 侧 tsan 判定取自 676g（Linux 专属工具链）"
+ }
+}
