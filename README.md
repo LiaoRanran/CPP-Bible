@@ -206,7 +206,8 @@ bash tools/generate_pdf.sh --by-part   # PDF（分卷）
 1. **第一年四件地基**（`_arch_v34` 战略结论）
    - ✅ 许可与协作包（本文件 + `LICENSE` + `DCO.md` + `CONTRIBUTING.md` + `CODE_OF_CONDUCT.md` + `.github/` 模板）
    - ✅ 判决形式规格 v1（[`docs/verdict_formal_spec_v1.md`](docs/verdict_formal_spec_v1.md)）——为后续 Rust + Verus 形式化做准备
-   - ✅ 元验证论文（NeurIPS 2027 Datasets & Benchmarks 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 30 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
+   - ✅ 元验证论文（NeurIPS 2027 Evaluations & Datasets 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 35 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
+   - ⚠️ **复现硬依赖 WSL**：论文数字的复现必须在 [`REPRODUCE.md`](REPRODUCE.md) 声明的 WSL 环境（Ubuntu 24.04.4 + g++ 13.3 + `setarch`）内执行；Windows-native / macOS 无法复现，错误环境下脚本会 fail-loud 抛错（不再静默降分；原 35%→10% 静默降级问题已封堵）
    - ✅ 数据修复 + 实验重算（676m）：34 条挂起样本判据修正、56→34 项统一词表、字段完整性（M1–M5）全过；A5 主端点**逐位不变**（标签修正对主分析零影响），数据质量与检测器 Benchmark 已写入论文附录
    - ✅ 门禁三杠杆（增量选例 / 结果缓存 / 分片）：`tools/test_selector_655.py`、`tools/result_cache_655.py`
 2. **信任根继续独立化**：外部锚（OpenTimestamps 上链）、第三方盲评、独立性从 L2 走向 L3
