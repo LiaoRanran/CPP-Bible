@@ -498,5 +498,112 @@
    "data/689_refactor_blueprint.md",
    "data/689_human_annotation_protocol.md"
   ]
+ },
+ "reframed_691": {
+  "note": "691 止损+建设轮：题名/公式表述/池计数三类修正 + 证据搬运 + 附录内容减法。无新实验；全部数字为既有冻结矩阵复算。",
+  "source_batches": [
+   "691"
+  ],
+  "title": "Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation",
+  "title_previous": "Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification (retired in 691: 2026 collision with 'Auditing the Evaluators' PROPOR 2026 and 'Evaluator Stress Test' ACL Findings 2026)",
+  "formula": {
+   "original": "E[J]=kd/n",
+   "current": "E[J]=k|D|/|A|",
+   "relation": "mathematically identical; n in the original denotes the asset-pool size (=8). 689 recorded this as a 'hard fix'; 691 reclassifies it as SYMBOL DISAMBIGUATION (n means sample size elsewhere).",
+   "fit_limit": "the linear form Delta ~ c*k*|D|/|A| does not explain the |D|=0 residual (+3.06pp) => descriptive, not causal"
+  },
+  "pools": {
+   "pool_b_equals_pool_c": true,
+   "pool_b_assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "pool_c_assets": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan"
+   ],
+   "distinct_pools": 2,
+   "block_instances": 14,
+   "distinct_pool_x_k_blocks": 9,
+   "distinct_improving_tiers_vs_676f_fd": 1,
+   "best_improving_tier": {
+    "k": 4,
+    "delta_pp": 1.4134,
+    "p": 0.3019956131896645
+   },
+   "source": "data/677c_asset_pools.json + data/677c_evolution_operator_results.json"
+  },
+  "mechanism_level_poolA_vs_single_random": {
+   "k1": {
+    "assets": "asan vs tsan",
+    "delta_pp": 11.3074,
+    "mcnemar_p": 6.018771766031572e-08,
+    "delta_vs_random_mean_pp": 12.2566
+   },
+   "k2": {
+    "delta_pp": 7.4205,
+    "mcnemar_p": 7.692818848583101e-05,
+    "delta_vs_random_mean_pp": 10.0576
+   },
+   "k3": {
+    "delta_pp": 7.4205,
+    "mcnemar_p": 3.714641593828229e-06,
+    "delta_vs_random_mean_pp": 5.7794
+   },
+   "k4": {
+    "delta_pp": 0.0,
+    "mcnemar_p": 1.0,
+    "delta_vs_random_mean_pp": 1.6074,
+    "note": "set collision 1/C(5,4)=0.2"
+   },
+   "source": "data/677c_a5_nondegenerate_results.json::pools.A.k_blocks"
+  },
+  "label_kappa_ai_self_consistency": {
+   "defect_type": 0.726674,
+   "planted": 0.788771,
+   "expected_verdict": 0.437405,
+   "severity": 0.157421,
+   "n": {
+    "defect_type": 287,
+    "planted": 287,
+    "expected_verdict": 287,
+    "severity": 262
+   },
+   "note": "AI self-consistency only (25% blind AI re-label); human IAA = 0. expected_verdict and severity were UNREPORTED before 691.",
+   "source": "data/682_kappa.json"
+  },
+  "governance": {
+   "ledger_events": 452,
+   "rules": 67,
+   "rules_sha256_version": "1.0.0",
+   "ledger_events_carry_ruleset_hash": false,
+   "note": "tamper-evident current-state integrity with partial historical reproducibility; NOT immutable and NOT tamper-proof."
+  },
+  "paper": {
+   "main_text_pages": 8,
+   "total_pages": 35,
+   "appendix_pages": 23,
+   "abstract_words_gate_caliber": 229,
+   "abstract_chars": 1814,
+   "compiled_with": "tectonic (0 errors / 0 undefined refs); pages measured with pypdf"
+  },
+  "sources": [
+   "data/691_formula_audit.md",
+   "data/691_title_assessment.md",
+   "data/691_appendix_audit.md",
+   "data/691_evidence_relocation.md",
+   "data/691_kappa_analysis.md",
+   "data/691_governance_claim.md",
+   "data/691_standardization_highlight.md",
+   "data/691_overclaim_audit.md"
+  ]
  }
 }

@@ -1,5 +1,5 @@
-Queyi / "Auditing the Evaluator" — arXiv source package (real-name version)
-==========================================================================
+Queyi / "Caliber Drift and Capability Boundaries" — arXiv source package (real-name version)
+===========================================================================================
 
 Contents (4 files, no external graphics):
   queyi_neurips2027_v1.1.tex   main LaTeX source (all figures are inline TikZ; no \includegraphics)
@@ -12,20 +12,45 @@ Compile
   tectonic -X compile queyi_neurips2027_v1.1.tex        # verified: tectonic
   # or: pdflatex queyi_neurips2027_v1.1 && bibtex queyi_neurips2027_v1.1 && pdflatex x2
 
-Verified build (2026-10-07, 689 repack)   <-- CURRENT
+Verified build (2026-10-07, 691 repack)   <-- CURRENT
 ----------------------------------------
-  total pages        36 (gate limit 36)
-  main text          content ends on page 7; References start on page 8
-                     (\label{page:endmain} sits AFTER \clearpage; count the .aux value as the
-                      off-by-one convention the repo quality gate reads)
+  total pages        34 (real-name twin; the anonymous twin is 35)
+  main text          content ends on page 8; References start on page 9
+  appendix           23 pages (13--35 in the anonymous twin; gate target <=26)
   abstract           245 words / 1776 characters (arXiv limit 1920 characters)
   undefined refs     none (0 undefined citations / 0 undefined \ref)
-  independent build  verified from the twin anonymous file; this package carries the real-name
-                     \author block and a "Preprint" notice string only
+  independent build  regenerate this file from research/latex/queyi_neurips2027_v1.1.tex
+                     (differences: \author block, notice string, header note only)
   anonymity          the ANONYMOUS twin was re-scanned: 0 identity traces; this file intentionally
                      carries the real identity (Ran Liao / Hefei University / 1026708211@qq.com)
   NOTE               publishing this real-name version during a double-blind review window
                      carries a timing risk; the author decides when to post it.
+
+What changed in this repack (691 corrected-and-enhanced)
+--------------------------------------------------------
+- TITLE changed again after an online collision check: "Auditing the Evaluator(s)" is already a
+  2026 paper title (PROPOR 2026) and "Evaluator Stress Test" is another (ACL Findings 2026), and
+  DeepFact's mechanism is called "audit-then-score". The paper now leads with its own terms:
+  "Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification
+  Evaluation". The audit *protocol* remains the named method (Sec. 3).
+- FORMULA reclassified: E[J]=kd/n was already the exact hypergeometric mean with n = asset-pool
+  size. The 689 edit is now recorded as SYMBOL DISAMBIGUATION (n collides with sample size), not
+  as a correction, with the notation change stated in the text.
+- "THREE POOLS" corrected: Pool B and Pool C contain the identical asset set (linker clears Pool
+  B's 0.5% catch floor at 0.88%) and their per-k blocks match numerically, so the ablation covers
+  TWO distinct pools and 9 distinct pool x k blocks; the single improving tier (k=4, +1.41pp,
+  p=0.302) is one tier replicated under three pool labels, not three independent wins.
+- EVIDENCE LIFTED into the main text: the mechanism-level tiers (k=1 +11.31pp p=6.0e-8, k=2/k=3
+  +7.42pp) into Finding 1; all four label kappas, including the two previously unreported ones
+  (expected_verdict 0.437, severity 0.157) into Threats T1 and Finding 2; the governance counters
+  (452 ledger events, 67 rules, pinned ruleset hash) into Sec. 2.
+- CONTENT SUBTRACTION (appendix): 67-rule manifest section removed (engineering detail); 673c
+  humanization material condensed 2x; e-process, reproducibility, toolchain-sensitivity,
+  meta-evaluation and the two 689 protocol subsections condensed; total pages 36 -> 35, with the
+  appendix at 23 pages.
+
+Verified build (2026-10-07, 689 repack, superseded by the 691 repack above)
+-------------------------------------------------------------------------
 
 What changed in this repack (689 reframed)
 ------------------------------------------

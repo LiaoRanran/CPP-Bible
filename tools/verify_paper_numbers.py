@@ -1206,6 +1206,34 @@ def build_claims(src, use_cmd=True):
           {"kind": "derived", "detail": "current_numbers.reframed_689.environment_metrics "
                                         "← data/689_environment_metrics.json"})
 
+    # ---------------- Z. 691 止损与增强（题名/公式/池/证据搬运） ----------------
+    r10 = (cn.get("reframed_691") or {})
+    m10 = (r10.get("mechanism_level_poolA_vs_single_random") or {})
+    if m10:
+        C("Z11", "691 机制级：Pool A k=1 +11.31pp (p=6.0e-8)；k=2/k=3 +7.42pp；k=4 0.00pp",
+          ["11.31", "6.0", "7.42", "0.00"], "Z.691修正",
+          {"kind": "derived", "detail": "current_numbers.reframed_691.mechanism_level_poolA_vs_single_random "
+                                        "← data/677c_a5_nondegenerate_results.json"})
+    k10 = (r10.get("label_kappa_ai_self_consistency") or {})
+    if k10:
+        C("Z12", "691 四个 κ（AI 自一致）：0.727 / 0.789 / 0.437 / 0.157",
+          [num(k10["defect_type"], 3), num(k10["planted"], 3),
+           num(k10["expected_verdict"], 3), num(k10["severity"], 3)], "Z.691修正",
+          {"kind": "derived", "detail": "current_numbers.reframed_691.label_kappa_ai_self_consistency "
+                                        "← data/682_kappa.json"})
+    g10 = (r10.get("governance") or {})
+    if g10:
+        C("Z13", "691 治理计数：452 ledger 事件 / 67 规则 / rules_sha256 v1.0.0",
+          [num(g10["ledger_events"]), num(g10["rules"])], "Z.691修正",
+          {"kind": "derived", "detail": "current_numbers.reframed_691.governance"})
+    p10 = (r10.get("pools") or {})
+    if p10:
+        C("Z14", "691 池计数：Pool B ≡ Pool C（同一六资产集）；9 个不同 (池,k) 块 / 14 块实例",
+          [num(p10["distinct_pools"]), num(p10["distinct_pool_x_k_blocks"]),
+           num(p10["block_instances"])], "Z.691修正",
+          {"kind": "derived", "detail": "current_numbers.reframed_691.pools "
+                                        "← data/677c_asset_pools.json + 677c_evolution_operator_results.json"})
+
     return claims
 
 

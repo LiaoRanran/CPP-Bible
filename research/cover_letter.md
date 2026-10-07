@@ -1,7 +1,17 @@
-# Cover Letter — Auditing the Evaluator (NeurIPS 2027 Evaluations & Datasets)
+# Cover Letter — Caliber Drift and Capability Boundaries (NeurIPS 2027 Evaluations & Datasets)
 
 > **性质**：投稿信（英文版为准；中文对照供内部核对）。
-> **版本**：**v1.4 (689 reframed)** —— version of record 见 `research/latex/VERSION.md`。
+> **版本**：**v1.5 (691 corrected-and-enhanced)** —— version of record 见 `research/latex/VERSION.md`。
+> **691 变更（相对 689/690）**：①**题名**改为 *Caliber Drift and Capability Boundaries: An Audit
+> Protocol for Software-Verification Evaluation*（撞名核查：2026 年已有 "Auditing the Evaluators"
+> (PROPOR 2026) 与 "Evaluator Stress Test" (ACL Findings 2026)，DeepFact 机制名 "audit-then-score"，
+> BabelJudge 自述 "reliability audit framework" ⇒ 退出 audit 命名拥挤区，改用自有术语）；
+> ②**公式改称符号消歧**（`E[J]=kd/n` 本就是超几何精确均值，`n` 指资产池；改名 `k|D|/|A|` 只为与样本量
+> `n` 区分，非纠错）；③**"三池验证"更正**（Pool B≡C，实为 2 个不同池 / 9 个不同块，唯一改进档 k=4
+> 被三个池标签重复计数）；④**证据搬运**（机制级 k=1 +11.31pp, p=6.0e-8 等到 §5.1；四个 κ 全报告，
+> 含未报告过的 expected_verdict 0.437 / severity 0.157；治理计数 452 事件/67 规则进 §2）；
+> ⑤**内容减法**（删 67 规则清单节、压缩 673c 材料与方案类附录；全稿 36→35 页，附录 23 页）。
+> **v1.4（689）**：结构性重构（Auditing the Evaluator 方向、5 发现、3 贡献）——骨架保留。
 > **689 变更（相对 677d/687）**：题名与叙事**结构性重构**——从"演化验证器"改为"审计评估器"；
 > 贡献 4→3（审计协议 / 实证审计 / 量化发现）；新增 §3 Evaluator-Audit Protocol；
 > 5 个发现重组（+24pp 改述为**测量池构成效应**；**演化假设失败列为 Finding 5**）；
@@ -23,7 +33,7 @@
 
 > Dear NeurIPS Evaluations & Datasets Chairs and Reviewers,
 >
-> We submit **"Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification"** for the **Evaluations & Datasets (E&D)** track (targeting the 2027 edition, typically double-blind).
+> We submit **"Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation"** for the **Evaluations & Datasets (E&D)** track (targeting the 2027 edition, typically double-blind).
 >
 > **Why E&D.** This is an **evaluation-methodology paper with a reproducible artifact and a substantial negative result**. We claim no new detector and no algorithmic superiority. Our question: *how often can an apparently convincing evaluation result survive an audit of the evaluator that produced it?*
 >

@@ -12,10 +12,10 @@
 
 | 项 | 值 |
 |----|----|
-| **论文版本** | **v1.4 (689 reframed)** |
-| **基于** | v1.3 (677d) 之上的**结构性重构**（689 究极重构轮）：题名 → *Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification*；贡献 4→3（审计协议/实证审计/量化发现）；新增 §3 Evaluator-Audit Protocol（claim 声明 + 8 类失败模式 + 证伪流程 + 4 态审计结果）；正文按 5 个审计发现重组（+24pp 改述为测量池构成效应，**演化假设失败列为 Finding 5**）；统计补全（TOST/双向标准化/环境三组件）；**不做新实验**（新增统计均为既有矩阵的确定性复算） |
-| **689 性质** | 重构 + 统计补全 + 实验方案（人类标注/公平对比/环境），正文 ≤9 页（实测 8 页，References 起于第 8 页）、全稿 36 页、摘要 245 词 |
-| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.4/689） |
+| **论文版本** | **v1.5 (691 corrected-and-enhanced)** |
+| **基于** | v1.4 (689) 之上做**精准修正 + 价值增强**（691）：题名 → *Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation*（撞名核查后退出 audit 命名拥挤区）；公式改称**符号消歧**（`E[J]=kd/n` 本就是超几何精确均值，`n`=资产池）；③"三池验证"更正为**两池/9 个不同块**（Pool B≡C）；机制级显著性、四个 κ、治理计数**搬运进正文**；附录内容减法（全稿 **36→35 页**，附录 23 页）。**不做新实验**（全部为既有冻结矩阵的复算/重述） |
+| **689 性质** | 重构 + 统计补全 + 实验方案（人类标注/公平对比/环境），正文 8 页、全稿 36 页、摘要 245 词 |
+| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.5/691） |
 | **匿名/实名** | 匿名版 = canonical（无姓名/单位/邮箱）；实名版 = `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` |
 | **中文对照稿** | `research/paper_shturl.md`（待 689 同步；当前仍为 677d 口径，登记为待办） |
 
@@ -189,7 +189,7 @@
 
 | # | 变更 | 落地位置 |
 |---|---|---|
-| 1 | 题名 → *Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification* | tex 头部/正文/投稿材料/arXiv 版 |
+| 1 | 题名 → *Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation* | tex 头部/正文/投稿材料/arXiv 版 |
 | 2 | 贡献 4→3（审计协议 / 实证审计 / 量化发现）；演化与子模退出贡献列表 | §1 / 摘要 |
 | 3 | 新增 §3 Evaluator-Audit Protocol（claim$=(D,A,E,\Theta,P)$；8 失败模式；证伪流程；4 态审计结果） | 正文 §3 |
 | 4 | 正文重组为 5 个发现（F1 构成效应 / F2 能力边界 / F3 环境 / F4 TOST+标准化 / F5 演化失败） | §5 |
@@ -207,6 +207,32 @@
 **遗留/待执行（登记，不得写成已完成）**：人类第二标注；native sanitizer 替代（clang-cl/MSVC）；
 容器化复现；native 三资产复跑；original-project 版本真实构建；论文中文对照稿 689 同步；
 DeepFact 会议状态与 SV-COMP 任务总数未核验。
+
+---
+
+## 5sexies. 691 变更清单（v1.4 → v1.5：止损 + 证据搬运 + 内容减法）
+
+**性质**：修正增强轮。**不做新实验、不跑 detect**；全部数字来自既有冻结矩阵（677c/682/683 产物）与官方/在线核验。
+
+### 一、止损三项
+| # | 项 | 结论与处置 |
+|---|---|---|
+| S1 | **公式** | `E[J]=kd/n` **数学正确**（超几何精确均值，`n`=资产池规模=8）；689 记录为"hard fix"是**表述错误**。691 改称**符号消歧**（改 `k|D|/|A|` 仅为与全篇样本量 `n` 区分），并在正文显式说明"notation, not correction"；另加**拟合限度**一句（`|D|=0` 时表达式归零但实测仍有 `+3.06pp` ⇒ 描述性拟合非因果模型）。 |
+| S1b | **真正的过度声明** | **"三池验证"**：`677c_asset_pools.json` 显示 Pool B 与 Pool C 资产集**完全相同**（`linker` catch 0.88% ≥ Pool B 的 0.5% 门槛），且 `677c_evolution_operator_results.json` 中 B/C 各 `k` 块数值**逐位相同** ⇒ 实为 **2 个不同池 / 9 个不同 (池,k) 块**；"3/14 improving tiers"实为**同 1 档（k=4）被三个池标签重复计数**。正文（附录算子节）与 F5 均已更正。 |
+| S2 | **题名** | 联网核查（2026-10-07）确认撞名：**"Auditing the Evaluators"**（PROPOR 2026, aclanthology 2026.propor-1.22）、**"Evaluator Stress Test"**（ACL Findings 2026 / arXiv 2507.05619）、DeepFact 机制名 **"Audit-then-Score"**（ACL 2026 long 1586）、BabelJudge 自述 **"reliability audit framework"**（arXiv 2606.22329）。⇒ 决策：**退出 audit 命名拥挤区**，改用自有术语（caliber drift / capability boundaries），保留 §3 的 "evaluator-audit protocol" 作为方法名。全文件同步（tex/CL/response/VERSION/arXiv 实名版 + 打包 `queyi_arxiv_v1.6_realname.tar.gz`）。 |
+| S3 | **附录瘦身** | 删除 67-rule 清单节（690 建议；工程细节非证据）；压缩 673c humanization 材料（11320→5651 字符）、e-process、复现节、工具链敏感性、元评估框架、689 两个方案类 subsection；全稿 **36→35 页**，附录 **23 页**（≤26）。 |
+
+### 二、建设五项（证据搬运而非补做）
+| # | 项 | 落地 |
+|---|---|---|
+| B1 | 机制级显著性进正文 §5.1 | `k=1 +11.31pp (p=6.0e-8)`；`k=2/k=3 +7.42pp (7.7e-5 / 3.7e-6)`；`k=4 =0.00pp`（碰撞 `1/C(5,4)=0.2`）；对 2000 次均值口径 `+12.26/+10.06/+5.78/+1.61pp`；有效 `n≈133–140` |
+| B2 | 四个 κ 全报告 | `defect_type 0.727` / `planted 0.789` / **`expected_verdict 0.437`** / **`severity 0.157`**（近随机，n=287/262，源 `data/682_kappa.json`）；T1 全面改写；F2 增"严重度标签本身最不可靠"的限定句 |
+| B3 | 治理 claim 强化 | §2 完整段：452 ledger 事件 / 67 规则 / 钉住 `rules_sha256`（v1.0.0）；"rule changes become auditable instead of invisible"；**诚实边界写明**（非 immutable、非 tamper-proof；452 事件尚未携带 ruleset hash） |
+| B4 | 标准化 −17.9pp 正文突出 | F4 改写为"标准化才是实质结果"：整体率相似是**方向相反的家族差异相互抵消**（bounds+memory+integer 真实 64.5% vs 合成 36.9%；logic 真实 1/31 vs 合成 9/35）；TOST 未过作为补充 |
+| B5 | 过度声明逐条修复 | 见 `data/691_overclaim_audit.md`（含"三池"、`kd/n`、演化残留、合成≡真实、Merkle 措辞、source-derived 命名六类） |
+
+### 三、验证（691 实测）
+页数 **35**（正文 8 页 / References 起 p9 / 附录 23 页）；摘要 **245 词 / 1776 字符**；编译 **0 错 / 0 未定义引用**；`paper_quality_gate` **6/6 PASS**；`fast_gate` PASS；`data_integrity` pass（`c9f51f51bc96f034`）；`tool_integrity` OK；实名版 34 页、独立编译通过、0 身份泄漏（匿名版）。
 
 ---
 

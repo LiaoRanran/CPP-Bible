@@ -1,5 +1,9 @@
 % =====================================================================
 %  Response to Reviewers — template (NeurIPS 2027 Evaluations & Datasets)
+%  v1.5 (691 corrected-and-enhanced): title -> "Caliber Drift and Capability Boundaries: An Audit
+%  Protocol for Software-Verification Evaluation"; formula reclassified as symbol disambiguation;
+%  "three pools" corrected to two distinct pools / 9 distinct blocks; mechanism-level tiers,
+%  all four kappas and the governance counters lifted into the main text; 36 -> 35 pages.
 %  v1.4 (689 reframed): title and framing updated after the structural reframe
 %  ("Auditing the Evaluator"); contributions 3; five audited findings; the
 %  Verifier Coverage / Evolution Efficiency metrics are DELETED (engineering
@@ -35,7 +39,7 @@
 
 \begin{center}
 {\Large\bfseries Response to Reviewers}\\[2pt]
-{\large Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification}\\[2pt]
+{\large Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation}\\[2pt]
 \textbf{Paper \#XXXX} \quad (Anonymous submission, NeurIPS E\&D, double-blind)
 \end{center}
 
@@ -76,10 +80,27 @@ Every number below is recomputed from a landed artifact.
         claim; it is reported in an appendix marked as such.
   \item \texttt{planted=false} samples are described as \textbf{source-derived reconstructions}
         (968 self-authored / 74 source-derived / 0 original external artifacts), not production code.
-  \item \textbf{689 structural reframe.} Title: ``Auditing the Evaluator: Stress-Testing
-        Evidence-Based Software Verification''; contributions 3 (audit protocol / empirical audit /
-        quantitative findings); new \S3 Evaluator-Audit Protocol (claim caliber $(D,A,E,\Theta,P)$;
-        eight failure modes; falsification procedure; four audit outcomes); five audited findings.
+  \item \textbf{691 corrections and enhancements.} (i)~\textbf{Title} is now ``Caliber Drift and
+        Capability Boundaries: An Audit Protocol for Software-Verification Evaluation'': a 2026
+        collision check found ``Auditing the Evaluators'' (PROPOR 2026), ``Evaluator Stress Test''
+        (ACL Findings 2026), DeepFact's ``audit-then-score'' and BabelJudge's ``reliability audit
+        framework'', so the paper moved to terms it owns. (ii)~\textbf{Formula reclassified as
+        symbol disambiguation, not a correction}: $E[J]=kd/n$ was already the exact hypergeometric
+        mean with $n$ = asset-pool size; the edit renames it $k|D|/|A|$ only because $n$ means
+        sample size elsewhere. (iii)~\textbf{``Three pools'' corrected to two}: Pool B and Pool C
+        share one asset set (linker clears the 0.5\% floor at 0.88\%) with numerically identical
+        blocks, so we report \textbf{9 distinct} pool$\,\times\,k$ blocks and ONE distinct
+        improving tier ($k{=}4$, $+1.41$pp, $p{=}0.302$) instead of ``3/14''. (iv)~\textbf{Evidence
+        lifted into the main text}: mechanism-level $k{=}1$ $+11.31$pp ($p{=}6.0\times10^{-8}$),
+        $k{=}2/k{=}3$ $+7.42$pp (Finding 1); all four label $\kappa$, including the two previously
+        unreported (\texttt{expected\_verdict} $0.437$, \texttt{severity} $0.157$, near chance) in
+        T1/Finding 2; governance counters (452 ledger events, 67 rules, pinned ruleset hash) in
+        \S2. (v)~\textbf{Content subtraction}: 67-rule manifest section removed and 673c/protocol
+        appendices condensed; total pages $36\to35$ with the appendix at 23.
+  \item \textbf{689 structural reframe.} Title then: ``Auditing the Evaluator''; contributions 3
+        (audit protocol / empirical audit / quantitative findings); new \S3 Evaluator-Audit
+        Protocol (claim caliber $(D,A,E,\Theta,P)$; eight failure modes; falsification procedure;
+        four audit outcomes); five audited findings.
         The $+24.0$pp selection gain is presented as a measurement-pool \emph{composition artifact}
         (mechanism level $+7.4$--$+11.3$pp), and the evolution hypothesis failure is Finding~5.
   \item \textbf{689 statistics} (deterministic recomputation of frozen matrices): TOST at $\pm10$pp
