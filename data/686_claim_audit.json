@@ -1,0 +1,44 @@
+{
+  "batch": "686",
+  "purpose": "逐条审计论文 v1.3 的主要 claim：支持度 / 是否需澄清 / 是否披露局限 / 是否被弱化",
+  "schema": {
+    "claim": "claim 摘要",
+    "location": "论文位置（章节/材料）",
+    "status": "supported | qualified | disclosed-limitation | understated | needs-clarification | not-claimed",
+    "evidence": "支撑/反驳证据",
+    "severity_if_attacked": "fatal | serious | moderate | minor",
+    "recommendation": "建议"
+  },
+  "audits": [
+    {"claim": "A5 预算匹配对照已跑，主端点 +24.03pp 显著（p=2.3e-41）", "location": "§6 E4 / rebuttal_prep Q1", "status": "qualified", "evidence": "a5_676f 全量 1137 样本；但并列分析 k=4 触发预注册 uninterpretable（Δ=0.00pp, p=1.0）", "severity_if_attacked": "serious", "recommendation": "强调「方向证据，非确认性结论」；并排 +7-12pp 机制估计"},
+    {"claim": "FD beats same-budget random", "location": "（论文明确不写此句）", "status": "not-claimed", "evidence": "rebuttal_prep 纪律「不得写 FD>Random」", "severity_if_attacked": "n/a", "recommendation": "维持克制；用 +24pp 与 +7-12pp 并行表述"},
+    {"claim": "机制层面选择效应 ≈ +7-12pp（非退化池 k<=3 显著）", "location": "§6 E4 / 677c", "status": "supported", "evidence": "非退化池 k=1/2/3 +11.31/+7.42/+7.42pp, p<=7.7e-5", "severity_if_attacked": "minor", "recommendation": "作为机制估计主口径"},
+    {"claim": "模板克隆泄漏已排除（clone-aware 重切分主端点不变）", "location": "§5.1.1 / 677b", "status": "supported", "evidence": "474 家族；strict 克隆对跨 split=0；主端点 +23.0~+26.7pp 不变", "severity_if_attacked": "minor", "recommendation": "保持 cluster CI 报告"},
+    {"claim": "有效 n≈133-140，CI 宽 1.78-2.10×", "location": "677b cluster bootstrap", "status": "supported", "evidence": "设计效应≈4.05-4.26；cluster CI [+16.6,+30.4]/[+18.3,+33.4]", "severity_if_attacked": "moderate", "recommendation": "全文统一按 cluster 宽度；核验 naive CI 未混用"},
+    {"claim": "演化算子提供可证伪性而非召回", "location": "§6 E4 / 677c 算子报告", "status": "qualified", "evidence": "full 优于 676f FD 仅 3/14 tiers，最佳 +1.41pp p=0.302 不显著", "severity_if_attacked": "fatal", "recommendation": "标题/贡献把「演化=召回增益」降为「演化=可证伪框架」；补真实演化增益实验（需 683 轨迹）"},
+    {"claim": "盲区 38.4%（instrument-boundary 口径）", "location": "§能力边界 / 676g", "status": "qualified", "evidence": "676g n=1147；707 catch/440 miss；但 1137 vs 1147 口径未统一（见 #1）", "severity_if_attacked": "moderate", "recommendation": "每处带 instrument-boundary 限定；加 1137/1147 脚注"},
+    {"claim": "单回合判定 ~5% 跑间不稳定", "location": "§E4 / 676f", "status": "supported", "evidence": "369 格重测 18 翻（4.9%）；并发 3 轮 4/80", "severity_if_attacked": "moderate", "recommendation": "多回合众数（路线图）；或点估计给 ±2pp 敏感度"},
+    {"claim": "当前状态可复现；历史钉定不完整", "location": "§8 / Q4", "status": "disclosed-limitation", "evidence": "452 事件无 ruleset hash；已降级为 current-state-only", "severity_if_attacked": "moderate", "recommendation": "hash 入账本（路线图）"},
+    {"claim": "单标注者、零第二标注者（T17 首要威胁）", "location": "§威胁 / Q10", "status": "disclosed-limitation", "evidence": "41 holdout+64 corpus 自产；无 IRR", "severity_if_attacked": "serious", "recommendation": "澄清 682 κ=0.727 是 AI 重标非人类 IRR；预注册人类双标注"},
+    {"claim": "条件复现（依赖 WSL）", "location": "Analysis(2)/Threats / Q11", "status": "disclosed-limitation", "evidence": "无 WSL 则 15 样本降级 unknown，外部召回 35%→10%", "severity_if_attacked": "fatal", "recommendation": "fail-loud 已落地；guard 重跑探测器仍 future"},
+    {"claim": "不声称第一个演化评估器", "location": "§2(7) / Q5", "status": "supported", "evidence": "明确「we do not claim to be the first」", "severity_if_attacked": "minor", "recommendation": "保持"},
+    {"claim": "Belnap 四态编码不新颖、无定理", "location": "§3 / Q3", "status": "supported", "evidence": "「we claim no novelty in the four-state encoding」", "severity_if_attacked": "minor", "recommendation": "保持；锚定「三口径全报」可检验后果"},
+    {"claim": "pass≠语义真值（evidence-acquisition 装置）", "location": "§3 Terminology / C0", "status": "supported", "evidence": "pass=(1,0) 边界内未获矛盾证据", "severity_if_attacked": "minor", "recommendation": "保持"},
+    {"claim": "泛化到其他语言未支持", "location": "Tab:claim / Q7", "status": "disclosed-limitation", "evidence": "C++ UB 好抓是优点也是外推限制", "severity_if_attacked": "moderate", "recommendation": "保持 narrow claim"},
+    {"claim": "矩阵规模 1147×8（能力边界）/ 1137（A5）", "location": "676g vs a5_676f", "status": "needs-clarification", "evidence": "676g total.n=1147；a5_676f=1137（去重10条）", "severity_if_attacked": "serious", "recommendation": "加脚注说明同一批样本两种口径，非矛盾"},
+    {"claim": "FD 在 2000 次重采样中严格优于随机 97.6%", "location": "§6 E4 / Q1", "status": "qualified", "evidence": "依赖单次随机种子抽到 2 个零信息资产；相对随机均值增益≈+16pp", "severity_if_attacked": "moderate", "recommendation": "重述为「相对单次含退化资产随机种子的百分位」+ 强调相对均值 +16pp"},
+    {"claim": "E9 跨缺陷区间压力测试，非 superiority", "location": "§E9 / Q12", "status": "qualified", "evidence": "主口径失败（100% 召回且 100% FPR=零判别）；StrictA 事后选", "severity_if_attacked": "serious", "recommendation": "明确 cross-regime stress test；列出 8 个 reverse pair"},
+    {"claim": "H4 subset-consistency corpus 失败（+33.3pp）", "location": "§一致性 / Q15", "status": "disclosed-limitation", "evidence": "登记为 composition shift 非能力增益", "severity_if_attacked": "moderate", "recommendation": "保持已披露"},
+    {"claim": "LLM judge 更敏感但 50% FPR，仅 propose 不 verdict", "location": "§E7 / Q6", "status": "supported", "evidence": "GLM-4 12/12 但 4/8 FPR；answer_leak_risk 瑕疵", "severity_if_attacked": "minor", "recommendation": "保持 propose-only 架构规则"},
+    {"claim": "685 FD 覆盖率 test 59.33% 与 A5 eval 54.59% 同集应一致", "location": "685 vs A5", "status": "needs-clarification", "evidence": "同 FD 集 {asan,compiler-warn,tsan,ubsan} 两口径差 ~5pp≈5% 不稳定", "severity_if_attacked": "minor", "recommendation": "加脚注说明 test/eval split 与单回合噪声差异"}
+  ],
+  "summary": {
+    "total": 20,
+    "supported": 8,
+    "qualified": 7,
+    "disclosed_limitation": 5,
+    "needs_clarification": 2,
+    "not_claimed": 1,
+    "top_vulnerabilities": ["evolution operator no significant gain (fatal)", "conditional reproduction (fatal)", "1137 vs 1147 inconsistency (serious, undisclosed)", "single-annotator T17 (serious)", "E9 unfair comparison (serious)"]
+  }
+}
