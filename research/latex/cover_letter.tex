@@ -5,7 +5,8 @@
 %  robustness: FD 54.6% vs Random 30.6% (+24.03pp, p=2.3e-41) vs Static 24.7% (+29.9pp);
 %  pre-registered parallel analysis collapses to 0.0pp => direction-only; selection
 %  effect ~+7-12pp; clone-family re-split +23.0-+26.7pp; effective n ~133-140;
-%  capability-boundary map 38.4% blind / 18 of 70; provenance 968/74/0; e-process
+%  capability-boundary map 38.4% blind (sample-level, unchanged) / 13 of 34 (681
+%  label-normalized); provenance 968/74/0; e-process
 %  exploratory. Track E&D (double-blind); template neurips_2025 placeholder
 %  (third-party, unmodified). Version of record: research/latex/VERSION.md
 %  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
@@ -57,7 +58,9 @@ LLM-generated technical knowledge?'' an \emph{externally checkable} one.
         directories, a \textbf{452}-event authority ledger, and a \emph{kernel-independent}
         reconciler (current state; historical pinning partial).
   \item \textbf{A large, caliber-audited empirical asset.} \textbf{1147} samples over
-        \textbf{70} defect types, in \textbf{7} expansion batches (expA--G). Provenance is
+        \textbf{34} defect types (normalized closed vocabulary), in \textbf{7} expansion
+        batches (expA--G); a 7-dimension audit of all 1147 samples found and repaired
+        \textbf{363} cross-source label inconsistencies. Provenance is
         three-valued: \textbf{968} \texttt{self-authored}, \textbf{74}
         \texttt{source-derived-reconstruction} (single-file teaching reconstructions of real
         CVEs/GitHub issues, \textbf{not} original production code), and \textbf{0}
@@ -76,7 +79,7 @@ LLM-generated technical knowledge?'' an \emph{externally checkable} one.
         \emph{family-level bootstrap} gives an \textbf{effective} $n\approx133$--$140$.
   \item \textbf{A capability-boundary map of the instrument.} On the \textbf{1147 $\times$ 8}
         matrix, sample-level detection is \textbf{61.6\%} and the blind spot \textbf{38.4\%};
-        \textbf{18 of 70} types exceed 50\% blind (deadlock 94.3\%, endianness 89.3\%; family
+        \textbf{13 of 34} types exceed 50\% blind (deadlock 84.6\%, endianness 89.3\%; family
         gradient memory 15.2\% $\to$ link/ODR 67.7\%). This is an \emph{instrument-boundary}
         statistic measured on our corpus with our 8-asset pool --- it does \textbf{not} claim
         that 38.4\% of real-world C++ defects are undetectable --- and it scopes every
@@ -112,7 +115,7 @@ the isolated selection effect is $\approx$\,\textbf{+7--12}pp, and a \textbf{clo
 leaves the endpoint unchanged (\textbf{+23.0--+26.7}pp) while a family-level bootstrap gives an
 \textbf{effective} $n\approx133$--$140$. We also publish
 a capability-boundary map of the instrument itself (sample-level detection \textbf{61.6\%}; \textbf{38.4\%} of 1147 samples are blind spots;
-\textbf{18 of 70} defect types exceed 50\% blind). This blind-spot ratio is an
+\textbf{13 of 34} normalized types exceed 50\% blind). This blind-spot ratio is an
 \emph{instrument-boundary} statistic measured on our corpus with our 8-asset pool: it does
 \textbf{not} imply that 38.4\% of real-world C++ defects are undetectable. Provenance in the corpus
 is three-valued: 968 \texttt{self-authored}, 74 \texttt{source-derived-reconstruction} (single-file
