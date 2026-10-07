@@ -1,0 +1,164 @@
+{
+ "title": {
+  "text": "C2 · Blind-spot rate by family (8 families, n=1147)",
+  "subtext": "681-fixed aggregates; horizontal bars sorted low → high",
+  "left": "center",
+  "textStyle": {
+   "color": "#222222"
+  }
+ },
+ "tooltip": {
+  "trigger": "axis",
+  "axisPointer": {
+   "type": "shadow"
+  }
+ },
+ "grid": {
+  "left": 130,
+  "right": 80,
+  "top": 70,
+  "bottom": 40
+ },
+ "xAxis": {
+  "type": "value",
+  "max": 80,
+  "name": "blind rate (%)",
+  "axisLabel": {
+   "color": "#222222"
+  }
+ },
+ "yAxis": {
+  "type": "category",
+  "data": [
+   "bounds",
+   "integer",
+   "memory",
+   "stl",
+   "language_oop",
+   "concurrency",
+   "alias_type",
+   "embedded_link"
+  ],
+  "axisLabel": {
+   "color": "#222222"
+  }
+ },
+ "series": [
+  {
+   "name": "blind rate (%)",
+   "type": "bar",
+   "data": [
+    {
+     "value": 7.6,
+     "itemStyle": {
+      "color": "#2e86de"
+     }
+    },
+    {
+     "value": 11.3,
+     "itemStyle": {
+      "color": "#2e86de"
+     }
+    },
+    {
+     "value": 28.9,
+     "itemStyle": {
+      "color": "#2e86de"
+     }
+    },
+    {
+     "value": 33.6,
+     "itemStyle": {
+      "color": "#2e86de"
+     }
+    },
+    {
+     "value": 37.9,
+     "itemStyle": {
+      "color": "#2e86de"
+     }
+    },
+    {
+     "value": 57.3,
+     "itemStyle": {
+      "color": "#c0392b"
+     }
+    },
+    {
+     "value": 63.4,
+     "itemStyle": {
+      "color": "#c0392b"
+     }
+    },
+    {
+     "value": 67.4,
+     "itemStyle": {
+      "color": "#c0392b"
+     }
+    }
+   ],
+   "label": {
+    "show": true,
+    "position": "right",
+    "formatter": "{b}",
+    "color": "#222222"
+   },
+   "barWidth": 22
+  }
+ ],
+ "queyi:meta": {
+  "rows": [
+   {
+    "family": "bounds",
+    "n": 118,
+    "blind": 9,
+    "blind_pct": 7.6
+   },
+   {
+    "family": "integer",
+    "n": 115,
+    "blind": 13,
+    "blind_pct": 11.3
+   },
+   {
+    "family": "memory",
+    "n": 190,
+    "blind": 55,
+    "blind_pct": 28.9
+   },
+   {
+    "family": "stl",
+    "n": 140,
+    "blind": 47,
+    "blind_pct": 33.6
+   },
+   {
+    "family": "language_oop",
+    "n": 174,
+    "blind": 66,
+    "blind_pct": 37.9
+   },
+   {
+    "family": "concurrency",
+    "n": 225,
+    "blind": 129,
+    "blind_pct": 57.3
+   },
+   {
+    "family": "alias_type",
+    "n": 93,
+    "blind": 59,
+    "blind_pct": 63.4
+   },
+   {
+    "family": "embedded_link",
+    "n": 92,
+    "blind": 62,
+    "blind_pct": 67.4
+   }
+  ],
+  "source": "data/681_type_stats_normalized.json#family8",
+  "generated_by": "tools/figures_682.py",
+  "note": "家族名取自 681 归一化数据（memory/bounds/integer/alias_type/concurrency/stl/language_oop/embedded_link）；>50% 标红。"
+ }
+}
