@@ -1,0 +1,481 @@
+{
+ "schema": "queyi-689-environment-metrics/v1",
+ "generated_by": "tools/environment_metrics_689.py",
+ "generated_at": "2026-10-07T21:43:01+08:00",
+ "seed": 6891,
+ "metric_definitions": {
+  "catch_rate_pct": "catch / total",
+  "unknown_rate_pct": "unknown / total",
+  "conditional_recall_pct": "catch / (catch + miss)（排除 unknown）",
+  "why_three": "环境变化可能通过 unknown 改变分母：单看 recall 会把\"不可测\"吞掉或虚升；三组件并报使分母变化显式。"
+ },
+ "profiles": {
+  "wsl-gcc-13.3": {
+   "status": "实测",
+   "environment": {
+    "os": "Ubuntu 24.04 (WSL2)",
+    "compiler": "g++ 13.3.0",
+    "flags": "-O0/-O2 双档，任一档报出即 catch",
+    "assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "wunsequenced",
+     "cross-compile",
+     "linker",
+     "compile-time"
+    ]
+   },
+   "real110_per_asset": {
+    "asan": {
+     "catch": 54,
+     "miss": 55,
+     "unknown": 1,
+     "total": 110,
+     "catch_rate_pct": 49.09090909090909,
+     "unknown_rate_pct": 0.9090909090909091,
+     "conditional_recall_pct": 49.54128440366973
+    },
+    "ubsan": {
+     "catch": 20,
+     "miss": 89,
+     "unknown": 1,
+     "total": 110,
+     "catch_rate_pct": 18.181818181818183,
+     "unknown_rate_pct": 0.9090909090909091,
+     "conditional_recall_pct": 18.34862385321101
+    },
+    "tsan": {
+     "catch": 25,
+     "miss": 84,
+     "unknown": 1,
+     "total": 110,
+     "catch_rate_pct": 22.727272727272727,
+     "unknown_rate_pct": 0.9090909090909091,
+     "conditional_recall_pct": 22.93577981651376
+    },
+    "compiler-warn": {
+     "catch": 5,
+     "miss": 105,
+     "unknown": 0,
+     "total": 110,
+     "catch_rate_pct": 4.545454545454546,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 4.545454545454546
+    },
+    "wunsequenced": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "cross-compile": {
+     "catch": 22,
+     "miss": 87,
+     "unknown": 1,
+     "total": 110,
+     "catch_rate_pct": 20.0,
+     "unknown_rate_pct": 0.9090909090909091,
+     "conditional_recall_pct": 20.18348623853211
+    },
+    "linker": {
+     "catch": 0,
+     "miss": 110,
+     "unknown": 0,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 0.0
+    },
+    "compile-time": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    }
+   },
+   "real110_or": {
+    "catch": 65,
+    "miss": 45,
+    "unknown": 0,
+    "total": 110,
+    "catch_rate_pct": 59.09090909090909,
+    "unknown_rate_pct": 0.0,
+    "conditional_recall_pct": 59.09090909090909
+   },
+   "syn1147_per_asset": {
+    "asan": {
+     "catch": 408,
+     "miss": 729,
+     "unknown": 10,
+     "total": 1147,
+     "catch_rate_pct": 35.571054925893634,
+     "unknown_rate_pct": 0.8718395815170008,
+     "conditional_recall_pct": 35.88390501319261
+    },
+    "ubsan": {
+     "catch": 270,
+     "miss": 867,
+     "unknown": 10,
+     "total": 1147,
+     "catch_rate_pct": 23.539668700959023,
+     "unknown_rate_pct": 0.8718395815170008,
+     "conditional_recall_pct": 23.7467018469657
+    },
+    "tsan": {
+     "catch": 263,
+     "miss": 874,
+     "unknown": 10,
+     "total": 1147,
+     "catch_rate_pct": 22.929380993897123,
+     "unknown_rate_pct": 0.8718395815170008,
+     "conditional_recall_pct": 23.131046613896217
+    },
+    "compiler-warn": {
+     "catch": 143,
+     "miss": 1004,
+     "unknown": 0,
+     "total": 1147,
+     "catch_rate_pct": 12.467306015693111,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 12.467306015693111
+    },
+    "wunsequenced": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 1147,
+     "total": 1147,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "cross-compile": {
+     "catch": 122,
+     "miss": 987,
+     "unknown": 38,
+     "total": 1147,
+     "catch_rate_pct": 10.636442894507411,
+     "unknown_rate_pct": 3.3129904097646032,
+     "conditional_recall_pct": 11.000901713255185
+    },
+    "linker": {
+     "catch": 10,
+     "miss": 1137,
+     "unknown": 0,
+     "total": 1147,
+     "catch_rate_pct": 0.8718395815170008,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 0.8718395815170008
+    },
+    "compile-time": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 1147,
+     "total": 1147,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    }
+   },
+   "syn1147_or": {
+    "catch": 707,
+    "miss": 440,
+    "unknown": 0,
+    "total": 1147,
+    "catch_rate_pct": 61.63905841325196,
+    "unknown_rate_pct": 0.0,
+    "conditional_recall_pct": 61.63905841325196
+   }
+  },
+  "windows-native-mingw": {
+   "status": "口径推断（非实测；纯 Windows sanitizer 需 clang-cl，本机未配置）",
+   "environment": {
+    "os": "win32",
+    "compiler": "MinGW g++ 13.1.0 / clang 22.1.8（ASan 缺运行库）",
+    "available_assets": [
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ]
+   },
+   "real110_or_unaware": {
+    "catch": 26,
+    "miss": 84,
+    "unknown": 0,
+    "total": 110,
+    "catch_rate_pct": 23.636363636363637,
+    "unknown_rate_pct": 0.0,
+    "conditional_recall_pct": 23.636363636363637
+   },
+   "real110_per_asset_aware": {
+    "compiler-warn": {
+     "catch": 5,
+     "miss": 105,
+     "unknown": 0,
+     "total": 110,
+     "catch_rate_pct": 4.545454545454546,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 4.545454545454546
+    },
+    "cross-compile": {
+     "catch": 22,
+     "miss": 87,
+     "unknown": 1,
+     "total": 110,
+     "catch_rate_pct": 20.0,
+     "unknown_rate_pct": 0.9090909090909091,
+     "conditional_recall_pct": 20.18348623853211
+    },
+    "linker": {
+     "catch": 0,
+     "miss": 110,
+     "unknown": 0,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 0.0
+    },
+    "asan": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "ubsan": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "tsan": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "wunsequenced": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    },
+    "compile-time": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 110,
+     "total": 110,
+     "catch_rate_pct": 0.0,
+     "unknown_rate_pct": 100.0,
+     "conditional_recall_pct": null
+    }
+   },
+   "aware_note": "感知协议下 asan/ubsan/tsan 记资产级 unknown=100%；样本级 OR 仍为 23.64%，但该数字必须随\"能力边界声明\"使用，不得与 P1 的 59.09% 直接相减后当\"退化\"而不说明分母构成"
+  },
+  "wsl-clang-18.1.3": {
+   "status": "实测（683-B1 分层抽样 200 条，asan/ubsan 双档）",
+   "environment": {
+    "os": "Ubuntu (WSL2)",
+    "compiler": "clang 18.1.3",
+    "samples": "1147 全池分层抽样（按 defect_type 比例，种子 6831，挂起样本跳过并等量替补）"
+   },
+   "per_asset": {
+    "asan": {
+     "gcc": {
+      "catch": 65,
+      "miss": 131,
+      "unknown": 4,
+      "total": 200,
+      "catch_rate_pct": 32.5,
+      "unknown_rate_pct": 2.0,
+      "conditional_recall_pct": 33.16326530612245
+     },
+     "clang": {
+      "catch": 67,
+      "miss": 126,
+      "unknown": 7,
+      "total": 200,
+      "catch_rate_pct": 33.5,
+      "unknown_rate_pct": 3.5000000000000004,
+      "conditional_recall_pct": 34.715025906735754
+     },
+     "agreement_pct": 93.5,
+     "kappa": 0.864,
+     "n_diff": 13
+    },
+    "ubsan": {
+     "gcc": {
+      "catch": 48,
+      "miss": 148,
+      "unknown": 4,
+      "total": 200,
+      "catch_rate_pct": 24.0,
+      "unknown_rate_pct": 2.0,
+      "conditional_recall_pct": 24.489795918367346
+     },
+     "clang": {
+      "catch": 52,
+      "miss": 141,
+      "unknown": 7,
+      "total": 200,
+      "catch_rate_pct": 26.0,
+      "unknown_rate_pct": 3.5000000000000004,
+      "conditional_recall_pct": 26.94300518134715
+     },
+     "agreement_pct": 93.5,
+     "kappa": 0.8434,
+     "n_diff": 13
+    }
+   },
+   "family_table": [
+    {
+     "family": "memory",
+     "cells": 68,
+     "gcc_catch_pct": 26.47058823529412,
+     "clang_catch_pct": 26.47058823529412,
+     "delta_clang_minus_gcc_pp": 0.0,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "bounds",
+     "cells": 44,
+     "gcc_catch_pct": 84.0909090909091,
+     "clang_catch_pct": 86.36363636363636,
+     "delta_clang_minus_gcc_pp": 2.272727272727273,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "integer",
+     "cells": 42,
+     "gcc_catch_pct": 45.23809523809524,
+     "clang_catch_pct": 45.23809523809524,
+     "delta_clang_minus_gcc_pp": 0.0,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "alias_type",
+     "cells": 36,
+     "gcc_catch_pct": 22.22222222222222,
+     "clang_catch_pct": 22.22222222222222,
+     "delta_clang_minus_gcc_pp": 0.0,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "concurrency",
+     "cells": 74,
+     "gcc_catch_pct": 9.45945945945946,
+     "clang_catch_pct": 6.756756756756757,
+     "delta_clang_minus_gcc_pp": -2.7027027027027026,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "stl",
+     "cells": 56,
+     "gcc_catch_pct": 30.357142857142854,
+     "clang_catch_pct": 44.642857142857146,
+     "delta_clang_minus_gcc_pp": 14.285714285714285,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "language_oop",
+     "cells": 42,
+     "gcc_catch_pct": 14.285714285714285,
+     "clang_catch_pct": 14.285714285714285,
+     "delta_clang_minus_gcc_pp": 0.0,
+     "gcc_unknown_rate_pct": 0.0,
+     "clang_unknown_rate_pct": 0.0
+    },
+    {
+     "family": "embedded_link",
+     "cells": 38,
+     "gcc_catch_pct": 2.631578947368421,
+     "clang_catch_pct": 0.0,
+     "delta_clang_minus_gcc_pp": -2.631578947368421,
+     "gcc_unknown_rate_pct": 21.052631578947366,
+     "clang_unknown_rate_pct": 36.84210526315789
+    }
+   ]
+  }
+ },
+ "deltas": {
+  "p3_vs_p1_200sample": {
+   "scope": "同一 200 条分层抽样，仅 asan/ubsan 两资产",
+   "asan": {
+    "delta_catch_rate_pp": 1.0,
+    "delta_unknown_rate_pp": 1.5000000000000004,
+    "delta_conditional_recall_pp": 1.5517606006133065
+   },
+   "ubsan": {
+    "delta_catch_rate_pp": 2.0,
+    "delta_unknown_rate_pp": 1.5000000000000004,
+    "delta_conditional_recall_pp": 2.4532092629798044
+   }
+  },
+  "p2_unaware_vs_p1_real110": {
+   "scope": "真实 110 条，OR 层（P2=跨平台资产并集，按 miss 记账）",
+   "delta_catch_rate_pp": -35.45454545454545,
+   "delta_unknown_rate_pp": 0.0,
+   "delta_conditional_recall_pp": -35.45454545454545,
+   "delta_catch_rate_pp_if_unknown_accounting": 0.0,
+   "note": "静默退化记账：Δcatch=−35.45pp、Δunknown=0pp（guard 仍绿）；感知记账：Δcatch=0（可用资产集不变）但新增 3 个资产的 unknown=100% 边界声明。两种记账的差别本身就是\"分母病理\"的演示。"
+  },
+  "p2_vs_p1_syn": {
+   "scope": "合成 1147 条，OR 层（P1 全 8 资产 vs P2 跨平台资产并集）",
+   "p1_or": {
+    "catch": 707,
+    "miss": 440,
+    "unknown": 0,
+    "total": 1147,
+    "catch_rate_pct": 61.63905841325196,
+    "unknown_rate_pct": 0.0,
+    "conditional_recall_pct": 61.63905841325196
+   },
+   "p2_or_estimate": {
+    "catch": 251,
+    "miss": 896,
+    "unknown": 0,
+    "total": 1147,
+    "catch_rate_pct": 21.883173496076722,
+    "unknown_rate_pct": 0.0,
+    "conditional_recall_pct": 21.883173496076722
+   },
+   "note": "合成侧同样只作口径推断（非实测）；用于展示退化方向与真实侧一致。"
+  }
+ },
+ "readings": {
+  "r1_cross_toolchain_stable": "同 OS 换编译器（g++↔clang）在 200 抽样上 asan/ubsan 一致率 93.5%，κ=0.864/0.843，Δcatch ≤2pp、Δunknown ≤1.5pp ⇒ 工具链敏感性有限（实测）。",
+  "r2_environment_loss_dominant": "跨环境（WSL→native）真实 110 的 catch_rate 59.09%→23.64%（−35.45pp，口径推断）；且静默退化时 unknown 不上升（Δunknown=0）——单看 recall 会误以为\"只是低了\"，看不到\"39 个捕获的测量根本未执行\"。",
+  "r3_denominator_pathology": "wunsequenced/compile-time 在真实 110 上的资产级 unknown_rate=100%，但在 OR 口径被其他资产掩盖（样本级 unknown=0）。任何单资产分析若不并报 unknown 率，都会把这两个资产读成\"0 检出\"。",
+  "r4_family_layer": "clang↔gcc 的差异集中在 stl 家族（+8/56 格 = +14.3pp，clang 更高），其余家族 Δ 极小；家族层无反转 ⇒ 一致率不是被单一家族拉高的。"
+ },
+ "caveats": [
+  "windows-native 一档为**架构/口径推断**，非本机实测；不得写成实测数字。",
+  "wsl-clang 档为 200 条分层抽样（非全池），其 catch 率不可与全池 61.64%/59.09% 直接比；仅用于同一样本上的 gcc↔clang 配对对比。",
+  "clang 侧 unknown（7/200）高于 gcc（4/200）：其中含 1 条 clang 编译失败（expF:F176），如实保留为 unknown。",
+  "P2 的\"26/110\"来自 683 矩阵中跨平台资产 verdict 的并集；若 Windows 上链接器/编译器行为与记录环境不同，绝对值会移动。"
+ ]
+}

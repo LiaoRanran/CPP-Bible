@@ -1,0 +1,372 @@
+{
+ "schema": "queyi-689-equivalence/v1",
+ "generated_by": "tools/equivalence_689.py",
+ "generated_at": "2026-10-07T21:41:50+08:00",
+ "seed": 6891,
+ "sources": {
+  "real": "data/683_real_world_detection_matrix.json（683，只读）",
+  "syn": "data/blindspot_676g_detection_matrix.json（676g，只读）",
+  "verdict_rule": "OR：任一 catch ⇒ catch；全部 unknown ⇒ unknown；其余 miss（两侧逐字一致）"
+ },
+ "arms": {
+  "real": {
+   "n": 110,
+   "catch": 65,
+   "rate_pct": 59.09090909090909,
+   "label": "source-derived real-defect corpus（110 CVE 重构）"
+  },
+  "syn": {
+   "n": 1147,
+   "catch": 707,
+   "rate_pct": 61.63905841325196,
+   "label": "self-authored synthetic corpus（676g 冻结矩阵）"
+  }
+ },
+ "difference": {
+  "diff_pp": -2.548149322342863,
+  "direction": "real − synthetic",
+  "se_pp": 4.9028003012637615,
+  "independence_note": "两批样本独立（非配对），不能做 McNemar；此前 z=-0.52, p=0.60 为**非显著性**，不是等价性证据"
+ },
+ "tost_main_margin10": {
+  "margin_pp": 10.0,
+  "ci90_pp": [
+   -10.612538180095331,
+   5.516239535409604
+  ],
+  "p_lower": 0.0642658891067488,
+  "p_upper": 0.005242890124994792,
+  "p_tost": 0.0642658891067488,
+  "equivalent": false,
+  "ci_within_margin": false
+ },
+ "tost_margin_sensitivity": [
+  {
+   "margin_pp": 5.0,
+   "ci90_pp": [
+    -10.612538180095331,
+    5.516239535409604
+   ],
+   "p_lower": 0.30850518756122447,
+   "p_upper": 0.06183396800082119,
+   "p_tost": 0.30850518756122447,
+   "equivalent": false,
+   "ci_within_margin": false
+  },
+  {
+   "margin_pp": 7.000000000000001,
+   "ci90_pp": [
+    -10.612538180095331,
+    5.516239535409604
+   ],
+   "p_lower": 0.18193329151448423,
+   "p_upper": 0.0257380727019188,
+   "p_tost": 0.18193329151448423,
+   "equivalent": false,
+   "ci_within_margin": false
+  },
+  {
+   "margin_pp": 10.0,
+   "ci90_pp": [
+    -10.612538180095331,
+    5.516239535409604
+   ],
+   "p_lower": 0.0642658891067488,
+   "p_upper": 0.005242890124994792,
+   "p_tost": 0.0642658891067488,
+   "equivalent": false,
+   "ci_within_margin": false
+  },
+  {
+   "margin_pp": 12.0,
+   "ci90_pp": [
+    -10.612538180095331,
+    5.516239535409604
+   ],
+   "p_lower": 0.0269370566915752,
+   "p_upper": 0.0015020685832436986,
+   "p_tost": 0.0269370566915752,
+   "equivalent": true,
+   "ci_within_margin": true
+  },
+  {
+   "margin_pp": 15.0,
+   "ci90_pp": [
+    -10.612538180095331,
+    5.516239535409604
+   ],
+   "p_lower": 0.005546704288937221,
+   "p_upper": 0.0001723175681712097,
+   "p_tost": 0.005546704288937221,
+   "equivalent": true,
+   "ci_within_margin": true
+  }
+ ],
+ "tost_margin_curve": [
+  {
+   "margin_pp": 0.0,
+   "p_tost": 0.6983753158421251
+  },
+  {
+   "margin_pp": 0.25,
+   "p_tost": 0.6803730348689675
+  },
+  {
+   "margin_pp": 0.5,
+   "p_tost": 0.66193537969806
+  },
+  {
+   "margin_pp": 0.75,
+   "p_tost": 0.6431008460002582
+  },
+  {
+   "margin_pp": 1.0,
+   "p_tost": 0.6239108409897522
+  },
+  {
+   "margin_pp": 1.25,
+   "p_tost": 0.6044094165203284
+  },
+  {
+   "margin_pp": 1.5,
+   "p_tost": 0.5846429694447799
+  },
+  {
+   "margin_pp": 1.75,
+   "p_tost": 0.5646599125829095
+  },
+  {
+   "margin_pp": 2.0,
+   "p_tost": 0.5445103201586121
+  },
+  {
+   "margin_pp": 2.25,
+   "p_tost": 0.5242455520187077
+  },
+  {
+   "margin_pp": 2.5,
+   "p_tost": 0.5039178613252112
+  },
+  {
+   "margin_pp": 2.75,
+   "p_tost": 0.48357999070988655
+  },
+  {
+   "margin_pp": 3.0,
+   "p_tost": 0.463284762088377
+  },
+  {
+   "margin_pp": 3.25,
+   "p_tost": 0.44308466544608704
+  },
+  {
+   "margin_pp": 3.5,
+   "p_tost": 0.42303145192664493
+  },
+  {
+   "margin_pp": 3.75,
+   "p_tost": 0.4031757364757629
+  },
+  {
+   "margin_pp": 4.0,
+   "p_tost": 0.38356661512045054
+  },
+  {
+   "margin_pp": 4.25,
+   "p_tost": 0.36425130169984443
+  },
+  {
+   "margin_pp": 4.5,
+   "p_tost": 0.345274788515493
+  },
+  {
+   "margin_pp": 4.75,
+   "p_tost": 0.32667953494380464
+  },
+  {
+   "margin_pp": 5.0,
+   "p_tost": 0.30850518756122447
+  },
+  {
+   "margin_pp": 5.25,
+   "p_tost": 0.2907883347846817
+  },
+  {
+   "margin_pp": 5.5,
+   "p_tost": 0.27356229843817514
+  },
+  {
+   "margin_pp": 5.75,
+   "p_tost": 0.25685696403405234
+  },
+  {
+   "margin_pp": 6.0,
+   "p_tost": 0.24069865091802667
+  },
+  {
+   "margin_pp": 6.25,
+   "p_tost": 0.22511002278378367
+  },
+  {
+   "margin_pp": 6.5,
+   "p_tost": 0.21011003842939924
+  },
+  {
+   "margin_pp": 6.75,
+   "p_tost": 0.1957139420163596
+  },
+  {
+   "margin_pp": 7.0,
+   "p_tost": 0.18193329151448423
+  },
+  {
+   "margin_pp": 7.25,
+   "p_tost": 0.16877602348305776
+  },
+  {
+   "margin_pp": 7.5,
+   "p_tost": 0.15624655185913594
+  },
+  {
+   "margin_pp": 7.75,
+   "p_tost": 0.1443458980058765
+  },
+  {
+   "margin_pp": 8.0,
+   "p_tost": 0.13307184892272517
+  },
+  {
+   "margin_pp": 8.25,
+   "p_tost": 0.12241914023943656
+  },
+  {
+   "margin_pp": 8.5,
+   "p_tost": 0.11237966040949776
+  },
+  {
+   "margin_pp": 8.75,
+   "p_tost": 0.10294267238603583
+  },
+  {
+   "margin_pp": 9.0,
+   "p_tost": 0.09409504900352439
+  },
+  {
+   "margin_pp": 9.25,
+   "p_tost": 0.08582151829875373
+  },
+  {
+   "margin_pp": 9.5,
+   "p_tost": 0.07810491508036832
+  },
+  {
+   "margin_pp": 9.75,
+   "p_tost": 0.07092643519236219
+  },
+  {
+   "margin_pp": 10.0,
+   "p_tost": 0.0642658891067488
+  },
+  {
+   "margin_pp": 10.25,
+   "p_tost": 0.0581019517169139
+  },
+  {
+   "margin_pp": 10.5,
+   "p_tost": 0.05241240547806858
+  },
+  {
+   "margin_pp": 10.75,
+   "p_tost": 0.047174374346548364
+  },
+  {
+   "margin_pp": 11.0,
+   "p_tost": 0.04236454629717379
+  },
+  {
+   "margin_pp": 11.25,
+   "p_tost": 0.03795938253933184
+  },
+  {
+   "margin_pp": 11.5,
+   "p_tost": 0.03393531189995491
+  },
+  {
+   "margin_pp": 11.75,
+   "p_tost": 0.030268909187798676
+  },
+  {
+   "margin_pp": 12.0,
+   "p_tost": 0.0269370566915752
+  },
+  {
+   "margin_pp": 12.25,
+   "p_tost": 0.02391708828853223
+  },
+  {
+   "margin_pp": 12.5,
+   "p_tost": 0.021186915944821694
+  },
+  {
+   "margin_pp": 12.75,
+   "p_tost": 0.018725138670107944
+  },
+  {
+   "margin_pp": 13.0,
+   "p_tost": 0.016511134242965908
+  },
+  {
+   "margin_pp": 13.25,
+   "p_tost": 0.014525134248196236
+  },
+  {
+   "margin_pp": 13.5,
+   "p_tost": 0.012748283160644469
+  },
+  {
+   "margin_pp": 13.75,
+   "p_tost": 0.011162682371715915
+  },
+  {
+   "margin_pp": 14.0,
+   "p_tost": 0.009751420184521686
+  },
+  {
+   "margin_pp": 14.25,
+   "p_tost": 0.008498588902234205
+  },
+  {
+   "margin_pp": 14.5,
+   "p_tost": 0.007389290203080545
+  },
+  {
+   "margin_pp": 14.75,
+   "p_tost": 0.006409630036335878
+  },
+  {
+   "margin_pp": 15.0,
+   "p_tost": 0.005546704288937221
+  }
+ ],
+ "min_passing_margin_pp": 10.612538180095331,
+ "deff_adjusted_sensitivity": {
+  "design_effect_upper": 4.26,
+  "source": "data/677b_cluster_bootstrap.json（design effect 4.05–4.26，取上界保守）",
+  "n_syn_effective": 269.25,
+  "se_pp": 5.5459821080469505,
+  "tost_margin10": {
+   "margin_pp": 10.0,
+   "ci90_pp": [
+    -11.670478107771862,
+    6.574179463086136
+   ],
+   "p_lower": 0.08953103508256777,
+   "p_upper": 0.011831234862655193,
+   "p_tost": 0.08953103508256777,
+   "equivalent": false,
+   "ci_within_margin": false
+  },
+  "min_passing_margin_pp": 11.670478107771862
+ },
+ "conclusion": "TOST（margin=±10pp）未通过：90% CI 下界 −10.61pp 略超 −10pp（p_tost≈0.064>0.05）；最小通过 margin≈10.61pp（deff 校正后≈11.67pp）。因此不能说\"合成与真实等价\"；只能说\"在本样本量与本 margin 下未能声明等价，差异点估计 −2.55pp、CI 宽约 ±8.1pp\"。"
+}
