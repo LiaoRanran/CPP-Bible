@@ -1,0 +1,61 @@
+{
+  "baseline_expected_catch_target": {
+    "target_n": 668,
+    "greedy_rate_pct": 91.6168,
+    "random_mean_rate_pct": 65.1228,
+    "delta_pp": 26.494,
+    "blindspot_rate_pct": 6.1377
+  },
+  "by_rate": {
+    "0.01": {
+      "r": 0.01,
+      "reps": 50,
+      "greedy_rate_pct_mean": 91.0711,
+      "delta_pp_mean": 27.0697,
+      "blindspot_rate_pct_mean": 6.6356,
+      "frac_reps_delta_below_0": 0.0,
+      "frac_reps_delta_below_base_half": 0.0
+    },
+    "0.03": {
+      "r": 0.03,
+      "reps": 50,
+      "greedy_rate_pct_mean": 89.9253,
+      "delta_pp_mean": 26.5629,
+      "blindspot_rate_pct_mean": 7.7311,
+      "frac_reps_delta_below_0": 0.0,
+      "frac_reps_delta_below_base_half": 0.0
+    },
+    "0.05": {
+      "r": 0.05,
+      "reps": 50,
+      "greedy_rate_pct_mean": 88.854,
+      "delta_pp_mean": 26.3298,
+      "blindspot_rate_pct_mean": 8.7303,
+      "frac_reps_delta_below_0": 0.0,
+      "frac_reps_delta_below_base_half": 0.0
+    },
+    "0.1": {
+      "r": 0.1,
+      "reps": 50,
+      "greedy_rate_pct_mean": 85.8336,
+      "delta_pp_mean": 25.3356,
+      "blindspot_rate_pct_mean": 11.4922,
+      "frac_reps_delta_below_0": 0.0,
+      "frac_reps_delta_below_base_half": 0.0
+    },
+    "0.15": {
+      "r": 0.15,
+      "reps": 50,
+      "greedy_rate_pct_mean": 82.8445,
+      "delta_pp_mean": 24.2985,
+      "blindspot_rate_pct_mean": 14.2985,
+      "frac_reps_delta_below_0": 0.0,
+      "frac_reps_delta_below_base_half": 0.0
+    }
+  },
+  "current_label_error_estimate": {
+    "source": "682 AI relabel κ=0.727 on defect_type (35-class, n=287); NOT a human IRR",
+    "binary_defect_label_error_likely": "lower than 35-class, unknown; treat r=0.05-0.10 as conservative upper bound",
+    "conclusion_within_error_bound": "see by_rate: conclusions stable up to r=0.15"
+  }
+}

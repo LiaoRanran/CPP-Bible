@@ -1,0 +1,102 @@
+{
+  "by_n": {
+    "100": {
+      "n": 100,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.94,
+      "random_mean_rate_pct_mean": 41.8687,
+      "delta_pp_mean": 17.0713,
+      "delta_pp_sd": 2.2561,
+      "delta_pp_ci95": [
+        13.2755,
+        21.1755
+      ],
+      "ci_width_pp": 7.9,
+      "percentile_mean": 100.0,
+      "frac_reps_fd_top5pct": 1.0
+    },
+    "200": {
+      "n": 200,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.67,
+      "random_mean_rate_pct_mean": 42.0198,
+      "delta_pp_mean": 16.6502,
+      "delta_pp_sd": 1.3952,
+      "delta_pp_ci95": [
+        14.4682,
+        19.3182
+      ],
+      "ci_width_pp": 4.85,
+      "percentile_mean": 99.9835,
+      "frac_reps_fd_top5pct": 1.0
+    },
+    "400": {
+      "n": 400,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.2175,
+      "random_mean_rate_pct_mean": 41.9203,
+      "delta_pp_mean": 16.2972,
+      "delta_pp_sd": 1.0203,
+      "delta_pp_ci95": [
+        14.634,
+        18.6144
+      ],
+      "ci_width_pp": 3.9804,
+      "percentile_mean": 100.0,
+      "frac_reps_fd_top5pct": 1.0
+    },
+    "600": {
+      "n": 600,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.4433,
+      "random_mean_rate_pct_mean": 41.9614,
+      "delta_pp_mean": 16.4819,
+      "delta_pp_sd": 0.7447,
+      "delta_pp_ci95": [
+        15.3146,
+        17.9146
+      ],
+      "ci_width_pp": 2.6,
+      "percentile_mean": 100.0,
+      "frac_reps_fd_top5pct": 1.0
+    },
+    "800": {
+      "n": 800,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.6437,
+      "random_mean_rate_pct_mean": 42.126,
+      "delta_pp_mean": 16.5177,
+      "delta_pp_sd": 0.5663,
+      "delta_pp_ci95": [
+        15.6253,
+        17.6111
+      ],
+      "ci_width_pp": 1.9858,
+      "percentile_mean": 100.0,
+      "frac_reps_fd_top5pct": 1.0
+    },
+    "1000": {
+      "n": 1000,
+      "reps": 100,
+      "draws_per_rep": 2000,
+      "greedy_rate_pct_mean": 58.496,
+      "random_mean_rate_pct_mean": 42.0808,
+      "delta_pp_mean": 16.4152,
+      "delta_pp_sd": 0.379,
+      "delta_pp_ci95": [
+        15.7002,
+        17.0188
+      ],
+      "ci_width_pp": 1.3186,
+      "percentile_mean": 100.0,
+      "frac_reps_fd_top5pct": 1.0
+    }
+  },
+  "min_n_for_95pct_power": 100,
+  "note": "FD_top5pct = fraction of subsamples where greedy beats >=95% of random draws (one-sided p<0.05 proxy)"
+}
