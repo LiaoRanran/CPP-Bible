@@ -12,11 +12,12 @@
 
 | 项 | 值 |
 |----|----|
-| **论文版本** | **v1.3 (677d)** |
-| **基于** | v1.2 (677a) 的表述修订 + **677b（clone-aware A5 + cluster bootstrap）+ 677c（非退化池 + 多 baseline + operator 算法化）的实验结果并入** |
-| **677d 性质** | **论文合并批次**（把已完成实验并入论文与投稿材料）：**不做新实验**、不重跑 detect、不改 677b/677c 产物；正文 ≤9 页、摘要 ≤250 词不变 |
-| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.3/677d） |
-| **中文对照稿** | `research/paper_shturl.md`（标题版本已同步为 v1.3 · 677d） |
+| **论文版本** | **v1.4 (689 reframed)** |
+| **基于** | v1.3 (677d) 之上的**结构性重构**（689 究极重构轮）：题名 → *Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification*；贡献 4→3（审计协议/实证审计/量化发现）；新增 §3 Evaluator-Audit Protocol（claim 声明 + 8 类失败模式 + 证伪流程 + 4 态审计结果）；正文按 5 个审计发现重组（+24pp 改述为测量池构成效应，**演化假设失败列为 Finding 5**）；统计补全（TOST/双向标准化/环境三组件）；**不做新实验**（新增统计均为既有矩阵的确定性复算） |
+| **689 性质** | 重构 + 统计补全 + 实验方案（人类标注/公平对比/环境），正文 ≤9 页（实测 8 页，References 起于第 8 页）、全稿 36 页、摘要 245 词 |
+| **canonical source** | `research/latex/queyi_neurips2027_v1.1.tex`（文件名保留 v1.1，内部版本号已改为 v1.4/689） |
+| **匿名/实名** | 匿名版 = canonical（无姓名/单位/邮箱）；实名版 = `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` |
+| **中文对照稿** | `research/paper_shturl.md`（待 689 同步；当前仍为 677d 口径，登记为待办） |
 
 > **文件名为什么不改**：`queyi_neurips2027_v1.1.tex` 被 `build.ps1`、`arxiv_submission/`、
 > `tools/verify_paper_numbers.py` 等多个脚本硬引用。677a 只改**内部版本号**（文件头 + 正文），
@@ -39,8 +40,10 @@
 | **盲区地图**：1147 × 8，catch 707 / miss 440 ⇒ 盲区 **38.4%**（样本级，681 后不变）；**13/34** 类型 >50% 盲（681 归一化重算；旧口径 18/70 已退役）；6 资产并集 61.6% vs 最佳单资产 35.6% | **676g + 681** | 类型级：`data/681_type_stats_normalized.json`（源：681 修复后的 `data/blindspot_676g_detection_matrix.json`）；样本级：`data/blindspot_676g_stats.json` | `python tools/repair_681_labels.py --apply` |
 | **检测器深度 Benchmark**：asan 58.5% … linker 1.3%；8 资产并集 94.21%；穷举最佳 k=4 = 92.58% | **676l** | `data/676l_benchmark_results.json` | 见 `data/676l_检测器Benchmark总报告.md` |
 | **数据质量**：重复 0 / 近克隆 103 对 / 模板克隆率 62.2% / κ=0.77,0.69,0.71 / 编译抽检 217/217 / 真实来源 74/74 | **676k + 676m** | `data/676k_*.json`、`data/676m_sample_manifest_corrected.json` | 见 `data/676m_总报告.md` |
-| Verifier Coverage **31/42 = 73.8%**（描述性，**无 CI**） | 659 / 677a 口径修正 | `tools/counts_659.py` | `python tools/counts_659.py` |
+| Verifier Coverage **31/42 = 73.8%**（描述性，**无 CI**） | 659 / 677a 口径修正 | `tools/counts_659.py` | **689 起废弃**（工程遥测，非科学证据；从论文删除） |
 | e-value（$2.5\times10^8$ 等） | **exploratory（677a 降级）** | 无权威预注册产物 | **不得用于 confirmatory claim**；见附录 `app:eprocess` |
+| **689 统计三件套**：TOST（$\pm10$pp **未过**；90% CI $[-10.61,+5.52]$pp；最小通过 margin $10.61$pp，deff 校正 $11.67$pp）；双向标准化（正向 $-17.92$pp / 反向 $+1.70$pp / 类型级 $-13.52$pp；$R^{\mathrm{syn}}_{\mathrm{std}}{=}77.01\%$）；环境三组件（真实 $59.09\%\to23.64\%$，$\Delta$unknown$=0$；clang$\leftrightarrow$g++ 93.5%，$\kappa=0.864/0.843$） | **689** | `data/689_equivalence_test.json`、`data/689_standardized_analysis.json`、`data/689_environment_metrics.json` | `python tools/equivalence_689.py`；`python tools/environment_metrics_689.py` |
+| **689 家族映射**（标准化与标注分析共用）：8 家族（memory/bounds/integer/alias\_type/concurrency/stl/language\_oop/embedded\_link） | **681** | `tools/repair_681_labels.py::FAMILY8` | 论文附录 Z.2 与 `689_standardized_analysis.json.family_mapping_source` |
 
 > **677a 唯一的数字改动（产物对齐，非结论变化）**：
 > 「高盲区类型 **15/70**」→「**18/70**」。旧值 15 是转录不全；权威产物
@@ -178,6 +181,34 @@
 **根因（一次性说明）**：676m 迁移改写了 308/1042 条权威 `defect_type`，但 `blindspot_676g_detection_matrix.json` 生成于 676m 之前且此后未重派生（见 `data/holdout_expansion/SCHEMA.md` §6「改写样本 308/1042」——与审计发现的 308 同数）⇒ 681 把两列重派生并归一化。
 
 **红线声明**：权威逐样本 JSON 与样本源码 `.cpp` **零改动**；`per_asset`/`or_verdict_all8` 观测值 **零改动**（A5 Δ 稳定性差异 **0.00pp**）；样本级 38.4%/61.6% **不变**。
+
+## 5quinquies. 689 变更清单（v1.3 → v1.4：结构性重构 + 统计补全）
+
+**性质**：大规模重构批次。**不做新检测实验**；全部新增数字来自既有冻结矩阵的确定性复算
+（`tools/equivalence_689.py`、`tools/environment_metrics_689.py`）。
+
+| # | 变更 | 落地位置 |
+|---|---|---|
+| 1 | 题名 → *Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification* | tex 头部/正文/投稿材料/arXiv 版 |
+| 2 | 贡献 4→3（审计协议 / 实证审计 / 量化发现）；演化与子模退出贡献列表 | §1 / 摘要 |
+| 3 | 新增 §3 Evaluator-Audit Protocol（claim$=(D,A,E,\Theta,P)$；8 失败模式；证伪流程；4 态审计结果） | 正文 §3 |
+| 4 | 正文重组为 5 个发现（F1 构成效应 / F2 能力边界 / F3 环境 / F4 TOST+标准化 / F5 演化失败） | §5 |
+| 5 | 旧 §4 Method 机制细节压缩入 §2；fig:loop 移附录；fig:core/caliber/evolution 删除（数据在附录表） | tex |
+| 6 | TOST：$\pm10$pp 未过（CI $[-10.61,+5.52]$；$p_{\mathrm{TOST}}{=}0.064$；最小 margin $10.61$pp） | 摘要/§5.4/附录 Z.1 |
+| 7 | 双向标准化：正向 $-17.92$pp；反向 $+1.70$pp；类型级 $-13.52$pp（构成抵消结论） | §5.4/附录 Z.2 |
+| 8 | 环境三组件 + profile 升格为 measurement tuple 组件 | §2/§5.3/附录 Z.3 |
+| 9 | 硬伤修复：`kd/n → k|D|/|A|`；TODO 清零（tab:e4 A0–A4 标 not run）；`18/70 → 13/34`；删 VC 73.8%/EE 1.9pp；static→calibration arm；$\kappa$ 全文 AI-only；Merkle→tamper-evident + 威胁模型；E9→观察性对比；页脚 NeurIPS 2025 占位被 tex 覆盖（不改 .sty） | 全文 |
+| 10 | 新增附录 Z（Reframing Evidence：TOST/标准化/环境/人类标注/公平对比与 SV-COMP 定位） | 附录（原 26 节字母用满 → 将 Per-sample Detail 降为 subsection 腾出字母） |
+| 11 | 人类标注：方案 + 去标签材料包（145 条，注释净化 280 处、标识符重命名 5、复扫 0 残留、144/145 可编译）+ 校准集 10 条 + 统计脚本；**状态 = 待人类执行，human IAA 仍为 0** | `data/689_human_annotation_protocol.md`、`data/annotation_package/` |
+| 12 | 公平对比协议（8 条公平性清单 + 预注册重跑方案）与 SV-COMP 2026 定位（官方核验：74 验证器/C 相关 61；**任务总数未核验，不引用**） | `data/689_fair_comparison_protocol.md`、`data/689_svcomp_positioning.md` |
+| 13 | 相关工作新增 DeepFact（arXiv:2603.05912）与 SV-COMP 2026 报告（TACAS 2026）；tab:positioning 重做为 6×6 审计维度对比 | `queyi_refs.bib`、附录 |
+| 14 | 页数：正文 8 页（References 起于第 8 页）≤9；全稿 36 ≤36；摘要 245 词/1776 字符 | 实测（tectonic） |
+
+**遗留/待执行（登记，不得写成已完成）**：人类第二标注；native sanitizer 替代（clang-cl/MSVC）；
+容器化复现；native 三资产复跑；original-project 版本真实构建；论文中文对照稿 689 同步；
+DeepFact 会议状态与 SV-COMP 任务总数未核验。
+
+---
 
 ## 6. 677a 的诚实边界
 

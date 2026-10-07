@@ -286,88 +286,217 @@
   "posthoc_power": "FD 两个对照的观测功效都是 1.0（效应极大）；post-hoc power 不得当设计期功效",
   "e_process": "FD 对比的 e-value 达 1.7e7~2.5e8（远超 Ville 阈值 20）⇒ 任意时刻也可拒绝",
   "delta_for_planned_study": "±5pp 精度需 holdout 236 / corpus 378 样本（在观测 p̂ 处现算）"
-},
-"a5_experiments": {
- "note": "A5 全量(676f) + clone-aware(677b) + 非退化池(677c) + 盲区地图(676g)。本段为 678 批次新增，与 VERSION.md §2 对齐；不改动上方 holdout/corpus 既有数字。",
- "source_batches": ["676f", "677b", "677c", "676g"],
- "full_pool_676f": {
-  "n": 566,
-  "fd_rate_pct": 54.59,
-  "random_rate_pct": 30.57,
-  "static_rate_pct": 24.74,
-  "delta_fd_vs_random_pp": 24.03,
-  "delta_fd_vs_static_pp": 29.85,
-  "ci_pp": [20.5, 27.5],
-  "mcnemar_p": 2.3e-41,
-  "tie_analysis_delta_pp": 0.0,
-  "source": "data/a5_676f_results.json"
  },
- "clone_aware_677b": {
-  "splits_delta_pp": [23.0, 26.7],
-  "splits_p_max": 4.1e-29,
-  "tie_delta_pp": [-0.53, 0.0],
-  "effective_n": [133, 140],
-  "design_effect": [4.05, 4.26],
-  "ci_widening_x": [1.78, 2.10],
-  "note": "clone-family-aware 重切分后主端点不降反略升，并列仍归零 ⇒ 模板泄漏已排除",
-  "source": "data/677b_a5_results_*.json, data/677b_cluster_bootstrap.json"
- },
- "nondegenerate_pool_677c": {
-  "strict_pool_k_significant": [1, 2, 3],
-  "optimal_delta_pp": 11.31,
-  "optimal_p": 6.02e-8,
-  "k4_delta_pp": 0.0,
-  "k4_selection_collision": 0.2,
-  "degenerate_contribution_point_pp": 24.03,
-  "degenerate_contribution_to_mean_pp": 12.81,
-  "source": "data/677c_a5_nondegenerate_results.json"
- },
- "blindspot_676g": {
-  "n": 1147,
-  "catch": 707,
-  "miss": 440,
-  "blindspot_ratio_pct": 38.4,
-  "blind_types_gt_50pct": 13,
-  "total_types": 34,
-  "note": "681 归一化重算：类型级数字由 676g 的 18/70 更新为 13/34（样本级 707/440/38.4% 未变，标签列与观测列解耦）；旧值保留于 data/blindspot_676g_stats.json（历史口径）",
-  "superseded_676g_type_level": {
-   "blind_types_gt_50pct": 18,
-   "total_types": 70,
-   "source": "data/blindspot_676g_stats.json"
+ "a5_experiments": {
+  "note": "A5 全量(676f) + clone-aware(677b) + 非退化池(677c) + 盲区地图(676g)。本段为 678 批次新增，与 VERSION.md §2 对齐；不改动上方 holdout/corpus 既有数字。",
+  "source_batches": [
+   "676f",
+   "677b",
+   "677c",
+   "676g"
+  ],
+  "full_pool_676f": {
+   "n": 566,
+   "fd_rate_pct": 54.59,
+   "random_rate_pct": 30.57,
+   "static_rate_pct": 24.74,
+   "delta_fd_vs_random_pp": 24.03,
+   "delta_fd_vs_static_pp": 29.85,
+   "ci_pp": [
+    20.5,
+    27.5
+   ],
+   "mcnemar_p": 2.3e-41,
+   "tie_analysis_delta_pp": 0.0,
+   "source": "data/a5_676f_results.json"
   },
-  "source": "data/681_type_stats_normalized.json"
- }
-},
-"repair_681": {
- "note": "681 究极轮次：跨源标签修复（matrix/INDEX/manifest 重派生）+ legacy 标签归一化。只改派生件；权威逐样本 JSON 与样本源码零改动；观测字段（per_asset/or_verdict_all8/hung_flag）零改动。",
- "source_batches": ["681"],
- "cross_source_consistency": {
-  "matrix_vs_auth_json_defect_type": 0,
-  "matrix_vs_auth_json_expected_verdict": 0,
-  "manifest_vs_auth_json_defect_type": 0,
-  "manifest_vs_auth_json_expected_verdict": 0,
-  "matrix_vs_676m_expected_verdict": 0,
-  "noncanonical_labels_remaining": 0
+  "clone_aware_677b": {
+   "splits_delta_pp": [
+    23.0,
+    26.7
+   ],
+   "splits_p_max": 4.1e-29,
+   "tie_delta_pp": [
+    -0.53,
+    0.0
+   ],
+   "effective_n": [
+    133,
+    140
+   ],
+   "design_effect": [
+    4.05,
+    4.26
+   ],
+   "ci_widening_x": [
+    1.78,
+    2.1
+   ],
+   "note": "clone-family-aware 重切分后主端点不降反略升，并列仍归零 ⇒ 模板泄漏已排除",
+   "source": "data/677b_a5_results_*.json, data/677b_cluster_bootstrap.json"
+  },
+  "nondegenerate_pool_677c": {
+   "strict_pool_k_significant": [
+    1,
+    2,
+    3
+   ],
+   "optimal_delta_pp": 11.31,
+   "optimal_p": 6.02e-08,
+   "k4_delta_pp": 0.0,
+   "k4_selection_collision": 0.2,
+   "degenerate_contribution_point_pp": 24.03,
+   "degenerate_contribution_to_mean_pp": 12.81,
+   "source": "data/677c_a5_nondegenerate_results.json"
+  },
+  "blindspot_676g": {
+   "n": 1147,
+   "catch": 707,
+   "miss": 440,
+   "blindspot_ratio_pct": 38.4,
+   "blind_types_gt_50pct": 13,
+   "total_types": 34,
+   "note": "681 归一化重算：类型级数字由 676g 的 18/70 更新为 13/34（样本级 707/440/38.4% 未变，标签列与观测列解耦）；旧值保留于 data/blindspot_676g_stats.json（历史口径）",
+   "superseded_676g_type_level": {
+    "blind_types_gt_50pct": 18,
+    "total_types": 70,
+    "source": "data/blindspot_676g_stats.json"
+   },
+   "source": "data/681_type_stats_normalized.json"
+  }
  },
- "changes": {
-  "defect_type_rows": 413,
-  "expected_verdict_rows": 34,
-  "legacy_labels_normalized": 38,
-  "observed_fields_touched": 0,
-  "expA_index_rows_fixed": 100
+ "repair_681": {
+  "note": "681 究极轮次：跨源标签修复（matrix/INDEX/manifest 重派生）+ legacy 标签归一化。只改派生件；权威逐样本 JSON 与样本源码零改动；观测字段（per_asset/or_verdict_all8/hung_flag）零改动。",
+  "source_batches": [
+   "681"
+  ],
+  "cross_source_consistency": {
+   "matrix_vs_auth_json_defect_type": 0,
+   "matrix_vs_auth_json_expected_verdict": 0,
+   "manifest_vs_auth_json_defect_type": 0,
+   "manifest_vs_auth_json_expected_verdict": 0,
+   "matrix_vs_676m_expected_verdict": 0,
+   "noncanonical_labels_remaining": 0
+  },
+  "changes": {
+   "defect_type_rows": 413,
+   "expected_verdict_rows": 34,
+   "legacy_labels_normalized": 38,
+   "observed_fields_touched": 0,
+   "expA_index_rows_fixed": 100
+  },
+  "type_stats_normalized": {
+   "n_types": 34,
+   "types_gt50_blind": 13,
+   "types_gt50_list": [
+    "cross_tu_ub",
+    "strict_aliasing",
+    "uninitialized_read",
+    "volatile_misuse",
+    "endianness",
+    "deadlock",
+    "algorithm_misuse",
+    "logic_error",
+    "interrupt_safety",
+    "virtual_function",
+    "linker_odr",
+    "condition_variable",
+    "atomic_ub"
+   ],
+   "sample_blind_pct": 38.4,
+   "check": "python tools/repair_681_labels.py --apply（幂等）"
+  },
+  "b5_expected_vs_actual_consistency_pct": 93.29,
+  "a5_stability": {
+   "delta_diff_pp": 0.0,
+   "basis": "矩阵 per_asset/or_verdict_all8 零改动（git diff 逐字段核验）"
+  },
+  "sources": [
+   "data/681_type_stats_normalized.json",
+   "data/681_标签修复日志.json",
+   "data/681_类型统计重算报告.md",
+   "data/681_归一化映射表.md"
+  ]
  },
- "type_stats_normalized": {
-  "n_types": 34,
-  "types_gt50_blind": 13,
-  "types_gt50_list": ["cross_tu_ub", "strict_aliasing", "uninitialized_read", "volatile_misuse", "endianness", "deadlock", "algorithm_misuse", "logic_error", "interrupt_safety", "virtual_function", "linker_odr", "condition_variable", "atomic_ub"],
-  "sample_blind_pct": 38.4,
-  "check": "python tools/repair_681_labels.py --apply（幂等）"
- },
- "b5_expected_vs_actual_consistency_pct": 93.29,
- "a5_stability": {
-  "delta_diff_pp": 0.0,
-  "basis": "矩阵 per_asset/or_verdict_all8 零改动（git diff 逐字段核验）"
- },
- "sources": ["data/681_type_stats_normalized.json", "data/681_标签修复日志.json", "data/681_类型统计重算报告.md", "data/681_归一化映射表.md"]
+ "reframed_689": {
+  "note": "689 究极重构轮：结构性重构 + 统计补全。全部数字来自既有冻结矩阵的确定性复算（不改观测字段），脚本 tools/equivalence_689.py 与 tools/environment_metrics_689.py。",
+  "source_batches": [
+   "689"
+  ],
+  "equivalence_tost": {
+   "real": {
+    "n": 110,
+    "catch": 65,
+    "rate_pct": 59.0909
+   },
+   "syn": {
+    "n": 1147,
+    "catch": 707,
+    "rate_pct": 61.6391
+   },
+   "diff_pp": -2.5481,
+   "se_pp": 4.9028,
+   "margin_pp": 10,
+   "ci90_pp": [
+    -10.61,
+    5.52
+   ],
+   "p_lower": 0.0643,
+   "p_upper": 0.0052,
+   "p_tost": 0.0643,
+   "equivalent": false,
+   "min_passing_margin_pp": 10.61,
+   "deff_adjusted": {
+    "design_effect": 4.26,
+    "min_passing_margin_pp": 11.67,
+    "tost_margin10_pass": false
+   },
+   "source": "data/689_equivalence_test.json（tools/equivalence_689.py）"
+  },
+  "standardized_analysis": {
+   "forward_r_syn_std_pct": 77.01,
+   "forward_diff_pp": -17.92,
+   "reverse_r_real_std_pct": 59.94,
+   "reverse_diff_pp": 1.7,
+   "type_forward_diff_pp": -13.52,
+   "type_reverse_diff_pp": 11.76,
+   "common_support_share_of_syn": 0.7977,
+   "family_mapping_source": "tools/repair_681_labels.py::FAMILY8",
+   "source": "data/689_standardized_analysis.json"
+  },
+  "environment_metrics": {
+   "real110_wsl_or_pct": 59.09,
+   "real110_native_or_pct": 23.64,
+   "delta_pp": -35.45,
+   "delta_unknown_pp": 0.0,
+   "clang_vs_gpp_200": {
+    "asan_agree_pct": 93.5,
+    "asan_kappa": 0.864,
+    "ubsan_agree_pct": 93.5,
+    "ubsan_kappa": 0.8434
+   },
+   "source": "data/689_environment_metrics.json（tools/environment_metrics_689.py）"
+  },
+  "paper": {
+   "title": "Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification",
+   "main_text_pages": 8,
+   "total_pages": 36,
+   "abstract_words": 245,
+   "abstract_chars": 1776,
+   "compiled_with": "tectonic（0 错、0 未定义引用；页数经 pypdf 实测）"
+  },
+  "human_annotation": {
+   "status": "designed_not_executed",
+   "package_n": 145,
+   "human_iaa": 0,
+   "note": "AI self-consistency κ=0.727 不构成人类 IAA；第二标注待人类执行。"
+  },
+  "sources": [
+   "data/689_equivalence_test.json",
+   "data/689_standardized_analysis.json",
+   "data/689_environment_metrics.json",
+   "data/689_refactor_blueprint.md",
+   "data/689_human_annotation_protocol.md"
+  ]
  }
 }

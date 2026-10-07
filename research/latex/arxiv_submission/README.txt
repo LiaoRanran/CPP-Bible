@@ -1,33 +1,66 @@
-Queyi / "Evolving Verifiers" — arXiv source package
-===================================================
+Queyi / "Auditing the Evaluator" — arXiv source package (real-name version)
+==========================================================================
 
 Contents (4 files, no external graphics):
   queyi_neurips2027_v1.1.tex   main LaTeX source (all figures are inline TikZ; no \includegraphics)
-  queyi_refs.bib               BibTeX database (66 entries)
-  neurips_2025.sty             NeurIPS 2025 style file (Datasets & Benchmarks track, [dandb], anonymous)
+  queyi_refs.bib               BibTeX database (75 entries)
+  neurips_2025.sty             NeurIPS 2025 style file (Datasets & Benchmarks track, [dandb])
   README.txt                   this file
 
 Compile
 -------
-  tectonic -X compile queyi_neurips2027_v1.1.tex        # verified: tectonic 0.17.0
+  tectonic -X compile queyi_neurips2027_v1.1.tex        # verified: tectonic
   # or: pdflatex queyi_neurips2027_v1.1 && bibtex queyi_neurips2027_v1.1 && pdflatex x2
 
-Verified build (2026-10-04, 677d repack)   <-- CURRENT
+Verified build (2026-10-07, 689 repack)   <-- CURRENT
 ----------------------------------------
-  total pages        33
-  main text          content ends on page 8; References start on page 9
-                     (\label{page:endmain} sits AFTER \clearpage, so the .aux reports 9 --
-                     this is the off-by-one convention the repo quality gate reads)
-  abstract           246 words (gate limit 250)
+  total pages        36 (gate limit 36)
+  main text          content ends on page 7; References start on page 8
+                     (\label{page:endmain} sits AFTER \clearpage; count the .aux value as the
+                      off-by-one convention the repo quality gate reads)
+  abstract           245 words / 1776 characters (arXiv limit 1920 characters)
   undefined refs     none (0 undefined citations / 0 undefined \ref)
-  quality gate       6/6 PASS (page limit, undefined refs, section labels, \ref resolution,
-                     abstract word count, registered-placeholder scan)
-  independent build  verified from a clean copy in a scratch directory (tectonic 0.17.0,
-                     exit 0, 0 engine errors, 0 undefined refs)
-  anonymity          checked: 0 identity traces (no names, no local paths, \author = Anonymous)
+  independent build  verified from the twin anonymous file; this package carries the real-name
+                     \author block and a "Preprint" notice string only
+  anonymity          the ANONYMOUS twin was re-scanned: 0 identity traces; this file intentionally
+                     carries the real identity (Ran Liao / Hefei University / 1026708211@qq.com)
+  NOTE               publishing this real-name version during a double-blind review window
+                     carries a timing risk; the author decides when to post it.
 
-What changed in this repack (677d)
-----------------------------------
+What changed in this repack (689 reframed)
+------------------------------------------
+- STRUCTURAL REFRAME (not a title swap). Title: "Evolving Verifiers..." -> "Auditing the
+  Evaluator: Stress-Testing Evidence-Based Software Verification". Contributions 4 -> 3
+  (auditable protocol / systematic empirical audit / quantitative findings); the evolution
+  operator and the submodular formalization are no longer contributions.
+- New Section 3 "The Evaluator-Audit Protocol": claim caliber Q=(D,A,E,Theta,P); eight failure
+  modes with identification signals; a falsification procedure walked end-to-end on the
+  "+24pp" claim; four audit outcomes (survives / weakened / collapses / unresolved).
+- Findings reorganised as five audited hypotheses (F1 composition artifact; F2 capability
+  boundary; F3 environment; F4 TOST + standardization; F5 evolution hypothesis fails). The
+  +24.0pp selection gain is presented as a measurement-pool composition artifact, not a win.
+- Statistics added by deterministic recomputation of frozen matrices (no new detect runs):
+  TOST at +-10pp FAILS (90% CI [-10.61,+5.52]pp; p_TOST=0.064; minimum passing margin 10.61pp);
+  two-way standardization (forward -17.92pp; reverse +1.70pp; type level -13.52pp);
+  three-component environment metrics (catch / unknown / conditional recall; 59.09% -> 23.64%
+  without the declared WSL profile, delta-unknown = 0).
+- Hard fixes: E[J]=kd/n -> k|D|/|A| (with the degenerate-asset derivation); TODO placeholders
+  removed (A0-A4 marked "not run"); 18/70 -> 13/34; "Verifier Coverage 73.8%" and
+  "Evolution Efficiency 1.9pp/rule" deleted; static arm renamed a calibration arm; all kappa
+  values labelled AI self-consistency (never human IAA); Merkle claims restated as
+  tamper-evident current-state integrity with a declared threat model; E9 restated as a
+  cross-regime observational comparison; the template's "Submitted to ... (NeurIPS 2025)"
+  notice is overridden in the .tex (the third-party .sty is untouched).
+- Moved to the appendix: the failure-driven loop figure; full protocol reproductions; the new
+  appendix Z "Reframing Evidence: Equivalence, Standardization, Environment and Human
+  Annotation (689)" (TOST tables, standardization tables, environment profiles, the
+  de-identified human-annotation package description, fair-comparison protocol and SV-COMP
+  positioning). Human annotation is DESIGNED, NOT EXECUTED (human IAA = 0).
+- Related work: DeepFact (arXiv:2603.05912) and SV-COMP 2026 (TACAS 2026 report) added; the
+  positioning table is rebuilt along six audit dimensions.
+
+What changed in this repack (677d, superseded by the 689 repack above)
+---------------------------------------------------------------------
 - Paper-merge batch: the 677b/677c experiment results are folded into the paper and the
   submission materials (no new experiments; detector/samples/question set untouched).
 - A5: main endpoint (+24.0pp, full pool) is now reported SIDE BY SIDE with the
@@ -103,7 +136,8 @@ Notes
   capability boundaries (676g), detector depth benchmark (676l), reproducibility
   (environment/seeds/commands), positioning, tables, AI-use statement, limitations, future work.
 - Numbers in the paper are recomputed from landed artifacts by tools/verify_paper_numbers.py
-  (118 checks; 113 consistent, 0 hard mismatches); see REPRODUCE.md in the repository root.
+  (126 checks; 112 consistent, 14 retired-by-689-reframe, 0 missing, 0 hard mismatches);
+  see REPRODUCE.md in the repository root.
 - Code/data availability: repository is public (Apache-2.0) with DCO sign-off; per-sample
   artifacts ship as supplementary material. Croissant / Responsible-AI metadata are registered
   pre-submission TODOs (to be generated once the 2027 specification is published).

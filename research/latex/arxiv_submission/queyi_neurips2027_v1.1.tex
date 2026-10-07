@@ -1,43 +1,43 @@
 % =====================================================================
-%  Evolving Verifiers — NeurIPS Evaluations & Datasets (E&D) submission (anonymous)
-%  v1.3 (677d): paper-merge batch. The 677b (clone-family-aware A5 split + cluster bootstrap)
-%      and 677c (non-degenerate pools + five baselines + an executable evolution operator)
-%      RESULTS ARE NOW FOLDED IN. No new experiments were run in 677d itself.
-%      - A5 is now reported SIDE BY SIDE: +24.0pp full pool (k=4) and approx +7-12pp on the
-%        degenerate-free pool (k<=3 significant; the k=|A|-1 zero is a set collision, 1/C(5,4));
-%        clone-family re-splits leave the endpoint unchanged (+23.0 to +26.7pp) => template
-%        leakage excluded; the family-level cluster bootstrap gives EFFECTIVE n ~133-140
-%        (design effect ~4.2) and 1.78-2.10x wider intervals.
-%      - New appendix paragraphs: "Clone-aware re-split and cluster bootstrap (677b)" and
-%        "Non-degenerate pools, baselines and an executable operator (677c)"; the operator now
-%        has an executable score function with its two disclosed collapses and a NON-significant
-%        ablation (full vs frequency-only: +1.41pp, p=0.302, 3/14 tiers).
-%      - The claim stays DIRECTIONAL ("evidence for the mechanism", never "FD beats Random").
-%      - Main text held at 8 pages of content (References start on page 9) by compressing prose.
-%  v1.2 (677a): framing revision + engineering cleanup. NO NEW EXPERIMENTS, NO NEW NUMBERS.
-%      - VERSION OF RECORD: see research/latex/VERSION.md (single source of truth for
-%        which artifact version every number in this paper comes from).
-%      - 677a changes are *framing only*: (B) "verifier" is always an evidence-acquisition
-%        apparatus, pass != semantic truth (new \S\ref{sec:threat} paragraph + first item of
-%        \S\ref{sec:claim}); (C) the 38.4% blind-spot ratio is an instrument-boundary
-%        statistic and is qualified at every occurrence; (D) Verifier Coverage 73.8% is a
-%        descriptive census statistic -- the Clopper-Pearson CI was removed; (E) e-process
-%        compressed to 2 sentences in the main text, full text in Appendix~\ref{app:eprocess}
-%        and marked EXPLORATORY; (F) "74 real defects" -> "74 source-derived
-%        reconstructions"; (H) engineering incident logs moved to Appendix~\ref{app:incidents}
-%        so the main text carries findings, not project management.
-%      - Numbers are identical to v1.1 (676m) except one *artifact-alignment* fix:
-%        "15 of 70" high-blind-spot types -> "18 of 70" (677a) -> "13 of 34" (681:
-%        label-normalized recompute from the repaired matrix; authoritative artifact
-%        data/681_type_stats_normalized.json. Sample-level 38.4%/707/440 unchanged).
+%  Auditing the Evaluator — arXiv real-name version (v1.4 / 689 reframed)
+%  NOTE: this file is the real-name twin of research/latex/queyi_neurips2027_v1.1.tex.
+%  Differences are limited to: (a) the \author block (real identity),
+%  (b) the notice string (preprint, not anonymized), (c) this header note.
+%  All scientific content, numbers, figures and appendices are identical.
+%  v1.4 (689 reframed): STRUCTURAL REFRAME, not a title swap. The paper no longer
+%      claims that a failure-driven evolution operator improves verification recall;
+%      it asks whether evaluation results survive an audit of the evaluator.
+%      - Title: "Evolving Verifiers: ..." -> "Auditing the Evaluator: ..." (evidence
+%        does not support the old framing; the negative result becomes Finding 5).
+%      - Contributions: 4 (incl. evolution + submodular formalization) -> 3
+%        (audit protocol / empirical audit / quantitative findings).
+%      - New section 3: Evaluator-Audit Protocol (claim declaration, eight failure
+%        modes, falsification procedure, four audit outcomes) -- the transferable core.
+%      - Findings reorganised as five audited hypotheses (F1..F5); +24.0pp is presented
+%        as a measurement-pool composition artifact, not a win.
+%      - Statistics added (689): TOST equivalence test (margin +/-10pp FAILS; 90% CI
+%        [-10.61,+5.52]pp; min passing margin 10.61pp), two-way standardization
+%        (forward diff -17.92pp; overall-rate similarity is composition offset),
+%        three-component environment metrics (catch/unknown/conditional recall).
+%      - Hard fixes (689): kd/n -> k*|D|/|A| (see Appendix~\ref{app:noise687});
+%        TODO placeholders removed; 18/70 -> 13/34; "Verifier Coverage 73.8%" and
+%        "1.9pp/rule" deleted; static arm renamed a calibration arm; kappa values are
+%        labelled AI self-consistency (never human IAA); Merkle claims restated as
+%        tamper-evident current-state integrity with a threat model; E9 restated as a
+%        cross-regime observational comparison; template footer placeholder overridden
+%        in this file (the .sty itself is third-party and untouched).
+%      - Human annotation: protocol + de-identified package prepared (Appendix~\ref{app:reframe689});
+%        execution is PENDING; no human IAA is claimed.
+%  v1.3 (677d): paper-merge batch (A5 side-by-side +24.0pp / +7-12pp; cluster bootstrap).
+%  v1.2 (677a): framing revision + engineering cleanup.
 %  v1.1 (673c): red-team critique revisions + humanization. ALL NUMBERS IDENTICAL TO v1.0.
 %  v1.0 (673a): all numbers synced to the authoritative numbers artifact (schema 672h).
 %  Engine: tectonic (XeTeX) / pdflatex+bibtex.
 %  Template: official neurips_2025.sty -- PLACEHOLDER. We target the NeurIPS 2027
 %  Evaluations & Datasets (E&D) track (renamed from Datasets & Benchmarks in 2026).
 %  The 2027 CFP is not published; this draft will migrate to the 2027 E&D style upon
-%  release. Do NOT edit neurips_2025.sty (third-party file); the "Submitted to 39th
-%  Conference ... (NeurIPS 2025)" footer it generates is a known placeholder artifact.
+%  release. Do NOT edit neurips_2025.sty (third-party file); its default notice string
+%  is overridden below with a neutral "under review" placeholder.
 % =====================================================================
 \documentclass{article}
 
@@ -57,11 +57,16 @@
 \pgfplotsset{compat=1.17}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
 
-% placeholder for results pending the baseline batch (kept visible on purpose)
-\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
 \newcommand{\cmark}{\textcolor{green!60!black}{\checkmark}}
 
-\title{Evolving Verifiers: Failure-Driven Evidence\\ Acquisition with Auditable Provenance}
+% Neutral notice string (the 2027 CFP is unpublished; do not print a wrong year).
+\makeatletter
+\renewcommand{\@noticestring}{%
+  Preprint (real-name version). Under review elsewhere; do not distribute.%
+}
+\makeatother
+
+\title{Auditing the Evaluator: Stress-Testing\\ Evidence-Based Software Verification}
 
 \author{%
   Ran Liao \\
@@ -74,610 +79,490 @@
 \maketitle
 
 \begin{abstract}
-At near-zero generation cost, the bottleneck moves to evolving the evidence-acquisition apparatus.
-Existing benchmarks evolve the items; we evolve the verifier's evidence-acquisition capability,
-under an externally interruptible audit discipline. Throughout, ``verifier'' means an
-evidence-acquisition apparatus: a pass means no acquired evidence
-contradicts the assertion within the capability boundary, not semantic truth. We present
-\textbf{Queyi}: conclusion--evidence--recomputation bound into a chain, the verifier's own failures
-the only legal input to evolution. Objects are executable C++ assertions with four-state
-verdicts; a forced provenance/scope split and a kernel-independent
-reconciler. Queyi has 67 rules, 42 real cards (31 with anchors; VC 73.8\%), a 452-event
-ledger and Merkle roots over 5 directories. On the same
-samples, holdout recall is 82.9\% (34/41), 81.0\% (17/21) strictly
-blind; corpus measurable recall is 62.5\% (40/64), versus a static caliber arm 2.4\%/17.2\%
-($\Delta$ +80.5/+45.3pp) and a random proxy 9.8\%/21.9\% ($\Delta$
-+73.2/+40.6pp); exact McNemar $p\le3.0\times10^{-8}$. Limitations: headline numbers need
-WSL; $n{=}41/64$ is small; 21 are strictly blind; the
-static arm a caliber re-binning, the random arm a proxy. We claim auditability, not superiority
-over real static detectors. Asset selection is formalized as monotone submodular maximization;
-greedy attains the optimum here. A 110-defect real-CVE benchmark reaches 59.09\% OR
-detection, indistinguishable from the synthetic corpus ($p{=}0.60$). The A5 budget-matched
-control runs at $n{=}566$: FD 54.6\% vs.\ Random 30.6\% (+24.0pp full pool, $p{=}2.3\times10^{-41}$), vs.\
-Static 24.7\% (+29.9pp); excluding degenerate assets, Random draws the same four at $k{=}4$, while
-$k\le3$ keeps +7.4--+11.3pp (effective $n\approx133$--$140$).
-A5 isolates ``do not fund assets that cannot inform,'' not
-``a smarter ranking''. Labels have AI self-consistency only ($\kappa{=}0.77$).
+How often can an apparently convincing evaluation result survive an audit of the evaluator
+that produced it? We study a software-verification apparatus---eight evidence-acquisition
+assets (sanitizers, compiler warnings, cross-compilation, linker) over C++ assertions---and
+show that evaluator claims can materially weaken or collapse under controls that change no
+malicious behavior: calibers drift, degenerate assets inflate gains, environments silently
+change the instrument, labels move the measured object. We present \textbf{Queyi}, an
+executable evaluator-audit protocol: every claim declares its caliber (dataset, asset,
+environment, configuration, protocol); eight failure modes structure the audit; claims are
+re-measured under adversarial controls and receive one of four outcomes (survives, weakened,
+collapses, unresolved). Auditing 1147 self-authored and 110 source-derived CVE-reconstruction
+samples yields five findings. (1)~A $+24.0$pp selection gain is mostly measurement-pool
+composition: removing degenerate assets leaves $+7.4$--$11.3$pp. (2)~The instrument is blind
+to 38.4\% of samples in a family-structured way; 41.5\% of real-defect catches ride on one
+asset. (3)~Without the declared WSL profile, real-defect detection falls
+59.09\%$\to$23.64\% with \emph{no} unknown increase and no warning---environment is part of
+the measurement. (4)~Synthetic and source-derived corpora fail TOST equivalence at $\pm10$pp
+(90\% CI $[-10.61,+5.52]$pp); standardization shows the similar headline rates hide a
+$-17.9$pp composition offset. (5)~Failure-driven evolution yields no measurable recall gain
+over frequency selection (identical selections in 14/14 tier checks; $p{=}0.302$)---an audit
+finding, not a contribution. Human annotation is designed but \emph{not executed}; all
+$\kappa$ values are AI self-consistency only.
 \end{abstract}
 
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
 % =====================================================================
-\paragraph{The problem: generation is easy, verification is not.}
-When LMs generate knowledge in bulk, the bottleneck shifts from ``generating correct
-knowledge'' to \emph{evolving verifiers that keep pace with generation}: memorization and
-contamination wear out a fixed yardstick, and the very samples a verifier has graded domesticate it.
-The question is therefore not ``how do we verify this batch,'' but ``how does a verifier evolve
-without grading its own homework, with every step independently auditable.''
-We ground this claim in an executable setting: an LLM can emit
-thousands of C++ technical assertions in minutes---\emph{numerous} (manual review does
-not scale), \emph{plausible}, and \emph{quietly wrong} (errors surface only under a specific flag,
-compiler, or platform). The asymmetry---\textbf{generation cost tends to zero, verification cost does
-not}---is our starting point. Executable evaluation of generated code has
-precedent~\cite{chen2021humaneval}; our question differs---not whether code passes tests, but
-whether a claim is supported by recomputable evidence.
+\paragraph{The question.}
+How often can an apparently convincing evaluation result survive an audit of the evaluator
+that produced it? Benchmarks are instruments, and instruments are audited in every empirical
+science---but in machine-learning evaluation the instrument is usually trusted. We treat the
+\emph{evaluation apparatus itself} as a first-class scientific object and ask a falsifiable
+question: when a headline number is re-measured under adversarial controls that change no
+malicious behavior and no ground truth, does the conclusion survive?
 
-\paragraph{The object of study is the measuring stick, not the score.}
-The instrument that produces a score is itself subject to Goodhartization---it drifts, is
-re-calibrated, silently breaks---and that drift is \emph{measurable}. We therefore treat the
-evaluation apparatus as a \textbf{first-class scientific object}: publish its capability boundary,
-require every rate to carry the caliber that produced it, and let the apparatus's own failures be
-the only legal input to its evolution~\cite{zhang2026whogrades}. Findings are of two kinds---numbers
-about C++ assertions, and \emph{numbers about the instrument}---and the second kind generalizes.
+\paragraph{Central hypothesis.}
+An evaluation apparatus can produce scientifically misleading conclusions
+\emph{without any malice}: through measurement-caliber drift (the same code scored under a
+different denominator), degenerate measurement components (funded assets that cannot inform),
+environment loss (the instrument silently loses capabilities), label corruption (the measured
+object moves), and uncontrolled changes in the measured population. Each failure is
+individually familiar; the contribution is an executable protocol that exposes them
+systematically and grades what remains.
 
-\paragraph{Motivation 1: high scores $\neq$ real ability.}
-SWE-bench turned ``fix real GitHub issues'' into a yardstick~\cite{jimenez2024swebench}, but
-follow-up work is systematically negative: gains on SWE-bench-Verified are partly \emph{memory
-rather than reasoning} (76\% file location inside the repo vs 53\% outside~\cite{liang2025illusion};
-$3\times$ higher than on two sibling benchmarks~\cite{prathifkumar2025verified}), and SWE-MERA
-reports 32.67\% of successful patches involving solution leakage and 31.08\% passing on insufficient
-tests~\cite{adamenko2025swemera}. \emph{Implication:} a verifier tested on its own data reproduces
-this failure---we therefore choose \textbf{external samples first}, \textbf{irreversible blinding},
-\textbf{layered reporting}.
-
-\paragraph{Motivation 2: AI-text detection answers the wrong question.}
-DetectGPT~\cite{mitchell2023detectgpt} and watermarking~\cite{kirchenbauer2023watermark} answer
-``was this text written by an AI?'', fragile to paraphrase~\cite{sadasivan2023canai}; more
-fundamentally, \textbf{provenance and truth are independent}. \emph{Implication:} we do not detect
-provenance; we \textbf{test assertions} (compile, warn, sanitize, cross-compiler/optimization diff).
+\paragraph{Queyi.}
+We instantiate the audit on an evidence-acquisition apparatus for C++ assertions:
+eight assets (AddressSanitizer, UndefinedBehaviorSanitizer, ThreadSanitizer, compiler
+warnings, cross-compilation, linker, and two declared-unavailable assets) evaluated under a
+four-state verdict discipline (\texttt{catch}/\texttt{miss}/\texttt{unknown}/\texttt{contradict},
+with \texttt{unknown} never counted as \texttt{miss}). The apparatus is instrumented so that
+every claim carries its measurement caliber and can be re-measured on the same samples.
 
 \paragraph{Contributions.}
-(1)~\textbf{An auditable evolution-governance framework} (\S\ref{sec:method}): evolution is an
-operator $E(\mathcal{C}_t, F_t)$ acting on the evidence-acquisition capability $\mathcal{C}_t$,
-driven \emph{only} by registered failures $F_t$, with three checkable properties---monotonicity,
-minimality and auditability (each step leaves the chain \emph{failure}$\to$\emph{rule}$\to$\emph{re-test})---plus
-four-state verdicts over registered evidence (\texttt{pass}, \texttt{fail}, \texttt{unknown},
-\texttt{contradict}~\cite{belnap1977useful}), a forced provenance/scope split and a
-kernel-independent reconciler. A runnable instantiation (67 rules, a 452-event ledger, Merkle roots
-over five controlled directories) realizes auditability \emph{for the current state}, with
-\emph{partial} historical pinning. \textbf{We give no theorems} for the three properties and claim
-no novelty in the four-state encoding; ``evolution'' names the \emph{governance iteration}, not a
-demonstrated recall gain.
-(2)~\textbf{A formalization of asset selection as submodular maximization} (\S\ref{sec:method}):
-coverage $f(S)=|\bigcup_{a\in S}C_a|$ is monotone submodular (zero violations in an exhaustive
-17{,}496-triple check), FD's greedy is the standard greedy algorithm, carrying the $(1-1/e)$
-guarantee, and it \emph{attains the optimum} on our instance (ratio $1.0$). We further bound the
-adaptive-selection ceiling (+2.3pp over the static optimum) and show stability under 5\% detector
-noise ($\le$0.11pp coverage drop)---formalization and guarantees, not a new selection algorithm.
-(3)~\textbf{A large-scale empirical study}: 1147 synthetic samples $\times$ 8 assets (9096 real
-\texttt{detect} calls); a budget-matched control at $n{=}566$ (+24.0pp, checked across four
-clone-aware splits, $k$-sweeps and 5000 re-draws); a cross-toolchain replication (clang~18 vs.\
-g++~13.3, agreement 93.5\%); and \textbf{110 real CVE-derived defects} (59.09\% OR detection,
-vs.\ synthetic $p{=}0.60$).
-(4)~\textbf{A capability-boundary map of the instrument}: detection 61.6\%, blind spot
-\textbf{38.4\%}, \textbf{13 of 34} normalized types $>$50\% blind (Appendix~\ref{app:blindspot}).
+(1)~\textbf{An auditable protocol for evaluating evaluators} (\S\ref{sec:method}):
+claims declare a caliber $Q{=}(D,A,E,\Theta,P)$; eight failure modes provide identification
+signals; a falsification procedure re-measures each claim under adversarial controls; and
+each claim receives a four-state audit outcome (survives / weakened / collapses / unresolved).
+(2)~\textbf{A systematic empirical audit} of a software-verification apparatus
+(\S\ref{sec:protocol}--\S\ref{sec:exp}): 1147 self-authored samples $\times$ 8 assets plus
+110 source-derived CVE reconstructions, with clone-aware splitting and explicit environment
+profiles.
+(3)~\textbf{Quantitative findings on what survives} (\S\ref{sec:exp}): five audited
+hypotheses, one of which (the evolution hypothesis) fails outright; all headline claims are
+traced to recomputable artifacts.
 
-\paragraph{What we do \emph{not} claim.} Not a better textbook, a stronger detector, or a formal
-proof; not that the executable operator beats frequency-based selection (3/14 (pool,$k$) tiers,
-best +1.41pp, $p{=}0.302$); and not that ``the verifier got stronger'' unless measured on the
-\emph{same external samples under the same caliber} (\S\ref{sec:exp}, Fig.~\ref{fig:evolution}).
-
-% =====================================================================
-\section{Related Work}
+\paragraph{Positioning and what we do \emph{not} claim.}
+Auditing evaluators is an active 2026 frontier---DeepFact's audit-then-score
+loop~\cite{huang2026deepfact}, metric co-evolution~\cite{zhang2026whogrades}, certified
+self-evolution~\cite{sengupta2026anytimevalid}, and SV-COMP's witness
+validation~\cite{beyer2026svcomp}. \textbf{We do not claim to be the first to audit an
+evaluator}; our claim concerns the audited object (a software-verification
+\emph{evidence-acquisition apparatus}, including caliber, assets, environment, labels and
+denominators), an executable protocol, and negative findings
+(Table~\ref{tab:positioning}, Appendix~\ref{app:reframe689}). We do not claim a better
+detector, a novel selection algorithm, or semantic verification: a \texttt{catch} is
+acquired evidence within a boundary, never truth. Relation to prior work is compressed here
+(full: Appendix~\ref{app:related}).
 \label{sec:related}
-% =====================================================================
-We compress prior work into six lines (two further directions, and an eight-direction table, are in
-Appendix~\ref{app:related}). All comparisons are \emph{positional and qualitative}, not empirical
-claims about those systems.
-
-\paragraph{(1) Self-evolving / contamination-resistant benchmarks (they evolve the \emph{items}).}
-Benchmark Self-Evolving~\cite{wang2024benchmarkevolving}, ArenaBencher~\cite{liu2025arenabencher},
-SWE-bench-Live~\cite{zhang2025swebenchlive}, DynaBench~\cite{kiela2021dynabench} and
-LiveBench~\cite{white2024livebench} all fight ``the model memorized the items''---but they evolve
-the \emph{object under test}; who judges stays a fixed oracle.
-
-\paragraph{(2) Mutation-guided LLM test generation (the closest engineering form).}
-ACH~\cite{foster2025ach} and MUTGEN~\cite{wang2025mutgen} turn mutation testing from an
-\emph{evaluation} device into a \emph{generation} device; Cleverest~\cite{liu2025cleverest} does
-just-in-time regression-test generation. We \emph{reuse} the idea internally, but \emph{refuse} to
-treat mutation score as a defect-detection rate.
-
-\paragraph{(3) Self-verification / LLM-as-a-judge (partly adopted, partly rejected).}
-LLM-as-a-judge~\cite{zheng2023judging} is practical and scalable, but we use LLMs only to
-\emph{propose candidates} and keep the \emph{judgment} fully programmatic; model-based
-verifiers~\cite{kwok2026llmverifier} keep the judge inside the model, against which our
-shared-failure-domain objection stands (\S\ref{sec:exp}, E7). (Formal verification and program
-analysis: Appendix~\ref{app:related}.)
-
-\paragraph{(4) Trained fact-checking models (the nearest neighbor where the \emph{judge} itself evolves).}
-Trained fact-checkers~\cite{tang2024minicheck} evolve \emph{the judge} itself, so auditability
-reduces to trusting model behaviour---complementary to us (\S\ref{app:related}).
-\paragraph{(5) Closest 2026 work (metric evolution and self-evolving verification).}
-Full text in \S\ref{app:related} (Table~\ref{tab:neighbours}). \emph{Who Grades the
-Grader?}~\cite{zhang2026whogrades} evolves the evaluation \emph{metric} itself against Goodhart
-drift---the closest analogue to our anti-Goodhart discipline, but its evolved object is a metric,
-not a verifier's evidence-acquisition capability; \emph{Self-Evolving Agents with Anytime-Valid
-Certificates}~\cite{sengupta2026anytimevalid} is an agent framework, not a C++ assertion protocol.
-\textbf{We do not claim to be the first to evolve an evaluator}: our claim concerns the evolved
-object and the recomputable \emph{failure}$\to$\emph{rule}$\to$\emph{re-test} chain.
-Table~\ref{tab:positioning} (Appendix~\ref{app:tables}) positions eight works along five dimensions.
-
-\paragraph{(6) Submodular maximization, active testing, governance (added in 687).}
-The $(1-1/e)$ greedy guarantee is classical~\cite{nemhauser1978submodular,krause2014submodular};
-active testing / adaptive submodularity~\cite{golovin2010near,golovin2011adaptive} frame ``what to
-measure next'' under a budget---our static greedy is their non-adaptive specialization, and we
-\emph{quantify} the adaptive gap (+2.3pp). Leaderboard-illusion and reward-hacking
-analyses~\cite{shankar2025leaderboard,skalse2022rewardhacking} motivate the governance side.
-
 
 % =====================================================================
-\section{Problem Definition and Threat Model}
+\section{What Is Being Evaluated?}
 \label{sec:threat}
 % =====================================================================
-\paragraph{Formalization.}
-A \emph{knowledge assertion} $a$ is a decidable statement plus a \emph{boundary triple}
-$\langle D, P, F\rangle$ (input domain, preconditions, failure conditions). \emph{Evidence} $e$ is
-a replayable observation (compiler version $+$ command $+$ optimization level $+$ output $+$
-content-addressed hash). A \emph{verdict} is $v\in\{\texttt{pass},\texttt{fail},\texttt{unknown},
-\texttt{contradict}\}$; \emph{verification capability} $\mathcal{C}$ is the set of available
-evidence-acquisition means. Our goal is \textbf{not} to maximize $\Pr[v{=}\texttt{pass}]$ but to
-maximize agreement with ground truth \emph{without disguising \texttt{unknown} as \texttt{pass}}.
+\paragraph{Measurement tuple.}
+An evaluation result is not a number; it is a tuple
+\begin{equation}
+\label{eq:tuple}
+\mathrm{measurement} = (x,\, a,\, e,\, \theta,\, p,\, v),
+\end{equation}
+where $x$ is the sample (a C++ assertion plus boundary triple $\langle D,P,F\rangle$),
+$a$ the evidence asset that produced an observation, $e$ the environment profile,
+$\theta$ the configuration/caliber (flags, optimization levels, timeouts),
+$p$ the protocol version, and $v\in\{\texttt{catch},\texttt{miss},\texttt{unknown},\texttt{contradict}\}$
+the observed verdict. \textbf{A verdict without its measurement caliber is not a complete
+observation.} All rates in this paper are functions of $(D,A,E,\Theta,P)$ declared per claim
+(\S\ref{sec:method}); the denominator is always $\text{catch}+\text{miss}$ (measurable
+samples), with \texttt{unknown} reported separately.
 
-\paragraph{Why four states.} ``Detector unavailable'' and ``detector says fine'' are different
-knowledge states (Fig.~\ref{fig:belnap}, Belnap's four-valued
-logic~\cite{belnap1977useful}). Recording \texttt{unknown} as \texttt{miss} understates
-capability; as \texttt{pass} it manufactures a \emph{false pass}; recording \texttt{miss} as
-\texttt{unknown} hides a capability gap. Hence the \textbf{denominator is
-$\text{catch}+\text{miss}$ (measurable samples)}, \texttt{unknown} and \texttt{not\_error} are
-reported separately, and the caliber lives in the artifact, not in prose.
+\paragraph{Observation function and profiling.}
+The apparatus computes $V(x,a,e,\theta)$, and for a budget $k$ reports the OR over the
+selected assets. The environment profile is a first-class field:
+$e=(\mathrm{os},\mathrm{kernel},\mathrm{arch},\mathrm{compiler},\mathrm{compiler\_version},
+\mathrm{stdlib},\mathrm{libc},\mathrm{sanitizer\_runtime},\mathrm{linker},
+\mathrm{optimization},\mathrm{compile\_flags},\mathrm{runtime\_flags},\mathrm{timeout},
+\mathrm{resource\_limits},\mathrm{container\_image})$.
+Each observation carries
+$\mathrm{measurement\_context\_id}=\mathrm{hash}(x_{\mathrm{hash}},a_{\mathrm{id{+}version}},
+e,\theta,p)$; two runs are comparable only if their context ids declare the same caliber.
+Crucially, $V(x,a,e_1,\theta)\neq V(x,a,e_2,\theta)$ is \emph{not noise}: it is potentially a
+different scientific observation (\S\ref{sec:exp}, Finding~3).
+
+\paragraph{Why four states.}
+``Detector unavailable'' and ``detector says fine'' are different knowledge states
+(Fig.~\ref{fig:belnap}, Belnap's four-valued logic~\cite{belnap1977useful}). Recording
+\texttt{unknown} as \texttt{miss} understates capability; as \texttt{pass} it manufactures a
+false pass. \label{sec:terminology} We use ``verifier'' in the evidence-acquisition sense: a
+\texttt{catch} means refuting evidence was acquired \emph{within the declared boundary}, not
+that the assertion is false---on our 1147-sample corpus \textbf{38.4\%} of samples are
+invisible to the eight-asset instrument (Finding~2).
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[font=\small, x=1.6cm, y=1.35cm]
+\begin{tikzpicture}[font=\small, x=1.55cm, y=1.30cm]
   \draw[->, thick] (-0.22,0) -- (1.42,0) node[right, font=\scriptsize] {support};
-  \draw[->, thick] (0,-0.22) -- (0,1.30) node[above, font=\scriptsize] {refutation};
+  \draw[->, thick] (0,-0.22) -- (0,1.28) node[above, font=\scriptsize] {refutation};
   \draw[gray!40, dashed] (1,0) -- (1,1) -- (0,1);
-  \node[draw, rounded corners, fill=yellow!25, align=center, inner sep=2pt, minimum width=1.55cm]
-    at (0,0) {\texttt{unknown}\\\scriptsize$(0,0)$\\\scriptsize\emph{neither}};
-  \node[draw, rounded corners, fill=green!20, align=center, inner sep=2pt, minimum width=1.55cm]
-    at (1,0) {\texttt{pass}\\\scriptsize$(1,0)$\\\scriptsize supported};
-  \node[draw, rounded corners, fill=red!20, align=center, inner sep=2pt, minimum width=1.55cm]
-    at (0,1) {\texttt{fail}\\\scriptsize$(0,1)$\\\scriptsize refuted};
-  \node[draw, rounded corners, fill=orange!25, align=center, inner sep=2pt, minimum width=1.55cm]
-    at (1,1) {\texttt{contradict}\\\scriptsize$(1,1)$\\\scriptsize both};
+  \node[draw, rounded corners, fill=yellow!25, align=center, inner sep=2pt, minimum width=1.5cm]
+    at (0,0) {\texttt{unknown}\\\scriptsize$(0,0)$};
+  \node[draw, rounded corners, fill=green!20, align=center, inner sep=2pt, minimum width=1.5cm]
+    at (1,0) {\texttt{pass}\\\scriptsize$(1,0)$};
+  \node[draw, rounded corners, fill=red!20, align=center, inner sep=2pt, minimum width=1.5cm]
+    at (0,1) {\texttt{fail}\\\scriptsize$(0,1)$};
+  \node[draw, rounded corners, fill=orange!25, align=center, inner sep=2pt, minimum width=1.5cm]
+    at (1,1) {\texttt{contradict}\\\scriptsize$(1,1)$};
 \end{tikzpicture}
-\caption{Every verdict is a Belnap state $(\mathrm{support},\mathrm{refutation})$ over
-\emph{registered evidence}: \texttt{pass}$=(1,0)$, \texttt{fail}$=(0,1)$, \texttt{unknown}$=(0,0)$,
-\texttt{contradict}$=(1,1)$. \textbf{Detector availability is separate per-item metadata, not a
-coordinate of this plane}: \texttt{unknown} means ``not registered either way'', never ``no detector
-exists''.}
+\caption{Four-state verdicts as Belnap states over \emph{registered evidence}.
+\texttt{unknown} means ``not registered either way'', never ``no detector exists''; asset
+availability is separate per-item metadata.}
 \label{fig:belnap}
 \end{figure}
 
-\paragraph{Terminology: what ``verifier'' means here.}
-\label{sec:terminology}
-We use ``verifier'' in the \textbf{evidence-acquisition} sense. A verifier \emph{acquires
-reproducible evidence} about an assertion and records the Belnap state induced by it; it does
-\emph{not} adjudicate semantic truth. \textbf{Verification} $=$ actively searching for evidence
-that supports or refutes an assertion within a capability boundary $\mathcal{C}$;
-\textbf{truth} $=$ semantic correctness, which we never claim to establish. A \texttt{pass} means
-\emph{no acquired evidence contradicts the assertion}---not that it is true, and nothing about
-classes outside the boundary (on our corpus \textbf{38.4\%} of samples are invisible to our
-eight-asset instrument; \S\ref{sec:validity}, Appendix~\ref{app:blindspot}). A \texttt{miss} means
-\emph{no refuting evidence was acquired}, not that the assertion holds.
+\paragraph{Apparatus mechanisms (summary; details in Appendix~\ref{app:formal}).}
+\texttt{artifact}$\to$\texttt{verifier}$\to$\texttt{verdict}$\to$\texttt{ledger}: knowledge
+cards with a forced \emph{provenance/semantic-scope} split (\S\ref{sec:prov}); rule-based
+verdicts; content-addressed evidence; a kernel-independent meta-state reconciler
+(\S\ref{sec:reconciler}); and an append-only ledger under a zero-change red line.
 
-\paragraph{Nineteen threats (T1--T19).}
-Table~\ref{tab:threats} (Appendix~\ref{app:tables}) lists all nineteen with mitigations and
-residuals; \S\ref{sec:validity} quantifies them under the standard validity
-layers~\cite{shadish2002experimental}. The four bearing most on our claims are \textbf{T8} (budget
-selection bias), \textbf{T13} (peeking), \textbf{T15} (untrusted LLM channel) and \textbf{T16}
-(small-sample poisoning); the A0--A5 ablations and the e-process protocol (\S\ref{sec:method}) exist
-to bound their residuals.
+\paragraph{Provenance vs.\ semantic scope.}
+\label{sec:prov}
+Provenance completeness and semantic-scope completeness are recorded separately, because a
+provenance-complete assertion can still be misused outside its scope; the mechanism is in
+place, the semantic-scope backfill is empty, and that directly limits external validity.
 
+\paragraph{Meta-state reconciler.}
+\label{sec:reconciler}
+A kernel-independent script rescans ground-truth sources against the baseline and exits
+non-zero on mismatch; assertions may hard-code a \emph{caliber}, never a
+\emph{measurement}. Residual: ``kernel-independent'' means it does not import the kernel,
+not that a third party wrote it.
 
-\paragraph{Three focus threats.}
-\textbf{(a) Construct: a \texttt{catch} is evidence, not truth.} Switching the pipeline from
-single- to dual-flag (\texttt{-O0}+\texttt{-O2}) moved recall \textbf{66.7\%$\to$87.5\% with the
-detector unchanged}---\emph{the caliber changed, not the capability}. \textbf{(b) Meta-Goodhart:}
-with no external reference the score can rise by changing the caliber or the denominator, and a
-reported rate can be \emph{hollow}---produced by a caliber change never re-run, so it appears in the
-paper but in no artifact while an automated \texttt{--check} on registered fields stays green:
-\textbf{caliber drift is not self-announcing} (Appendix~\ref{app:incidents}). \textbf{(c)
-Contamination:} leakage (T3), shared-criterion labeling (an upper bound, $F_1{=}1.0$), unblinded
-expansion. Three further threats are registered: \textbf{T17} (single-annotator labels),
-\textbf{T18} (public rules invite evasion), \textbf{T19} (three samples no sanitizer sees---%
-\texttt{h46}, \texttt{h59}, \texttt{h60}---are both capability gaps and attack surface); full
-statements in Appendix~\ref{app:humanize}.
+\paragraph{Integrity mechanism.}
+Evidence is content-addressed and the current state is protected by hash-chained roots over
+controlled directories. This is \textbf{tamper-evident current-state integrity with partial
+historical reproducibility}---\emph{not} an immutable log: an actor controlling both the
+artifacts and the root can recompute both; ledger events do not yet carry a ruleset hash, so
+historical states are reproducible only under an unchanged-ruleset assumption
+(Appendix~\ref{app:pinning}).
 
 % =====================================================================
-\section{Method}
+\section{The Evaluator-Audit Protocol}
 \label{sec:method}
 % =====================================================================
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[
-  font=\small,
-  box/.style={draw, rounded corners, align=center, inner sep=3pt, minimum height=9mm, text width=2.35cm},
-  arr/.style={-{Latex[length=2mm]}, thick},
-  fb/.style={-{Latex[length=2mm]}, dashed, thick, gray}
-]
-\node[box] (a) {artifact\\\footnotesize LLM assertions\\\footnotesize (card + boundary triple)};
-\node[box, right=4mm of a] (b) {verifier\\\footnotesize 67 rules, 4-state verdict};
-\node[box, right=4mm of b] (c) {failure\\\footnotesize miss $M_t$ / unknown $U_t$};
-\node[box, below=7mm of c] (d) {new verification asset\\\footnotesize detector / flag / platform};
-\node[box, left=4mm of d] (e) {verifier evolution\\\footnotesize $C_t \to C_{t+1}$};
-\node[box, left=4mm of e] (f) {blind holdout\\\footnotesize external measurement};
-\draw[arr] (a)--(b);
-\draw[arr] (b)--(c);
-\draw[arr] (c)--(d);
-\draw[arr] (d)--(e);
-\draw[arr] (e)--(f);
-\draw[fb] (f.north) -- ++(0,4mm) -| node[pos=0.25, above, font=\scriptsize]{re-measure on the \emph{same} $X$} (b.north);
-\draw[fb] (c.east) -- ++(6mm,0) |- node[pos=0.75, right, font=\scriptsize, align=left]{config error $\Rightarrow$ fix + void old value} (d.east);
-\end{tikzpicture}
-\caption{The failure-driven verification loop. Solid arrows form the main cycle; dashed arrows
-are re-measurement and caliber correction. Tools: the rule engine (67 rules, four states), the
-kernel-independent meta-state reconciler, and the counterfactual operator.}
-\label{fig:loop}
-\end{figure}
+We state the protocol abstractly; it is executable on our apparatus and transferable to
+other measurement devices (any setting with samples, instruments, and a claimed rate).
 
-\paragraph{Architecture (summary; full in Appendix~\ref{app:formal}).}
-\texttt{artifact}$\to$\texttt{verifier}$\to$\texttt{verdict}$\to$\texttt{ledger}
-(Fig.~\ref{fig:loop}): knowledge cards with a boundary triple; \textbf{67} rules producing
-four-state verdicts; content-addressed evidence per compile/run (\textbf{28} cards at L1,
-\textbf{28} double-compiler confirmed, \textbf{147} real compilations); and a \textbf{452}-event
-append-only ledger under a zero-change red line.
+\subsection{Claim declaration}
+Every quantitative claim must declare its caliber $Q=(D,A,E,\Theta,P)$:
+$D$ = dataset (samples and their provenance), $A$ = asset/instrument set, $E$ = environment
+set (one or more profiles), $\Theta$ = configuration set (flags, levels, timeouts),
+$P$ = protocol (pre-registration, seeds, statistical rules). A claim without $Q$ is not
+falsifiable and is excluded from the paper's findings. Example: Finding~1's
+$Q_1$ = (A5 held-out split, $n{=}566$; eight assets; WSL g++~13.3 profile; $k{=}4$;
+frozen pre-registration with 2000 budget draws).
 
-\paragraph{Four-state verdict.}
-The four states are drawn in Fig.~\ref{fig:belnap}; their meanings, actions and escalation rule are
-in Table~\ref{tab:verdict} (Appendix~\ref{app:tables}). The point of \texttt{contradict} is that
-\emph{the machine never picks a side when evidence conflicts}---the conflict itself is information.
-Machine cards are always \texttt{needs\_review}$=$true and never counted as ``verified'';
-\texttt{verified} is human-signed only.
+\subsection{Eight failure modes}
+For each mode we give the definition, the identification signal used in our audit, and the
+concrete instance found (all instances are documented in the appendices).
 
-\paragraph{Gate tiers L0/L1.} \textbf{7} blocking gates (L0) and \textbf{10} advisory gates (L1,
-registered red rather than blocking); tiering separates ``must hold'' from ``up for discussion''.
-Enumerations in Appendix~\ref{app:formal}.
+\begin{enumerate}\itemsep2pt
+\item \textbf{Caliber drift.} The same evidence is scored under a changed caliber
+(denominator, flags, or counting rule), so the reported rate moves without any capability
+change. \emph{Signal:} re-binning identical raw counts under alternative denominators.
+\emph{Instance:} unknown$\to$miss re-binning moves corpus recall by $+9.9$pp with the
+\emph{same} 40 catches; a flag change once moved holdout recall $66.7\%\to87.5\%$ with the
+detector untouched (Appendix~\ref{app:tables}, \ref{app:incidents}).
+\item \textbf{Degenerate components.} Assets that cannot inform about the sampled defects are
+still funded, so part of a ``selection gain'' is avoidance of zero-information slots, and
+part of a pooled rate is a composition effect. \emph{Signal:} remove degenerate assets;
+re-run selection at the same budget. \emph{Instance:} Finding~1 ($+24.0$pp collapses).
+\item \textbf{Label corruption.} The measured object moves rather than the instrument: a
+reported subset of ``20 samples'' contained 7 true errors; three sampled labels contradict
+their own code in a later audit. \emph{Signal:} independent re-labeling; cross-source
+consistency scans.  \emph{Instance:} \S\ref{sec:exp} Finding~4, \S\ref{sec:validity} T1.
+\item \textbf{Environment loss.} The declared environment is part of the instrument; if it is
+absent, capabilities disappear. \emph{Signal:} re-measure under the reduced profile with
+three-component accounting (catch rate, unknown rate, conditional recall)---reporting a single
+recall hides the loss. \emph{Instance:} Finding~3 ($59.09\%\to23.64\%$, unknown unchanged).
+\item \textbf{Denominator changes.} Rates computed on different base populations are compared
+as if comparable; unknown handling is the canonical case. \emph{Signal:} recompute every
+rate under all defensible denominators and publish the spread. \emph{Instance:} the
+$+9.9$pp caliber effect above; 38.4\% vs 61.6\% readings of the same matrix.
+\item \textbf{Source/template dependence.} Samples share templates, so effective sample size
+is far below nominal. \emph{Signal:} template-family-aware re-splitting and cluster
+bootstrap. \emph{Instance:} design effect $\approx4.1$--$4.3$ (effective
+$n\approx133$--$140$), CI widening $1.78$--$2.10\times$ (Appendix~\ref{app:a5full}).
+\item \textbf{Comparator unfairness.} Cross-tool comparisons silently change environment,
+timeout, calibration selection, or the use of post-hoc defensive calibers.
+\emph{Signal:} predeclare configurations; report primary caliber even when it fails.
+\emph{Instance:} our own E9 (Appendix~\ref{app:clangtidy}).
+\item \textbf{Capability-boundary blindness.} Aggregate rates are silent about what the
+instrument cannot see. \emph{Signal:} per-family blind-spot maps; per-asset contribution
+under leave-one-out. \emph{Instance:} Finding~2 ($38.4\%$; $13$ of $34$ types $>50\%$ blind).
+\end{enumerate}
 
-\paragraph{Provenance vs.\ semantic scope (forced split).}
-\label{sec:prov}
-\emph{Provenance} (where an assertion comes from) and \emph{semantic scope} (where it holds) are
-recorded separately, because a provenance-complete assertion can still be misused outside its
-scope (T6). Current state: provenance complete \textbf{26/26}, \textbf{semantic scope complete
-0/26}---the mechanism is in place, the backfill is empty, and that directly limits external
-validity.
+\subsection{Falsification procedure}
+For every headline claim: (i) state the claim; (ii) expose its hidden assumption;
+(iii) construct the adversarial control that targets that assumption; (iv) re-measure on the
+same held-out samples under the same caliber; (v) apply a predeclared decision rule.
+We walk one claim end-to-end:
 
-\paragraph{Meta-state reconciler (anti-self-justification).}
-\label{sec:reconciler}
-The reconciler is \emph{kernel-independent}: it rescans ground-truth sources against the baseline,
-emitting \texttt{META-STATE-CONFLICT} and exiting 1 on mismatch; assertions may hard-code a
-\emph{caliber}, never a \emph{measurement}. Residual: ``kernel-independent'' means it does not
-import the kernel, \emph{not} that a third party wrote it.
+\emph{Claim.} ``Failure-driven asset selection improves recall over budget-matched random
+selection.'' \emph{Hidden assumption.} All eight assets can inform about the sampled defects,
+so selection quality (ranking) is what moves the rate. \emph{Adversarial control.} Remove the
+three degenerate assets and re-run the same algorithm against the same random control at the
+same budget; additionally clone-family re-split and cluster bootstrap. \emph{Re-measurement.}
+Full pool: $+24.0$pp (CI $[+20.5,+27.5]$, $p{=}2.3\times10^{-41}$, $n{=}566$). Degenerate-free
+pool: at $k{=}4$ random draws the same four assets ($\Delta{=}0.0$, $p{=}1.0$); at
+$k\le3$, $+7.4$--$+11.3$pp survives, with effective $n\approx133$--$140$.
+\emph{Decision rule.} A claim ``survives'' only if the effect remains non-zero and significant
+under the degenerate-free control; otherwise it is graded \emph{collapses} (as a mechanism
+claim) while the composition finding is registered as the real result. \emph{Outcome:}
+collapses as stated; the audited version (Finding~1) survives.
 
-\paragraph{Failure-driven loop.} For every \texttt{miss}$\cup$\texttt{unknown} we attribute the
-cause---a \emph{measurement-configuration error} (fix the config and \emph{void the old value}, not
-a capability gain) or a \emph{capability gap} (add an evidence-acquisition means $\Rightarrow
-\mathcal{C}_{t+1}$)---then \textbf{re-measure on the same $X$}; if $\Delta$ is not significant the
-addition does \emph{not} enter the claim table. Re-measuring on the same $X$ is essential (else a
-``capability gain'' may be an easier sample set), as is a budget-matched random control (else it
-may be \emph{more budget}). The operator and its score function are stated formally in
-Appendix~\ref{app:formal}. The executable operator's recall gain over frequency-based selection is
-\emph{not} significant (3/14 (pool,$k$) tiers, best $+1.41$pp, $p{=}0.302$); its value is
-falsifiability and governance, not a recall improvement (Appendix~\ref{app:operator683}).
-
-\paragraph{Selection as submodular maximization (added in 687).}
-With $f(S)=|\bigcup_{a\in S}C_a|$ (coverage over the eight assets), the budgeted problem
-$\max_{|S|\le k}f(S)$ is monotone submodular (all $17{,}496$ triples checked: zero violations), so
-failure-driven selection---frequency ranking and residual-coverage greedy---is the standard greedy
-algorithm, carrying the $(1-1/e)$ guarantee~\cite{nemhauser1978submodular} and, on our instance,
-attaining the optimum exactly (ratio $1.0$; $63.2\%$ is a ratio floor, not a coverage target).
-The adaptive ceiling is only $+2.29$pp and the choice is stable under 5\% noise ($\le0.11$pp drop;
-Appendices~\ref{app:submodular687}--\ref{app:noise687}).
-
-\paragraph{Rule-version pinning and sequential testing.} We pin the ruleset by hashing its
-canonicalised manifest (\texttt{rules\_manifest\_sha256}); ledger events do not yet carry the field
-(future work). The \emph{e-process} for anytime-valid sequential testing is \emph{exploratory}
-(priors and grids not pre-registered, Appendix~\ref{app:eprocess}) and supports no confirmatory claim.
-
-\paragraph{Two descriptive metrics of the verifier's own state.}
-\textbf{Verifier Coverage} $=$ anchored/real cards $=$ \textbf{31/42 $=$ 73.8\%}, guarding against
-``rule-count inflation with hollow evidence''; the 42 cards are a \emph{complete enumeration}, so VC
-is a \emph{descriptive percentage with no confidence interval} and must not be read as a detection
-rate. \textbf{Evolution Efficiency} ($1.9$pp/rule) is likewise descriptive, \emph{not} a
-contribution. Per-domain breakdown (domain VC 4/5; \textbf{lang 0/8} is the largest gap) and caveats:
-Appendix~\ref{app:formal}.
+\subsection{Four audit outcomes}
+Each audited claim receives exactly one of:
+\textbf{survives} (effect retains sign and significance under all predeclared adversarial
+controls), \textbf{weakened} (retains sign, loses magnitude or significance under at least
+one control), \textbf{collapses} (sign or significance lost under a control that directly
+targets the hidden assumption), \textbf{unresolved} (controls cannot be run under the current
+declared environment/caliber---the honest state for e.g.\ cross-regime comparisons). Findings
+\S\ref{sec:exp} carry these grades; \S\ref{sec:validity} records what stays unresolved.
 
 % =====================================================================
-\section{Evaluation Protocol}
+\section{Experimental Design}
 \label{sec:protocol}
 % =====================================================================
-We \emph{freeze the protocol before seeing results}; later changes must be logged with their effect
-on existing numbers.
-\paragraph{Dataset layers, baselines, ablations, metrics.}
-\label{sec:baseline}
-Five dataset layers (D0--D4), never merged: D0 core mutation \textbf{96.5\%} (self-justification
-only, never claimed), D1 re-injection \textbf{6/6}, D2 blind holdout \textbf{82.9\%} (34/41), D3
-external corpus \textbf{62.5\%} measurable (40/64), D4 16 unsigned machine cards. Three baselines,
-all budget-matched: B1 static gate, B2 static$+$mutation, and \textbf{B3 budget-matched
-random}---the control separating ``failure-driven'' from ``it just spends more''. \textbf{Status:}
-all three arms ran on the same samples ($n{=}41/64$), but the random arm is an
-\emph{instrument-level proxy} at this denominator, so we claim \emph{direction}, not a controlled
-magnitude. Six ablations A0--A5 (\textbf{A5 has run}); \textbf{A0 $-$ A5} is the key contrast. Seven
-metrics, and \textbf{every rate must carry a \texttt{denominator}}; VC and EE are descriptive and
-carry no detection-set semantics. Full protocol, alignment tables, the $1042$-sample quality audit
-and statistics: Appendix~\ref{app:stats}, Tables~\ref{tab:e4} and~\ref{tab:baseline}.
+\paragraph{Datasets (never merged).}
+\emph{Synthetic corpus} (1147 samples): self-authored C++ assertions with planted defects
+across 34 normalized types (8 families), including 64 corpus-null controls and 35 hung
+samples. \emph{Source-derived real-defect corpus} (110 samples): minimal reconstructions of
+defects from 30+ real projects (CVE/NVD-verified mechanisms, responses frozen; \emph{not}
+original project code---reconstruction loses build-system and cross-module fidelity). We
+therefore name it \textbf{source-derived reconstruction}, never ``naturalistic'' evidence;
+provenance is recorded as a three-value schema (self-authored /
+source-derived-reconstruction / original-external-artifact). A 10-sample counting-caliber
+difference between the A5 matrix ($n{=}1137$, after de-duplication) and the blind-spot map
+($n{=}1147$, pre-de-duplication superset) is documented as two counting calibers of one
+population, not a contradiction.
+
+\paragraph{Blind holdout discipline.}
+Primary rates come from a held-out split with failure-hit derivations disjoint from
+evaluation; A5 evaluation runs on $n{=}566\gg138$; headline holdout/corpus rates
+($n{=}41/64$) are reported with the caveat that the random arm at that denominator is an
+instrument-level proxy, so only \emph{direction} is claimed (Appendix~\ref{app:tables}).
+
+\paragraph{Baselines.}
+Three arms, all budget-matched: \textbf{FD} (failure-driven selection), a
+\textbf{static calibration arm} (the static gate re-binned under the same denominator---a
+caliber reference, \emph{not} an independent verifier), and \textbf{random} (the control
+separating ``failure-driven'' from ``spends more budget''). Ablations A0--A5 are
+design-registered; \textbf{A5 has run} ($n{=}566$); A0--A4 remain unrun and are marked as
+such wherever referenced.
+
+\paragraph{Environments.}
+Four profiles are declared: \texttt{wsl-gcc-13.3} (asan/ubsan/tsan, primary),
+\texttt{windows-native-mingw} (compiler-warn/cross-compile/linker; sanitizers unavailable),
+\texttt{wsl-clang-18.1.3} (200-sample stratified replication), and MSVC/clang-cl (absent on
+this machine, declared unavailable---not simulated). Profile membership is printed with
+every run; cross-profile numbers are never subtracted silently
+(\S\ref{sec:exp}~Finding~3, Appendix~\ref{app:reframe689}).
+
+\paragraph{Statistical caliber (frozen).}
+Seed for every stochastic step; cluster-aware reporting (design effect $\approx4.2$);
+exact McNemar for paired contrasts with Clopper--Pearson intervals; Holm/Bonferroni over
+pre-registered contrasts; TOST for equivalence claims (added in 689);
+$k$-sweeps and exploratory denominators reported as exploratory. \label{sec:baseline}
+Post-hoc power is never presented as design power.
+
+\paragraph{Pre-specified audit decisions.}
+Before re-measurement we fixed: (a) degenerate-asset removal is the primary control for
+selection claims; (b) environment-aware accounting requires three components, and a missing
+profile caps the outcome at ``unresolved''; (c) equivalence requires TOST, never a
+non-significant difference test; (d) the evolution hypothesis is falsified if the executable
+operator cannot beat frequency-based selection at any predeclared tier.
 
 % =====================================================================
-\section{Experiments}
+\section{Findings: What Survives an Audit?}
 \label{sec:exp}
-% =====================================================================
-All numbers are \emph{recomputed from artifacts}; intervals are \textbf{Clopper--Pearson 95\%}
-(Wilson as sensitivity); a single script recomputes the baseline arms (Appendix~\ref{app:repro}).
-\textbf{How to read our intervals.} Except for A5's $\Delta$ intervals (randomization intervals
-over \textbf{2000} budget draws), every interval is a binomial interval over a \emph{fixed,
-enumerated} set (holdout 41, corpus 64, the 1147 matrix)---a sampling-variability indicator under
-an i.i.d.\ model, not a coverage guarantee; complete enumerations get no interval
-(\S\ref{sec:method}). The load-bearing content of a number is its \emph{direction} and
-\emph{caliber}, not its interval.
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=7.6cm, height=3.8cm,
-  ybar, bar width=7pt,
-  ymin=0, ymax=100,
-  ylabel={Recall (\%)},
-  symbolic x coords={holdout, corpus, defect},
-  xtick=data,
-  x tick label style={font=\small},
-  legend style={font=\scriptsize, at={(0.5,-0.20)}, anchor=north, legend columns=3, draw=none},
-  enlarge x limits=0.26,
-  title style={font=\small},
-]
-\addplot[fill=green!45, draw=green!50!black] coordinates {(holdout,82.9) (corpus,62.5) (defect,100)};
-\addplot[fill=gray!35, draw=gray!60!black] coordinates {(holdout,2.4) (corpus,17.2) (defect,100)};
-\addplot[fill=orange!40, draw=orange!70!black] coordinates {(holdout,9.8) (corpus,21.9) (defect,0)};
-\legend{FD, Static, Random$\dagger$}
-\end{axis}
-\end{tikzpicture}
-\caption{Core recall across three arms on the expanded samples (\textbf{FD} 82.9\%/62.5\%;
-\textbf{Static}, a \emph{caliber re-binning}, not a re-run; \textbf{Random$\dagger$}, an
-instrument-level \emph{proxy}, not the paper's B3). Point estimates; CIs in Table~\ref{tab:e1}.
-$n=41/64$ is small---read \emph{direction} first.}
-\label{fig:core}
-\end{figure}
-
-\paragraph{E1 --- Main experiment: static vs.\ random vs.\ failure-driven (Figure~\ref{fig:core}).}
-The three arms on the same samples (Static caliber re-bin; Random$\dagger$ proxy; FD) give FD
-holdout 82.9\% [67.9, 92.8] / corpus 62.5\% [49.5, 74.3], vs.\ Static 2.4\%/17.2\% and
-Random$\dagger$ 9.8\%/21.9\%; $\Delta$(static$\to$FD) $+80.5$/$+45.3$pp and
-$\Delta$(random$\dagger\to$FD) $+73.2$/$+40.6$pp (all four CIs strictly positive, lowest bound
-28.6pp). Full table in Appendix~\ref{tab:e1}. \textbf{Expanded-sample honesty:} the expansion moved
-holdout 81.0\%$\to$\textbf{82.9\%} and corpus 54.2\%$\to$\textbf{62.5\%}---split into
-\emph{composition} vs \emph{within-layer} change, \textbf{not} capability gains; the H4 subset check
-passes for holdout (+4.0pp) but \textbf{fails for corpus (+33.3pp)} and is registered as a
-composition shift. FPR is \textbf{0.0\%} (0/11 controls); the pre-673u 18.2\% (2/11) came from a
-constant-catch detector bug (Appendix~\ref{app:incidents}).
-
-\paragraph{E2 --- Caliber ablation (Table~\ref{tab:e2}, Fig.~\ref{fig:caliber}).} Three arms share
-\emph{the same raw catch counts} (holdout 34, corpus 40) and differ only in the denominator: A (main;
-drop unknown) gives \textbf{82.9\%/62.5\%}, B (unknown$\to$miss) 81.0\%/54.8\%, C (all)
-81.0\%/52.6\%. The caliber effect reaches $\mathbf{+9.9}$pp on the corpus: a rate without its
-caliber is uninterpretable.
-
-\begin{figure}[t]
-\centering
-\begin{minipage}[t]{0.48\linewidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=6.2cm, height=3.0cm,
-  ybar, bar width=10pt,
-  ymin=0, ymax=72,
-  ylabel={corpus recall (\%)},
-  symbolic x coords={C, B, A},
-  xtick=data,
-  x tick label style={font=\small},
-  nodes near coords, nodes near coords style={font=\scriptsize},
-  enlarge x limits=0.34,
-]
-\addplot[fill=blue!30, draw=blue!60!black] coordinates {(C,52.6) (B,54.8) (A,62.5)};
-\end{axis}
-\end{tikzpicture}
-\caption{Caliber ablation, external corpus: the \emph{same} 40 catches under three
-denominators---C 52.6\%, B 54.8\%, A 62.5\%: a \textbf{+9.9}pp swing from the caliber alone
-(holdout: $+1.9$pp).}
-\label{fig:caliber}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.48\linewidth}
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=6.2cm, height=3.0cm,
-  ymin=0, ymax=100, ylabel={holdout recall (\%)},
-  symbolic x coords={660,665,666,668,669,671a,672h}, xtick=data,
-  nodes near coords, nodes near coords style={font=\scriptsize},
-  enlarge x limits=0.15,
-]
-\addplot[mark=*, thick, blue] coordinates {(660,80.0) (665,66.7) (666,81.2) (668,87.5) (669,87.5) (671a,81.0) (672h,82.9)};
-\end{axis}
-\end{tikzpicture}
-\caption{Evolution curve. \textbf{80.0$\to$66.7$\to$87.5$\to$81.0$\to$82.9 is not a capability
-curve}: 665 is single-flag and 668 dual-flag---detector unchanged; the 666 value (81.2\%) never
-landed in any artifact.}
-\label{fig:evolution}
-\end{minipage}
-\end{figure}
-
-\paragraph{E3 --- Evolution curve (cross-batch metrics in Table~\ref{tab:e3}).}
-The holdout column is \emph{not the same $X$}: the only same-sample re-measurement (668 vs.\ 665)
-changed the \emph{flag}, not the capability.
-
-\paragraph{E4 --- Ablation A5 (\emph{run}): the budget-matched control.}
-A0--A4 remain design-only; \textbf{the key contrast A0 $-$ A5} is the core-mechanism falsifier:
-\textbf{if the CI of $\Delta(\text{A0}-\text{A5})$ crosses 0, ``failure-driven beats same-budget
-random'' does not hold}. It has \textbf{run at full scale} (676f): a real $1137\times8$
-matrix,\footnote{The A5 matrix is $1137$ samples \emph{after} de-duplication ($10$ content
-duplicates dropped); the 676g capability-boundary map reads the pre-de-duplication superset
-$1147=1009$ planted $+74$ source-derived $+64$ corpus-null. Same population, two counting calibers
---- not a contradiction.}
-failure-hits from a disjoint derivation split ($n{=}571$), evaluation on the held-out split
-($n{=}566\gg138$). At $k{=}4$ against a 2000-draw random distribution, FD \textbf{54.6\%} vs.\
-Random \textbf{30.6\%} ($\Delta{=}\mathbf{+24.0}$pp, CI [+20.5, +27.5],
-$p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%} ($\Delta{=}\mathbf{+29.9}$pp).
-\textbf{The Static contrast is robust; the Random one is not:} excluding the three degenerate
-assets, FD-vs-Static \emph{grows} to \textbf{+30.6}pp while FD-vs-Random collapses to \textbf{0.0}pp
-($p{=}1.0$)---Random's draw is then the same four. A5 isolates ``do not fund assets that cannot
-inform,'' not ``a smarter ranking''; we still do not write ``FD beats Random''. A 676m label
-re-check left this endpoint \emph{bit-identical} (Appendix~\ref{app:a5full}).
-\textbf{Robustness (677b/677c, Appendix~\ref{app:a5full}).} Clone-family splits leave $\Delta$ at
-$+23.0$--$+26.7$pp (leakage is not driving it), but a family-level bootstrap cuts the effective $n$
-to $\approx133$--$140$; on the degenerate-free pool the effect survives at $k\le3$ ($+11.31$pp at
-$k{=}1$) and the $k{=}4$ zero is a set collision.
-\textbf{Sensitivity (682).} Across four split variants $\Delta$ stays $+23.0$--$+26.7$pp
-($p<10^{-28}$); over \textbf{5000} re-draws FD sits at the \textbf{97.3rd percentile} (median
-gain $+13.25$pp)---the A5 direction does not hinge on one seed.
-
-\paragraph{E5 --- Statistical tests for the baseline contrasts (Table~\ref{tab:e5}).}
-FD and the two opponent arms are paired \emph{on the same samples} (41 / 64 pairs), so we use exact
-McNemar with Clopper--Pearson intervals. Small-sample warning: McNemar rests on the extreme $c{=}0$
-structure---a few reverse pairs would inflate $p$ quickly. Holm/Bonferroni over the four
-pre-registered contrasts leaves all significant ($p_{\max}=1.2\times10^{-7}$); Cohen's $h$ is
-reported for \emph{sensitivity only}---the paired $\Delta$ and its interval are our primary effect
-measures (Appendix~\ref{app:stats}).
-
-\paragraph{E7--E8 --- LLM judge arm and external anchor (both negative).}
-An LLM judge (\textbf{GLM-4}) caught \textbf{12/12} errors vs.\ FD's 6/12 on the same subset but
-produced \textbf{4/8} false positives on controls (\emph{more sensitive, far less specific}); an
-external anchor on the \textbf{C++ Core Guidelines} gives \textbf{44.0\%} over 50 snippets, with
-pre-registered \textbf{H2 missing by 0.8pp}. Both are reported without ``correction''
-(Appendix~\ref{app:extra}).
-
-\paragraph{E9 --- Cross-regime external stress test (clang-tidy / cppcheck).}
-On the \emph{same} 41/64 samples, under the only defensible caliber (StrictA, chosen \emph{after}
-results, hence exploratory), FD \textbf{82.9\%} beats clang-analyzer \textbf{48.8\%} and cppcheck
-\textbf{41.5\%} on holdout ($p{=}1.2\times10^{-4}$ / $1.5\times10^{-5}$) but only \emph{ties}
-cppcheck on corpus (62.5\% vs.\ 54.7\%, $p{=}0.383$)---a stress test rather than a ranking
-(Appendix~\ref{app:clangtidy}).
-
-\paragraph{E10 --- Real-world validation (683; Appendix~\ref{app:realworld683}).}
-\textbf{110} CVE-derived C++ defects (CVEs verified online via the NVD API, responses frozen)
-through \emph{the same} 8-asset pipeline reach \textbf{59.09\%} OR detection---indistinguishable
-from the synthetic corpus ($p{=}0.60$); 41.5\% of catches are solo-asset, and a cross-toolchain
-replication (clang~18 vs.\ g++~13.3) agrees at 93.5\% ($\kappa\ge0.84$).
-
-% =====================================================================
-\section{Analysis}
 \label{sec:analysis}
 % =====================================================================
-\textbf{(1) Labels are the largest error source.} A batch reported ``20 holdout samples'' of which
-only \textbf{7} were true errors: the same data reads 35\% or 80.0\% by denominator---the
-\emph{measured object} was corrected, not the verifier. \textbf{(2) Environment dependence causes
-silent drops:} without WSL, 15 samples degrade to \texttt{unknown} and external recall falls
-\textbf{35.0\%$\to$10.0\%} \emph{with the guard green} (fail-loud checks now raise instead).
-\textbf{(3) Apparatus drift is systematic:} three audited instances where number and artifact
-disagreed because code changed without re-measurement (Appendix~\ref{app:incidents}). \textbf{(4)
-Mutation score $\neq$ real defect detection:} internal \textbf{96.5\%} (110/114) vs external
-\textbf{62.5\%} (40/64); mutants correlate with, but do not equal, real faults~\cite{just2014mutants}.
-\textbf{(5) Whether FD gains are real.} FD beats the static and random-proxy arms
-($p\le3.0\times10^{-8}$), but that random arm is an \emph{instrument-level proxy}; the real A5
-control \emph{survives} on the degenerate-free pool only at $k\le3$ ($+7.4$ to $+11.3$pp, the
-$k{=}4$ zero being a set collision), with an effective $n\approx133$--$140$, unchanged under
-clone-family splitting: ``FD beats same-budget random'' stays \emph{directional} (\S\ref{sec:exp}).
+All numbers are recomputed from artifacts (Appendices~\ref{app:a5full},
+\ref{app:reframe689}); intervals are Clopper--Pearson 95\% unless stated. Each finding
+states the audited claim, the control, and the outcome grade.
+
+\paragraph{F1. A $+24$pp ``selection gain'' is mostly measurement-pool composition
+(\textbf{collapses as stated; composition finding survives}).}
+A5's budget-matched control reports FD $54.6\%$ vs.\ random $30.6\%$
+($\Delta{=}+24.0$pp full pool) on $n{=}566$. The adversarial control (remove three degenerate
+assets; same algorithm, same budget) collapses the $k{=}4$ contrast to $0.0$pp
+($p{=}1.0$): random's draw is then the same four assets. The composition contribution is
+$+24.03$pp at the single $k{=}4$ caliber and $\approx+12.8$pp at the mean caliber; the
+mechanism-level effect survives at $+7.4$--$11.3$pp ($k\le3$) with effective
+$n\approx133$--$140$ after clone-aware re-splitting (design effect $\approx4.2$; CI widening
+$1.78$--$2.10\times$). \emph{Reading:} a seemingly very large evaluator improvement was
+substantially an artifact of measurement-pool composition. \emph{Cross-check:} the same
+collapse reproduces on the source-derived corpus: at $k{=}1..7$ the executable operator's
+literal selections coincide with greedy in every tier ($\Delta{=}0.0$pp).
+
+\paragraph{F2. The instrument has a structured capability boundary (\textbf{survives}).}
+Blind-spot ratio \textbf{38.4\%} ($440/1147$)---an \emph{instrument-boundary} statistic for
+this corpus and this eight-asset instrument, expected to move when either changes.
+\textbf{13 of 34} normalized types exceed $50\%$ blindness. Blindness is organized by defect
+\emph{semantics}, not severity: family-level blindness spans memory $\approx15.7\%$ to
+link/ODR $\approx67.7\%$, while CRITICAL/HIGH/MEDIUM real defects all detect at $60$--$62\%$;
+parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server
+logic at $0\%$. On the real corpus, \textbf{41.5\%} of catches are solo-asset; asan alone
+holds 18; removing asan drops detection $59.09\%\to42.73\%$. Semantic/logic families are
+harder on real defects than on synthetic ones (type punning $-52.2$pp, logic $-22.5$pp,
+data race $-20.7$pp; type-level, all reported in Appendix~\ref{app:reframe689}). This is a
+major finding, not a limitation.
+
+\paragraph{F3. Environment silently changes conclusions (\textbf{survives}).}
+Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the
+reduced native profile (compiler-warn/cross-compile/linker only) it drops to
+\textbf{23.64\%} ($-35.45$pp) with \emph{no} unknown increase: 39 catches depend on Linux
+sanitizers, and the un-aware protocol records the missing measurements as misses, so guards
+stay green while the conclusion silently changes. Same-OS compiler substitution (g++$\leftrightarrow$clang
+on 200 paired samples) is benign: 93.5\% agreement, $\kappa{=}0.864/0.843$, $\Delta$catch
+$\le2$pp, $\Delta$unknown $\le1.5$pp. Three-component accounting
+(catch rate / unknown rate / conditional recall) is the minimum caliber that exposes the
+difference; the native profile's sanitizer absence is an \emph{architectural inference}
+(clang-cl/MSVC not present), declared as such. \emph{Reading:} environment is part of the
+measurement, not a reproducibility footnote.
+
+\paragraph{F4. ``Similar rates'' hide a composition offset; equivalence is not
+established (\textbf{weakened}).}
+The real 59.09\% vs.\ synthetic 61.64\% comparison previously carried a ``$p{=}0.60$'' that
+must not be read as equivalence. A two-one-sided-test audit at $\pm10$pp \textbf{does not
+pass}: 90\% CI $[-10.61,+5.52]$pp, $p_{\mathrm{TOST}}{=}0.064$; the minimum passing margin is
+$10.61$pp ($11.67$pp under a conservative design-effect adjustment). \emph{Standardization}
+answers why the headline rates look similar: re-weighting the synthetic family rates by the
+real family composition raises the synthetic prediction to $77.01\%$---a
+\textbf{$-17.92$pp} forward difference---while the reverse weighting nearly closes
+($+1.70$pp); i.e.\ the overall similarity is produced by opposed composition effects
+(real defects concentrate in strong families: bounds+memory+integer $=64.5\%$ of samples),
+not by equal capability. Type-level standardization is directionally identical
+($-13.52$pp). \emph{Naming correction:} source-derived reconstruction $\neq$ naturalistic
+artifact; a three-value provenance schema is adopted.
+
+\paragraph{F5. The evolution hypothesis fails (\textbf{the audited claim collapses; the
+negative result is the finding}).}
+Failure-driven evolution was the original thesis. Audited: the executable operator
+$E$ (scored selection over failure/novelty/cost/redundancy) is \textbf{selection-identical}
+to frequency-only and set-cover greedy in \textbf{14/14} pool$\times k$ blocks (in literal
+mode, novelty is mathematically equivalent to failure; the uniqueness variant changes
+selection in 11/14 blocks but adds no recall); on the real corpus, $k{=}1..7$ deltas are all
+$0.0$pp; the best of 3/14 improving tiers is $+1.41$pp, $p{=}0.302$. \emph{Analysis, not
+apology:} asset selection here is monotone submodular with a small asset universe, where
+simple optimal selection already exists (all 17496 triples checked; greedy attains ratio
+$1.0$; adaptive ceiling only $+2.29$pp)---\textbf{the apparent need for sophisticated
+evaluator evolution can disappear once the evaluator-selection problem is correctly
+formalized}. We also disclose that FD currently lacks a mechanism that exceeds a naive
+frequency baseline. What the evolution loop retains is governance value: it forces failures
+to become explicit, registered, and re-measured---falsifiability, not recall.
+
+% =====================================================================
+\section{Synthesis: Five Rules for Auditable Evaluators}
+\label{sec:synthesis}
+% =====================================================================
+From the five audits we distill five reusable rules (each instantiated in Queyi and stated
+so they transfer beyond C++ verification, e.g.\ to LLM evaluation and benchmark governance):
+\begin{enumerate}\itemsep2pt
+\item \textbf{R1 --- Every claim carries its caliber.} Publish $(D,A,E,\Theta,P)$ with the
+number; a rate without a caliber is not an observation (\S\ref{sec:threat}, Eq.~\ref{eq:tuple}).
+\item \textbf{R2 --- Unknown is not miss.} Report unknowns separately and never let a missing
+measurement enter a denominator as a failure (Finding~3).
+\item \textbf{R3 --- Capability boundaries accompany headline rates.} Every aggregate rate
+travels with its blind-spot map and per-asset dependence (Finding~2).
+\item \textbf{R4 --- Environmental validity is part of the measurement.} Declare environment
+profiles, print available-asset manifests, and cap conclusions at ``unresolved'' when the
+declared profile cannot be satisfied (Finding~3).
+\item \textbf{R5 --- Apparent improvement must survive composition and matched-control
+audits.} Remove degenerate components, re-run at matched budget, and re-split by template
+family before calling a delta an improvement (Finding~1, F5).
+\end{enumerate}
+The AGEA abstraction (assets--governance--evolution--accountability) and the submodular
+selection formalization are kept as \emph{tools} supporting R5, not as contributions
+(Appendices~\ref{app:formal}, \ref{app:submodular687}).
 
 % =====================================================================
 \section{Threats to Validity}
 \label{sec:validity}
 % =====================================================================
+We report five threat classes with direction and mitigation status (the 19-item table and
+quantified residuals are in Appendices~\ref{app:tables}, \ref{app:threats_quantified}).
 
-The nineteen threats and their mitigations/residuals are in Table~\ref{tab:threats}; the
-residual-validity matrix in Table~\ref{tab:validity}.
+\paragraph{T1 --- Label validity (\emph{unresolved}).}
+All rates rest on single-annotator labels; there is \textbf{no human inter-annotator
+agreement}. The $\kappa$ values in this paper ($0.77$, $n{=}131$; $0.73$, $n{=}287$) are
+\textbf{AI self-consistency, not human IAA}, and must not be cited as validation. A
+two-annotator blind protocol with a de-identified 145-sample package, 10 calibration items,
+and pre-registered thresholds (verdict $\kappa\ge0.8$; family $\kappa\ge0.7$) is
+\emph{designed and packaged but not executed} (Appendix~\ref{app:reframe689}); until then,
+label-sensitive conclusions are flagged (labels can move the absolute blind-spot rate
+$6.6\%\to14.3\%$ under $\le15\%$ flips, though contrast directions are stable).
 
-\paragraph{Biggest unresolved threat: unreviewed labels; and the pinning gap.}
-All detection rates rest on labels (41 holdout $+$ 64 corpus) from a single human annotator and
-\emph{no human} IAA---a mislabeled sample moves a rate silently. \textbf{All
-$\kappa$ values here} ($0.77$, $n{=}131$; $0.73$, $n{=}287$) are \textbf{AI self-consistency, not
-human IAA}; we never claim the labels are validated. We pre-registered a two-annotator re-label of a
-random 25\% subsample ($10/41$, $16/64$), original annotator blinded, $\kappa<0.6$ escalating to a
-$100\%$ third-party re-review. Historical-state pinning is separately \emph{incomplete}:
-current-state verdicts are fully reproducible, historical ones only under an unchanged-ruleset
-assumption (Appendix~\ref{app:pinning}).
-
-\paragraph{Instrument boundary; A5's remaining gaps (all measured).}
-Over $1147$ samples \textbf{38.4\%} are blind spots ($13$ of $34$ normalized types exceed $50\%$),
-so every rate speaks about the \emph{visible} region only (Appendix~\ref{app:blindspot}). For A5,
-power is closed ($n{=}566$) and \emph{identification} is not
-(Appendix~\ref{app:threats_quantified}). The samples are template clones (474 families): a
-family-level bootstrap gives a design effect $\approx4.1$--$4.3$ (\textbf{effective
-$n\approx133$--$140$}; clone-aware $\Delta$ CIs $[+16.6,+30.4]$pp and $[+18.3,+33.4]$pp, both
-excluding 0), and $\approx+12$pp of the full-pool $\Delta{=}+24.0$pp is degenerate-asset
-avoidance---leaving the mechanism-level $\approx+7$--$12$pp (Appendix~\ref{app:a5full}).
-\textbf{Counterfactual robustness (686).} Subsampling ($n{=}100$), asset removal (92 combinations),
-$\le15\%$ label flips and $\le20\%$ detector noise all leave the contrast's \emph{direction}
-unchanged (the absolute blind-spot rate is label-sensitive: $6.6\%\to14.3\%$;
-Appendix~\ref{app:counterfactual687}). \textbf{Conditional reproduction:} without the declared WSL
-environment external recall falls $35\%\to10\%$---we claim no reproduction outside it.
-
-\paragraph{Three scope restrictions on reading our numbers.}
-\textbf{(i)} the blind-spot ratio is an \emph{instrument-boundary} statistic (\textbf{38.4\%} on our
-1147-sample corpus with our 8-asset instrument), expected to move when either changes; \textbf{(ii)}
-the $74$ \texttt{planted=false} samples are single-file \emph{reconstructions}, not production code
-(Appendix~\ref{app:datasheet}); \textbf{(iii)} a \texttt{pass} concerns \emph{acquired evidence
-within a boundary}, not semantic correctness (\S\ref{sec:terminology}).
-
-% =====================================================================
-\section{Claim Boundary}
+\paragraph{T2 --- External validity (\emph{partially mitigated}).}
+One language (C++), one apparatus of eight assets, and a synthetic corpus whose defects were
+designed to be observable (a selection bias we now quantify rather than hide: Finding~4).
+The 110-sample source-derived corpus improves ecological validity but is
+\emph{reconstruction}, not production code; type coverage reaches 9 of the 10 targeted
+families.
 \label{sec:claim}
-% =====================================================================
+Claim boundary: a \texttt{catch} is evidence within a boundary, never semantic truth; the
+e-process remains exploratory and supports no confirmatory claim
+(Appendix~\ref{app:eprocess}).
 
-The falsifiable claim boundary---every claim asserted, refused, or left unknown---is in
-Table~\ref{tab:claim} (Appendix~\ref{app:tables}); we state the most important boundary first:
+\paragraph{T3 --- Environment validity (\emph{partially mitigated}).}
+The primary profile is WSL-bound; without it, the measured capability drops 35.45pp
+(Finding~3). The native profile's sanitizer absence is an architectural inference (no
+clang-cl/MSVC on the machine); containerized reproduction and a native three-asset re-run
+are specified with decision criteria but not executed (Appendix~\ref{app:reframe689}).
+Toolchain asymmetry (static tools on MinGW vs.\ dynamic assets on WSL) makes some
+comparisons observational only.
 
-\textbf{C0. Queyi does not verify semantic truth; it evolves an evidence-acquisition apparatus.}
-A \texttt{pass} means \emph{no acquired evidence contradicts the assertion within the current
-capability boundary}---not that it is true or free of defects outside it. On our corpus
-\textbf{38.4\%} of samples are invisible to our instrument, so \emph{every} rate here concerns the
-visible region only (\S\ref{sec:terminology}, Appendix~\ref{app:blindspot}); the e-process is
-\emph{exploratory} and supports no claim (Appendix~\ref{app:eprocess}).
+\paragraph{T4 --- Dependence and clustering (\emph{mitigated}).}
+Synthetic samples share templates; clone-family-aware re-splits and a family-level cluster
+bootstrap give effective $n\approx133$--$140$ (design effect $\approx4.1$--$4.3$; CIs
+widened $1.78$--$2.10\times$). All headline contrasts are reported under both calibers.
+Single-run grid instability ($\approx5\%$ of cells flip) bounds point estimates by roughly
+$\pm2$pp and is not folded into the intervals.
+
+\paragraph{T5 --- Instrument scope and stability (\emph{mitigated}).}
+Eight assets; two are declared-unavailable (never funded); detection rides
+disproportionately on asan (18 solo catches); a removed-asan control changes the real-corpus
+rate by $-16.36$pp. Cross-run stability: 5\% grid flips; the shadow-mapped
+toolchain replication agrees at 93.5\%.
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 % =====================================================================
-LLMs drive the \emph{generation} cost of technical knowledge to near zero, but the
-\emph{verification} cost does not fall. It cannot be solved by model-judging-model or AI-text
-detection, but by binding \emph{verdict--evidence--recomputation} into a chain an external party can
-interrupt---which Queyi realizes as four auditable mechanisms: four-state verdicts, a forced
-provenance/scope split, a kernel-independent reconciler, and a failure-driven loop.
+We found that evaluator claims that initially appear robust can materially weaken or
+collapse when the evaluator itself is audited, and we provide an executable protocol for
+detecting that collapse. On a software-verification apparatus: a $+24$pp selection gain was
+mostly measurement-pool composition; the instrument is blind to 38.4\% of its corpus in a
+family-structured way; losing the declared environment silently cut real-defect detection by
+35pp with no warning; synthetic-vs-real similarity failed a TOST equivalence test and is
+explained by a $-17.9$pp composition offset; and failure-driven evolution produced no
+measurable recall advantage over frequency selection---the audited claim collapsed, and we
+report the collapse as the result. What remains is a protocol, five rules, and a measured
+map of what survives.
 
-We also made our own failures part of the method: 66.7\%$\to$87.5\% is a caliber change (the old
-value must be voided), \textbf{81.0\%$\to$82.9\% and 54.2\%$\to$62.5\% are expanded-sample
-re-estimates, not capability gains}, and the evolution operators show \emph{no significant immediate
-recall gain} (3/14 tiers; $p{=}0.302$). The recurring lesson: \textbf{apparatus state is not
-self-announcing}---no check we own detects a reported-but-unlanded rate today
-(Appendix~\ref{app:incidents}); an audit rates credibility \textbf{6/10}: infrastructure
-trustworthy, \emph{numbers fragile}. \textbf{Next:} A0--A4, human IAA, more real-world projects,
-language transfer (supported/unsupported lists and qualifiers:
-Appendices~\ref{app:tables}--\ref{app:future}).
+\paragraph{Future work.}
+Execute the human annotation (the single most important pending item); reproduce a small set
+of original-project builds to test reconstruction fidelity; add an LLM-as-verifier arm and
+semantic/logic-layer verifiers; extend the audit protocol across languages/domains; and
+invite third-party replication challenges under the published caliber.
 
 \clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
 \bibliographystyle{plainnat}
 \bibliography{queyi_refs}
 
-% =====================================================================
 \newpage
 \appendix
 
@@ -710,7 +595,7 @@ sanitizer \textbf{84.6\%} (33/39). These denominators are recomputed from the la
 artifacts and are the source of the abstract's layered read.
 
 \begin{table}[t]
-\caption{E4. Ablation groups A0--A5. Each row writes its hypothesis \emph{before} results.}
+\caption{E4. Ablation groups A0--A5. Each row writes its hypothesis \emph{before} results; A0--A4 remain design-registered and \emph{unrun} (declared as such in the main text); only A5 has run.}
 \label{tab:e4}
 \centering
 \footnotesize
@@ -718,11 +603,11 @@ artifacts and are the source of the abstract's layered read.
 \toprule
 ID & Remove/change & Hypothesis & Primary metric & Result \\
 \midrule
-A0 & Full system (baseline) & --- & detection rate & \texttt{\{\{TODO\_ablation\_A0\}\}} \\
-A1 & $-$failure-derived rules (post-657 ruleset) & H: detection drops & $\Delta$ detection vs.\ A0 & \texttt{\{\{TODO\_ablation\_A1\}\}} \\
-A2 & $-$holdout isolation (blind$\to$dev) & H: overfitting (dev$\uparrow$, blind flat) & dev vs.\ blind recall & \texttt{\{\{TODO\_ablation\_A2\}\}} \\
-A3 & $-$provenance (boundary-triple check) & H: false-pass rate rises & false-pass rate & \texttt{\{\{TODO\_ablation\_A3\}\}} \\
-A4 & $-$mutation (L1 self-justification) & H: internal strength drops & mutation kill (internal) & \texttt{\{\{TODO\_ablation\_A4\}\}} \\
+A0 & Full system (baseline) & --- & detection rate & \textit{not run} \\
+A1 & $-$failure-derived rules (post-657 ruleset) & H: detection drops & $\Delta$ detection vs.\ A0 & \textit{not run} \\
+A2 & $-$holdout isolation (blind$\to$dev) & H: overfitting (dev$\uparrow$, blind flat) & dev vs.\ blind recall & \textit{not run} \\
+A3 & $-$provenance (boundary-triple check) & H: false-pass rate rises & false-pass rate & \textit{not run} \\
+A4 & $-$mutation (L1 self-justification) & H: internal strength drops & mutation kill (internal) & \textit{not run} \\
 A5 & random-budget control & H: below A0 & $\Delta$ detection vs.\ A0 & \textbf{run at full scale (676f)}: $n{=}566$ eval; vs Random \textbf{+24.0}pp [+20.5, +27.5] ($p{=}2.3{\times}10^{-41}$), vs Static \textbf{+29.9}pp ($p{=}1.9{\times}10^{-31}$); Static contrast survives the parallel analysis (\textbf{+30.6}pp), Random contrast collapses to \textbf{0.0}pp $\Rightarrow$ \texttt{uninterpretable} \\
 \bottomrule
 \end{tabular}
@@ -851,23 +736,20 @@ third-party-recomputable decisions over a knowledge-assertion ledger. Not first.
 
 
 \begin{table}[t]
-\caption{Positioning: six works $\times$ five dimensions. Benchmark evolution evolves the
-\emph{items}; MiniCheck evolves the \emph{judge} (a trained fact-checking model); Queyi evolves
-the \emph{verifier's evidence-acquisition capability} while requiring every step of that
-evolution to be externally measurable.}
+\caption{Evaluator-audit neighbours (metadata verified online 2026-10-07). Queyi's differences are in the audited \emph{object} (a software-verification evidence-acquisition apparatus, including caliber, composition, environment, labels and denominators) and in its negative findings---we do not claim priority~\cite{huang2026deepfact,zhang2026whogrades,sengupta2026anytimevalid,beyer2026svcomp}.}
 \label{tab:positioning}
 \centering
 \footnotesize
-\begin{tabular}{@{}p{2.5cm}p{2.2cm}p{2.6cm}p{2.2cm}p{2.1cm}p{2.0cm}@{}}
+\begin{tabular}{@{}p{1.7cm}p{2.6cm}p{2.9cm}p{1.8cm}p{1.6cm}p{1.9cm}@{}}
 \toprule
-Work & Object evolved & Strategy & Auditable & Failure-driven & 4-state \\
+Work & Object audited/evolved & Audit mechanism & Unknown & Env.\ modeled & Domain \\
 \midrule
-Benchmark Self-Evolving~\cite{wang2024benchmarkevolving} & items / samples & model-feedback rewriting & partial (generation logs) & no (pass/difficulty signal) & no \\
-ArenaBencher~\cite{liu2025arenabencher} & items (adversarial) & opponent-model games & partial & no (win-rate signal) & no \\
-LiveBench~\cite{white2024livebench} & items (periodic refresh) & human $+$ model updates & partial (item dates) & no (temporal rotation) & no \\
-SWE-bench Verified~\cite{jimenez2024swebench,liang2025illusion} & items (human filtering) & manual subset curation & high (human review) & no (static set) & no \\
-MiniCheck~\cite{tang2024minicheck} & the judge (fact-check weights) & distillation training & no (trusts the model) & no (training objective) & no \\
-\textbf{Queyi (ours)} & \textbf{verifier capability $\mathcal{C}$} & \textbf{failure-driven: \texttt{miss}/\texttt{unknown} $\to$ new detectors/rules} & \textbf{Merkle $+$ 452-event ledger $+$ per-sample detail} & \textbf{yes (only legal input)} & \textbf{yes (\texttt{unknown}/\texttt{contradict} first-class)} \\
+\textbf{Queyi} & software-verification evidence-acquisition apparatus & claim caliber + 8 failure modes + adversarial re-measurement + 4 outcomes & four-state, first-class & yes (tuple + 3-component metrics) & C++ assertions, 8 assets \\
+DeepFact~\cite{huang2026deepfact} & benchmark labels and rationales (AtS loop) & verifier submits evidence; auditor adjudicates; benchmark updated before scoring & not explicit & no & deep-research factuality \\
+Who Grades~\cite{zhang2026whogrades} & evaluation metric function (typed detectors) & locked-set audit + anchor guards (ablation: collapse without guards) & not explicit & no & LLM agent skills \\
+SEA~\cite{sengupta2026anytimevalid} & agent policy (adapter + harness) & versioned harness + anytime-valid certificates & certificate budget & harness fixed, not audited & general agents \\
+SV-COMP~\cite{beyer2026svcomp} & verifiers (ranked yearly on fixed tasks) & witness validation by independent tools & timeout$\approx$unsolved & containers (normalized) & C/Java/SV-LIB verification \\
+HELM / cards~\cite{liang2023helm} & documents, not instruments & documentation checklists & no & reported, not audited & general ML \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -882,21 +764,20 @@ MiniCheck~\cite{tang2024minicheck} & the judge (fact-check weights) & distillati
 \midrule
 \cmark\ supported & High recall on \emph{seen} error types & holdout \textbf{82.9\%} (34/41) [67.9, 92.8]; corpus measurable \textbf{62.5\%} (40/64) [49.5, 74.3] (post-672h) \\
 \cmark\ supported & Gates catch \emph{known} defects (change a number, go red) & range self-check 5/5 red; gate \texttt{overall=PASS} \\
-\cmark\ supported & Provenance chain fully auditable & 5 Merkle roots consistent; 452-event ledger unchanged; provenance triple landed \\
+\cmark\ supported & Current-state integrity is tamper-evident (with a declared threat model) & hash-chained roots over controlled directories detect changes to the current state; 452-event ledger unchanged; partial historical reproducibility only under an unchanged ruleset \\
 \cmark\ supported & Caliber declarable and recomputable & three-arm caliber ablation; every rate carries a denominator \\
-\cmark\ supported & On the same samples FD beats the static re-binning and random$\dagger$ proxy arms & exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; $\Delta$ lower bound $\ge$28.6pp (\S\ref{sec:exp}) \\
-\cmark\ supported & Verifier semantic coverage and evolution rate are measurable & Verifier Coverage 31/42 = 73.8\% (descriptive census over our fixed 42-card claim set; no CI---see \S\ref{sec:exp}); EE 1.9pp/rule (descriptive; \S\ref{sec:method}) \\
-\cmark\ supported & On the \emph{visible} region, FD beats a budget-matched static arm at scale & A5: +29.9pp ($p{=}1.9\times10^{-31}$), +30.6pp in the parallel analysis ($n{=}566$); unchanged under clone-family splitting (677b); effective $n\approx133$--$140$ \\
-\cmark\ supported & A detector's capability boundary can be mapped and published & 1147-sample $\times$ 8-asset matrix \emph{on our corpus with our 8-asset instrument}: blind-spot ratio 38.4\%; 18/70 types $>50\%$ blind; union of 6 assets 61.6\% vs best single 35.6\% (\S\ref{app:blindspot}). \emph{Instrument-boundary statistic, not a property of C++ defect detection} \\
+\cmark\ supported & On the same samples FD beats the static calibration arm and random$\dagger$ proxy arms & exact McNemar $p\le3.0\times10^{-8}$; Cohen's $h\ge0.85$; $\Delta$ lower bound $\ge$28.6pp (\S\ref{sec:exp}) \\
+\cmark\ supported & On the \emph{visible} region, FD beats a budget-matched static calibration arm at scale & A5: +29.9pp ($p{=}1.9\times10^{-31}$), +30.6pp in the parallel analysis ($n{=}566$); unchanged under clone-family splitting (677b); effective $n\approx133$--$140$ \\
+\cmark\ supported & A detector's capability boundary can be mapped and published & 1147-sample $\times$ 8-asset matrix \emph{on our corpus with our 8-asset instrument}: blind-spot ratio 38.4\%; 13/34 normalized types $>50\%$ blind; union of 6 assets 61.6\% vs best single 35.6\% (\S\ref{app:blindspot}). \emph{Instrument-boundary statistic, not a property of C++ defect detection} \\
 \midrule
 $\times$ not supported & Generalization to \emph{unseen} error types & all samples same-source; scope backfill 0/26 \\
 $\times$ not supported & Absolute ``detection rate $X$\%'' & $n{=}41/64$, CI half-width $\approx$12pp; $\pm$5pp needs $n{=}236/378$ \\
 $\times$ not supported & Better than a \emph{real} static detector / true B3, or ``FD beats same-budget random'' & static arm is a caliber re-binning; random$\dagger$ is a proxy; real interfaces BLOCKED; \textbf{A5 at full scale ($n{=}566$) is significant vs Static and robust in the parallel analysis (+30.6pp)}; vs Random it is \textbf{+11.31pp at $k{=}1$ on the degenerate-free pool} ($p{=}6.0\times10^{-8}$; 677c) and 0.0pp at $k{=}4$ (set collision $1/\binom54$); clone-aware splits leave both unchanged (677b) and the family-level cluster bootstrap gives effective $n\approx133$--$140$ $\Rightarrow$ \emph{direction-only} on a smaller selection effect ($\approx$\,$+7$--$12$pp) \\
 $\times$ not supported & ``$F_1{=}1.0$ is calibrated'' & criterion and truth are same-source $\Rightarrow$ upper bound \\
 $\times$ not supported & Mutation score as detection rate & core 96.5\% $\neq$ defect-detection rate~\cite{just2014mutants} \\
-$\times$ not supported & Evolution trend & only a single same-sample re-measurement \\
+$\times$ \textbf{collapsed} & ``failure-driven evolution improves recall'' & the executable operator selection is identical to frequency and set-cover greedy (14/14 pool$\times k$ blocks; real corpus $\Delta{=}0.0$pp at $k{=}1..7$; best improving tier $+1.41$pp, $p{=}0.302$) $\Rightarrow$ reported as Finding~5, not a contribution (Appendix~\ref{app:operator683}) \\
 \midrule
-\multicolumn{3}{@{}p{13.7cm}@{}}{\textbf{Not reproducible (fail when the environment changes):} holdout/external recall depend on \textbf{WSL + g++ + \texttt{setarch}} (silent drop 35.0\%$\to$10.0\% without WSL; 669d-era caliber); TSan results are intermittently unavailable under WSL high-entropy ASLR; the OTS anchor is a zero-attestation placeholder, so ``anchored on-chain'' does \emph{not} hold.} \\
+\multicolumn{3}{@{}p{13.7cm}@{}}{\textbf{Environment-conditioned (silent degradation when the profile changes):} real-corpus detection depends on the declared WSL sanitizer profile; without it the rate drops $59.09\%\to23.64\%$ with \emph{no} unknown increase and no guard turning red (Finding~3; 689 caliber). The native profile's sanitizer absence is an architectural inference (no clang-cl/MSVC on the machine).} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -921,7 +802,7 @@ T6 & semantic-scope misuse & forced provenance/scope split (\S\ref{sec:prov}) & 
 T7 & metric confusion (mutation $\to$ detection) & metric layering; mutation is self-justification only & external readers may still misread \\
 T8 & selection bias (budget) & budget-matched random baseline (\S\ref{sec:baseline}); three arms \textbf{run} & random arm is an \emph{instrument-level proxy} (true B3 not rerun at 672h) \\
 T9 & overfitting historical defects & blind D2 + external D3 & appended samples unblinded \\
-T10 & reproducibility crisis & Merkle roots + version capture + time anchor & OTS is a placeholder; WSL dependency undeclared \\
+T10 & reproducibility crisis & hash-chained roots + version capture + time anchor & OTS is a placeholder; WSL dependency undeclared \\
 T11 & authority manipulation & 452-event ledger, zero-change red line & discipline, not cryptographic enforcement \\
 T12 & unclear AI authorship & AI-use registry & contribution split remains a convention \\
 T13 & \textbf{peeking / selective stopping}: the ledger accumulates while rates are reported at snapshots & frozen statistical plan; \textbf{e-process / confidence sequence} as a pre-committed expansion protocol (\S\ref{sec:method}) & nothing forces $\mu_0$ to be fixed in advance $\Rightarrow$ pre-registration required \\
@@ -986,6 +867,36 @@ supplementary material.
 \label{app:formal}
 This appendix holds the formal statement of \S\ref{sec:method} that was moved out of the main text
 to stay within the page limit. Nothing here is new relative to v1.1.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners, align=center, inner sep=3pt, minimum height=9mm, text width=2.35cm},
+  arr/.style={-{Latex[length=2mm]}, thick},
+  fb/.style={-{Latex[length=2mm]}, dashed, thick, gray}
+]
+\node[box] (a) {artifact\\\footnotesize LLM assertions\\\footnotesize (card + boundary triple)};
+\node[box, right=4mm of a] (b) {verifier\\\footnotesize 67 rules, 4-state verdict};
+\node[box, right=4mm of b] (c) {failure\\\footnotesize miss $M_t$ / unknown $U_t$};
+\node[box, below=7mm of c] (d) {new verification asset\\\footnotesize detector / flag / platform};
+\node[box, left=4mm of d] (e) {verifier evolution\\\footnotesize $C_t \to C_{t+1}$};
+\node[box, left=4mm of e] (f) {blind holdout\\\footnotesize external measurement};
+\draw[arr] (a)--(b);
+\draw[arr] (b)--(c);
+\draw[arr] (c)--(d);
+\draw[arr] (d)--(e);
+\draw[arr] (e)--(f);
+\draw[fb] (f.north) -- ++(0,4mm) -| node[pos=0.25, above, font=\scriptsize]{re-measure on the \emph{same} $X$} (b.north);
+\draw[fb] (c.east) -- ++(6mm,0) |- node[pos=0.75, right, font=\scriptsize, align=left]{config error $\Rightarrow$ fix + void old value} (d.east);
+\end{tikzpicture}
+\caption{The failure-driven verification loop. Solid arrows form the main cycle; dashed arrows
+are re-measurement and caliber correction. Tools: the rule engine (67 rules, four states), the
+kernel-independent meta-state reconciler, and the counterfactual operator.}
+\label{fig:loop}
+\end{figure}
+
+\paragraph{The audited apparatus.} The figure above is the object of the audit: an LLM emits assertions; a rule-based verifier yields four-state verdicts; registered failures (only legal input) drive capability changes; a blind holdout re-measures on the \emph{same} $X$; dashed arrows are re-measurement and caliber correction (a configuration error voids the old value).
 
 \paragraph{Formal definitions (backing the three contributions).}
 \emph{Verifier state} $\mathcal{C}_t$: the set of available evidence-acquisition means (detectors
@@ -1097,7 +1008,7 @@ $\Delta=15$pp paired contrast needs $n\approx138$. These are why the A5 contrast
 \emph{direction-only}: the pre-registered parallel analysis is what any selection-strategy claim
 must survive.
 
-\section{Per-sample Detail}
+\subsection{Per-sample Detail}
 \label{app:persample}
 For each primary metric we ship an \texttt{id}$\to$\texttt{verdict} table (the key to third-party
 recomputation): holdout (\texttt{planted/detector/verdict/opts\_seen}), external
@@ -1119,10 +1030,8 @@ python tools/run_658_gate.py                # L0 5/5
 # post-672h authority: holdout 82.9% (34/41), corpus measurable 62.5% (40/64), FPR 0.0% (0/11)
 python -c "import json;d=json.load(open('data/experiments/reveal_update_671a.json', \
   encoding='utf-8'));print(json.dumps(d['pending_for_671b'],ensure_ascii=False,indent=2))"
-# Verifier Coverage: denominator 42, numerator 31 -> 73.8% [58.0, 86.1]
-python tools/counts_659.py --json           # atoms_real = 42 (denominator authority)
-python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval; \
-  print(cp_interval(31,42))"
+# (Verifier Coverage 73.8% and Evolution Efficiency 1.9pp/rule were removed in 689:
+#  engineering telemetry over a fixed 42-card set, not scientific evidence.)
 # consistency
 python -c "import sys;sys.path.insert(0,'tools');import gate_engine;print(len(gate_engine.RULES))"  # 67
 wc -l data/authority/decision_event_v2_ledger.jsonl  # 452
@@ -1239,7 +1148,7 @@ Vera~\cite{feng2026vera} & test cases for agents & deterministic predicates over
 LLM-as-a-Verifier~\cite{kwok2026llmverifier} & the verifier's \emph{score distribution} & model logits (continuous score) & Sharpest contrast: the judge stays inside the model---our shared-failure-domain objection applies; no recomputable chain \\
 PaperTrail~\cite{martinboyle2026papertrail} & the \emph{interface} (claims vs.\ evidence) & human judgement & Same claim/evidence decomposition as our evidence cards, but a UI study with no verdict algebra and no audit trail \\
 Reproducibility Beyond Artifacts~\cite{li2026reprobeyond} & socio-technical process & interview evidence & Explains \emph{why} our guard/pinning gap matters: failures live in interactions, not missing artifacts \\
-Atlas~\cite{spoczynski2025atlas} & ML lifecycle metadata & attestation + transparent logs & Our Merkle ledger is a smaller sibling; they target supply chain, we target verdicts \\
+Atlas~\cite{spoczynski2025atlas} & ML lifecycle metadata & attestation + transparent logs & Our hash-chained current-state ledger is a smaller sibling; they target supply chain, we target verdicts \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1942,9 +1851,10 @@ reconstructions are single-translation-unit; the linker asset has no trigger sur
 corpus --- registered as a scope fact, not a failure), and the two constant-unknown assets are
 excluded as everywhere. 27 of the 65 catches (41.5\%) are \emph{solo} catches (exactly one
 asset fires), directly quantifying complementarity.
-\textbf{Real vs.\ synthetic.} The OR rate is statistically indistinguishable from the synthetic
-corpus ($59.09\%$ vs.\ $61.64\%$; two-proportion $z=-0.52$, $p=0.60$, Cohen's $h=0.052$;
-independent samples, \emph{not} paired, so no McNemar). The informative structure is per-asset
+\textbf{Real vs.\ synthetic.} The two OR rates are close but are \emph{not} established as
+equivalent: a TOST at $\pm10$pp fails (90\% CI $[-10.61,+5.52]$pp; minimum passing margin
+$10.61$pp), and standardization shows the similarity is a composition offset ($-17.92$pp
+forward; Appendix~\ref{app:reframe689}). The informative structure is per-asset
 and per-type: \texttt{asan} is \emph{stronger} on the real corpus ($+13.52$\,pp, $p=0.005$) and
 so is \texttt{cross-compile} ($+9.36$\,pp, $p=0.003$), while \texttt{compiler-warn} is weaker
 ($-7.92$\,pp, $p=0.014$). Removing logic/hang-semantics types ($n=31$, OR $3.23\%$) leaves 79
@@ -2040,8 +1950,9 @@ $\mathbb{E}[f(S^{\text{rand}}_k)]=\sum_s(1-\binom{8-r_s}{k}/\binom{8}{k})$: $42.
 (greedy $+16.4$pp above; a 2000-draw simulation gives $42.52\%$, consistent within sampling error).
 \textbf{Degenerate assets.} Assets with $C_a=\varnothing$ (\texttt{compile-time},
 \texttt{wunsequenced}) have $\Delta_a(S)\equiv0$, so the greedy never selects them, whereas a
-random draw wastes $\mathbb{E}[J]=kd/n$ slots---giving $\Delta\approx c\,kd/n$ with $c\approx11$
-pp/slot validated across three pools ($d{=}0$: $+3.06$pp; $d{=}1$: $+7.57$pp; $d{=}3$: $+15.97$pp).
+random draw wastes $\mathbb{E}[J]=k\,|D|/|A|$ slots (with $|A|{=}8$ the asset-pool size and $|D|$
+the degenerate-asset count)---giving $\Delta\approx c\,k\,|D|/|A|$ with $c\approx11$
+pp/slot validated across three pools ($|D|{=}0$: $+3.06$pp; $|D|{=}1$: $+7.57$pp; $|D|{=}3$: $+15.97$pp).
 
 \subsection{Adaptive selection ceiling}
 \label{app:ceiling687}
@@ -2116,5 +2027,81 @@ the instrument, reported rather than hidden. \emph{Efficiency:} Shapley coverage
 concentrates on few assets (\texttt{asan} $19.53$, \texttt{ubsan} $13.40$, \texttt{tsan} $11.53$;
 degenerate assets $0$); cost-weighted efficiency needs runtime fields the matrix lacks (future
 work).
+
+
+\section{Reframing Evidence: Equivalence, Standardization, Environment and Human Annotation (689)}
+\label{app:reframe689}
+This appendix lands the 689-batch statistics and protocols that the reframed main text
+references. All numbers are recomputed from the artifacts below by
+\texttt{tools/equivalence\_689.py} and \texttt{tools/environment\_metrics\_689.py};
+human-annotation materials are prepared (\texttt{data/annotation\_package/}) and marked
+\emph{pending execution}.
+
+\subsection{TOST equivalence testing: synthetic vs.\ source-derived}
+The real corpus detects $65/110$ (59.09\%) and the synthetic matrix $707/1147$ (61.64\%);
+the samples are independent, so a non-significant difference test cannot establish
+equivalence. Two one-sided tests (TOST, $\alpha{=}0.05$, 90\% CI) at margin $\pm10$pp
+\textbf{fail}: CI $[-10.61,+5.52]$pp, $p_{\mathrm{lower}}{=}0.064$, $p_{\mathrm{upper}}{=}0.005$,
+$p_{\mathrm{TOST}}{=}0.064$. The minimum passing margin is $|d|+z_{90}\mathrm{SE}=10.61$pp;
+under a conservative design-effect adjustment ($4.26\times$ on the synthetic side, per the
+cluster bootstrap) it rises to $11.67$pp. Margin sensitivity (in pp): $\pm5$ fail, $\pm7$
+fail, $\pm10$ fail, $\pm12$ pass, $\pm15$ pass; the full $m\in[0,15]$ decision curve is in
+\texttt{data/689\_equivalence\_test.json}. \textbf{We did not widen the margin to pass.}
+
+\subsection{Standardized composition analysis}
+Why do the headline rates look similar despite different defect mixes? We standardize both
+directions at the family level (8 families, authoritative mapping
+\texttt{tools/repair\_681\_labels.py::FAMILY8}) and at the type level (the 9 shared types).
+Forward (synthetic family rates weighted by the real family composition):
+$R^{\mathrm{syn}}_{\mathrm{std}}{=}77.01\%$ vs.\ real $59.09\%$ $\Rightarrow$
+$\mathbf{-17.92}$pp. Reverse (real family rates weighted by the synthetic composition, on the
+6 common families, renormalized): $R^{\mathrm{real}}_{\mathrm{std}}{=}59.94\%$ vs.\ synthetic
+$61.64\%$ $\Rightarrow$ $+1.70$pp. Type-level standardization is directionally identical
+(forward $-13.52$pp; reverse on the 9-type subset $+11.76$pp). The similarity is therefore a
+\emph{composition offset}: real defects concentrate in strong families (bounds+memory+integer
+$=64.5\%$ of samples vs.\ $36.9\%$ synthetic), and within shared families the real corpus is
+better on memory/bounds/concurrency but worse on integer/alias/logic
+(e.g.\ \texttt{logic\_error}: real $1/31$ vs.\ synthetic $9/35$). Full tables:
+\texttt{data/689\_standardized\_analysis.json}.
+
+\subsection{Three-component environment metrics}
+Single-rate reporting hides environment loss; we report catch rate, unknown rate, and
+conditional recall (catch / (catch+miss)) for every profile.
+\texttt{wsl-gcc-13.3} (real 110): $59.09\%$ / $0\%$ / $59.09\%$. Reduced native profile
+(compiler-warn + cross-compile + linker only, architectural inference): $23.64\%$ / $0\%$ /
+$23.64\%$---the missing 39 sanitizer-dependent catches are recorded as \emph{misses} by an
+un-aware protocol, so no guard turns red ($\Delta$unknown $=0$pp). Per-asset unknowns are
+not zero where it matters: \texttt{wunsequenced}/\texttt{compile-time} are $100\%$ unknown on
+all 110 samples; on the 200-sample clang replication, unknown rises from 4/200 (g++) to
+7/200 (clang) and conditional recall differs by $\le2$pp (93.5\% agreement, $\kappa\ge0.843$).
+Experiment designs (aware-protocol demonstration done; clang-cl/MSVC substitution,
+containerized reproduction and a native re-run specified with decision criteria) are in
+\texttt{data/689\_environment\_*}.\{json,md\}.
+
+\subsection{Human annotation protocol (designed and packaged; \emph{not executed})}
+Human IAA is \textbf{0}. The 25\% AI re-label ($\kappa{=}0.727$) is AI self-consistency and
+cannot substitute for human agreement. Prepared: a de-identified 145-sample package
+(41 blind holdout + 64 external corpus + 40 family-stratified A5), comment-leakage
+sanitization (280 redactions, 5 identifier renames, residual scan clean, package code
+compiles 144/145), a reviewer-facing guidelines manual fixing the \emph{detector-observability}
+semantics of \texttt{expected\_verdict}, a 10-item calibration set with answers, and an
+analysis script computing per-field Cohen's $\kappa$ with agreement\% and disagreement counts.
+Pre-registered thresholds: verdict $\kappa\ge0.8$, family $\kappa\ge0.7$; below-threshold values
+demote label-dependent conclusions to ``label-sensitive''. Files:
+\texttt{data/689\_human\_annotation\_protocol.md}, \texttt{data/annotation\_package/},
+coordinator key (never shipped to the annotator): \texttt{data/689\_annotation\_key\_mapping.json}.
+
+\subsection{Fair comparison protocol and SV-COMP positioning}
+The cross-tool comparison is restated as \emph{cross-regime observational comparison
+(convergent validity)}: identical samples and labels, but environments cannot be unified
+(static MinGW vs.\ dynamic WSL assets), the pre-registered clang-tidy caliber failed at
+chance level (100\% recall and 100\% FPR), and StrictA was chosen after results---all three
+facts are reported together, the 8 reverse pairs are kept as disclosed weaknesses, and a
+containerized re-run with per-sample verdicts is registered as future work. \textbf{SV-COMP positioning:} SV-COMP 2026
+(15th edition, TACAS 2026) registers 74 verifiers (61 C-related; 45 active) and 26 validators,
+and validates witnesses by independent tools; it answers \emph{which verifier performs well on
+given tasks}, whereas Queyi asks \emph{whether evaluation results survive an audit of the
+evaluator} (caliber, composition, environment, labels, denominators). Protocols:
+\texttt{data/689\_fair\_comparison\_protocol.md}, \texttt{data/689\_svcomp\_positioning.md}.
 
 \end{document}

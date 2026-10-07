@@ -1,23 +1,18 @@
 % =====================================================================
 %  Cover letter — Queyi, NeurIPS 2027 Evaluations & Datasets (E&D) submission
-%  v1.3 (677d): contributions expanded 3 -> 5 (alignment with research/cover_letter.md
-%  v1.3); A5 now includes 677b (clone-aware re-split) + 677c (non-degenerate pool)
-%  robustness: FD 54.6% vs Random 30.6% (+24.03pp, p=2.3e-41) vs Static 24.7% (+29.9pp);
-%  pre-registered parallel analysis collapses to 0.0pp => direction-only; selection
-%  effect ~+7-12pp; clone-family re-split +23.0-+26.7pp; effective n ~133-140;
-%  capability-boundary map 38.4% blind (sample-level, unchanged) / 13 of 34 (681
-%  label-normalized); provenance 968/74/0; e-process
-%  exploratory. Track E&D (double-blind); template neurips_2025 placeholder
-%  (third-party, unmodified). Version of record: research/latex/VERSION.md
-%  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
-%  ---------------------------------------------------------------------
-%  687 sync (unified merge batch): contribution 3 now includes the submodular
-%  formalization (greedy attains the optimum, ratio 1.0; adaptive ceiling +2.3pp;
-%  stable under 5% detector noise, <=0.11pp drop); headline adds the 110-defect
-%  real-CVE benchmark (NVD 110/110 online-verified; OR 59.09%, indistinguishable
-%  from synthetic p=0.60); family gradient corrected to memory 15.7%. Narrative word
-%  count 384 (<=500 excluding the numbered list; 683 incl. list). Mirrors
-%  research/cover_letter.md v1.3+687.
+%  v1.4 (689 reframed): STRUCTURAL REFRAME. Title -> "Auditing the Evaluator:
+%  Stress-Testing Evidence-Based Software Verification". Contributions 3 (audit
+%  protocol / empirical audit / quantitative findings). Five audited findings,
+%  including the evolution hypothesis failure (Finding 5, p=0.302) and the
+%  +24.0pp composition artifact (Finding 1). New statistics (deterministic
+%  recomputation, no new detect runs): TOST at +-10pp FAILS (90% CI
+%  [-10.61,+5.52]pp); two-way standardization (forward -17.92pp); three-component
+%  environment metrics (59.09% -> 23.64% without the WSL profile; delta-unknown 0).
+%  Human annotation: designed and packaged (145 samples), NOT executed; human IAA = 0;
+%  all kappa values are AI self-consistency. Template neurips_2025 placeholder
+%  (third-party, unmodified; notice string overridden to "Under review" in the paper).
+%  Version of record: research/latex/VERSION.md. Compile: pdflatex cover_letter.tex
+%  Mirrors research/cover_letter.md v1.4 (689) --- numbers must match verbatim.
 % =====================================================================
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -37,140 +32,91 @@ To the NeurIPS Evaluations \& Datasets Chairs and Reviewers,
 
 \bigskip
 \noindent
-We submit \textbf{``Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable
-Provenance''} for consideration in the \textbf{Evaluations \& Datasets (E\&D)} track, renamed from
-Datasets \& Benchmarks in 2026 and (since 2026) \textbf{typically double-blind}; we target the 2027
-edition. \emph{Throughout, ``verifier'' is used in the evidence-acquisition sense}: a
-\texttt{pass} verdict reports that no acquired evidence contradicts the assertion within our
-capability boundary, \textbf{not} that the assertion is semantically true.
+We submit \textbf{``Auditing the Evaluator: Stress-Testing Evidence-Based Software
+Verification''} for consideration in the \textbf{Evaluations \& Datasets (E\&D)} track,
+renamed from Datasets \& Benchmarks in 2026 and (since 2026) \textbf{typically double-blind};
+we target the 2027 edition. \emph{Throughout, ``verifier'' is used in the
+evidence-acquisition sense}: a \texttt{catch} verdict reports that refuting evidence was
+acquired within our capability boundary, \textbf{not} that the assertion is semantically true.
 
 \paragraph{Template note.}
 The 2027 CFP is not yet released. This draft uses the official \texttt{neurips\_2025} style as a
-\emph{placeholder} (the style file is third-party and unmodified); it will migrate to the 2027
-E\&D style on release. Croissant and Responsible-AI metadata are registered as pre-submission TODOs
-because the 2027 metadata specification is not yet fixed.
+\emph{placeholder} (the style file is third-party and unmodified); its default notice string is
+overridden to a neutral ``Under review'' line inside the paper source, and the draft will
+migrate to the 2027 E\&D style on release.
 
 \paragraph{Why this fits E\&D.}
-Our contribution is an \emph{evaluation methodology} with a fully reproducible artifact and an
-explicit \emph{critical / negative} analysis---the three things E\&D asks for. We do not claim a new
-model or a new benchmark. We claim a way to make the question ``how well can we verify
-LLM-generated technical knowledge?'' an \emph{externally checkable} one.
+Our contribution is an \emph{evaluation methodology} with a fully reproducible artifact and a
+substantial \emph{negative} result---the audit shows several apparently convincing evaluator
+claims weakening or collapsing. We claim no new detector and no algorithmic superiority. Our
+question: \emph{how often can an apparently convincing evaluation result survive an audit of
+the evaluator that produced it?}
 
-\paragraph{Core contributions.}
+\paragraph{Three contributions.}
 \begin{enumerate}
-  \item \textbf{Formalized failure-driven verifier evolution.} The verifier's
-        evidence-acquisition capability $\mathcal{C}$ evolves under an operator driven
-        \emph{only} by registered failures, with three checkable properties and a
-        \emph{falsification protocol}: six pre-registered ablations (A0--A5) that can
-        \emph{reject} the mechanism. Auditability: Merkle roots over \textbf{5} controlled
-        directories, a \textbf{452}-event authority ledger, and a \emph{kernel-independent}
-        reconciler (current state; historical pinning partial).
-  \item \textbf{A large, caliber-audited empirical asset.} \textbf{1147} samples over
-        \textbf{34} defect types (normalized closed vocabulary), in \textbf{7} expansion
-        batches (expA--G); a 7-dimension audit of all 1147 samples found and repaired
-        \textbf{363} cross-source label inconsistencies. Provenance is
-        three-valued: \textbf{968} \texttt{self-authored}, \textbf{74}
-        \texttt{source-derived-reconstruction} (single-file teaching reconstructions of real
-        CVEs/GitHub issues, \textbf{not} original production code), and \textbf{0}
-        \texttt{original-external-artifact}. Rates carry a four-state caliber
-        (\texttt{unknown} first-class): the denominator alone moves the corpus rate by
-        \textbf{9.9pp}.
-  \item \textbf{A full-scale falsification experiment (A5), formalized as submodular
-        maximization, with robustness measured.}
-        \textbf{1137} samples $\times$ \textbf{8} assets $=$ \textbf{9096} real
-        \texttt{detect} calls (derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%}
-        vs.\ Random \textbf{30.6\%} ($\Delta$ \textbf{+24.03pp}, $p{=}2.3\times10^{-41}$)
-        and vs.\ Static \textbf{24.7\%} (\textbf{+29.9pp}). Asset selection is formalized as
-        \textbf{monotone submodular maximization}: the greedy choice attains the optimum here
-        (ratio 1.0, exhaustive check), the \textbf{adaptive ceiling is only +2.3pp}, and the
-        selection is stable under 5\% detector noise ($\le0.11$pp drop). The pre-registered
-        parallel analysis collapses to $\Delta$ \textbf{0.0pp}, so we register it as
-        \emph{direction-only} (\texttt{uninterpretable}) with the \emph{selection} effect at
-        $\approx$\,\textbf{+7--12pp}; a \emph{clone-family re-split} leaves the endpoint
-        unchanged (\textbf{+23.0--+26.7pp}), excluding template leakage, while a
-        \emph{family-level bootstrap} gives an \textbf{effective} $n\approx133$--$140$.
-  \item \textbf{A capability-boundary map of the instrument.} On the \textbf{1147 $\times$ 8}
-        matrix, sample-level detection is \textbf{61.6\%} and the blind spot \textbf{38.4\%};
-        \textbf{13 of 34} types exceed 50\% blind (deadlock 84.6\%, endianness 89.3\%; family
-        gradient memory 15.7\% $\to$ link/ODR 67.7\%). This is an \emph{instrument-boundary}
-        statistic measured on our corpus with our 8-asset pool --- it does \textbf{not} claim
-        that 38.4\% of real-world C++ defects are undetectable --- and it scopes every
-        headline number to the \emph{visible} region.
-  \item \textbf{Open artifact and reproducible pipeline.} Apache-2.0, DCO-signed; a fail-loud
-        \texttt{docker/paper/run\_all.sh} and \texttt{REPRODUCE.md}; one-command
-        recomputation. (Croissant and Responsible-AI metadata are registered as
-        pre-submission TODOs, since the 2027 metadata spec is not yet released.)
+  \item \textbf{An auditable protocol for evaluating evaluators.} Every quantitative claim
+        declares a measurement caliber $Q=(D,A,E,\Theta,P)$ (dataset, asset set, environment
+        set, configuration set, protocol); eight failure modes provide identification signals;
+        each headline claim is re-measured under adversarial controls that change no malicious
+        behavior, and receives one of four audit outcomes (\textbf{survives / weakened /
+        collapses / unresolved}).
+  \item \textbf{A systematic empirical audit} of a software-verification apparatus:
+        \textbf{1147} self-authored samples $\times$ \textbf{8} assets plus \textbf{110}
+        source-derived CVE reconstructions (all sample CVEs NVD-verified online), with
+        clone-aware splitting and explicit environment profiles.
+  \item \textbf{Quantitative findings on what survives.} (F1)~A $+24.0$pp selection gain is
+        \emph{mostly measurement-pool composition}; removing degenerate assets leaves
+        $+7.4$--$11.3$pp (mechanism level). (F2)~The instrument is \emph{blind to 38.4\%} of
+        its corpus in a family-structured way; severity does not predict detection; 41.5\% of
+        real-defect catches ride on a single asset (\texttt{asan}). (F3)~\emph{Environment is
+        part of the measurement}: without the declared WSL profile, real-defect detection
+        falls $59.09\%\to23.64\%$ with \emph{no} unknown increase and no warning. (F4)~Synthetic
+        and source-derived corpora \emph{do not reach TOST equivalence} at $\pm10$pp (90\% CI
+        $[-10.61,+5.52]$pp), and standardization shows the similar headline rates hide a
+        $-17.9$pp composition offset. (F5)~Failure-driven evolution yields \emph{no measurable
+        recall gain} over frequency-based selection (identical selections in 14/14 tier checks;
+        best $+1.41$pp, $p{=}0.302$)---reported as an audit finding, not a contribution.
 \end{enumerate}
 
-\paragraph{Relation to prior work.}
-Benchmark-evolution lines (Benchmark Self-Evolving, ArenaBencher, LiveBench) evolve the
-\emph{items}; mutation-guided testing (Meta ACH, MUTGEN) evolves \emph{tests}; formal verification
-(seL4, CompCert) provides \emph{proofs}; and MiniCheck evolves \emph{judge weights}.
-\textbf{None evolves the measuring stick itself while
-proving the change is externally measurable and self-falsifiable.} That is our position.
+\paragraph{What we deliberately do \emph{not} claim.}
+No priority (``first to audit an evaluator''---DeepFact~\cite{huang2026deepfact}, metric
+co-evolution~\cite{zhang2026whogrades}, certified self-evolution~\cite{sengupta2026anytimevalid}
+and SV-COMP's witness validation~\cite{beyer2026svcomp} are active neighbours); no superiority
+over mature verifiers (our cross-tool comparison is \emph{observational}, and the pre-registered
+caliber failed at chance level); no semantic verification (a \texttt{catch} is acquired evidence
+within a boundary); and \textbf{no human label validation}---human IAA is 0; the $\kappa$ values
+in the paper are AI self-consistency; a de-identified 145-sample annotation package with
+pre-registered thresholds accompanies the submission and its execution is the top post-review
+priority.
 
-\paragraph{Headline result.}
-On the \emph{same} samples, failure-driven verification reaches \textbf{82.9\%} blind-holdout recall
-(34/41, CP95 [67.9, 92.8]) and \textbf{62.5\%} external-corpus recall (40/64, CP95 [49.5, 74.3]),
-versus a \emph{static caliber arm} at \textbf{2.4\%} and \textbf{17.2\%} ($\Delta$
-\textbf{+80.5pp} [+68.4, +92.6] / \textbf{+45.3pp} [+33.1, +57.5]; exact McNemar
-$p=2.3\times10^{-10}$ / $3.7\times10^{-9}$; Cohen's $h\ge0.97$) and a \emph{random proxy arm}
-at \textbf{9.8\%} and \textbf{21.9\%} ($\Delta$ \textbf{+73.2pp} [+59.6, +86.7] /
-\textbf{+40.6pp} [+28.6, +52.7]; exact McNemar $p=1.9\times10^{-9}$ / $3.0\times10^{-8}$;
-Cohen's $h\ge0.85$). The budget-matched control A5 now
-runs at full scale (1137 samples; $n{=}566$ held out): FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%}
-(\textbf{+24.03}pp, $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%} (\textbf{+29.9}pp),
-with the Static contrast surviving the pre-registered parallel analysis (\textbf{+30.6}pp) while
-the Random contrast collapses to \textbf{0.0}pp once degenerate assets are excluded. The Random
-contrast is \textbf{+11.31}pp at $k{=}1$ on the degenerate-free pool ($p{=}6.0\times10^{-8}$), so
-the isolated selection effect is $\approx$\,\textbf{+7--12}pp, and a \textbf{clone-family re-split}
-leaves the endpoint unchanged (\textbf{+23.0--+26.7}pp) while a family-level bootstrap gives an
-\textbf{effective} $n\approx133$--$140$. We also publish
-a capability-boundary map of the instrument itself (sample-level detection \textbf{61.6\%}; \textbf{38.4\%} of 1147 samples are blind spots;
-\textbf{13 of 34} normalized types exceed 50\% blind). This blind-spot ratio is an
-\emph{instrument-boundary} statistic measured on our corpus with our 8-asset pool: it does
-\textbf{not} imply that 38.4\% of real-world C++ defects are undetectable. Provenance in the corpus
-is three-valued: 968 \texttt{self-authored}, 74 \texttt{source-derived-reconstruction} (single-file
-teaching reconstructions of real CVEs/issues, \textbf{not} original production code), and 0
-\texttt{original-external-artifact}. A \textbf{110-defect real-CVE benchmark} (all sample CVEs
-verified online via the NVD API, raw responses frozen) reads \textbf{59.09\%} OR detection ---
-statistically indistinguishable from the synthetic corpus ($p{=}0.60$) --- with \textbf{93.5\%}
-cross-toolchain agreement (clang 18 vs.\ g++ 13.3). The e-process layer is \emph{exploratory}
-(priors and alternative grids not pre-registered) and supports no confirmatory claim.
+\paragraph{Assets, statistics and reproducibility.}
+Apache-2.0, DCO-signed; fail-loud reproduction scripts; all headline numbers recomputed from
+frozen matrices by two new deterministic scripts (equivalence/standardization; environment
+metrics); the annotation package and per-sample artifacts ship as supplementary material.
+Known limits, declared in the paper: the primary profile is WSL-bound (the native profile's
+sanitizer absence is an architectural inference; clang-cl/MSVC were not tested); template-clone
+dependence (design effect $\approx4.2$); $\sim$5\% per-cell run-to-run instability; the
+eight-asset instrument scope.
 
-\paragraph{Honest limitations (stated up front).}
-The two headline rates depend on a specific WSL sanitizer environment and \textbf{fail silently} when
-it is absent (corpus 35.0\% $\to$ 10.0\%) --- the reproducibility script now checks for this and
-aborts; the static arm is a \textbf{caliber re-binning} (not a re-run) and the random arm is an
-\textbf{instrument-level proxy} (not the paper's budget-matched B3, whose interface is currently
-blocked in a split repository); the effective sample size after clone-aware re-splitting is only $n\approx133$--$140$
-(design effect $\approx4$), and single-cell verdicts carry $\approx$\,\textbf{5\%}
-run-to-run instability (676f self-verified); A5 isolates \emph{pool composition}
-(``do not fund assets that cannot inform''), not a smarter ranking, so we claim \textbf{auditability of the mechanism} plus
-\textbf{a significant same-sample advantage over the static/proxy arms} --- \textbf{not} superiority
-over a true static detector or the real B3. We include this analysis as part of the contribution
-rather than hiding it.
-
-\paragraph{Data and code availability.}
-The repository is public (Apache-2.0) with DCO sign-off. Datasets D2/D3/D4 and the recomputation
-commands are described in \texttt{REPLICATION.md}. Every reported number is recomputed from landed
-artifacts, and the paper marks any not-yet-landed value explicitly rather than filling in
-estimates. Croissant and Responsible-AI metadata are \emph{registered TODOs} (to be generated before
-submission once the 2027 specification is published), not yet shipped.
-
-\paragraph{Reproducibility.}
-All headline numbers are reproducible via single commands; the paper documents the exact
-environment dependencies (WSL, \texttt{g++}, \texttt{setarch}) and reports \texttt{UNVERIFIED}
-rather than a misleading low score when a dependency is missing.
-
-\bigskip
+\medskip
 \noindent
-We believe this work matches E\&D's stated interest in rigorous evaluation practices and
-transparent, auditable artifacts. We thank you for your consideration.
+We hope the E\&D community finds the \textbf{audit protocol and the negative findings} useful
+beyond C++ verification.
 
 \bigskip
 \noindent
 Sincerely,\\
 The Authors
+
+\begin{thebibliography}{9}
+\bibitem{huang2026deepfact} Y.~Huang et al. DeepFact: Co-Evolving Benchmarks and Agents for
+Deep Research Factuality. arXiv:2603.05912, 2026.
+\bibitem{zhang2026whogrades} X.~Zhang et al. Who Grades the Grader? Co-Evolving Evaluation
+Metrics and Skills for Self-Improving LLM Agents. arXiv:2607.12790, 2026.
+\bibitem{sengupta2026anytimevalid} B.~Sengupta. Self-Evolving Agents with Anytime-Valid
+Certificates. arXiv:2607.00871, 2026.
+\bibitem{beyer2026svcomp} D.~Beyer and J.~Strej\v{c}ek. Evaluating Software Verifiers for C,
+Java, and SV-LIB: Report on SV-COMP 2026. TACAS 2026.
+\end{thebibliography}
 
 \end{document}

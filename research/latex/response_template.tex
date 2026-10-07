@@ -1,17 +1,23 @@
 % =====================================================================
 %  Response to Reviewers — template (NeurIPS 2027 Evaluations & Datasets)
-%  v1.2 (677a): rewritten from research/response_template.md (the authoritative
-%  version). The previous .tex was a v0.x-era draft with stale numbers and
-%  dangling \ref's into the paper; numbers here mirror the .md exactly.
+%  v1.4 (689 reframed): title and framing updated after the structural reframe
+%  ("Auditing the Evaluator"); contributions 3; five audited findings; the
+%  Verifier Coverage / Evolution Efficiency metrics are DELETED (engineering
+%  telemetry, not scientific evidence); TOST / standardization / environment
+%  numbers added. .md remains the authoritative version; numbers mirror it exactly.
 %  Version of record: research/latex/VERSION.md
 %  Compile: pdflatex response_template.tex   (standalone; no bib, no paper labels)
-%  Calibration notes for the responder (677a):
-%    * "verifier" = evidence-acquisition apparatus; pass != semantic truth.
+%  Calibration notes for the responder (689):
+%    * "verifier" = evidence-acquisition apparatus; catch != semantic truth.
 %    * 38.4% blind spot is an instrument-boundary statistic ("on our 1147-sample
 %      corpus with our 8-asset instrument"); 13/34 types >50% blind.
-%    * Verifier Coverage 73.8% has NO confidence interval (complete enumeration).
+%    * Verifier Coverage 73.8% and Evolution Efficiency 1.9pp/rule were REMOVED
+%      in 689; never quote them.
 %    * e-process is EXPLORATORY and is never quoted as evidence strength.
 %    * planted=false = source-derived reconstruction (968/74/0), not production code.
+%    * TOST at +-10pp FAILS (90% CI [-10.61,+5.52]pp); never write "equivalent".
+%    * the evolution operator's recall gain is NOT significant (14/14 identical
+%      selections; best +1.41pp, p=0.302) — Finding 5, stated as a negative result.
 % =====================================================================
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -29,7 +35,7 @@
 
 \begin{center}
 {\Large\bfseries Response to Reviewers}\\[2pt]
-{\large Evolving Verifiers: Failure-Driven Evidence Acquisition with Auditable Provenance}\\[2pt]
+{\large Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification}\\[2pt]
 \textbf{Paper \#XXXX} \quad (Anonymous submission, NeurIPS E\&D, double-blind)
 \end{center}
 
@@ -64,12 +70,26 @@ Every number below is recomputed from a landed artifact.
         boundary, \emph{not} semantic truth (\S3 Terminology; first item of \S9, ``C0'').
   \item The 38.4\% figure is qualified at every occurrence as an \textbf{instrument-boundary}
         statistic on our corpus with our 8-asset instrument.
-  \item Verifier Coverage 73.8\% is reported \emph{without} a confidence interval: the 42 cards are a
-        complete enumeration, not a sample.
+  \item Verifier Coverage 73.8\% and Evolution Efficiency 1.9pp/rule were \textbf{removed} in the 689
+        revision: engineering telemetry over a fixed card set, not scientific evidence.
   \item The e-process layer is \textbf{exploratory} (not pre-registered) and supports no confirmatory
         claim; it is reported in an appendix marked as such.
   \item \texttt{planted=false} samples are described as \textbf{source-derived reconstructions}
         (968 self-authored / 74 source-derived / 0 original external artifacts), not production code.
+  \item \textbf{689 structural reframe.} Title: ``Auditing the Evaluator: Stress-Testing
+        Evidence-Based Software Verification''; contributions 3 (audit protocol / empirical audit /
+        quantitative findings); new \S3 Evaluator-Audit Protocol (claim caliber $(D,A,E,\Theta,P)$;
+        eight failure modes; falsification procedure; four audit outcomes); five audited findings.
+        The $+24.0$pp selection gain is presented as a measurement-pool \emph{composition artifact}
+        (mechanism level $+7.4$--$+11.3$pp), and the evolution hypothesis failure is Finding~5.
+  \item \textbf{689 statistics} (deterministic recomputation of frozen matrices): TOST at $\pm10$pp
+        \textbf{fails} (90\% CI $[-10.61,+5.52]$pp; minimum passing margin $10.61$pp); two-way
+        standardization (forward $-17.92$pp; reverse $+1.70$pp) shows the headline similarity is a
+        composition offset; three-component environment metrics (real detection
+        $59.09\%\to23.64\%$ without the declared WSL profile; $\Delta$unknown $=0$).
+  \item \textbf{Human annotation} is designed and packaged (de-identified 145-sample set,
+        10 calibration items, pre-registered thresholds) but \textbf{not executed}; human IAA $=0$;
+        all $\kappa$ values are AI self-consistency.
 \end{itemize}
 
 \section*{Reviewer 1}

@@ -1,9 +1,9 @@
-# Response to Reviewers — Template (Queyi, NeurIPS 2027 E&D) · v1.2 (677a)
+# Response to Reviewers — Template (Queyi, NeurIPS 2027 E&D) · v1.4 (689 reframed)
 
 > **用法**：引用审稿人原话（`Reviewer:`），再给回复（`Response:`），并标出改动位置（`Change:`）。
 > **纪律**：不辩解、不回避；**承认的缺口原样承认**（与论文立场一致）。
-> **数字基线**：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）+ `data/a5_676f_results.json`（A5 全量）+ `data/blindspot_676g_stats.json`（盲区地图）。**回复中不得出现未落盘数字。**
-> **677a 口径（回复时必须一致）**：① "verifier" = **evidence-acquisition 装置**，`pass` ≠ 语义真值；② 盲区 38.4% 为 **instrument-boundary** 统计（"on our corpus with our 8-asset instrument"）；③ 高盲区类型 **13/34**；④ VC 73.8% **无 CI**（全枚举，描述性）；⑤ e-process 为 **exploratory**（不得当证据强度）；⑥ `planted=false` = **source-derived reconstruction**（非原始生产代码）；⑦ Track 名为 **E&D**（2026 起由 D&B 更名），**通常双盲**；模板为 2025 placeholder，Croissant/RAI 元数据为**待办**。版本 of record：`research/latex/VERSION.md`。
+> **数字基线**：`data/current_numbers.json`（含 `reframed_689` 段）+ `data/689_*.json`（TOST/标准化/环境三组件）+ `data/a5_676f_results.json` + `data/blindspot_676g_stats.json`。**回复中不得出现未落盘数字。**
+> **689 口径（回复时必须一致）**：① 题名 = **"Auditing the Evaluator: Stress-Testing Evidence-Based Software Verification"**（不得再用 "Evolving Verifiers"）；② 贡献 **3 条**（审计协议 / 实证审计 / 量化发现），演化与子模**不是**贡献；③ **5 个发现**：F1 +24.0pp 主要为**池构成效应**（机制级 +7.4–11.3pp）、F2 38.4% 盲区（instrument-boundary；13/34 类 >50%）、F3 环境（59.09%→23.64%，Δunknown=0）、F4 **TOST 未过**（90% CI [−10.61,+5.52]pp）+ 标准化 −17.92pp、F5 **演化假设失败**（14/14 同选；p=0.302）；④ **VC 73.8% 与 EE 1.9pp/rule 已删除**；⑤ static 臂 = **calibration arm**；⑥ §7 五类威胁 T1–T5；⑦ **human IAA = 0**（方案+材料包已备、待执行）；κ 一律 AI self-consistency；⑧ Track 名为 **E&D**，通常双盲；模板 2025 placeholder（页脚已覆盖为 Under review）。版本 of record：`research/latex/VERSION.md`。
 
 ---
 
@@ -17,6 +17,10 @@
 - 明确 `UNVERIFIED` 协议（缺依赖时报未验证，不报误导性低分）。
 - 新增/强化威胁：LLM 通道不可信（prompt injection）、小样本投毒、peeking、检测器能力边界（T20）。
 - 补引用：Cohen (1988)、Connor (1987)、Belnap (1977)、CELEUS、QuickCheck/Hypothesis/KLEE。
+- **689 结构性重构**：题名改为 "Auditing the Evaluator…"；贡献 4→3；新增 §3 审计协议（claim 口径 / 8 失败模式 / 证伪流程 / 4 态结果）；正文重组为 5 个审计发现；+24.0pp 改述为测量池构成效应（机制级 +7.4–11.3pp）；**演化假设失败列为 Finding 5**；删除 VC 73.8% / EE 1.9pp/rule；static → calibration arm；Merkle 改述为 tamper-evident 当前态完整性 + 威胁模型；E9 改述为观察性对比；页脚 NeurIPS 2025 占位被 tex 覆盖。
+- **689 统计补全**（仅确定性复算，无新 detect 运行）：TOST ±10pp **未过**（90% CI [−10.61,+5.52]pp；最小通过 margin 10.61pp）；双向标准化（正向 −17.92pp / 反向 +1.70pp / 类型级 −13.52pp）；环境三组件（真实 59.09%→23.64%、Δunknown=0；clang↔g++ 93.5%、κ=0.864/0.843）。
+- **689 人类标注**：去标签材料包 145 条 + 校准集 10 条 + 预注册阈值（verdict κ≥0.8）已备；**human IAA = 0，待执行**（投稿前第一人工项）。
+- **689 页数/摘要**：正文 8 页（References 起第 8 页）≤9；全稿 36 ≤36；摘要 245 词 / 1776 字符。
 
 ---
 

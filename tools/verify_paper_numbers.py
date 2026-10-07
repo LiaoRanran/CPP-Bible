@@ -480,11 +480,13 @@ def build_claims(src, use_cmd=True):
     C("A15", "扩样前 corpus 54.2% (26/48)",
       [pct(exp672.get("corpus_before", {}).get("rate_pct")),
        ratio(exp672.get("corpus_before", {}).get("k"), exp672.get("corpus_before", {}).get("n"))],
-      "A.核心三臂", J("data/current_numbers.json", "expansion_672h.corpus_before.rate_pct"))
+      "A.核心三臂", J("data/current_numbers.json", "expansion_672h.corpus_before.rate_pct"),
+      status="superseded:689重构", note="689 重构：扩样前后口径随旧正文段落移出正文（数据仍在产物）")
     C("A16", "H4 子集差额 corpus +33.3pp / holdout +4.0pp",
       [f"+{pct(exp672.get('H4_subset_delta', {}).get('corpus_pp'))}pp",
        f"+{pct(exp672.get('H4_subset_delta', {}).get('holdout_pp'))}pp"],
-      "A.核心三臂", J("data/current_numbers.json", "expansion_672h.H4_subset_delta.corpus_pp"))
+      "A.核心三臂", J("data/current_numbers.json", "expansion_672h.H4_subset_delta.corpus_pp"),
+      status="superseded:689重构", note="689 重构：H4 子集差额随旧正文段落移出正文（数据仍在产物）")
 
     ss = cn.get("sample_size_672k", {})
     C("A17", "±5pp 半宽所需样本量 holdout 236 / corpus 378",
@@ -535,7 +537,8 @@ def build_claims(src, use_cmd=True):
     C("B08", "holdout 新子集 17/20 = 85.0%（round5）",
       [ratio(hr["round5"]["error_subset"]["catch"], hr["round5"]["error_subset"]["total"]),
        pct(hr["round5"]["error_subset"]["detect_rate_pct"])],
-      "B.reveal", J("data/holdout_reveal_5_672h.json", "round5.error_subset.detect_rate_pct"))
+      "B.reveal", J("data/holdout_reveal_5_672h.json", "round5.error_subset.detect_rate_pct"),
+      status="superseded:689重构", note="689 重构：round5 子集数字随旧正文段落移出正文（数据仍在产物）")
 
     # 历史批次（tab:e3  Evolution Curve / Fig. evolution）
     hr3 = src.get("holdout_reveal_3") or {}
@@ -603,7 +606,8 @@ def build_claims(src, use_cmd=True):
             C(f"C05.{dom}", f"VC 分域 {dom} {d['anchored']}/{d['real']}",
               [f"{dom} {d['anchored']}/{d['real']}"], "C.系统计数",
               {"kind": "scan", "detail": f"atoms/{dom}/ATOM-*.md"},
-              note="分域不通过汇票，只作辅助（论文写作 `conc 3/3, hist 1/1, mem 22/24, ub 5/6, lang 0/8`）")
+              status="superseded:689重构",
+              note="689 重构：Verifier Coverage（含分域）已从论文删除（工程遥测，非科学证据）")
 
     # VC 的 CP95：直接调用 stat_bounds.cp_interval（一次取两个分位）
     if use_cmd:
@@ -612,7 +616,8 @@ def build_claims(src, use_cmd=True):
         if len(vals) >= 2:
             C("C06", "VC 的 Clopper–Pearson 95% CI [58.0, 86.1]",
               [f"{pct(float(vals[0]))}, {pct(float(vals[1]))}"], "C.系统计数",
-              {"kind": "cmd", "cmd": CMD_VC_CI})
+              {"kind": "cmd", "cmd": CMD_VC_CI},
+              status="superseded:689重构", note="689 重构：VC 及其 CI 已从论文删除（工程遥测，非科学证据）")
         else:
             claims.append({"id": "C06", "label": "VC 的 CP 95% CI（stat_bounds.cp_interval(31,42)）",
                            "forms": [], "group": "C.系统计数",
@@ -1109,6 +1114,8 @@ def build_claims(src, use_cmd=True):
     ]
     for cid, label, k, n, printed in CI_CASES:
         st = "active" if printed else "not_printed"
+        if cid in ("I11", "I12", "I13", "I14"):
+            st = "superseded:689重构"  # 689 重构：分层 CI 数字移出正文（数据仍在产物）
         if not use_cmd:
             claims.append({"id": cid, "label": label, "forms": [], "group": "I.CI重算",
                            "source": {"kind": "cmd", "cmd": _cmd_ci(k, n)},
@@ -1169,6 +1176,35 @@ def build_claims(src, use_cmd=True):
           ["12.81"], "D.A5",
           {"kind": "derived", "detail": "current_numbers.a5_experiments.nondegenerate_pool_677c "
                                         "← data/677c_a5_nondegenerate_results.json"})
+
+    # ---------------- E. 689 重构批次（TOST / 标准化 / 环境三组件） ----------------
+    r9 = (cn.get("reframed_689") or {})
+    t9 = (r9.get("equivalence_tost") or {})
+    if t9:
+        C("Z01", "689 TOST：±10pp 未过，90% CI [-10.61, 5.52]pp，p_TOST=0.064",
+          [pct(t9["ci90_pp"][0], 2), pct(t9["ci90_pp"][1], 2), num(t9["p_tost"], 3)], "Z.689重构",
+          {"kind": "derived", "detail": "current_numbers.reframed_689.equivalence_tost "
+                                        "← data/689_equivalence_test.json"})
+        C("E02", f"689 TOST 最小通过 margin {t9['min_passing_margin_pp']}pp（deff 校正 "
+                 f"{t9['deff_adjusted']['min_passing_margin_pp']}pp）",
+          [num(t9["min_passing_margin_pp"], 2), num(t9["deff_adjusted"]["min_passing_margin_pp"], 2)],
+          "Z.689重构",
+          {"kind": "derived", "detail": "data/689_equivalence_test.json"})
+    s9 = (r9.get("standardized_analysis") or {})
+    if s9:
+        C("E03", "689 标准化：正向 -17.92pp（R_syn_std=77.01%），反向 +1.70pp，类型级 -13.52pp",
+          [num(s9["forward_diff_pp"], 2), num(s9["forward_r_syn_std_pct"], 2),
+           num(s9["reverse_diff_pp"], 2), num(s9["type_forward_diff_pp"], 2)], "Z.689重构",
+          {"kind": "derived", "detail": "current_numbers.reframed_689.standardized_analysis "
+                                        "← data/689_standardized_analysis.json"})
+    e9 = (r9.get("environment_metrics") or {})
+    if e9:
+        C("E04", "689 环境：真实 59.09%→23.64%（-35.45pp，Δunknown=0），clang↔g++ 93.5%",
+          [num(e9["real110_wsl_or_pct"], 2), num(e9["real110_native_or_pct"], 2),
+           num(abs(e9["delta_pp"]), 2), num(e9["clang_vs_gpp_200"]["asan_agree_pct"], 1)],
+          "Z.689重构",
+          {"kind": "derived", "detail": "current_numbers.reframed_689.environment_metrics "
+                                        "← data/689_environment_metrics.json"})
 
     return claims
 

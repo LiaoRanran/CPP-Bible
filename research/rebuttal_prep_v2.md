@@ -162,6 +162,11 @@
 | FPR（控制样本） | 0/11 = 0.0% | `current_numbers.json:control_false_positive` |
 | 论文数字审计 | 105 active checks 一致 / 0 不一致；9 项已解释 missing | `tools/verify_paper_numbers.py` |
 | 数据审计（680） | 结构完整性 100%；抽样 229：FAIL 0；跨源标签不一致 363 行 | `data/680_数据质量深度审计报告.md` |
+| **689 TOST**（新） | 真实 59.09% vs 合成 61.64%；±10pp **未过**（90% CI [−10.61,+5.52]pp；p_TOST=0.064；最小通过 margin 10.61pp，deff 校正 11.67pp） | `689_equivalence_test.json` |
+| **689 标准化**（新） | 正向 −17.92pp（R_syn_std=77.01%）；反向 +1.70pp；类型级 −13.52pp ⇒ **构成抵消** | `689_standardized_analysis.json` |
+| **689 环境三组件**（新） | 真实 59.09%→23.64%（−35.45pp，Δunknown=0）；clang↔g++ 93.5%（κ=0.864/0.843，Δ≤2pp） | `689_environment_metrics.json` |
+| **689 页数/摘要**（新） | 正文 8 页（References 起 8 页）≤9；全稿 36 ≤36；摘要 245 词 / 1776 字符 ≤1920 | tectonic + pypdf 实测 |
+| **689 人类标注**（新） | 材料包 145 条（41+64+40）；注释净化 280 处、标识符重命名 5、复扫 0 残留；144/145 可编译；**human IAA = 0，待执行** | `689_human_annotation_protocol.md`、`data/annotation_package/` |
 
 ---
 
@@ -171,6 +176,65 @@
 - ❌ "real-world defects" → ✅ "source-derived reconstructions of real CVEs/issues（单文件教学化）"
 - ❌ "verified labels / ground truth" → ✅ "project-authored labels, AI self-consistency κ=0.77"
 - ❌ "38.4% of C++ defects are undetectable" → ✅ "38.4% of *our 1147 samples* are blind spots *with our 8-asset instrument*"
+- ❌ "synthetic and real are equivalent / no difference（p>0.05 暗示等价）" → ✅ "TOST at ±10pp **fails**; the point estimate is −2.55pp with a wide CI; structure differs by family（−17.92pp 标准化）"
+- ❌ "the evolution operator improves recall（旧题名叙事）" → ✅ "no measurable recall gain over frequency selection (14/14 identical; p=0.302) — reported as Finding 5（审计发现）"
+- ❌ "Verifier Coverage 73.8% / Evolution Efficiency 1.9pp/rule" → ✅ 已删除（工程遥测非科学证据；689 起不得引用）
+- ❌ "static arm（作为独立验证器）" → ✅ "static **calibration arm**（口径重分箱，非独立 verifier）"
+- ❌ "human annotation planned（含糊）" → ✅ "designed and packaged, **not executed**; human IAA = 0（明确状态）"
+
+---
+
+## 10. 689 重构后的新问题（预期审稿人会问，预备回答）
+
+### Q-689-1. "Why did the title change from *Evolving Verifiers*?"
+**诚实回应（建议原文）**：
+> The evidence does not support the old framing. Our audited tests show the executable evolution
+> operator is selection-identical to frequency and set-cover greedy (14/14 pool$\times k$ blocks;
+> real corpus $\Delta{=}0.0$pp at $k{=}1..7$; best improving tier $+1.41$pp, $p{=}0.302$), and the
+> apparently large $+24$pp selection gain is mostly measurement-pool composition. Rather than
+> keeping a title whose central claim we had already falsified, we restructured the paper around
+> the question the data did answer: whether evaluator claims survive an audit of the evaluator.
+> The failed hypothesis is now Finding 5, stated explicitly.
+
+### Q-689-2. "TOST did not pass — so your synthetic corpus is not representative?"
+**回应要点**：
+> Correct: we do **not** claim equivalence. TOST at $\pm10$pp fails (90% CI $[-10.61,+5.52]$pp);
+> the honest statement is "no significant difference detected in this sample, with a CI wide
+> enough to accommodate a materially adverse shift, and a family-level structure that differs
+> substantially". The standardization analysis is the sharper result: re-weighting synthetic
+> family rates by the real composition predicts $77.01\%$ against the observed $59.09\%$
+> ($-17.92$pp), i.e. the headline similarity is a **composition offset**, not equal capability.
+> We treat this as Finding 4 rather than hiding it behind a non-significant difference test.
+
+### Q-689-3. "How is this different from DeepFact / Who Grades the Grader / SV-COMP?"
+**回应要点**（详见 `data/689_related_work_update.md` + `data/689_svcomp_positioning.md`）：
+> We do not claim priority and we cite all three as active neighbours. The audited **object**
+> differs: DeepFact audits benchmark labels via evidence-backed adjudication; metric co-evolution
+> evolves a scoring function; SV-COMP ranks verifiers on fixed tasks with witness validation;
+> SEA certifies agent self-modification. Queyi audits a **software-verification
+> evidence-acquisition apparatus**---its caliber, asset composition, environment profile, labels
+> and denominators---with an executable protocol and negative findings. One sentence: *SV-COMP
+> asks which verifier performs well on given tasks; we ask whether evaluation results survive an
+> audit of the evaluator.*
+
+### Q-689-4. "If the environment can swing the result by 35pp, how can any number be trusted?"
+**回应要点**：
+> We reframe this as the finding, not a defect: the swing occurs because the instrument silently
+> loses capabilities, and our three-component accounting (catch rate / unknown rate / conditional
+> recall) makes the loss explicit. Under an environment-**aware** protocol, the missing sanitizer
+> assets are declared unknowns with a printed availability manifest, and the conclusion is capped
+> at "unresolved" for claims that require them; the same-OS compiler swap moves detection by
+> $\le2$pp (93.5\% agreement, $\kappa\ge0.843$), which localizes the risk to profile changes, not
+> to toolchain jitter. Every rate in the paper names its profile.
+
+### 预期追问（快答）
+| 追问 | 快答 |
+|---|---|
+| "Then why keep the $+24$pp anywhere?" | 必须并排：全池 $+24.0$pp 是**构成效应**（$k{=}4$ 单点口径全部来自池构成），机制级 $+7.4$–$11.3$pp（$k\le3$，有效 $n\approx133$–$140$）；两者并列出现，且以构成效应为主结论 |
+| "static arm is not a verifier?" | 是 **calibration arm**（口径重分箱的参照），我们从不为它命名 superiority claim |
+| "Where is the human IAA?" | 方案 + 去标签材料包（145 条，标注量 2.5–4h）+ 预注册阈值（verdict $\kappa\ge0.8$）已备，**待执行**；这是投稿前第一人工项；现有 $\kappa$ 一律 AI self-consistency |
+| "Why 8 pages of main text with 36 pages total?" | 正文义务 8 页（References 起于第 8 页）≤9；新增统计与协议细节全部入附录 Z，主文只留结论与指针 |
+| "A0–A4 still unrun?" | 是；论文中显式标注 `not run`（不再使用 TODO 占位符），只报告已运行的 A5 |
 - ❌ "first ever" → ✅ 无首次主张
 - ❌ "the operator improves detection" → ✅ "the operator's immediate value is falsifiability; the ablation is not significant (3/14 tiers, p=0.302)"
 
