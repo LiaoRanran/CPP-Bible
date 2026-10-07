@@ -32,6 +32,7 @@ import math
 import os
 import re
 import sys
+from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLINDSPOT = os.path.join(ROOT, "data", "blindspot_676g_sample_manifest.json")
@@ -98,7 +99,7 @@ def strip_comments_and_literals(src: str) -> str:
 
 _ID_RE = re.compile(r"[A-Za-z_][A-Za-z_0-9]*")
 _NUM_RE = re.compile(r"\b(?:0[xX][0-9a-fA-F]+|\d+\.?\d*(?:[eE][+-]?\d+)?[fFuUlL]*)\b")
-_PREPROC_RE = re.compile(r"^[ \t]*#.*$", re.M)
+_PREPROC_RE = re.compile(r"^[ \t]*#.*$", re.MULTILINE)
 
 
 def normalize(src: str) -> str:
@@ -294,7 +295,7 @@ def layer2(samples: list[dict]) -> dict:
 
 def _tfidf_vectors(docs: list[list[str]]) -> list[dict]:
     n = len(docs)
-    df = collections.Counter()
+    df: collections.Counter[str] = collections.Counter()
     for d in docs:
         for t in set(d):
             df[t] += 1
@@ -323,7 +324,7 @@ def tokenize_structure(src: str) -> list[str]:
 def _cos(a: dict, b: dict) -> float:
     if len(a) > len(b):
         a, b = b, a
-    return sum(w * b.get(t, 0.0) for t, w in a.items())
+    return float(sum(w * b.get(t, 0.0) for t, w in a.items()))
 
 
 def layer3(samples: list[dict]) -> dict:
@@ -362,7 +363,6 @@ def layer3b_structure(samples: list[dict]) -> dict:
     """
     docs = {s["uid"]: tokenize_structure(s["src_text"]) for s in samples if s["src_text"]}
     uids = sorted(docs)
-    idx = {u: i for i, u in enumerate(uids)}
     vecs = _tfidf_vectors([docs[u] for u in uids])
     meta = {s["uid"]: s for s in samples}
     pairs = []
@@ -390,7 +390,7 @@ def layer3b_structure(samples: list[dict]) -> dict:
 # --------------------------------------------------------------------------- #
 def batch_matrix(dup_groups: list[list[dict]]) -> dict:
     """按批次对统计重复对数（无序对，含同批）。"""
-    m = collections.Counter()
+    m: collections.Counter[tuple[str, str]] = collections.Counter()
     for members in dup_groups:
         for i in range(len(members)):
             for j in range(i + 1, len(members)):
@@ -418,7 +418,7 @@ def main() -> int:
     covered = collections.Counter(s["batch"] for s in samples if s["has_source"])
     n_covered = sum(covered.values())
 
-    result = {
+    result: dict[str, Any] = {
         "schema": "queyi-audit-676k-dedup/v1",
         "generated_by": "tools/audit_676k_dedup.py",
         "source_manifest": "data/blindspot_676g_sample_manifest.json",

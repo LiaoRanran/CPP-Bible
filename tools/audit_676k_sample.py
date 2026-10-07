@@ -25,7 +25,6 @@ import collections
 import json
 import os
 import random
-import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -183,7 +182,9 @@ def do_sample(recs: list[dict]) -> dict:
 
 
 def load_sample_manifest() -> dict:
-    return json.load(open(SAMPLE_OUT, encoding="utf-8"))
+    with open(SAMPLE_OUT, encoding="utf-8") as f:
+        data: dict = json.load(f)
+    return data
 
 
 def do_dump(path: str) -> None:
@@ -212,7 +213,7 @@ def cohen_kappa(pairs: list[tuple[str, str]]) -> dict:
     po = sum(1 for a, b in pairs if a == b) / n
     ca = collections.Counter(a for a, _ in pairs)
     cb = collections.Counter(b for _, b in pairs)
-    pe = sum((ca[l] / n) * (cb[l] / n) for l in labels)
+    pe = sum((ca[lab] / n) * (cb[lab] / n) for lab in labels)
     k = (po - pe) / (1 - pe) if pe != 1 else 1.0
     return {"n": n, "po": round(po, 6), "pe": round(pe, 6), "kappa": round(k, 6),
             "labels": labels}

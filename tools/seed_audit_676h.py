@@ -75,10 +75,10 @@ def scan_file(path: str, rel: str):
         text = open(path, encoding="utf-8", errors="replace").read()
     except OSError:
         return None
-    seeds = set(SEED_CONST_RE.findall(text)) | set(ANY_SEED_LITERAL_RE.findall(text))
+    seed_set = set(SEED_CONST_RE.findall(text)) | set(ANY_SEED_LITERAL_RE.findall(text))
     for rx in SEED_LITERAL_EXTRA_RES:
-        seeds |= set(rx.findall(text))
-    seeds = sorted(seeds)
+        seed_set |= set(rx.findall(text))
+    seeds = sorted(seed_set)
     if not USE_RE.search(text) and not seeds:
         return None
     symbols = sorted({m.group(1) for m in DOWNSTREAM_RE.finditer(text)})

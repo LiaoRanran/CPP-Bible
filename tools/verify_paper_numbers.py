@@ -96,7 +96,7 @@ _FORMAT_HINTS = (
 
 # 上下文归类规则（在"是否被检察覆盖"之后生效；只用于把**非经验**数字分门别类，
 # 绝不用于把经验数字悄悄洗掉——所有归类结果都会连同样例写进 JSON 报告，可人工复核）
-CONTEXT_RULES = [
+_CONTEXT_RULES_RAW = [
     (r"Cohen", "method_constant", "效应量口径/阈值常数（Cohen's h）"),
     (r"\\alpha|alpha\\b|significan", "method_constant", "显著性水平/统计口径常数"),
     (r"Clopper|Wilson|Wald|CP ?95|CI|interval| Kernel", "method_constant", "CI 口径常数（如 95）"),
@@ -138,7 +138,7 @@ CONTEXT_RULES = [
      "工程事实叙述数字"),
     (r"\\cite\{", "cited_context", "出现在引用附近的数字（人工复核）"),
 ]
-CONTEXT_RULES = [(re.compile(rx), cls, note) for rx, cls, note in CONTEXT_RULES]
+CONTEXT_RULES = [(re.compile(rx), cls, note) for rx, cls, note in _CONTEXT_RULES_RAW]
 
 
 # --------------------------------------------------------------------------
@@ -171,14 +171,14 @@ def get_path(obj, dotted: str):
     return cur
 
 
-def pct(v, places: int = 1) -> str:
+def pct(v, places: int = 1) -> str | None:
     r"""百分数渲染：与论文写法一致（不做 \% 后缀，匹配时允许后缀任意字符）。"""
     if v is None:
         return None
     return f"{round(float(v) + 0.0, places):.{places}f}"
 
 
-def num(v, places: int | None = None) -> str:
+def num(v, places: int | None = None) -> str | None:
     if v is None:
         return None
     if places is None:
@@ -188,7 +188,7 @@ def num(v, places: int | None = None) -> str:
     return f"{round(float(v), places):.{places}f}"
 
 
-def ratio(k, n) -> str:
+def ratio(k, n) -> str | None:
     if k is None or n is None:
         return None
     return f"{int(round(float(k)))}/{int(round(float(n)))}"
@@ -674,7 +674,6 @@ def build_claims(src, use_cmd=True):
                 return b
         return None
 
-    PENDING = "pending_676f"
     A5F = "data/experiments/a5_673p.json"
     for ds, eval_n_label in (("holdout", "holdout"), ("corpus", "corpus")):
         b4 = _byk(ds, 4)
@@ -1455,7 +1454,7 @@ def main(argv=None):
 
     # 页数（来自同名 .log，避免换算）
     log_rel = tex_rel[:-4] + ".log"
-    pages = total_pages = None
+    total_pages = None
     lp = _p(log_rel)
     if os.path.exists(lp):
         log = open(lp, encoding="utf-8", errors="replace").read()

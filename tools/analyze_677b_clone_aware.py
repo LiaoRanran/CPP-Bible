@@ -40,15 +40,16 @@ import re
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "data"))
 
-import audit_676k_dedup as k676            # noqa: E402  归一化/结构 token 口径（676k，未改动）
-import run_a5_experiment_673p as a5        # noqa: E402  三臂/统计原语（未改动）
-import selection_strategies_673p as ss     # noqa: E402
-import verifier_pool_673p as vp            # noqa: E402
+import audit_676k_dedup as k676  # noqa: E402  归一化/结构 token 口径（676k，未改动）
+import run_a5_experiment_673p as a5  # noqa: E402  三臂/统计原语（未改动）
+import selection_strategies_673p as ss  # noqa: E402
+import verifier_pool_673p as vp  # noqa: E402
 
 MANIFEST = ROOT / "data" / "a5_676f_sample_manifest.json"
 MATRIX = ROOT / "data" / "a5_676f_detection_matrix.json"
@@ -94,7 +95,8 @@ def _now() -> str:
 
 
 def _jload(p: Path) -> dict:
-    return json.loads(Path(p).read_text(encoding="utf-8"))
+    data: dict = json.loads(Path(p).read_text(encoding="utf-8"))
+    return data
 
 
 def _jwrite(p: Path, doc: dict) -> None:
@@ -111,6 +113,8 @@ def _md_write(p: Path, text: str) -> None:
 
 def _load_module(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"无法装载模块 {name}（{path}）")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
@@ -215,7 +219,7 @@ def clone_pair(v: dict | None, thr_jac: float = THR_JACCARD,
     """C1（由调用侧单独并）之外的 pair 级克隆判据：C2 ∪ C3。"""
     if not v:
         return False
-    return v["jaccard"] >= thr_jac or v["cosine"] >= thr_cos
+    return bool(v["jaccard"] >= thr_jac or v["cosine"] >= thr_cos)
 
 
 class UnionFind:
@@ -341,7 +345,9 @@ def _fam_record(man_idx: dict, fam_id: str, members: list[str], shash: dict,
             for j in range(i + 1, n):
                 a, b = members[i], members[j]
                 if shash[a] == shash[b]:
-                    jacs.append(1.0); coss.append(1.0); ss.append(1.0)
+                    jacs.append(1.0)
+                    coss.append(1.0)
+                    ss.append(1.0)
                     continue
                 v = pairs.get(tuple(sorted((a, b))))
                 jacs.append(v["jaccard"] if v else 0.0)
@@ -469,7 +475,7 @@ def stage_families() -> int:
                 1 for v in famsd.values() if len({man_idx[m]["source_batch"] for m in v}) > 1),
         }
 
-    sensitivity = {
+    sensitivity: dict[str, Any] = {
         "complete_linkage_by_threshold": {str(t): _fam_summary(f) for t, f in fam_complete_by_thr.items()},
         "single_linkage_by_threshold": {str(t): _fam_summary(f) for t, f in fam_single_by_thr.items()},
         "note": ("主家族定义 = complete-linkage @0.85（家族内任意两成员都判克隆）；"
@@ -493,7 +499,7 @@ def stage_families() -> int:
         1 for (a, b), v in pairs.items() if clone_pair(v) and unit_of[a] != unit_of[b])
 
     # 与 676k 对照
-    k676cmp = {"status": "skip"}
+    k676cmp: dict[str, Any] = {"status": "skip"}
     if DEDUP_676K.is_file():
         d = _jload(DEDUP_676K)
         l2 = d["layer2_normalized"]["details"]["groups"]
@@ -506,8 +512,8 @@ def stage_families() -> int:
             if len(a5m) > 1:
                 l2_hit_groups += 1
                 l2_hit_members += len(a5m)
-        cov = {"n_pairs_676k": len(l3b), "n_both_in_a5": 0, "n_same_family": 0,
-               "n_missing_endpoint": 0, "examples_not_same_family": []}
+        cov: dict[str, Any] = {"n_pairs_676k": len(l3b), "n_both_in_a5": 0, "n_same_family": 0,
+                               "n_missing_endpoint": 0, "examples_not_same_family": []}
         for p in l3b:
             ia = k676.to_a5_id(p["a"]["batch"], p["a"]["uid"].split(":", 1)[1])
             ib = k676.to_a5_id(p["b"]["batch"], p["b"]["uid"].split(":", 1)[1])
@@ -741,7 +747,8 @@ def sample_split_of(units: dict[str, list[str]], assign: dict[str, str]) -> dict
 
 def _balance(sample_split: dict[str, str], man_idx: dict, attr: str) -> dict:
     """两侧在属性 attr 上的分布（比例 + 最大偏差 pp）。"""
-    sides = {"derivation": collections.Counter(), "evaluation": collections.Counter()}
+    sides: dict[str, collections.Counter[str]] = {
+        "derivation": collections.Counter(), "evaluation": collections.Counter()}
     for sid, side in sample_split.items():
         v = man_idx[sid][attr] if attr != "planted" else bool(man_idx[sid]["planted"])
         sides[side][str(v)] += 1
@@ -829,8 +836,8 @@ def stage_splits() -> int:
         ("family_stratified", fam_units, "stratified"),
         ("strict_stratified", strict_units, "stratified"),
     ]
-    outs = {"original": {"strategy": "original（676f 原 split：层内 sha256 奇偶）",
-                         "sample_split": original, "validation": orig_stats}}
+    outs: dict[str, Any] = {"original": {"strategy": "original（676f 原 split：层内 sha256 奇偶）",
+                                         "sample_split": original, "validation": orig_stats}}
     for name, units, mode in configs:
         assign = assign_side(units, mode, man_idx)
         ssmap = sample_split_of(units, assign)
@@ -1139,7 +1146,7 @@ def bootstrap_split(name: str, sample_split: dict[str, str], units: dict[str, li
     mode="frozen"：冻结两条臂的资产集（= 论文报告的 Δ 所对应的固定对照），只重采样数据。"""
     unit_ids = sorted(units)
     side_of: dict[str, str] = {}
-    ids_of: dict[str, list[str]] = {}
+    ids_of: dict[str, list[dict[str, str]]] = {}
     for uid, members in units.items():
         sides = {sample_split[m] for m in members}
         if len(sides) != 1:
@@ -1151,10 +1158,11 @@ def bootstrap_split(name: str, sample_split: dict[str, str], units: dict[str, li
     fd_rates, rn_rates, deltas, co_deltas, n_evs = [], [], [], [], []
     fd_asset_counts: dict[str, int] = collections.Counter()
     co_asset_counts: dict[str, int] = collections.Counter()
-    fd_frozen_assets = tuple(frozen["fd_assets"]) if (frozen or {}).get("fd_assets") else None
-    rn_frozen_assets = tuple(frozen["random_assets"]) if (frozen or {}).get("random_assets") else None
-    co_fd_frozen = tuple(frozen["co_fd_assets"]) if (frozen or {}).get("co_fd_assets") else None
-    co_rn_frozen = tuple(frozen["co_random_assets"]) if (frozen or {}).get("co_random_assets") else None
+    fz = frozen or {}
+    fd_frozen_assets = tuple(fz["fd_assets"]) if fz.get("fd_assets") else None
+    rn_frozen_assets = tuple(fz["random_assets"]) if fz.get("random_assets") else None
+    co_fd_frozen = tuple(fz["co_fd_assets"]) if fz.get("co_fd_assets") else None
+    co_rn_frozen = tuple(fz["co_random_assets"]) if fz.get("co_random_assets") else None
     for rep in range(n_reps):
         rnd = random.Random(SEED_BOOT + rep)
         der_rows: list[dict] = []
@@ -1165,23 +1173,27 @@ def bootstrap_split(name: str, sample_split: dict[str, str], units: dict[str, li
         if not der_rows or not ev_rows:
             continue
         n = len(ev_rows)
+        fd_assets: tuple[str, ...]
+        rn_assets: tuple[str, ...]
+        co_fd_assets: tuple[str, ...]
+        co_rn_assets: tuple[str, ...]
         if mode == "frozen":
-            fd_assets = fd_frozen_assets
-            rn_assets = rn_frozen_assets
+            fd_assets = fd_frozen_assets or ()
+            rn_assets = rn_frozen_assets or ()
             co_fd_assets = co_fd_frozen or ()
             co_rn_assets = co_rn_frozen or ()
         else:
             fh = a5.fail_hits_real(der_rows, ASSETS, index)
-            fd_assets = ss.select("failure_driven", vp.ASSET_POOL, max_assets=PRIMARY_K,
-                                  fail_hits={a: int(fh.get(a, 0)) for a in ASSETS},
-                                  candidates=ASSETS).assets
-            rn_assets = ss.select("random", vp.ASSET_POOL, max_assets=PRIMARY_K,
-                                  seed=SEED_ARM + rep, candidates=ASSETS).assets
+            fd_assets = tuple(ss.select("failure_driven", vp.ASSET_POOL, max_assets=PRIMARY_K,
+                                        fail_hits={a: int(fh.get(a, 0)) for a in ASSETS},
+                                        candidates=ASSETS).assets)
+            rn_assets = tuple(ss.select("random", vp.ASSET_POOL, max_assets=PRIMARY_K,
+                                        seed=SEED_ARM + rep, candidates=ASSETS).assets)
             co_fh = {a: int(fh.get(a, 0)) for a in co_cands}
-            co_fd_assets = ss.select("failure_driven", vp.ASSET_POOL, max_assets=PRIMARY_K,
-                                     fail_hits=co_fh, candidates=co_cands).assets
-            co_rn_assets = ss.select("random", vp.ASSET_POOL, max_assets=PRIMARY_K,
-                                     seed=SEED_ARM + rep, candidates=co_cands).assets
+            co_fd_assets = tuple(ss.select("failure_driven", vp.ASSET_POOL, max_assets=PRIMARY_K,
+                                           fail_hits=co_fh, candidates=co_cands).assets)
+            co_rn_assets = tuple(ss.select("random", vp.ASSET_POOL, max_assets=PRIMARY_K,
+                                           seed=SEED_ARM + rep, candidates=co_cands).assets)
         fd_k = sum(1 for r in ev_rows if ex.verdict(r, fd_assets) == "catch")
         rn_k = sum(1 for r in ev_rows if ex.verdict(r, rn_assets) == "catch")
         fd_rates.append(fd_k / n)
@@ -1428,12 +1440,17 @@ def stage_tables() -> int:
             n = p["n"]
             C.append(f"## {name}（评估 n={n}，分裂单位 {bf['n_units']} 个）\n")
             lo, hi = a5.cp_interval(p["fd_k"], n)
-            w_naive = (hi - lo) * 100
-            w_f = (bf["fd_rate"]["ci95_percentile"][1] - bf["fd_rate"]["ci95_percentile"][0]) * 100
-            C.append(f"- FD 检出率：点估计 {p['fd_rate_pct']}%；普通 CP95 [{lo*100:.2f}, {hi*100:.2f}]"
+            if lo is None or hi is None:
+                raise ValueError("cp_interval 返回 None（k/n 不完整）")
+            lo_f, hi_f = float(lo), float(hi)
+            w_naive = (hi_f - lo_f) * 100
+            ci_f0 = float(bf["fd_rate"]["ci95_percentile"][0])
+            ci_f1 = float(bf["fd_rate"]["ci95_percentile"][1])
+            w_f = (ci_f1 - ci_f0) * 100
+            C.append(f"- FD 检出率：点估计 {p['fd_rate_pct']}%；普通 CP95 [{lo_f*100:.2f}, {hi_f*100:.2f}]"
                      f"（宽 {w_naive:.2f}pp）；cluster(frozen) 95% "
-                     f"[{bf['fd_rate']['ci95_percentile'][0]*100:.2f}, "
-                     f"{bf['fd_rate']['ci95_percentile'][1]*100:.2f}]（宽 {w_f:.2f}pp）")
+                     f"[{ci_f0*100:.2f}, "
+                     f"{ci_f1*100:.2f}]（宽 {w_f:.2f}pp）")
             d_naive = p["delta_ci95_pp"]
             w_dn = d_naive[1] - d_naive[0]
             w_df = (bf["delta_fd_random"]["ci95_percentile"][1]

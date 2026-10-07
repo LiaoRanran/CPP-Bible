@@ -16,8 +16,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-import re
 import sys
+from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MANIFEST = "data/a5_676f_sample_manifest.json"
@@ -97,12 +97,13 @@ def main() -> int:
 
     # 盲区矩阵样本数（并集口径：含历史批次，与 A5 的 1137 不等是正常的）
     bl_n = (bl.get("total") or {}).get("n")
-    check("D5", "盲区地图样本数已登记且 ≥ A5 清单", bool(bl_n) and bl_n >= len(samples),
+    bl_n_ok = isinstance(bl_n, int) and bl_n >= len(samples)
+    check("D5", "盲区地图样本数已登记且 ≥ A5 清单", bl_n_ok,
           f"blindspot n={bl_n}；A5 n={len(samples)}（并集含历史批次，差异属预期）")
 
     # md5 重算：按 676f_pipeline 的 _md5_files 口径（文件名 + 字节，按文件名排序）
     verified = skipped = mismatched = 0
-    mismatch_list = []
+    mismatch_list: list[str] = []
     for s in samples:
         files = s.get("files") or []
         if not files or not s.get("content_md5"):
@@ -129,7 +130,7 @@ def main() -> int:
     ).hexdigest()[:16]
 
     verdict = "pass" if all(c["ok"] for c in checks) else "fail"
-    report = {
+    report_full: dict[str, Any] = {
         "schema": "queyi-data-integrity/676h",
         "generated_by": "tools/data_integrity_676h.py",
         "manifest": MANIFEST,
@@ -143,7 +144,7 @@ def main() -> int:
         "verdict": verdict,
     }
     with open(os.path.join(ROOT, OUT_JSON.replace("/", os.sep)), "w", encoding="utf-8") as fh:
-        json.dump(report, fh, ensure_ascii=False, indent=1)
+        json.dump(report_full, fh, ensure_ascii=False, indent=1)
 
     for c in checks:
         print(f"[integrity] {'OK  ' if c['ok'] else 'FAIL'} {c['id']} {c['name']} — {c['detail']}")

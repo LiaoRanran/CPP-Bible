@@ -28,6 +28,7 @@ import json
 import os
 import re
 import sys
+from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPDIR = os.path.join(ROOT, "data", "holdout_expansion")
@@ -102,16 +103,16 @@ def e1() -> dict:
         actual_json = set(json_files)
         # 多文件样本：sample_107_a.cpp / _main.cpp 归属 sample_107
         actual_cpp = set()
-        for c in cpp_files:
-            m = re.match(r"^(sample_[A-Z]?\d+)(_[a-z]+)?$", c)
-            actual_cpp.add(m.group(1) if m else c)
+        for cf in cpp_files:
+            m = re.match(r"^(sample_[A-Z]?\d+)(_[a-z]+)?$", cf)
+            actual_cpp.add(m.group(1) if m else cf)
 
         missing_json = sorted(declared_set - actual_json)
         extra_json = sorted(actual_json - declared_set)
         missing_cpp = sorted(declared_set - actual_cpp)
 
         # 实际类型分布
-        actual_by_type = collections.Counter()
+        actual_by_type: collections.Counter[str] = collections.Counter()
         for stem in actual_json:
             p = os.path.join(d, stem + ".json")
             try:
@@ -164,7 +165,7 @@ def e2() -> dict:
     planted_false_no_url = []
     loc_missing_parts = []
     n_checked = 0
-    field_presence = collections.Counter()
+    field_presence: collections.Counter[str] = collections.Counter()
 
     for b in EXP_BATCHES:
         d = os.path.join(EXPDIR, b)
@@ -269,7 +270,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--json")
     args = ap.parse_args()
-    res = {
+    res: dict[str, Any] = {
         "schema": "queyi-audit-676k-integrity/v1",
         "generated_by": "tools/audit_676k_integrity.py",
         "E1_index_consistency": e1(),
