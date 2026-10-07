@@ -1,0 +1,8248 @@
+{
+ "schema": "queyi-680-audit/v1",
+ "generated_at": "2026-10-07",
+ "seed": 6801,
+ "sample_frac": 0.2,
+ "n_universe": 1147,
+ "n_sampled_B2": 229,
+ "B1": {
+  "inline_no_disk": 64
+ },
+ "B2": {
+  "PASS": 212,
+  "N/A_inline": 11,
+  "REVIEW": 6,
+  "marker_coverage_by_batch": {
+   "expA": 22,
+   "expD": 46,
+   "expE": 42,
+   "expC": 42,
+   "expB": 16,
+   "expF": 25,
+   "holdout": 1,
+   "expG": 18
+  },
+  "sampled_by_batch": {
+   "expA": 22,
+   "expD": 46,
+   "expE": 42,
+   "expC": 42,
+   "expB": 16,
+   "expF": 25,
+   "corpus": 11,
+   "holdout": 7,
+   "expG": 18
+  }
+ },
+ "B2_fail": [],
+ "B2_review": [
+  {
+   "uid": "holdout:h48",
+   "reason": "no_defect_marker"
+  },
+  {
+   "uid": "holdout:h54",
+   "reason": "no_defect_marker"
+  },
+  {
+   "uid": "holdout:h15",
+   "reason": "no_defect_marker"
+  },
+  {
+   "uid": "holdout:h5",
+   "reason": "no_defect_marker"
+  },
+  {
+   "uid": "holdout:h22",
+   "reason": "no_defect_marker"
+  },
+  {
+   "uid": "holdout:h23",
+   "reason": "no_defect_marker"
+  }
+ ],
+ "B3": {
+  "vocab_size": 34,
+  "n_distinct_json_1042": 33,
+  "n_distinct_manifest_1147": 46,
+  "oov_json_1042": {},
+  "oov_originals_105": {
+   "UB": 64,
+   "MEM": 10,
+   "CONC": 5,
+   "leak": 1,
+   "RAII/UB": 1,
+   "ODR": 1,
+   "memory": 4,
+   "memory-order": 2,
+   "API": 4,
+   "unspecified": 8,
+   "historical": 1,
+   "compiler-diff": 2,
+   "ambiguity": 1,
+   "compiler-bug": 1
+  },
+  "dist_json": {
+   "out_of_bounds": 89,
+   "atomic_ub": 65,
+   "deadlock": 65,
+   "integer_overflow": 57,
+   "bit_operation": 51,
+   "memory_order": 40,
+   "iterator_invalidation": 35,
+   "stl_container_ub": 35,
+   "string_ub": 35,
+   "algorithm_misuse": 35,
+   "logic_error": 31,
+   "move_semantics": 30,
+   "raii_violation": 30,
+   "virtual_function": 30,
+   "smart_pointer": 30,
+   "lambda_capture": 30,
+   "condition_variable": 30,
+   "endianness": 28,
+   "volatile_misuse": 28,
+   "memory_leak": 27,
+   "alignment": 26,
+   "use_after_free": 24,
+   "null_pointer_deref": 24,
+   "type_punning": 23,
+   "linker_odr": 23,
+   "uninitialized_read": 20,
+   "interrupt_safety": 20,
+   "register_ub": 20,
+   "data_race": 18,
+   "double_free": 15,
+   "strict_aliasing": 13,
+   "other_ub": 8,
+   "cross_tu_ub": 7
+  },
+  "cross_source_mismatch_by_batch": {
+   "expA": 100,
+   "expB": 35,
+   "expC": 103,
+   "expE": 60,
+   "expG": 65
+  },
+  "cross_source_mismatch_by_field": {
+   "defect_type": 100,
+   "matrix_defect_type": 308,
+   "expected_verdict": 38
+  },
+  "cross_source_rows": [
+   {
+    "uid": "expA:sample_001",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_002",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_003",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_004",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_005",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_006",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_007",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_008",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_009",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_010",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "use_after_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_011",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_012",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_013",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_014",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_015",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_016",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "double_free"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_017",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_018",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_019",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_020",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_021",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_022",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_023",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_024",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "memory_safety",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_025",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_026",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_027",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_028",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_029",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_030",
+    "diffs": [
+     [
+      "defect_type",
+      "move_semantics",
+      "out_of_bounds"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_031",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_032",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_033",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_034",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_035",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_036",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_037",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_038",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_039",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_040",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_041",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_042",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_043",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_044",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_045",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_046",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_047",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_048",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_049",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_050",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_051",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_052",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_053",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_054",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_055",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_056",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_057",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_058",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_059",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "null_pointer_deref"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_060",
+    "diffs": [
+     [
+      "defect_type",
+      "raii_violation",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_061",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_062",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_063",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_064",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_065",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_066",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_067",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_068",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_069",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_070",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_071",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_072",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_073",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_074",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_075",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_076",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ],
+     [
+      "expected_verdict",
+      "catch",
+      "miss"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_077",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ],
+     [
+      "expected_verdict",
+      "catch",
+      "miss"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_078",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ],
+     [
+      "expected_verdict",
+      "catch",
+      "miss"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_079",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "uninitialized_read"
+     ],
+     [
+      "expected_verdict",
+      "catch",
+      "miss"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_080",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_081",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_082",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_083",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_084",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_085",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_086",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_087",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "bit_operation"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_088",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_089",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_090",
+    "diffs": [
+     [
+      "defect_type",
+      "virtual_function",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_091",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_092",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_093",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "integer_overflow"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_094",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "other_ub"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "other_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_095",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "other_ub"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "other_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_096",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "other_ub"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "other_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_097",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "bit_operation"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_098",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "bit_operation"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_099",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "integer_overflow"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expA:sample_100",
+    "diffs": [
+     [
+      "defect_type",
+      "linker_odr",
+      "integer_overflow"
+     ],
+     [
+      "expected_verdict",
+      "miss",
+      "catch"
+     ],
+     [
+      "matrix_defect_type",
+      "undefined_behavior",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B041",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B042",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B043",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B044",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B045",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B046",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B047",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B048",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B049",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B050",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B051",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B052",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B053",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B054",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B055",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B056",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B057",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B058",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B059",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B060",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "resource_leak",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B081",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B082",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B083",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B084",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B085",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B086",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B087",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B088",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B089",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B090",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B091",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "alignment"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B092",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B093",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "null_pointer_deref"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B099",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "type_punning"
+     ]
+    ]
+   },
+   {
+    "uid": "expB:sample_B100",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "other_ub",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_091",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_092",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_093",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_094",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_095",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_096",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_097",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_098",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_099",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_100",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_101",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_102",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_103",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_104",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_105",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_106",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_114",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_115",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_116",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_117",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_118",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_119",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_120",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "cross_tu_ub",
+      "linker_odr"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_121",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_122",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_123",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_124",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_125",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_126",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_127",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_128",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_129",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_130",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_131",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_132",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_133",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_134",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_135",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_136",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_137",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_138",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_139",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_140",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "bit_operation"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_141",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_142",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_143",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_144",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_145",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_146",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_147",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_148",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "integer_overflow"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_149",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_150",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_151",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_152",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_153",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_154",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_155",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_156",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_157",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_158",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_159",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_160",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "optimization_dependent",
+      "strict_aliasing"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_161",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_162",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_163",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_164",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_165",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_166",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_167",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_168",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_169",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_170",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_171",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_172",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_173",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_174",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_175",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_176",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "use_after_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_177",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_178",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_179",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_180",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_181",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_182",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "double_free"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_183",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_184",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_185",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_186",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_187",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_188",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "memory_leak"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_189",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_190",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_191",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_192",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_193",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_194",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_195",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_196",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_197",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_198",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_199",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expC:sample_200",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "conditional_trigger",
+      "logic_error"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E111",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E112",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E113",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E114",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E115",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E116",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E117",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E118",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E119",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E120",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E121",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E122",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E123",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E124",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E125",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E126",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E127",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E128",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E129",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E130",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E131",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E132",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E133",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E134",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E135",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E136",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E137",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E138",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E139",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E140",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "aba_problem",
+      "atomic_ub"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E141",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E142",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E143",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E144",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E145",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E146",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E147",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E148",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E149",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E150",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E151",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E152",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E153",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E154",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E155",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E156",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E157",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E158",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E159",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E160",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E161",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E162",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E163",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E164",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E165",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E166",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E167",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E168",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E169",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expE:sample_E170",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "lock_priority_inversion",
+      "deadlock"
+     ]
+    ]
+   },
+   {
+    "uid": "expG:sample_G001",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "heap_overread",
+      "out_of_bounds"
+     ]
+    ]
+   },
+   {
+    "uid": "expG:sample_G002",
+    "diffs": [
+     [
+      "matrix_defect_type",
+      "heap_overread",
+      "out_of_bounds"
+     ]
+    ]
+   }
+  ],
+  "expA_manifest_type_dist": {
+   "move_semantics": 30,
+   "raii_violation": 30,
+   "virtual_function": 30,
+   "linker_odr": 10
+  },
+  "expA_json_type_dist": {
+   "use_after_free": 10,
+   "double_free": 6,
+   "out_of_bounds": 28,
+   "null_pointer_deref": 15,
+   "uninitialized_read": 20,
+   "bit_operation": 10,
+   "integer_overflow": 8,
+   "other_ub": 3
+  }
+ },
+ "B4": {
+  "has_platform_token": 330,
+  "token_no_note": 274,
+  "inline_skipped": 64,
+  "embedded_concurrency_token_no_note": 218,
+  "declared": 149,
+  "note_coverage_pct_of_1147": 12.99,
+  "top_platform_types": {
+   "endianness": 28,
+   "volatile_misuse": 28,
+   "bit_operation": 28,
+   "alignment": 25,
+   "interrupt_safety": 20,
+   "register_ub": 20
+  }
+ },
+ "B5": {
+  "consistent": 1036,
+  "inconsistent": 111,
+  "miss->catch": 72,
+  "catch->miss": 39,
+  "inconsistent_pct": 9.68,
+  "by_batch": {
+   "expE": 46,
+   "expF": 16,
+   "corpus": 14,
+   "expD": 13,
+   "expG": 8,
+   "expC": 6,
+   "expB": 5,
+   "expA": 2,
+   "holdout": 1
+  },
+  "catch2miss_by_type": {
+   "deadlock": 31,
+   "condition_variable": 3,
+   "memory_safety": 2,
+   "raii_violation": 1,
+   "atomic_ub": 1,
+   "heap_overread": 1
+  },
+  "catch2miss_hung": 34,
+  "catch2miss_nonhung": 5,
+  "catch2miss_nonhung_ids": [
+   "expA:sample_011",
+   "expA:sample_012",
+   "expC:sample_032",
+   "expE:sample_E054",
+   "expG:sample_G051"
+  ]
+ },
+ "B5_mismatches": [
+  {
+   "uid": "holdout:h46",
+   "batch": "holdout",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3e-06",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3e-20",
+   "batch": "corpus",
+   "defect_type": "historical",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-06",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-09",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-11",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-14",
+   "batch": "corpus",
+   "defect_type": "compiler-diff",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-18",
+   "batch": "corpus",
+   "defect_type": "ambiguity",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-21",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-22",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-25",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-29",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-30",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-32",
+   "batch": "corpus",
+   "defect_type": "UB",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "corpus:d3-37",
+   "batch": "corpus",
+   "defect_type": "unspecified",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expA:sample_011",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": false,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expA:sample_012",
+   "batch": "expA",
+   "defect_type": "memory_safety",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": false,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expB:sample_B090",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expB:sample_B094",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expB:sample_B095",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expB:sample_B096",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expB:sample_B097",
+   "batch": "expB",
+   "defect_type": "other_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expC:sample_021",
+   "batch": "expC",
+   "defect_type": "move_semantics",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expC:sample_032",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": false,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expC:sample_053",
+   "batch": "expC",
+   "defect_type": "raii_violation",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expC:sample_064",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expC:sample_069",
+   "batch": "expC",
+   "defect_type": "virtual_function",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expC:sample_099",
+   "batch": "expC",
+   "defect_type": "cross_tu_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D055",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D056",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D057",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D058",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D060",
+   "batch": "expD",
+   "defect_type": "stl_container_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D081",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D082",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D083",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D084",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D085",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D093",
+   "batch": "expD",
+   "defect_type": "string_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D134",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expD:D138",
+   "batch": "expD",
+   "defect_type": "algorithm_misuse",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E003",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E004",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E005",
+   "batch": "expE",
+   "defect_type": "memory_order",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E041",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E052",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E054",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": false,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E067",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E068",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E072",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E075",
+   "batch": "expE",
+   "defect_type": "atomic_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E076",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E077",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E078",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E079",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E080",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E081",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E082",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E083",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E084",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E085",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E086",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E088",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E089",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E090",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E091",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E092",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E093",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E094",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E095",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E096",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E097",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E098",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E099",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E100",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E101",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E102",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E104",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E105",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E106",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E108",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E109",
+   "batch": "expE",
+   "defect_type": "deadlock",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E147",
+   "batch": "expE",
+   "defect_type": "lock_priority_inversion",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E176",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E177",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expE:sample_E191",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expE:sample_E198",
+   "batch": "expE",
+   "defect_type": "condition_variable",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": true,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expF:F027",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F029",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F031",
+   "batch": "expF",
+   "defect_type": "alignment",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F042",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F069",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F070",
+   "batch": "expF",
+   "defect_type": "endianness",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F076",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F101",
+   "batch": "expF",
+   "defect_type": "volatile_misuse",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F143",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F147",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F149",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F150",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F155",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F168",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F170",
+   "batch": "expF",
+   "defect_type": "interrupt_safety",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expF:F189",
+   "batch": "expF",
+   "defect_type": "register_ub",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G022",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G042",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G043",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G045",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G051",
+   "batch": "expG",
+   "defect_type": "heap_overread",
+   "expected": "catch",
+   "actual": "miss",
+   "hung": false,
+   "kind": "catch->miss"
+  },
+  {
+   "uid": "expG:sample_G068",
+   "batch": "expG",
+   "defect_type": "info_leak",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G087",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  },
+  {
+   "uid": "expG:sample_G098",
+   "batch": "expG",
+   "defect_type": "logic_error",
+   "expected": "miss",
+   "actual": "catch",
+   "hung": false,
+   "kind": "miss->catch"
+  }
+ ],
+ "B6": {
+  "n_families": 474,
+  "n_multimember": 194,
+  "n_mixed_defect_type": 14,
+  "n_mixed_expected": 23,
+  "worst10": [
+   {
+    "family_id": "F0288",
+    "size": 21,
+    "mapped": 21,
+    "n_distinct_defect_type": 5,
+    "defect_type_dist": {
+     "volatile_misuse": 3,
+     "bit_operation": 5,
+     "register_ub": 10,
+     "UB": 2,
+     "API": 1
+    },
+    "expected_dist": {
+     "miss": 3,
+     "catch": 18
+    },
+    "actual_dist": {
+     "miss": 3,
+     "catch": 18
+    },
+    "score": 46,
+    "members": [
+     "F102",
+     "F104",
+     "F105",
+     "F106",
+     "F107",
+     "F108",
+     "F109",
+     "F110",
+     "F171",
+     "F172",
+     "F173",
+     "F174",
+     "F175",
+     "F176",
+     "F177",
+     "F178",
+     "F179",
+     "F180",
+     "d3f-07",
+     "d3f-11",
+     "h56"
+    ]
+   },
+   {
+    "family_id": "F0021",
+    "size": 16,
+    "mapped": 16,
+    "n_distinct_defect_type": 4,
+    "defect_type_dist": {
+     "virtual_function": 3,
+     "linker_odr": 2,
+     "integer_overflow": 8,
+     "logic_error": 3
+    },
+    "expected_dist": {
+     "catch": 11,
+     "miss": 5
+    },
+    "actual_dist": {
+     "catch": 13,
+     "miss": 3
+    },
+    "score": 36,
+    "members": [
+     "A088",
+     "A089",
+     "A090",
+     "A099",
+     "A100",
+     "C141",
+     "C142",
+     "C143",
+     "C144",
+     "C145",
+     "C146",
+     "C147",
+     "C148",
+     "C198",
+     "C199",
+     "C200"
+    ]
+   },
+   {
+    "family_id": "F0014",
+    "size": 17,
+    "mapped": 17,
+    "n_distinct_defect_type": 3,
+    "defect_type_dist": {
+     "raii_violation": 1,
+     "virtual_function": 4,
+     "integer_overflow": 12
+    },
+    "expected_dist": {
+     "miss": 5,
+     "catch": 12
+    },
+    "actual_dist": {
+     "miss": 5,
+     "catch": 12
+    },
+    "score": 26,
+    "members": [
+     "A060",
+     "A061",
+     "A062",
+     "A063",
+     "A075",
+     "C121",
+     "C122",
+     "C123",
+     "C124",
+     "C125",
+     "C126",
+     "C127",
+     "C128",
+     "C129",
+     "C130",
+     "C131",
+     "C132"
+    ]
+   },
+   {
+    "family_id": "F0002",
+    "size": 16,
+    "mapped": 16,
+    "n_distinct_defect_type": 3,
+    "defect_type_dist": {
+     "move_semantics": 11,
+     "raii_violation": 4,
+     "MEM": 1
+    },
+    "expected_dist": {
+     "catch": 11,
+     "miss": 5
+    },
+    "actual_dist": {
+     "catch": 15,
+     "miss": 1
+    },
+    "score": 26,
+    "members": [
+     "A005",
+     "A006",
+     "A007",
+     "A008",
+     "A011",
+     "A014",
+     "A017",
+     "A018",
+     "A019",
+     "A020",
+     "A030",
+     "A031",
+     "A032",
+     "A033",
+     "A034",
+     "h49"
+    ]
+   },
+   {
+    "family_id": "F0004",
+    "size": 14,
+    "mapped": 14,
+    "n_distinct_defect_type": 3,
+    "defect_type_dist": {
+     "move_semantics": 2,
+     "double_free": 6,
+     "memory_leak": 6
+    },
+    "expected_dist": {
+     "catch": 13,
+     "miss": 1
+    },
+    "actual_dist": {
+     "miss": 1,
+     "catch": 13
+    },
+    "score": 26,
+    "members": [
+     "A012",
+     "A015",
+     "C177",
+     "C178",
+     "C179",
+     "C180",
+     "C181",
+     "C182",
+     "C183",
+     "C184",
+     "C185",
+     "C186",
+     "C187",
+     "C188"
+    ]
+   },
+   {
+    "family_id": "F0019",
+    "size": 15,
+    "mapped": 15,
+    "n_distinct_defect_type": 3,
+    "defect_type_dist": {
+     "virtual_function": 5,
+     "linker_odr": 2,
+     "bit_operation": 8
+    },
+    "expected_dist": {
+     "catch": 12,
+     "miss": 3
+    },
+    "actual_dist": {
+     "catch": 15
+    },
+    "score": 25,
+    "members": [
+     "A080",
+     "A081",
+     "A082",
+     "A083",
+     "A087",
+     "A097",
+     "A098",
+     "C133",
+     "C134",
+     "C135",
+     "C136",
+     "C137",
+     "C138",
+     "C139",
+     "C140"
+    ]
+   },
+   {
+    "family_id": "F0409",
+    "size": 4,
+    "mapped": 4,
+    "n_distinct_defect_type": 3,
+    "defect_type_dist": {
+     "UB": 2,
+     "memory": 1,
+     "MEM": 1
+    },
+    "expected_dist": {
+     "miss": 1,
+     "catch": 3
+    },
+    "actual_dist": {
+     "catch": 4
+    },
+    "score": 25,
+    "members": [
+     "d3-22",
+     "d3e-08",
+     "h27",
+     "h48"
+    ]
+   },
+   {
+    "family_id": "F0286",
+    "size": 5,
+    "mapped": 5,
+    "n_distinct_defect_type": 2,
+    "defect_type_dist": {
+     "volatile_misuse": 4,
+     "UB": 1
+    },
+    "expected_dist": {
+     "miss": 4,
+     "catch": 1
+    },
+    "actual_dist": {
+     "miss": 4,
+     "catch": 1
+    },
+    "score": 16,
+    "members": [
+     "F089",
+     "F090",
+     "F091",
+     "F092",
+     "d3f-06"
+    ]
+   },
+   {
+    "family_id": "F0007",
+    "size": 5,
+    "mapped": 5,
+    "n_distinct_defect_type": 2,
+    "defect_type_dist": {
+     "move_semantics": 1,
+     "raii_violation": 4
+    },
+    "expected_dist": {
+     "miss": 1,
+     "catch": 4
+    },
+    "actual_dist": {
+     "catch": 5
+    },
+    "score": 15,
+    "members": [
+     "A024",
+     "A037",
+     "A038",
+     "A039",
+     "A040"
+    ]
+   },
+   {
+    "family_id": "F0287",
+    "size": 7,
+    "mapped": 7,
+    "n_distinct_defect_type": 2,
+    "defect_type_dist": {
+     "volatile_misuse": 3,
+     "interrupt_safety": 4
+    },
+    "expected_dist": {
+     "miss": 7
+    },
+    "actual_dist": {
+     "miss": 5,
+     "catch": 2
+    },
+    "score": 11,
+    "members": [
+     "F099",
+     "F100",
+     "F101",
+     "F141",
+     "F143",
+     "F144",
+     "F146"
+    ]
+   }
+  ]
+ },
+ "n_issues": 360,
+ "issues": [
+  {
+   "uid": "holdout:h48",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h54",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h15",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h5",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h22",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h23",
+   "source_batch": "?",
+   "dimension": "B2",
+   "severity": "medium",
+   "reason": "抽样真实性(待人工复核): no_defect_marker",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×64)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: UB",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×10)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: MEM",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×5)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: CONC",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: leak",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: RAII/UB",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: ODR",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×4)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: memory",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×2)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: memory-order",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×4)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: API",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×8)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: unspecified",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: historical",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×2)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: compiler-diff",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: ambiguity",
+   "evidence": {}
+  },
+  {
+   "uid": "(originals×1)",
+   "source_batch": "holdout/corpus",
+   "dimension": "B3",
+   "severity": "low",
+   "reason": "原始样本沿用 legacy 标签: compiler-bug",
+   "evidence": {}
+  },
+  {
+   "uid": "(cross-source×363)",
+   "source_batch": "exp",
+   "dimension": "B3b",
+   "severity": "high",
+   "reason": "manifest/matrix 与权威逐样本 JSON 标签不一致（建议以 JSON 重derive）",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B001",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B003",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B004",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B007",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B008",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B009",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B010",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B013",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B014",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B015",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B016",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B017",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B018",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expB:sample_B019",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E001",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E002",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E003",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E004",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E005",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E006",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E007",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E008",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E009",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E010",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E011",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E012",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E013",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E014",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E015",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E016",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E017",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E018",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E019",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E020",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E021",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E022",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E023",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E024",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E025",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E026",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E027",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E028",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E029",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E030",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E031",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E032",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E033",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E034",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E035",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E036",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E037",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E038",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E039",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E040",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E041",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E042",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E043",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E044",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E045",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E046",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E047",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E048",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E049",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E050",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E051",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E052",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E053",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E054",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E055",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E056",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E057",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E058",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E059",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E060",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E061",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E062",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E063",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E064",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E065",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E066",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E067",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E068",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E069",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E070",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E071",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E072",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E073",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E074",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E075",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E076",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E077",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E078",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E079",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E080",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E081",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E082",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E083",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E084",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E085",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E086",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E087",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E088",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E089",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E090",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E091",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E092",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E093",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E094",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E095",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E096",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E097",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E098",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E099",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E100",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E101",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E102",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E103",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E104",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E105",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E106",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E107",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E108",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E109",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E110",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E111",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E112",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E113",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E114",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E115",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E116",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E117",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E118",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E119",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E120",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E121",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E122",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E123",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E124",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E125",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E126",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E127",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E128",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E129",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E130",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E131",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E132",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E133",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E134",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E135",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E136",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E137",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E138",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E139",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E140",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E141",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E142",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E143",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E144",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E145",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E146",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E147",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E148",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E149",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E150",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E151",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E152",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E153",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E154",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E155",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E156",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E157",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E158",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E159",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E160",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E161",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E162",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E163",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E164",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E165",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E166",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E167",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E168",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E169",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E170",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E171",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E172",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E173",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E174",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E175",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E176",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E177",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E178",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E179",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E180",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E181",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E182",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E183",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E184",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E185",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E186",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E187",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E188",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E189",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E190",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E191",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E192",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E193",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E194",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E195",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E196",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E197",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E198",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E199",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expE:sample_E200",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expG:sample_G024",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expG:sample_G082",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expG:sample_G083",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "expG:sample_G084",
+   "source_batch": "?",
+   "dimension": "B4",
+   "severity": "low",
+   "reason": "平台依赖迹象但无 platform_notes",
+   "evidence": {}
+  },
+  {
+   "uid": "holdout:h46",
+   "source_batch": "holdout",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3e-06",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3e-20",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "historical",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-06",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-09",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "unspecified",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-11",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "unspecified",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-14",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "compiler-diff",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-18",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "ambiguity",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-21",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-22",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-25",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-29",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-30",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-32",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "UB",
+    "hung": false
+   }
+  },
+  {
+   "uid": "corpus:d3-37",
+   "source_batch": "corpus",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "unspecified",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expA:sample_011",
+   "source_batch": "expA",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "memory_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expA:sample_012",
+   "source_batch": "expA",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "memory_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expB:sample_B090",
+   "source_batch": "expB",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "other_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expB:sample_B094",
+   "source_batch": "expB",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "other_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expB:sample_B095",
+   "source_batch": "expB",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "other_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expB:sample_B096",
+   "source_batch": "expB",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "other_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expB:sample_B097",
+   "source_batch": "expB",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "other_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_021",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "move_semantics",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_032",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "raii_violation",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_053",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "raii_violation",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_064",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "virtual_function",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_069",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "virtual_function",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expC:sample_099",
+   "source_batch": "expC",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "cross_tu_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D055",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "stl_container_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D056",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "stl_container_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D057",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "stl_container_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D058",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "stl_container_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D060",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "stl_container_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D081",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D082",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D083",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D084",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D085",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D093",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "string_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D134",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "algorithm_misuse",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expD:D138",
+   "source_batch": "expD",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "algorithm_misuse",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E003",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "memory_order",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E004",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "memory_order",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E005",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "memory_order",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E041",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E052",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E054",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E067",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E068",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E072",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E075",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "atomic_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E076",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E077",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E078",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E079",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E080",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E081",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E082",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E083",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E084",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E085",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E086",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E088",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E089",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E090",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E091",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E092",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E093",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E094",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E095",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E096",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E097",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E098",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E099",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E100",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E101",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E102",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E104",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E105",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E106",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E108",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E109",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "deadlock",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E147",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "lock_priority_inversion",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E176",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "condition_variable",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E177",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "condition_variable",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expE:sample_E191",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "condition_variable",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expE:sample_E198",
+   "source_batch": "expE",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "condition_variable",
+    "hung": true
+   }
+  },
+  {
+   "uid": "expF:F027",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "alignment",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F029",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "alignment",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F031",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "alignment",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F042",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "endianness",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F069",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "endianness",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F070",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "endianness",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F076",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "volatile_misuse",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F101",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "volatile_misuse",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F143",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F147",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F149",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F150",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F155",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F168",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F170",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "interrupt_safety",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expF:F189",
+   "source_batch": "expF",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "register_ub",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G022",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G042",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G043",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G045",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G051",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "high",
+   "reason": "expected/actual 不一致 catch->miss",
+   "evidence": {
+    "defect_type": "heap_overread",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G068",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "info_leak",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G087",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "expG:sample_G098",
+   "source_batch": "expG",
+   "dimension": "B5",
+   "severity": "medium",
+   "reason": "expected/actual 不一致 miss->catch",
+   "evidence": {
+    "defect_type": "logic_error",
+    "hung": false
+   }
+  },
+  {
+   "uid": "F0288",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (5 种)",
+   "evidence": {
+    "size": 21,
+    "dist": {
+     "volatile_misuse": 3,
+     "bit_operation": 5,
+     "register_ub": 10,
+     "UB": 2,
+     "API": 1
+    }
+   }
+  },
+  {
+   "uid": "F0021",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (4 种)",
+   "evidence": {
+    "size": 16,
+    "dist": {
+     "virtual_function": 3,
+     "linker_odr": 2,
+     "integer_overflow": 8,
+     "logic_error": 3
+    }
+   }
+  },
+  {
+   "uid": "F0014",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (3 种)",
+   "evidence": {
+    "size": 17,
+    "dist": {
+     "raii_violation": 1,
+     "virtual_function": 4,
+     "integer_overflow": 12
+    }
+   }
+  },
+  {
+   "uid": "F0002",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (3 种)",
+   "evidence": {
+    "size": 16,
+    "dist": {
+     "move_semantics": 11,
+     "raii_violation": 4,
+     "MEM": 1
+    }
+   }
+  },
+  {
+   "uid": "F0004",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (3 种)",
+   "evidence": {
+    "size": 14,
+    "dist": {
+     "move_semantics": 2,
+     "double_free": 6,
+     "memory_leak": 6
+    }
+   }
+  },
+  {
+   "uid": "F0019",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (3 种)",
+   "evidence": {
+    "size": 15,
+    "dist": {
+     "virtual_function": 5,
+     "linker_odr": 2,
+     "bit_operation": 8
+    }
+   }
+  },
+  {
+   "uid": "F0409",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (3 种)",
+   "evidence": {
+    "size": 4,
+    "dist": {
+     "UB": 2,
+     "memory": 1,
+     "MEM": 1
+    }
+   }
+  },
+  {
+   "uid": "F0286",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (2 种)",
+   "evidence": {
+    "size": 5,
+    "dist": {
+     "volatile_misuse": 4,
+     "UB": 1
+    }
+   }
+  },
+  {
+   "uid": "F0007",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (2 种)",
+   "evidence": {
+    "size": 5,
+    "dist": {
+     "move_semantics": 1,
+     "raii_violation": 4
+    }
+   }
+  },
+  {
+   "uid": "F0287",
+   "source_batch": "family",
+   "dimension": "B6",
+   "severity": "medium",
+   "reason": "家族内 defect_type 不一致 (2 种)",
+   "evidence": {
+    "size": 7,
+    "dist": {
+     "volatile_misuse": 3,
+     "interrupt_safety": 4
+    }
+   }
+  }
+ ]
+}
