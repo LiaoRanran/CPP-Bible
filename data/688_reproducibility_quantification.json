@@ -1,0 +1,25 @@
+{
+ "n": 110,
+ "full_or_catch": 65,
+ "full_rate": 59.09,
+ "cross_platform_or_catch": 26,
+ "cross_platform_rate": 23.64,
+ "drop_if_no_WSL_pp": 35.45,
+ "sanitizer_only_catch": 39,
+ "sanitizer_sole_catch": {
+  "asan": 18,
+  "tsan": 3,
+  "ubsan": 3
+ },
+ "asset_availability_note": "wunsequenced/compile-time 本机 MinGW 恒 unknown；asan/ubsan/tsan 需 Linux/WSL 运行时，纯 Windows-native 不可用；cross-compile/linker/compiler-warn 为非 Linux 专用（仍依赖本机编译器）。",
+ "wall_seconds_by_asset": {
+  "asan": 416.42,
+  "ubsan": 412.18,
+  "tsan": 431.62,
+  "compiler-warn": 22.87,
+  "wunsequenced": 3.48,
+  "cross-compile": 1026.18,
+  "linker": 37.21,
+  "compile-time": 0.42
+ }
+}

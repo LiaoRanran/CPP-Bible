@@ -1,0 +1,144 @@
+{
+ "asset_catch_rate": {
+  "asan": 0.4909,
+  "ubsan": 0.1818,
+  "tsan": 0.2273,
+  "compiler-warn": 0.0455,
+  "wunsequenced": 0.0,
+  "cross-compile": 0.2,
+  "linker": 0.0,
+  "compile-time": 0.0
+ },
+ "operator_order": [
+  "asan",
+  "tsan",
+  "cross-compile",
+  "ubsan",
+  "compiler-warn",
+  "wunsequenced",
+  "linker",
+  "compile-time"
+ ],
+ "by_k": {
+  "1": {
+   "fd_selection": [
+    "asan"
+   ],
+   "fd_rate": 49.09,
+   "op_selection": [
+    "asan"
+   ],
+   "op_rate": 49.09,
+   "delta_pp": 0.0
+  },
+  "2": {
+   "fd_selection": [
+    "asan",
+    "ubsan"
+   ],
+   "fd_rate": 53.64,
+   "op_selection": [
+    "asan",
+    "ubsan"
+   ],
+   "op_rate": 53.64,
+   "delta_pp": 0.0
+  },
+  "3": {
+   "fd_selection": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "fd_rate": 56.36,
+   "op_selection": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "op_rate": 56.36,
+   "delta_pp": 0.0
+  },
+  "4": {
+   "fd_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "fd_rate": 59.09,
+   "op_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "op_rate": 59.09,
+   "delta_pp": 0.0
+  },
+  "5": {
+   "fd_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn"
+   ],
+   "fd_rate": 59.09,
+   "op_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn"
+   ],
+   "op_rate": 59.09,
+   "delta_pp": 0.0
+  },
+  "6": {
+   "fd_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "wunsequenced"
+   ],
+   "fd_rate": 59.09,
+   "op_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "wunsequenced"
+   ],
+   "op_rate": 59.09,
+   "delta_pp": 0.0
+  },
+  "7": {
+   "fd_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "wunsequenced",
+    "linker"
+   ],
+   "fd_rate": 59.09,
+   "op_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "wunsequenced",
+    "linker"
+   ],
+   "op_rate": 59.09,
+   "delta_pp": 0.0
+  }
+ },
+ "conclusion": "真实靶场 110 上算子 literal 模式选择与 FD 贪心选择在 k=1..7 完全一致/几乎一致（novel≡failure≡frequency 坍缩在真实数据上同样成立），Δ≈0，确认 686 硬伤：演化算子无召回增益（与自造语料 677c 结论一致）。"
+}
