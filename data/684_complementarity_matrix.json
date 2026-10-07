@@ -1,0 +1,479 @@
+{
+  "n_samples": 716,
+  "assets": [
+    "asan",
+    "compile-time",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan",
+    "wunsequenced"
+  ],
+  "matrix": {
+    "asan": {
+      "asan": {
+        "f_i": 399,
+        "f_j": 399,
+        "f_ij": 399,
+        "complementarity": -399,
+        "classification": "self"
+      },
+      "compile-time": {
+        "f_i": 399,
+        "f_j": 0,
+        "f_ij": 399,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 399,
+        "f_j": 143,
+        "f_ij": 498,
+        "complementarity": -44,
+        "classification": "redundant"
+      },
+      "cross-compile": {
+        "f_i": 399,
+        "f_j": 170,
+        "f_ij": 471,
+        "complementarity": -98,
+        "classification": "redundant"
+      },
+      "linker": {
+        "f_i": 399,
+        "f_j": 10,
+        "f_ij": 409,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 399,
+        "f_j": 255,
+        "f_ij": 485,
+        "complementarity": -169,
+        "classification": "redundant"
+      },
+      "ubsan": {
+        "f_i": 399,
+        "f_j": 268,
+        "f_ij": 530,
+        "complementarity": -137,
+        "classification": "redundant"
+      },
+      "wunsequenced": {
+        "f_i": 399,
+        "f_j": 0,
+        "f_ij": 399,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "compile-time": {
+      "asan": {
+        "f_i": 0,
+        "f_j": 399,
+        "f_ij": 399,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compile-time": {
+        "f_i": 0,
+        "f_j": 0,
+        "f_ij": 0,
+        "complementarity": 0,
+        "classification": "self"
+      },
+      "compiler-warn": {
+        "f_i": 0,
+        "f_j": 143,
+        "f_ij": 143,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "cross-compile": {
+        "f_i": 0,
+        "f_j": 170,
+        "f_ij": 170,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "linker": {
+        "f_i": 0,
+        "f_j": 10,
+        "f_ij": 10,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 0,
+        "f_j": 255,
+        "f_ij": 255,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "ubsan": {
+        "f_i": 0,
+        "f_j": 268,
+        "f_ij": 268,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "wunsequenced": {
+        "f_i": 0,
+        "f_j": 0,
+        "f_ij": 0,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "compiler-warn": {
+      "asan": {
+        "f_i": 143,
+        "f_j": 399,
+        "f_ij": 498,
+        "complementarity": -44,
+        "classification": "redundant"
+      },
+      "compile-time": {
+        "f_i": 143,
+        "f_j": 0,
+        "f_ij": 143,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 143,
+        "f_j": 143,
+        "f_ij": 143,
+        "complementarity": -143,
+        "classification": "self"
+      },
+      "cross-compile": {
+        "f_i": 143,
+        "f_j": 170,
+        "f_ij": 288,
+        "complementarity": -25,
+        "classification": "redundant"
+      },
+      "linker": {
+        "f_i": 143,
+        "f_j": 10,
+        "f_ij": 153,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 143,
+        "f_j": 255,
+        "f_ij": 377,
+        "complementarity": -21,
+        "classification": "redundant"
+      },
+      "ubsan": {
+        "f_i": 143,
+        "f_j": 268,
+        "f_ij": 332,
+        "complementarity": -79,
+        "classification": "redundant"
+      },
+      "wunsequenced": {
+        "f_i": 143,
+        "f_j": 0,
+        "f_ij": 143,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "cross-compile": {
+      "asan": {
+        "f_i": 170,
+        "f_j": 399,
+        "f_ij": 471,
+        "complementarity": -98,
+        "classification": "redundant"
+      },
+      "compile-time": {
+        "f_i": 170,
+        "f_j": 0,
+        "f_ij": 170,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 170,
+        "f_j": 143,
+        "f_ij": 288,
+        "complementarity": -25,
+        "classification": "redundant"
+      },
+      "cross-compile": {
+        "f_i": 170,
+        "f_j": 170,
+        "f_ij": 170,
+        "complementarity": -170,
+        "classification": "self"
+      },
+      "linker": {
+        "f_i": 170,
+        "f_j": 10,
+        "f_ij": 180,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 170,
+        "f_j": 255,
+        "f_ij": 366,
+        "complementarity": -59,
+        "classification": "redundant"
+      },
+      "ubsan": {
+        "f_i": 170,
+        "f_j": 268,
+        "f_ij": 392,
+        "complementarity": -46,
+        "classification": "redundant"
+      },
+      "wunsequenced": {
+        "f_i": 170,
+        "f_j": 0,
+        "f_ij": 170,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "linker": {
+      "asan": {
+        "f_i": 10,
+        "f_j": 399,
+        "f_ij": 409,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compile-time": {
+        "f_i": 10,
+        "f_j": 0,
+        "f_ij": 10,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 10,
+        "f_j": 143,
+        "f_ij": 153,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "cross-compile": {
+        "f_i": 10,
+        "f_j": 170,
+        "f_ij": 180,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "linker": {
+        "f_i": 10,
+        "f_j": 10,
+        "f_ij": 10,
+        "complementarity": -10,
+        "classification": "self"
+      },
+      "tsan": {
+        "f_i": 10,
+        "f_j": 255,
+        "f_ij": 265,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "ubsan": {
+        "f_i": 10,
+        "f_j": 268,
+        "f_ij": 278,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "wunsequenced": {
+        "f_i": 10,
+        "f_j": 0,
+        "f_ij": 10,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "tsan": {
+      "asan": {
+        "f_i": 255,
+        "f_j": 399,
+        "f_ij": 485,
+        "complementarity": -169,
+        "classification": "redundant"
+      },
+      "compile-time": {
+        "f_i": 255,
+        "f_j": 0,
+        "f_ij": 255,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 255,
+        "f_j": 143,
+        "f_ij": 377,
+        "complementarity": -21,
+        "classification": "redundant"
+      },
+      "cross-compile": {
+        "f_i": 255,
+        "f_j": 170,
+        "f_ij": 366,
+        "complementarity": -59,
+        "classification": "redundant"
+      },
+      "linker": {
+        "f_i": 255,
+        "f_j": 10,
+        "f_ij": 265,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 255,
+        "f_j": 255,
+        "f_ij": 255,
+        "complementarity": -255,
+        "classification": "self"
+      },
+      "ubsan": {
+        "f_i": 255,
+        "f_j": 268,
+        "f_ij": 443,
+        "complementarity": -80,
+        "classification": "redundant"
+      },
+      "wunsequenced": {
+        "f_i": 255,
+        "f_j": 0,
+        "f_ij": 255,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "ubsan": {
+      "asan": {
+        "f_i": 268,
+        "f_j": 399,
+        "f_ij": 530,
+        "complementarity": -137,
+        "classification": "redundant"
+      },
+      "compile-time": {
+        "f_i": 268,
+        "f_j": 0,
+        "f_ij": 268,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 268,
+        "f_j": 143,
+        "f_ij": 332,
+        "complementarity": -79,
+        "classification": "redundant"
+      },
+      "cross-compile": {
+        "f_i": 268,
+        "f_j": 170,
+        "f_ij": 392,
+        "complementarity": -46,
+        "classification": "redundant"
+      },
+      "linker": {
+        "f_i": 268,
+        "f_j": 10,
+        "f_ij": 278,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 268,
+        "f_j": 255,
+        "f_ij": 443,
+        "complementarity": -80,
+        "classification": "redundant"
+      },
+      "ubsan": {
+        "f_i": 268,
+        "f_j": 268,
+        "f_ij": 268,
+        "complementarity": -268,
+        "classification": "self"
+      },
+      "wunsequenced": {
+        "f_i": 268,
+        "f_j": 0,
+        "f_ij": 268,
+        "complementarity": 0,
+        "classification": "neutral"
+      }
+    },
+    "wunsequenced": {
+      "asan": {
+        "f_i": 0,
+        "f_j": 399,
+        "f_ij": 399,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compile-time": {
+        "f_i": 0,
+        "f_j": 0,
+        "f_ij": 0,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "compiler-warn": {
+        "f_i": 0,
+        "f_j": 143,
+        "f_ij": 143,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "cross-compile": {
+        "f_i": 0,
+        "f_j": 170,
+        "f_ij": 170,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "linker": {
+        "f_i": 0,
+        "f_j": 10,
+        "f_ij": 10,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "tsan": {
+        "f_i": 0,
+        "f_j": 255,
+        "f_ij": 255,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "ubsan": {
+        "f_i": 0,
+        "f_j": 268,
+        "f_ij": 268,
+        "complementarity": 0,
+        "classification": "neutral"
+      },
+      "wunsequenced": {
+        "f_i": 0,
+        "f_j": 0,
+        "f_ij": 0,
+        "complementarity": 0,
+        "classification": "self"
+      }
+    }
+  }
+}

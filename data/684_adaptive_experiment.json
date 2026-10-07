@@ -1,0 +1,70 @@
+{
+  "split": "677b_strict_stratified",
+  "seed": 20260930,
+  "n_train": 569,
+  "n_test": 568,
+  "strategies": {
+    "Static": {
+      "assets": [
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "compile-time"
+      ],
+      "train_selected_on": "fixed",
+      "test_rate_pct": 29.0493
+    },
+    "FD_greedy": {
+      "assets": [
+        "asan",
+        "tsan",
+        "ubsan",
+        "compiler-warn"
+      ],
+      "train_selected_on": "derivation(train)",
+      "test_rate_pct": 59.331
+    },
+    "FD_frequency": {
+      "assets": [
+        "asan",
+        "tsan",
+        "ubsan",
+        "cross-compile"
+      ],
+      "train_selected_on": "derivation(train) catch-count top-k (676f method)",
+      "test_rate_pct": 57.5704
+    },
+    "Random_single": {
+      "assets": [
+        "wunsequenced",
+        "cross-compile",
+        "tsan",
+        "compile-time"
+      ],
+      "train_selected_on": "seed=20260930",
+      "test_rate_pct": 31.8662
+    },
+    "Random_mean2000": {
+      "assets": "mean over 2000 draws",
+      "train_selected_on": "seed=20260930",
+      "test_rate_pct": 43.5211
+    },
+    "Oracle": {
+      "assets": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+      ],
+      "train_selected_on": "evaluation(test) [leaky upper bound]",
+      "test_rate_pct": 59.331
+    },
+    "Adaptive_1p3": {
+      "assets": "asan + 3 (bayes-predicted group)",
+      "train_selected_on": "derivation(train) for bayes model",
+      "test_rate_pct": 57.7465,
+      "group_prediction_accuracy_pct": 28.3451
+    }
+  },
+  "conclusion": null
+}

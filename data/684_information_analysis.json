@@ -1,0 +1,100 @@
+{
+  "n_samples": 1137,
+  "n_groups": 11,
+  "H_defect_group_bits": 3.226001,
+  "groups": {
+    "legacy": 95,
+    "memory_safety": 99,
+    "undefined_behavior": 87,
+    "concurrency": 219,
+    "language_semantics": 90,
+    "odr_link": 30,
+    "optimization_sensitive": 40,
+    "conditional_trigger": 40,
+    "stl": 200,
+    "embedded": 149,
+    "real_world": 88
+  },
+  "assets": {
+    "asan": {
+      "p_catch": 0.350923,
+      "p_miss": 0.640281,
+      "p_unknown": 0.008795,
+      "H_binary_catch_miss_bits": 0.942008,
+      "H_ternary_bits": 1.002071,
+      "I_a_defect_group_bits": 0.298595,
+      "H_a_given_G_bits": 0.703476,
+      "H_defect_group_given_a_bits": 2.927406
+    },
+    "compile-time": {
+      "p_catch": 0.0,
+      "p_miss": 0.0,
+      "p_unknown": 1.0,
+      "H_binary_catch_miss_bits": 0.0,
+      "H_ternary_bits": 0.0,
+      "I_a_defect_group_bits": 0.0,
+      "H_a_given_G_bits": 0.0,
+      "H_defect_group_given_a_bits": 3.226001
+    },
+    "compiler-warn": {
+      "p_catch": 0.12577,
+      "p_miss": 0.87423,
+      "p_unknown": 0.0,
+      "H_binary_catch_miss_bits": 0.545721,
+      "H_ternary_bits": 0.545721,
+      "I_a_defect_group_bits": 0.113196,
+      "H_a_given_G_bits": 0.432525,
+      "H_defect_group_given_a_bits": 3.112806
+    },
+    "cross-compile": {
+      "p_catch": 0.149516,
+      "p_miss": 0.817062,
+      "p_unknown": 0.033421,
+      "H_binary_catch_miss_bits": 0.648076,
+      "H_ternary_bits": 0.811944,
+      "I_a_defect_group_bits": 0.209608,
+      "H_a_given_G_bits": 0.602336,
+      "H_defect_group_given_a_bits": 3.016394
+    },
+    "linker": {
+      "p_catch": 0.008795,
+      "p_miss": 0.991205,
+      "p_unknown": 0.0,
+      "H_binary_catch_miss_bits": 0.072695,
+      "H_ternary_bits": 0.072695,
+      "I_a_defect_group_bits": 0.038312,
+      "H_a_given_G_bits": 0.034383,
+      "H_defect_group_given_a_bits": 3.18769
+    },
+    "tsan": {
+      "p_catch": 0.224274,
+      "p_miss": 0.766931,
+      "p_unknown": 0.008795,
+      "H_binary_catch_miss_bits": 0.77729,
+      "H_ternary_bits": 0.837352,
+      "I_a_defect_group_bits": 0.097082,
+      "H_a_given_G_bits": 0.740271,
+      "H_defect_group_given_a_bits": 3.12892
+    },
+    "ubsan": {
+      "p_catch": 0.235708,
+      "p_miss": 0.755497,
+      "p_unknown": 0.008795,
+      "H_binary_catch_miss_bits": 0.797034,
+      "H_ternary_bits": 0.857097,
+      "I_a_defect_group_bits": 0.198466,
+      "H_a_given_G_bits": 0.658631,
+      "H_defect_group_given_a_bits": 3.027536
+    },
+    "wunsequenced": {
+      "p_catch": 0.0,
+      "p_miss": 0.0,
+      "p_unknown": 1.0,
+      "H_binary_catch_miss_bits": 0.0,
+      "H_ternary_bits": 0.0,
+      "I_a_defect_group_bits": 0.0,
+      "H_a_given_G_bits": 0.0,
+      "H_defect_group_given_a_bits": 3.226001
+    }
+  }
+}
