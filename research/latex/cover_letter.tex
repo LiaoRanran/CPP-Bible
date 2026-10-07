@@ -1,9 +1,13 @@
 % =====================================================================
 %  Cover letter — Queyi, NeurIPS 2027 Evaluations & Datasets (E&D) submission
-%  v1.2 (677a): track renamed D&B -> E&D (2026); typically double-blind; template is a
-%  placeholder (neurips_2025 style, third-party, unmodified); 18/70 blind-spot types
-%  (aligned to data/blindspot_676g_stats.json); provenance three-valued; e-process
-%  exploratory. Version of record: research/latex/VERSION.md
+%  v1.3 (677d): contributions expanded 3 -> 5 (alignment with research/cover_letter.md
+%  v1.3); A5 now includes 677b (clone-aware re-split) + 677c (non-degenerate pool)
+%  robustness: FD 54.6% vs Random 30.6% (+24.03pp, p=2.3e-41) vs Static 24.7% (+29.9pp);
+%  pre-registered parallel analysis collapses to 0.0pp => direction-only; selection
+%  effect ~+7-12pp; clone-family re-split +23.0-+26.7pp; effective n ~133-140;
+%  capability-boundary map 38.4% blind / 18 of 70; provenance 968/74/0; e-process
+%  exploratory. Track E&D (double-blind); template neurips_2025 placeholder
+%  (third-party, unmodified). Version of record: research/latex/VERSION.md
 %  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
 % =====================================================================
 \documentclass[11pt]{article}
@@ -45,38 +49,69 @@ LLM-generated technical knowledge?'' an \emph{externally checkable} one.
 
 \paragraph{Core contributions.}
 \begin{enumerate}
-  \item \textbf{A verification system} built on four-state verdicts
-        (\texttt{pass}/\texttt{fail}/\texttt{unknown}/\texttt{contradict}, with \texttt{unknown} a
-        first-class citizen), a forced split of provenance vs.\ semantic scope, and a
-        \emph{kernel-independent} meta-state reconciler (anti-self-justification).
-  \item \textbf{An evaluation protocol}: a five-layer dataset (D0--D4), budget-matched baselines, a
-        six-group ablation with pre-registered hypotheses, and a \emph{frozen} statistical caliber
-        (Clopper--Pearson primary; Fisher/Boschloo; exact McNemar; BH/Holm).
-  \item \textbf{An open artifact}: a Merkle-anchored supply chain, a 452-event authority ledger,
-        per-sample detail artifacts, and single-command recomputation entry points.
+  \item \textbf{Formalized failure-driven verifier evolution.} The verifier's
+        evidence-acquisition capability $\mathcal{C}$ evolves under an operator driven
+        \emph{only} by registered failures, with three checkable properties and a
+        \emph{falsification protocol}: six pre-registered ablations (A0--A5) that can
+        \emph{reject} the mechanism. Auditability: Merkle roots over \textbf{5} controlled
+        directories, a \textbf{452}-event authority ledger, and a \emph{kernel-independent}
+        reconciler (current state; historical pinning partial).
+  \item \textbf{A large, caliber-audited empirical asset.} \textbf{1147} samples over
+        \textbf{70} defect types, in \textbf{7} expansion batches (expA--G). Provenance is
+        three-valued: \textbf{968} \texttt{self-authored}, \textbf{74}
+        \texttt{source-derived-reconstruction} (single-file teaching reconstructions of real
+        CVEs/GitHub issues, \textbf{not} original production code), and \textbf{0}
+        \texttt{original-external-artifact}. Rates carry a four-state caliber
+        (\texttt{unknown} first-class): the denominator alone moves the corpus rate by
+        \textbf{9.9pp}.
+  \item \textbf{A full-scale falsification experiment (A5), with robustness measured.}
+        \textbf{1137} samples $\times$ \textbf{8} assets $=$ \textbf{9096} real
+        \texttt{detect} calls (derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%}
+        vs.\ Random \textbf{30.6\%} ($\Delta$ \textbf{+24.03pp}, $p{=}2.3\times10^{-41}$)
+        and vs.\ Static \textbf{24.7\%} (\textbf{+29.9pp}). The pre-registered parallel
+        analysis collapses to $\Delta$ \textbf{0.0pp}, so we register it as
+        \emph{direction-only} (\texttt{uninterpretable}) with the \emph{selection} effect at
+        $\approx$\,\textbf{+7--12pp}; a \emph{clone-family re-split} leaves the endpoint
+        unchanged (\textbf{+23.0--+26.7pp}), excluding template leakage, while a
+        \emph{family-level bootstrap} gives an \textbf{effective} $n\approx133$--$140$.
+  \item \textbf{A capability-boundary map of the instrument.} On the \textbf{1147 $\times$ 8}
+        matrix, sample-level detection is \textbf{61.6\%} and the blind spot \textbf{38.4\%};
+        \textbf{18 of 70} types exceed 50\% blind (deadlock 94.3\%, endianness 89.3\%; family
+        gradient memory 15.2\% $\to$ link/ODR 67.7\%). This is an \emph{instrument-boundary}
+        statistic measured on our corpus with our 8-asset pool --- it does \textbf{not} claim
+        that 38.4\% of real-world C++ defects are undetectable --- and it scopes every
+        headline number to the \emph{visible} region.
+  \item \textbf{Open artifact and reproducible pipeline.} Apache-2.0, DCO-signed; a fail-loud
+        \texttt{docker/paper/run\_all.sh} and \texttt{REPRODUCE.md}; one-command
+        recomputation. (Croissant and Responsible-AI metadata are registered as
+        pre-submission TODOs, since the 2027 metadata spec is not yet released.)
 \end{enumerate}
 
 \paragraph{Relation to prior work.}
 Benchmark-evolution lines (Benchmark Self-Evolving, ArenaBencher, LiveBench) evolve the
 \emph{items}; mutation-guided testing (Meta ACH, MUTGEN) evolves \emph{tests}; formal verification
-(seL4, CompCert) provides \emph{proofs}. \textbf{None evolves the measuring stick itself while
-proving the change is externally measurable.} That is our position.
+(seL4, CompCert) provides \emph{proofs}; and MiniCheck evolves \emph{judge weights}.
+\textbf{None evolves the measuring stick itself while
+proving the change is externally measurable and self-falsifiable.} That is our position.
 
 \paragraph{Headline result.}
 On the \emph{same} samples, failure-driven verification reaches \textbf{82.9\%} blind-holdout recall
 (34/41, CP95 [67.9, 92.8]) and \textbf{62.5\%} external-corpus recall (40/64, CP95 [49.5, 74.3]),
 versus a \emph{static caliber arm} at \textbf{2.4\%} and \textbf{17.2\%} ($\Delta$
 \textbf{+80.5pp} [+68.4, +92.6] / \textbf{+45.3pp} [+33.1, +57.5]; exact McNemar
-$p=2.3\times10^{-10}$ / $3.7\times10^{-9}$; Cohen's $h\ge0.97$). The budget-matched control A5 now
+$p=2.3\times10^{-10}$ / $3.7\times10^{-9}$; Cohen's $h\ge0.97$) and a \emph{random proxy arm}
+at \textbf{9.8\%} and \textbf{21.9\%} ($\Delta$ \textbf{+73.2pp} [+59.6, +86.7] /
+\textbf{+40.6pp} [+28.6, +52.7]; exact McNemar $p=1.9\times10^{-9}$ / $3.0\times10^{-8}$;
+Cohen's $h\ge0.85$). The budget-matched control A5 now
 runs at full scale (1137 samples; $n{=}566$ held out): FD \textbf{54.6\%} vs.\ Random \textbf{30.6\%}
-(\textbf{+24.0}pp, $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%} (\textbf{+29.9}pp),
+(\textbf{+24.03}pp, $p{=}2.3\times10^{-41}$) and vs.\ Static \textbf{24.7\%} (\textbf{+29.9}pp),
 with the Static contrast surviving the pre-registered parallel analysis (\textbf{+30.6}pp) while
 the Random contrast collapses to \textbf{0.0}pp once degenerate assets are excluded. The Random
 contrast is \textbf{+11.31}pp at $k{=}1$ on the degenerate-free pool ($p{=}6.0\times10^{-8}$), so
 the isolated selection effect is $\approx$\,\textbf{+7--12}pp, and a \textbf{clone-family re-split}
 leaves the endpoint unchanged (\textbf{+23.0--+26.7}pp) while a family-level bootstrap gives an
 \textbf{effective} $n\approx133$--$140$. We also publish
-a capability-boundary map of the instrument itself (\textbf{38.4\%} of 1147 samples are blind spots;
+a capability-boundary map of the instrument itself (sample-level detection \textbf{61.6\%}; \textbf{38.4\%} of 1147 samples are blind spots;
 \textbf{18 of 70} defect types exceed 50\% blind). This blind-spot ratio is an
 \emph{instrument-boundary} statistic measured on our corpus with our 8-asset pool: it does
 \textbf{not} imply that 38.4\% of real-world C++ defects are undetectable. Provenance in the corpus
@@ -90,8 +125,10 @@ The two headline rates depend on a specific WSL sanitizer environment and \textb
 it is absent (corpus 35.0\% $\to$ 10.0\%) --- the reproducibility script now checks for this and
 aborts; the static arm is a \textbf{caliber re-binning} (not a re-run) and the random arm is an
 \textbf{instrument-level proxy} (not the paper's budget-matched B3, whose interface is currently
-blocked in a split repository); A5 isolates \emph{pool composition} (``do not fund assets that
-cannot inform''), not a smarter ranking, so we claim \textbf{auditability of the mechanism} plus
+blocked in a split repository); the effective sample size after clone-aware re-splitting is only $n\approx133$--$140$
+(design effect $\approx4$), and single-cell verdicts carry $\approx$\,\textbf{5\%}
+run-to-run instability (676f self-verified); A5 isolates \emph{pool composition}
+(``do not fund assets that cannot inform''), not a smarter ranking, so we claim \textbf{auditability of the mechanism} plus
 \textbf{a significant same-sample advantage over the static/proxy arms} --- \textbf{not} superiority
 over a true static detector or the real B3. We include this analysis as part of the contribution
 rather than hiding it.
