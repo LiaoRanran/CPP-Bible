@@ -1,0 +1,27 @@
+{
+ "schema": "queyi-689-annotation-leakage-scan/v1",
+ "generated_at": "2026-10-07T21:58:08+08:00",
+ "note": "净化后复扫；residual 应为空（非空则需人工处理后再交付标注者）；identifier_flags 为标识符级疑似泄露，交协调者人工复核",
+ "n_residual_files": 0,
+ "residual": [],
+ "n_identifier_flags": 0,
+ "identifier_flags": [],
+ "n_string_flags": 2,
+ "string_flags": [
+  {
+   "file": "S059.cpp",
+   "uid": "holdout:h1",
+   "hits": [
+    "scenario=single|race|safe\\n"
+   ]
+  },
+  {
+   "file": "S106.cpp",
+   "uid": "holdout:h31",
+   "hits": [
+    "scenario=single|race|safe\\n"
+   ]
+  }
+ ],
+ "raw_string_files": []
+}

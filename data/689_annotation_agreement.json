@@ -1,0 +1,14 @@
+{
+ "schema": "queyi-689-annotation-agreement/v1",
+ "generated_by": "data/annotation_package/analyze_annotation.py",
+ "generated_at": "2026-10-07T21:59:19+08:00",
+ "input_csv": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\annotation_package\\annotation_template.csv",
+ "n_expected": 145,
+ "n_rows_in_csv": 145,
+ "n_with_verdict": 0,
+ "fields": {},
+ "disagreements": [],
+ "threshold_check": {},
+ "status": "pending",
+ "note": "标注尚未填写（annotation_template.csv 为空）：本脚本已就绪，第二标注者完成后重跑即可产出 κ/agreement%/分歧清单。"
+}

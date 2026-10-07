@@ -1,0 +1,11 @@
+﻿anon_id,expected_verdict,defect_type_family,defect_type,planted
+C01,catch,memory,double_free,True
+C02,catch,bounds,out_of_bounds,True
+C03,catch,integer,bit_operation,True
+C04,catch,alias_type,type_punning,True
+C05,miss,concurrency,memory_order,True
+C06,miss,stl,iterator_invalidation,True
+C07,miss,language_oop,virtual_function,True
+C08,catch,embedded_link,linker_odr,True
+C09,miss,embedded_link,register_ub,True
+C10,miss,alias_type,alignment,True
