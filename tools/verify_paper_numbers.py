@@ -1143,6 +1143,33 @@ def build_claims(src, use_cmd=True):
           [num(gaps[0]), num(gaps[1])], "A.核心三臂",
           {"kind": "derived", "detail": "sample_size_672k.±5pp.n − 当前可测 n"})
 
+    # 681 C3：677b（clone-aware 重切分 / cluster bootstrap）与 677c（非退化池 / 退化贡献）
+    # 纳入检查集，使 v1.3 之后新增的 A5 稳健性数字处于同一追溯口径内。
+    ca = ((cn.get("a5_experiments") or {}).get("clone_aware_677b") or {})
+    nd = ((cn.get("a5_experiments") or {}).get("nondegenerate_pool_677c") or {})
+    ca_splits = ca.get("splits_delta_pp") or []
+    ca_n = ca.get("effective_n") or []
+    if len(ca_splits) == 2:
+        C("D11", f"clone-aware 重切分 Δ +{ca_splits[0]}~+{ca_splits[1]}pp（677b，逐 split 为 +23.02/+25.70）",
+          ["23.02", "25.70"], "D.A5",
+          {"kind": "derived", "detail": "current_numbers.a5_experiments.clone_aware_677b "
+                                        "← data/677b_a5_results_family_random.json / _family_stratified.json"})
+    if len(ca_n) == 2:
+        C("D12", f"cluster bootstrap 有效 n≈{ca_n[0]}–{ca_n[1]}（677b，design effect ≈4.1–4.3）",
+          [num(ca_n[0]), num(ca_n[1])], "D.A5",
+          {"kind": "derived", "detail": "current_numbers.a5_experiments.clone_aware_677b "
+                                        "← data/677b_cluster_bootstrap.json"})
+    if nd.get("optimal_delta_pp") is not None:
+        C("D13", f"非退化池选择效应 +{nd['optimal_delta_pp']}pp（677c，k=1，p=6.02e-08）",
+          ["11.31"], "D.A5",
+          {"kind": "derived", "detail": "current_numbers.a5_experiments.nondegenerate_pool_677c "
+                                        "← data/677c_a5_nondegenerate_results.json"})
+    if nd.get("degenerate_contribution_to_mean_pp") is not None:
+        C("D14", f"退化资产对均值的贡献 ≈+{nd['degenerate_contribution_to_mean_pp']}pp（677c）",
+          ["12.81"], "D.A5",
+          {"kind": "derived", "detail": "current_numbers.a5_experiments.nondegenerate_pool_677c "
+                                        "← data/677c_a5_nondegenerate_results.json"})
+
     return claims
 
 

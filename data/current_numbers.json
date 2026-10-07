@@ -1,6 +1,7 @@
 {
  "schema": "queyi-current-numbers/672h",
- "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致） ｜ 672k W6 统计重做已并入",
+ "revision": "681",
+ "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致） ｜ 672k W6 统计重做已并入 ｜ 678 W3 增补 a5_experiments ｜ 681 W3 增补 repair_681（跨源标签修复 + legacy 归一化）并把类型级数字更新为 34/13",
  "generated_at": "2026-10-01",
  "note": "本文件只放当前最新核心数字（672h 扩样后）。历史轨迹见 data/experiments/reveal_update_672f.json 与 reveal_update_671a.json；扩样登记见 data/holdout_reveal_5_672h.json 与 data/external_corpus_reveal_672h.json。",
  "seed": 20260930,
@@ -326,9 +327,47 @@
   "catch": 707,
   "miss": 440,
   "blindspot_ratio_pct": 38.4,
-  "blind_types_gt_50pct": 18,
-  "total_types": 70,
-  "source": "data/blindspot_676g_stats.json"
+  "blind_types_gt_50pct": 13,
+  "total_types": 34,
+  "note": "681 归一化重算：类型级数字由 676g 的 18/70 更新为 13/34（样本级 707/440/38.4% 未变，标签列与观测列解耦）；旧值保留于 data/blindspot_676g_stats.json（历史口径）",
+  "superseded_676g_type_level": {
+   "blind_types_gt_50pct": 18,
+   "total_types": 70,
+   "source": "data/blindspot_676g_stats.json"
+  },
+  "source": "data/681_type_stats_normalized.json"
  }
-}
+},
+"repair_681": {
+ "note": "681 究极轮次：跨源标签修复（matrix/INDEX/manifest 重派生）+ legacy 标签归一化。只改派生件；权威逐样本 JSON 与样本源码零改动；观测字段（per_asset/or_verdict_all8/hung_flag）零改动。",
+ "source_batches": ["681"],
+ "cross_source_consistency": {
+  "matrix_vs_auth_json_defect_type": 0,
+  "matrix_vs_auth_json_expected_verdict": 0,
+  "manifest_vs_auth_json_defect_type": 0,
+  "manifest_vs_auth_json_expected_verdict": 0,
+  "matrix_vs_676m_expected_verdict": 0,
+  "noncanonical_labels_remaining": 0
+ },
+ "changes": {
+  "defect_type_rows": 413,
+  "expected_verdict_rows": 34,
+  "legacy_labels_normalized": 38,
+  "observed_fields_touched": 0,
+  "expA_index_rows_fixed": 100
+ },
+ "type_stats_normalized": {
+  "n_types": 34,
+  "types_gt50_blind": 13,
+  "types_gt50_list": ["cross_tu_ub", "strict_aliasing", "uninitialized_read", "volatile_misuse", "endianness", "deadlock", "algorithm_misuse", "logic_error", "interrupt_safety", "virtual_function", "linker_odr", "condition_variable", "atomic_ub"],
+  "sample_blind_pct": 38.4,
+  "check": "python tools/repair_681_labels.py --apply（幂等）"
+ },
+ "b5_expected_vs_actual_consistency_pct": 93.29,
+ "a5_stability": {
+  "delta_diff_pp": 0.0,
+  "basis": "矩阵 per_asset/or_verdict_all8 零改动（git diff 逐字段核验）"
+ },
+ "sources": ["data/681_type_stats_normalized.json", "data/681_标签修复日志.json", "data/681_类型统计重算报告.md", "data/681_归一化映射表.md"]
+ }
 }

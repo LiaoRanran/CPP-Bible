@@ -36,7 +36,7 @@
 | **A5 全量**：FD 54.6% vs Random 30.6%（Δ **+24.0pp**，CI [+20.5, +27.5]，p=2.3×10⁻⁴¹）／vs Static 24.7%（+29.9pp）；并列分析 Δ=**0.0pp**；n=566 | **676f**（经 **676m** 重算复核，主端点**逐位不变**） | `data/a5_676f_results.json`、`data/a5_676f_detection_matrix.json` | `python tools/...`（见 `data/676m_A5重算报告.md`） |
 | **A5 clone-aware 稳健性 + cluster bootstrap**：三种切分 Δ **+23.0~+26.7pp**（p ≤ 4.1×10⁻²⁹）；并列仍 −0.53~+0.00pp；**有效 n≈133–140（deff ≈4.05–4.26）**；Δ 的 CI 宽 **1.78–2.10×**；克隆泄漏量化（64.5% 评估样本有同族 sibling） | **677b** | `data/677b_a5_results_{family_random,family_stratified,strict_stratified}.json`、`data/677b_cluster_bootstrap.json`、`data/677b_clone_families.json` | `python tools/analyze_677b_clone_aware.py --stage all` |
 | **A5 非退化池 + 多 baseline + operator 算法化**：严格池 k=1/2/3 显著（最优 **+11.31pp**，p=6.02×10⁻⁸）；k=4 归零 = **选集碰撞 0.2**；退化贡献 **+24.03pp（单点）/+12.81pp（对均值）**；frequency≡fd；full vs fd_only 3/14 档（+1.41pp, p=0.302） | **677c** | `data/677c_a5_nondegenerate_results.json`、`data/677c_baseline_results.json`、`data/677c_evolution_operator_results.json` | `python tools/analyze_677c_nondegenerate.py --stage all` |
-| **盲区地图**：1147 × 8，catch 707 / miss 440 ⇒ 盲区 **38.4%**；**18/70** 类型 >50% 盲；6 资产并集 61.6% vs 最佳单资产 35.6% | **676g** | `data/blindspot_676g_stats.json` | `python data/blindspot_676g_analysis.py` |
+| **盲区地图**：1147 × 8，catch 707 / miss 440 ⇒ 盲区 **38.4%**（样本级，681 后不变）；**13/34** 类型 >50% 盲（681 归一化重算；旧口径 18/70 已退役）；6 资产并集 61.6% vs 最佳单资产 35.6% | **676g + 681** | 类型级：`data/681_type_stats_normalized.json`（源：681 修复后的 `data/blindspot_676g_detection_matrix.json`）；样本级：`data/blindspot_676g_stats.json` | `python tools/repair_681_labels.py --apply` |
 | **检测器深度 Benchmark**：asan 58.5% … linker 1.3%；8 资产并集 94.21%；穷举最佳 k=4 = 92.58% | **676l** | `data/676l_benchmark_results.json` | 见 `data/676l_检测器Benchmark总报告.md` |
 | **数据质量**：重复 0 / 近克隆 103 对 / 模板克隆率 62.2% / κ=0.77,0.69,0.71 / 编译抽检 217/217 / 真实来源 74/74 | **676k + 676m** | `data/676k_*.json`、`data/676m_sample_manifest_corrected.json` | 见 `data/676m_总报告.md` |
 | Verifier Coverage **31/42 = 73.8%**（描述性，**无 CI**） | 659 / 677a 口径修正 | `tools/counts_659.py` | `python tools/counts_659.py` |
@@ -87,7 +87,11 @@
 | `data/a5_676f_results.json` | 676f（676m 复核） | ✅ current |
 | `data/677b_clone_families.json`、`data/677b_split_*.json`、`data/677b_a5_results_*.json`、`data/677b_cluster_bootstrap.json` | **677b** | ✅ current（A5 稳健性/有效样本量的权威产物） |
 | `data/677c_a5_nondegenerate_results.json`、`data/677c_baseline_results.json`、`data/677c_evolution_operator_results.json`、`data/677c_asset_pools.json` | **677c** | ✅ current（非退化池/多 baseline/operator 的权威产物） |
-| `data/blindspot_676g_stats.json` | 676g | ✅ current |
+| `data/blindspot_676g_stats.json` | 676g | 🟡 **类型级 superseded（681）**：样本级（707/440/38.4%）仍权威；类型级改引 `data/681_type_stats_normalized.json` |
+| `data/blindspot_676g_detection_matrix.json` | **676g + 681 修复** | ✅ current（681：`defect_type`/`expected_verdict` 两列重派生；`per_asset`/`or_verdict_all8` 观测列**零改动**） |
+| `data/holdout_expansion/expA/INDEX.json` | **681** | ✅ current（100 条 `defect_type` + 38 条 `expected_verdict` 对齐权威 JSON；`by_type` 重算） |
+| `data/676m_sample_manifest_corrected.json` | **676m + 681** | ✅ current（681：expA 100 行标签修正；其余批次本就一致） |
+| `data/681_修复计划.md`、`data/681_标签修复日志.json`、`data/681_归一化映射表.md`、`data/681_类型统计重算报告.md`、`data/681_type_stats_normalized.json` | **681** | ✅ current（修复计划/逐条 old→new + 证据/38 项映射表/重算与论文口径建议/结构化统计） |
 
 ### 3.4 Superseded（保留但不引用）
 
@@ -105,7 +109,8 @@
 | A5 Δ **+55.0pp**（p=9.8×10⁻⁴）／**+43.8pp**（p=0.039） | 675a | **+24.0pp**（CI [+20.5, +27.5]，p=2.3×10⁻⁴¹），n=566（676f） |
 | A5 评估集 **n=20/16**、FD **90.0% / 81.3%** | 675a | **n=566**，FD 54.6%（676f） |
 | A5「FD 严格更优 **93.75% / 95.8%**」 | 675a（673u 旧值） | **97.6%**（676f，2000 次重采样） |
-| 高盲区类型 **15/70** | 673c（转录不全） | **18/70**（676g 权威产物） |
+| 高盲区类型 **15/70** | 673c（转录不全） | **18/70**（676g）→ 再经 681 归一化为 **13/34** |
+| 类型数 / 高盲区类型数 **70 / 18-of-70**（未归一化标签集，含 38 个 legacy 同义/元标签） | 676g（681 前口径） | **34 / 13**（681：矩阵标签归一化到 34 项闭集后重算；样本级 38.4%/707/440 **不变**） |
 | holdout **81.2%**（13/16） | 666 | **从未落盘**；现行为 82.9%（34/41，672h） |
 | corpus **43.8%**（14/32）/ **35.0%**（14/40） | 665 | **62.5%**（40/64，672h 扩样后可测口径） |
 | 669d 口径消融表（87.5/82.4/82.4 与 43.8/37.8/35.0） | 669d | 分母已变，表**作废**（仅 git 留档） |
@@ -156,6 +161,23 @@
 `A5 主端点 +24.0pp（全池，k=4）` **必须与** `非退化池选择效应 ≈+7~12pp（k≤3 显著，k=4 为选集碰撞）` 同句出现；
 任何 A5 区间须注明 **有效 n≈133–140（deff ≈4.05–4.26）** 与 **1.78–2.10× 放宽**；
 `clone-aware 重切分后主端点与并列归零均不变` ⇒ **模板泄漏已排除**（不是"未检验"）。
+
+## 5quater. 681 变更清单（数据修复批次：**标签口径归一化**，无新实验）
+
+| # | 文件 | 变更 |
+|---|---|---|
+| 1 | `data/blindspot_676g_detection_matrix.json` | `defect_type` **413** 行重派生（308 扩样 ← 权威 JSON；105 原始 ← SCHEMA §3.3/§4.2 证据映射）+ `expected_verdict` **34** 行（expE hung 口径回灌）；**观测列零改动** |
+| 2 | `data/holdout_expansion/expA/INDEX.json` | 100 行 `defect_type` + 38 行 `expected_verdict` 对齐权威 JSON；`by_type` 重算 |
+| 3 | `data/676m_sample_manifest_corrected.json` | expA 100 行标签修正（↔ 权威 JSON 不一致归零） |
+| 4 | `data/current_numbers.json` | 新增 `repair_681` 段；`revision: "681"`；类型级数字 **70/18 → 34/13**（样本级不变） |
+| 5 | `tools/repair_681_labels.py` | 新增（幂等修复脚本；dry-run/`--apply`） |
+| 6 | `tools/verify_paper_numbers.py` | 检查集 **118 → 122**（D11–D14：677b clone-aware Δ / 有效 n / 677c 选择效应 / 退化贡献） |
+| 7 | `data/681_*.md`、`data/681_*.json` | 修复计划 / 修复日志 / 归一化映射表 / 类型统计重算报告 / 结构化统计 |
+| 8 | 论文与投稿信（D 任务） | 类型级标签数字由 70/18 更新为 34/13（**仅标签数字与口径说明**，样本级与 A5 数字未动） |
+
+**根因（一次性说明）**：676m 迁移改写了 308/1042 条权威 `defect_type`，但 `blindspot_676g_detection_matrix.json` 生成于 676m 之前且此后未重派生（见 `data/holdout_expansion/SCHEMA.md` §6「改写样本 308/1042」——与审计发现的 308 同数）⇒ 681 把两列重派生并归一化。
+
+**红线声明**：权威逐样本 JSON 与样本源码 `.cpp` **零改动**；`per_asset`/`or_verdict_all8` 观测值 **零改动**（A5 Δ 稳定性差异 **0.00pp**）；样本级 38.4%/61.6% **不变**。
 
 ## 6. 677a 的诚实边界
 
