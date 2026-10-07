@@ -1,0 +1,538 @@
+{
+ "schema": "queyi-682-a5-split-comparison/v1",
+ "generated_by": "tools/analyze_682_sensitivity.py splits",
+ "generated_at": "2026-10-07T18:09:15+08:00",
+ "inputs": {
+  "manifest": "data/a5_676f_sample_manifest.json",
+  "matrix": "data/a5_676f_detection_matrix.json",
+  "results_676f": "data/a5_676f_results.json",
+  "splits": {
+   "family_random": "data/677b_split_family_random.json",
+   "family_stratified": "data/677b_split_family_stratified.json",
+   "strict_stratified": "data/677b_split_strict_stratified.json"
+  }
+ },
+ "design": {
+  "primary_k": 4,
+  "candidates": [
+   "asan",
+   "compile-time",
+   "compiler-warn",
+   "cross-compile",
+   "linker",
+   "tsan",
+   "ubsan",
+   "wunsequenced"
+  ],
+  "seed_random_arm": 20260930,
+  "multi_seed_runs": 2000,
+  "detector_unchanged": true,
+  "fd_fail_hits_source": "各 split 自己的派生集（不含评估集信息）"
+ },
+ "reproduce_676f_original_split": {
+  "checks": {
+   "fd_rate_pct": true,
+   "fd_k": true,
+   "random_rate_pct": true,
+   "static_rate_pct": true,
+   "delta_pp": true,
+   "mcnemar_p": true,
+   "fd_assets": true,
+   "random_assets": true,
+   "static_assets": true
+  },
+  "registered": {
+   "fd_rate_pct": 54.5936,
+   "random_rate_pct": 30.5654,
+   "static_rate_pct": 24.735,
+   "delta_pp": 24.0283,
+   "mcnemar_p": 2.2958874039497854e-41,
+   "fd_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "random_assets": [
+    "wunsequenced",
+    "cross-compile",
+    "tsan",
+    "compile-time"
+   ],
+   "static_assets": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "fd_k": 309
+  },
+  "recomputed": {
+   "fd_rate_pct": 54.5936,
+   "random_rate_pct": 30.5654,
+   "static_rate_pct": 24.735,
+   "delta_pp": 24.0283,
+   "mcnemar_p": 2.2958874039497854e-41,
+   "fd_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "random_assets": [
+    "wunsequenced",
+    "cross-compile",
+    "tsan",
+    "compile-time"
+   ],
+   "static_assets": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "fd_k": 309
+  },
+  "all_match": true
+ },
+ "results": {
+  "original": {
+   "split": "original",
+   "n_derivation": 571,
+   "n_evaluation": 566,
+   "derivation_fail_hits": {
+    "asan": 212,
+    "compile-time": 0,
+    "compiler-warn": 76,
+    "cross-compile": 89,
+    "linker": 6,
+    "tsan": 132,
+    "ubsan": 139,
+    "wunsequenced": 0
+   },
+   "n_degenerate_full_pool": 2,
+   "main_k4": {
+    "fd": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "k": 309,
+     "rate_pct": 54.5936,
+     "cost_units": 11
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "k": 173,
+     "rate_pct": 30.5654,
+     "seed": 20260930
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 140,
+     "rate_pct": 24.735
+    },
+    "full_pool": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "compiler-warn",
+      "linker",
+      "compile-time",
+      "wunsequenced"
+     ],
+     "rate_pct": 60.0707
+    }
+   },
+   "delta_fd_random_pp": 24.0283,
+   "delta_fd_random_ci95_pp": [
+    20.5084,
+    27.5481
+   ],
+   "random_mean_rate_pct": 40.1713,
+   "delta_fd_random_mean_pp": 14.4223,
+   "mcnemar_p_fd_random": 2.2958874039497854e-41,
+   "discordant_b_c": [
+    136,
+    0
+   ],
+   "cohens_h": 0.4912,
+   "delta_fd_static_pp": 29.8587,
+   "mcnemar_p_fd_static": 1.8915021013313463e-31,
+   "random_multi": {
+    "runs": 2000,
+    "mean_rate_pct": 40.1713,
+    "p2_5": 15.0177,
+    "p97_5": 54.2403,
+    "fd_strictly_better_frac": 0.976
+   },
+   "fd_cost_units": 11,
+   "static_assets_available": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "mcnemar_p_vs_static_discordant": {
+    "n_pairs": 566,
+    "fd_catch": 309,
+    "static_catch": 140,
+    "discordant_a_only": 200,
+    "discordant_b_only": 31,
+    "delta_pp": 29.8587,
+    "delta_ci95_pp": [
+     25.2058,
+     34.5115
+    ],
+    "delta_se_pp": 2.3739,
+    "mcnemar_p": 1.8915021013313463e-31,
+    "cohens_h": 0.6217,
+    "ci_crosses_zero": false
+   }
+  },
+  "family_random": {
+   "split": "family_random",
+   "n_derivation": 568,
+   "n_evaluation": 569,
+   "derivation_fail_hits": {
+    "asan": 197,
+    "compile-time": 0,
+    "compiler-warn": 79,
+    "cross-compile": 80,
+    "linker": 10,
+    "tsan": 144,
+    "ubsan": 135,
+    "wunsequenced": 0
+   },
+   "n_degenerate_full_pool": 2,
+   "main_k4": {
+    "fd": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "cross-compile"
+     ],
+     "k": 326,
+     "rate_pct": 57.2935,
+     "cost_units": 11
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "k": 174,
+     "rate_pct": 30.58,
+     "seed": 20260930
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 146,
+     "rate_pct": 25.6591
+    },
+    "full_pool": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "cross-compile",
+      "compiler-warn",
+      "linker",
+      "compile-time",
+      "wunsequenced"
+     ],
+     "rate_pct": 62.3902
+    }
+   },
+   "delta_fd_random_pp": 26.7135,
+   "delta_fd_random_ci95_pp": [
+    23.078,
+    30.3491
+   ],
+   "random_mean_rate_pct": 40.907,
+   "delta_fd_random_mean_pp": 16.3865,
+   "mcnemar_p_fd_random": 3.503246160812046e-46,
+   "discordant_b_c": [
+    152,
+    0
+   ],
+   "cohens_h": 0.5453,
+   "delta_fd_static_pp": 31.6344,
+   "mcnemar_p_fd_static": 8.353350414665067e-35,
+   "random_multi": {
+    "runs": 2000,
+    "mean_rate_pct": 40.907,
+    "p2_5": 15.8172,
+    "p97_5": 55.3603,
+    "fd_strictly_better_frac": 0.976
+   },
+   "fd_cost_units": 11,
+   "static_assets_available": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "mcnemar_p_vs_static_discordant": {
+    "n_pairs": 569,
+    "fd_catch": 326,
+    "static_catch": 146,
+    "discordant_a_only": 209,
+    "discordant_b_only": 29,
+    "delta_pp": 31.6344,
+    "delta_ci95_pp": [
+     26.9995,
+     36.2694
+    ],
+    "delta_se_pp": 2.3648,
+    "mcnemar_p": 8.353350414665067e-35,
+    "cohens_h": 0.6548,
+    "ci_crosses_zero": false
+   }
+  },
+  "family_stratified": {
+   "split": "family_stratified",
+   "n_derivation": 568,
+   "n_evaluation": 569,
+   "derivation_fail_hits": {
+    "asan": 201,
+    "compile-time": 0,
+    "compiler-warn": 94,
+    "cross-compile": 74,
+    "linker": 10,
+    "tsan": 130,
+    "ubsan": 134,
+    "wunsequenced": 0
+   },
+   "n_degenerate_full_pool": 2,
+   "main_k4": {
+    "fd": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn"
+     ],
+     "k": 316,
+     "rate_pct": 55.536,
+     "cost_units": 11
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "k": 185,
+     "rate_pct": 32.5132,
+     "seed": 20260930
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 130,
+     "rate_pct": 22.8471
+    },
+    "full_pool": {
+     "assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "compile-time",
+      "wunsequenced"
+     ],
+     "rate_pct": 57.8207
+    }
+   },
+   "delta_fd_random_pp": 23.0228,
+   "delta_fd_random_ci95_pp": [
+    19.1435,
+    26.9022
+   ],
+   "random_mean_rate_pct": 39.9257,
+   "delta_fd_random_mean_pp": 15.6103,
+   "mcnemar_p_fd_random": 4.078087318805367e-29,
+   "discordant_b_c": [
+    144,
+    13
+   ],
+   "cohens_h": 0.4682,
+   "delta_fd_static_pp": 32.6889,
+   "mcnemar_p_fd_static": 6.26256655038606e-44,
+   "random_multi": {
+    "runs": 2000,
+    "mean_rate_pct": 39.9257,
+    "p2_5": 16.8717,
+    "p97_5": 53.7786,
+    "fd_strictly_better_frac": 0.976
+   },
+   "fd_cost_units": 11,
+   "static_assets_available": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "mcnemar_p_vs_static_discordant": {
+    "n_pairs": 569,
+    "fd_catch": 316,
+    "static_catch": 130,
+    "discordant_a_only": 199,
+    "discordant_b_only": 13,
+    "delta_pp": 32.6889,
+    "delta_ci95_pp": [
+     28.4534,
+     36.9245
+    ],
+    "delta_se_pp": 2.161,
+    "mcnemar_p": 6.26256655038606e-44,
+    "cohens_h": 0.685,
+    "ci_crosses_zero": false
+   }
+  },
+  "strict_stratified": {
+   "split": "strict_stratified",
+   "n_derivation": 569,
+   "n_evaluation": 568,
+   "derivation_fail_hits": {
+    "asan": 201,
+    "compile-time": 0,
+    "compiler-warn": 58,
+    "cross-compile": 69,
+    "linker": 9,
+    "tsan": 146,
+    "ubsan": 118,
+    "wunsequenced": 0
+   },
+   "n_degenerate_full_pool": 2,
+   "main_k4": {
+    "fd": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "cross-compile"
+     ],
+     "k": 327,
+     "rate_pct": 57.5704,
+     "cost_units": 11
+    },
+    "random": {
+     "assets": [
+      "wunsequenced",
+      "cross-compile",
+      "tsan",
+      "compile-time"
+     ],
+     "k": 181,
+     "rate_pct": 31.8662,
+     "seed": 20260930
+    },
+    "static": {
+     "assets": [
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced"
+     ],
+     "k": 165,
+     "rate_pct": 29.0493
+    },
+    "full_pool": {
+     "assets": [
+      "asan",
+      "tsan",
+      "ubsan",
+      "cross-compile",
+      "compiler-warn",
+      "linker",
+      "compile-time",
+      "wunsequenced"
+     ],
+     "rate_pct": 62.6761
+    }
+   },
+   "delta_fd_random_pp": 25.7042,
+   "delta_fd_random_ci95_pp": [
+    22.1104,
+    29.2981
+   ],
+   "random_mean_rate_pct": 43.1452,
+   "delta_fd_random_mean_pp": 14.4252,
+   "mcnemar_p_fd_random": 2.2420775429197023e-44,
+   "discordant_b_c": [
+    146,
+    0
+   ],
+   "cohens_h": 0.5231,
+   "delta_fd_static_pp": 28.5211,
+   "mcnemar_p_fd_static": 1.9508292315474666e-30,
+   "random_multi": {
+    "runs": 2000,
+    "mean_rate_pct": 43.1452,
+    "p2_5": 17.9577,
+    "p97_5": 57.5704,
+    "fd_strictly_better_frac": 0.963
+   },
+   "fd_cost_units": 11,
+   "static_assets_available": [
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "wunsequenced"
+   ],
+   "mcnemar_p_vs_static_discordant": {
+    "n_pairs": 568,
+    "fd_catch": 327,
+    "static_catch": 165,
+    "discordant_a_only": 191,
+    "discordant_b_only": 29,
+    "delta_pp": 28.5211,
+    "delta_ci95_pp": [
+     23.9721,
+     33.0702
+    ],
+    "delta_se_pp": 2.321,
+    "mcnemar_p": 1.9508292315474666e-30,
+    "cohens_h": 0.5844,
+    "ci_crosses_zero": false
+   }
+  }
+ },
+ "honest_notes": [
+  "判定矩阵复用 676f（1137×8）；本批未重跑 detect()，检测器与样本源文件零改动。",
+  "四种 split 的评估集样本数分别为：original=566、family_random=569、family_stratified=569、strict_stratified=568（原 split 566；偏差 <0.4%）。",
+  "Static 臂只用静态资产（池中 4 个：compiler-warn/cross-compile/linker/wunsequenced），k>4 时按 min(k,4) 计——Static 臂不随 k 增大而增大，这是资产池事实不是统计处理。",
+  "退化资产 compile-time / wunsequenced 全样本 unknown（676h R5 可重算），其入选 FD 时对检出率贡献恒为 0。"
+ ]
+}
