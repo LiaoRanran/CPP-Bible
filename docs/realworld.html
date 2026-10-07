@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real-World Benchmark — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>真实靶场基准（Real-World C++ Defect Benchmark）</h1>
+  <p class="sub">每条缺陷来自真实系统（CVE/NVD 在线验证记录、修复 commit、issue 链接），
+  以<b>最小重构 PoC</b>（source-derived，非原始项目代码）落盘，并由同一套 8 资产流水线判定。
+  浏览 / 筛选 / 查看每条样本的检测结果与出处。</p>
+
+  <div class="cards" id="rw-kpis">
+    <div class="card"><div class="kpi">…</div><div class="muted">加载中</div></div>
+  </div>
+
+  <div class="controls">
+    <select id="f-project"><option value="">全部项目</option></select>
+    <select id="f-type"><option value="">全部缺陷类型</option></select>
+    <select id="f-verdict">
+      <option value="">全部判定</option>
+      <option value="catch">catch（被检出）</option>
+      <option value="miss">miss（漏报）</option>
+      <option value="unknown">unknown</option>
+    </select>
+    <select id="f-year"><option value="">全部年份</option></select>
+    <input type="text" id="f-q" placeholder="搜索 RW-ID / CVE / 项目…">
+    <button class="btn" id="btn-reset">重置</button>
+  </div>
+  <p class="kv" id="filter-stat">—</p>
+
+  <table id="rw-table">
+    <thead><tr>
+      <th>RW-ID</th><th>CVE / 出处</th><th>项目</th><th>缺陷类型</th>
+      <th>年份</th><th>8 资产 OR</th><th>命中资产</th><th>详情</th>
+    </tr></thead>
+    <tbody><tr><td colspan="8" class="muted">加载中…</td></tr></tbody>
+  </table>
+
+  <h2>怎么读这张表</h2>
+  <ul class="muted">
+    <li><b>8 资产 OR</b>：asan / ubsan / tsan / compiler-warn / wunsequenced /
+      cross-compile / linker / compile-time 任一 catch 即 catch；
+      全部 unknown 才记 unknown（绝不当 miss）。</li>
+    <li><b>命中资产</b>：实际报出该缺陷的检测器（多资产命中 = 互补）。</li>
+    <li>点"详情"可看逐资产判定、原始检测器输出摘要、出处链接与复现命令。</li>
+    <li>年份 = NVD 首次发布年（如有）；无 CVE 的条目用项目披露年。</li>
+  </ul>
+  <p class="honest">诚实声明：PoC 为<b>最小重构</b>（source-derived / reconstructed），
+  不是原始项目上下文；部分样本在本地观测（如 sanitizer 超时）与环境相关，逐条在详情中标注。
+  CVE 描述、CVSS、发布时间均来自 NVD API 应答原文（在线验证记录见 data.html）。</p>
+</main>
+
+<dialog class="detail" id="dlg">
+  <div id="dlg-body"></div>
+  <div style="margin-top:12px"><button class="btn" id="dlg-close">关闭</button></div>
+</dialog>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+<script src="assets/app.js"></script>
+<script>
+let RW = null;
+
+function renderRows(rows) {
+  const tb = document.querySelector("#rw-table tbody");
+  tb.innerHTML = rows.map(r => `<tr>
+    <td><span class="tag">${r.rw_id}</span></td>
+    <td>${r.cve_id.startsWith("CVE") ?
+        `<a href="${r.source_url}" target="_blank" rel="noopener">${r.cve_id}</a>` :
+        (r.source_url ? `<a href="${r.source_url}" target="_blank" rel="noopener">${r.cve_id}</a>` : r.cve_id)}</td>
+    <td>${r.project}</td>
+    <td><code class="inline">${r.defect_type}</code></td>
+    <td>${r.year || "—"}</td>
+    <td>${verdictPill(r.or_verdict)}</td>
+    <td class="muted">${(r.caught_by || []).join(", ") || "—"}</td>
+    <td><button class="btn ghost" data-rw="${r.rw_id}">详情</button></td>
+  </tr>`).join("") || `<tr><td colspan="8" class="muted">没有匹配项</td></tr>`;
+  document.querySelectorAll("button[data-rw]").forEach(b => {
+    b.onclick = () => showDetail(b.getAttribute("data-rw"));
+  });
+}
+
+function applyFilters() {
+  const p = el("f-project").value, t = el("f-type").value, v = el("f-verdict").value;
+  const y = el("f-year").value, q = el("f-q").value.trim();
+  const rows = RW.samples.filter(r =>
+    (!p || r.project === p) && (!t || r.defect_type === t) &&
+    (!v || r.or_verdict === v) && (!y || String(r.year) === y) &&
+    textMatch(r, ["rw_id", "cve_id", "project", "defect_type"], q));
+  el("filter-stat").textContent =
+    `匹配 ${rows.length} / ${RW.samples.length} 条（数据版本：${RW.generated_at}）`;
+  renderRows(rows);
+}
+
+function showDetail(id) {
+  const r = RW.samples.find(x => x.rw_id === id);
+  if (!r) return;
+  const pa = Object.entries(r.per_asset).map(([a, v]) =>
+    `<tr><td>${a}</td><td>${verdictPill(v.verdict)}</td><td class="muted">${(v.note || "").slice(0, 260)}</td></tr>`).join("");
+  el("dlg-body").innerHTML = `
+    <h3>${r.rw_id} · ${r.cve_id} · ${r.project}</h3>
+    <p class="kv"><b>缺陷类型</b> ${r.defect_type} ｜ <b>年份</b> ${r.year || "—"} ｜
+      <b>严重度</b> ${r.severity || "—"} ｜ <b>来源</b>
+      ${r.source_url ? `<a href="${r.source_url}" target="_blank" rel="noopener">${r.source_url}</a>` : "—"}</p>
+    <p class="kv"><b>机制</b> ${r.mechanism || "—"}</p>
+    <p class="kv"><b>复现</b> <code class="inline">g++ -std=c++17 -g -fsanitize=address ${r.poc_file || r.rw_id + ".cpp"} -o p && ./p</code></p>
+    <table><thead><tr><th>资产</th><th>判定</th><th>原始输出摘要</th></tr></thead><tbody>${pa}</tbody></table>
+    <p class="kv"><b>notes</b> ${r.notes || "—"}</p>`;
+  el("dlg").showModal();
+}
+
+(async () => {
+  try {
+    RW = await loadJSON("assets/data/realworld_benchmark.json");
+    const kpi = (v, l) => `<div class="card"><div class="kpi">${v}</div><div class="muted">${l}</div></div>`;
+    el("rw-kpis").innerHTML =
+      kpi(RW.samples.length, "真实缺陷样本（RW-xxx）") +
+      kpi(RW.projects.length, "覆盖项目") +
+      kpi(RW.types.length, "缺陷类型（34 类词表）") +
+      kpi(RW.or_catch_rate_pct + "%", "8 资产 OR 检出率") +
+      kpi(RW.online_verified_cves, "NVD 在线验证 CVE") +
+      kpi(RW.years[0] + "–" + RW.years[RW.years.length - 1], "覆盖年份");
+    const fill = (id, arr) => {
+      const sel = el(id);
+      arr.forEach(x => { const o = document.createElement("option"); o.value = x; o.textContent = x; sel.appendChild(o); });
+    };
+    fill("f-project", RW.projects); fill("f-type", RW.types); fill("f-year", RW.years);
+    ["f-project", "f-type", "f-verdict", "f-year"].forEach(id => el(id).onchange = applyFilters);
+    el("f-q").oninput = applyFilters;
+    el("btn-reset").onclick = () => {
+      ["f-project", "f-type", "f-verdict", "f-year"].forEach(id => el(id).value = "");
+      el("f-q").value = ""; applyFilters();
+    };
+    el("dlg-close").onclick = () => el("dlg").close();
+    applyFilters();
+  } catch (e) {
+    document.querySelector("#rw-table tbody").innerHTML =
+      `<tr><td colspan="8">数据未生成（${e.message}）：先运行 python tools/site_683_data.py</td></tr>`;
+  }
+})();
+</script>
+</body>
+</html>

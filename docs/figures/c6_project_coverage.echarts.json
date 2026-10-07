@@ -1,0 +1,111 @@
+{
+ "title": {
+  "text": "C6 · 真实靶场项目覆盖",
+  "left": "center"
+ },
+ "tooltip": {
+  "trigger": "axis"
+ },
+ "grid": {
+  "left": 170,
+  "right": 50,
+  "top": 60,
+  "bottom": 40
+ },
+ "xAxis": {
+  "type": "value",
+  "name": "样本数"
+ },
+ "yAxis": {
+  "type": "category",
+  "data": [
+   "Boost",
+   "CUPS",
+   "Chromium",
+   "Godot Engine",
+   "HTTP/2 协议栈（nginx/httpd/Go 等）",
+   "Redis",
+   "SQLite（Chromium 内置）",
+   "Unicode/LLVM/GCC 生态",
+   "WebKit",
+   "XZ Utils",
+   "libssh",
+   "libwebp",
+   "ncurses",
+   "polkit",
+   "Apache HTTP Server",
+   "Firefox",
+   "FreeType",
+   "ImageMagick",
+   "PostgreSQL",
+   "SQLite",
+   "nginx",
+   "sudo",
+   "zlib",
+   "Chromium/V8",
+   "FFmpeg",
+   "FreeBSD",
+   "OpenSSH",
+   "Qt",
+   "libpng",
+   "libtiff",
+   "protobuf",
+   "libxml2",
+   "expat",
+   "glibc",
+   "Linux kernel",
+   "OpenSSL",
+   "curl"
+  ],
+  "axisLabel": {
+   "fontSize": 11
+  }
+ },
+ "series": [
+  {
+   "type": "bar",
+   "data": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    4,
+    6,
+    8,
+    10,
+    10,
+    16
+   ],
+   "itemStyle": {
+    "color": "#2e86de"
+   }
+  }
+ ]
+}

@@ -1,0 +1,2585 @@
+{
+ "generated_at": "2026-10-07T20:21:47+08:00",
+ "charts": {
+  "c1": {
+   "option": {
+    "title": {
+     "text": "C1 · Detection rate by defect type × asset (34 normalized types, n=1147)",
+     "subtext": "681-fixed 34-type canon; value = catch rate (%). Two rightmost columns are blank by construction: constant-unknown assets (no local detector) — unknown is NOT drawn as 0%/miss. 13 types with >50% blind are marked.",
+     "left": "center",
+     "textStyle": {
+      "color": "#222222"
+     }
+    },
+    "tooltip": {
+     "position": "top",
+     "formatter": "type #{b} × asset {a}: {c}%"
+    },
+    "grid": {
+     "left": 150,
+     "right": 90,
+     "top": 80,
+     "bottom": 60
+    },
+    "xAxis": {
+     "type": "category",
+     "data": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced",
+      "compile-time"
+     ],
+     "axisLabel": {
+      "rotate": 30,
+      "color": "#222222"
+     }
+    },
+    "yAxis": {
+     "type": "category",
+     "data": [
+      "cross_tu_ub",
+      "strict_aliasing",
+      "uninitialized_read",
+      "volatile_misuse",
+      "endianness",
+      "deadlock",
+      "algorithm_misuse",
+      "logic_error",
+      "interrupt_safety",
+      "virtual_function",
+      "linker_odr",
+      "condition_variable",
+      "atomic_ub",
+      "memory_order",
+      "move_semantics",
+      "type_punning",
+      "register_ub",
+      "raii_violation",
+      "iterator_invalidation",
+      "alignment",
+      "bit_operation",
+      "lambda_capture",
+      "other_ub",
+      "double_free",
+      "string_ub",
+      "memory_leak",
+      "smart_pointer",
+      "out_of_bounds",
+      "stl_container_ub",
+      "integer_overflow",
+      "data_race",
+      "memory_safety",
+      "null_pointer_deref",
+      "use_after_free"
+     ],
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "visualMap": {
+     "min": 0,
+     "max": 100,
+     "calculable": true,
+     "orient": "vertical",
+     "right": 10,
+     "top": "middle",
+     "inRange": {
+      "color": [
+       "#c0392b",
+       "#f6e58d",
+       "#27ae60"
+      ]
+     }
+    },
+    "series": [
+     {
+      "name": "catch rate (%)",
+      "type": "heatmap",
+      "data": [
+       [
+        0,
+        0,
+        0.0
+       ],
+       [
+        1,
+        0,
+        0.0
+       ],
+       [
+        2,
+        0,
+        0.0
+       ],
+       [
+        3,
+        0,
+        0.0
+       ],
+       [
+        4,
+        0,
+        0.0
+       ],
+       [
+        5,
+        0,
+        0.0
+       ],
+       [
+        6,
+        0,
+        null
+       ],
+       [
+        7,
+        0,
+        null
+       ],
+       [
+        0,
+        1,
+        0.0
+       ],
+       [
+        1,
+        1,
+        0.0
+       ],
+       [
+        2,
+        1,
+        0.0
+       ],
+       [
+        3,
+        1,
+        0.0
+       ],
+       [
+        4,
+        1,
+        0.0
+       ],
+       [
+        5,
+        1,
+        0.0
+       ],
+       [
+        6,
+        1,
+        null
+       ],
+       [
+        7,
+        1,
+        null
+       ],
+       [
+        0,
+        2,
+        0.0
+       ],
+       [
+        1,
+        2,
+        0.0
+       ],
+       [
+        2,
+        2,
+        0.0
+       ],
+       [
+        3,
+        2,
+        0.0
+       ],
+       [
+        4,
+        2,
+        0.0
+       ],
+       [
+        5,
+        2,
+        0.0
+       ],
+       [
+        6,
+        2,
+        null
+       ],
+       [
+        7,
+        2,
+        null
+       ],
+       [
+        0,
+        3,
+        3.57
+       ],
+       [
+        1,
+        3,
+        3.57
+       ],
+       [
+        2,
+        3,
+        0.0
+       ],
+       [
+        3,
+        3,
+        0.0
+       ],
+       [
+        4,
+        3,
+        0.0
+       ],
+       [
+        5,
+        3,
+        0.0
+       ],
+       [
+        6,
+        3,
+        null
+       ],
+       [
+        7,
+        3,
+        null
+       ],
+       [
+        0,
+        4,
+        10.71
+       ],
+       [
+        1,
+        4,
+        7.14
+       ],
+       [
+        2,
+        4,
+        0.0
+       ],
+       [
+        3,
+        4,
+        0.0
+       ],
+       [
+        4,
+        4,
+        7.14
+       ],
+       [
+        5,
+        4,
+        0.0
+       ],
+       [
+        6,
+        4,
+        null
+       ],
+       [
+        7,
+        4,
+        null
+       ],
+       [
+        0,
+        5,
+        0.0
+       ],
+       [
+        1,
+        5,
+        3.08
+       ],
+       [
+        2,
+        5,
+        13.85
+       ],
+       [
+        3,
+        5,
+        0.0
+       ],
+       [
+        4,
+        5,
+        1.54
+       ],
+       [
+        5,
+        5,
+        0.0
+       ],
+       [
+        6,
+        5,
+        null
+       ],
+       [
+        7,
+        5,
+        null
+       ],
+       [
+        0,
+        6,
+        22.86
+       ],
+       [
+        1,
+        6,
+        0.0
+       ],
+       [
+        2,
+        6,
+        0.0
+       ],
+       [
+        3,
+        6,
+        0.0
+       ],
+       [
+        4,
+        6,
+        0.0
+       ],
+       [
+        5,
+        6,
+        0.0
+       ],
+       [
+        6,
+        6,
+        null
+       ],
+       [
+        7,
+        6,
+        null
+       ],
+       [
+        0,
+        7,
+        0.0
+       ],
+       [
+        1,
+        7,
+        0.0
+       ],
+       [
+        2,
+        7,
+        2.86
+       ],
+       [
+        3,
+        7,
+        17.14
+       ],
+       [
+        4,
+        7,
+        5.71
+       ],
+       [
+        5,
+        7,
+        0.0
+       ],
+       [
+        6,
+        7,
+        null
+       ],
+       [
+        7,
+        7,
+        null
+       ],
+       [
+        0,
+        8,
+        5.0
+       ],
+       [
+        1,
+        8,
+        5.0
+       ],
+       [
+        2,
+        8,
+        25.0
+       ],
+       [
+        3,
+        8,
+        0.0
+       ],
+       [
+        4,
+        8,
+        0.0
+       ],
+       [
+        5,
+        8,
+        0.0
+       ],
+       [
+        6,
+        8,
+        null
+       ],
+       [
+        7,
+        8,
+        null
+       ],
+       [
+        0,
+        9,
+        20.0
+       ],
+       [
+        1,
+        9,
+        16.67
+       ],
+       [
+        2,
+        9,
+        20.0
+       ],
+       [
+        3,
+        9,
+        16.67
+       ],
+       [
+        4,
+        9,
+        0.0
+       ],
+       [
+        5,
+        9,
+        0.0
+       ],
+       [
+        6,
+        9,
+        null
+       ],
+       [
+        7,
+        9,
+        null
+       ],
+       [
+        0,
+        10,
+        4.17
+       ],
+       [
+        1,
+        10,
+        0.0
+       ],
+       [
+        2,
+        10,
+        0.0
+       ],
+       [
+        3,
+        10,
+        0.0
+       ],
+       [
+        4,
+        10,
+        0.0
+       ],
+       [
+        5,
+        10,
+        37.5
+       ],
+       [
+        6,
+        10,
+        null
+       ],
+       [
+        7,
+        10,
+        null
+       ],
+       [
+        0,
+        11,
+        0.0
+       ],
+       [
+        1,
+        11,
+        6.67
+       ],
+       [
+        2,
+        11,
+        43.33
+       ],
+       [
+        3,
+        11,
+        0.0
+       ],
+       [
+        4,
+        11,
+        10.0
+       ],
+       [
+        5,
+        11,
+        0.0
+       ],
+       [
+        6,
+        11,
+        null
+       ],
+       [
+        7,
+        11,
+        null
+       ],
+       [
+        0,
+        12,
+        27.69
+       ],
+       [
+        1,
+        12,
+        7.69
+       ],
+       [
+        2,
+        12,
+        24.62
+       ],
+       [
+        3,
+        12,
+        1.54
+       ],
+       [
+        4,
+        12,
+        6.15
+       ],
+       [
+        5,
+        12,
+        0.0
+       ],
+       [
+        6,
+        12,
+        null
+       ],
+       [
+        7,
+        12,
+        null
+       ],
+       [
+        0,
+        13,
+        7.14
+       ],
+       [
+        1,
+        13,
+        2.38
+       ],
+       [
+        2,
+        13,
+        47.62
+       ],
+       [
+        3,
+        13,
+        0.0
+       ],
+       [
+        4,
+        13,
+        0.0
+       ],
+       [
+        5,
+        13,
+        0.0
+       ],
+       [
+        6,
+        13,
+        null
+       ],
+       [
+        7,
+        13,
+        null
+       ],
+       [
+        0,
+        14,
+        6.67
+       ],
+       [
+        1,
+        14,
+        16.67
+       ],
+       [
+        2,
+        14,
+        0.0
+       ],
+       [
+        3,
+        14,
+        46.67
+       ],
+       [
+        4,
+        14,
+        0.0
+       ],
+       [
+        5,
+        14,
+        0.0
+       ],
+       [
+        6,
+        14,
+        null
+       ],
+       [
+        7,
+        14,
+        null
+       ],
+       [
+        0,
+        15,
+        21.74
+       ],
+       [
+        1,
+        15,
+        47.83
+       ],
+       [
+        2,
+        15,
+        4.35
+       ],
+       [
+        3,
+        15,
+        0.0
+       ],
+       [
+        4,
+        15,
+        8.7
+       ],
+       [
+        5,
+        15,
+        0.0
+       ],
+       [
+        6,
+        15,
+        null
+       ],
+       [
+        7,
+        15,
+        null
+       ],
+       [
+        0,
+        16,
+        5.0
+       ],
+       [
+        1,
+        16,
+        0.0
+       ],
+       [
+        2,
+        16,
+        5.0
+       ],
+       [
+        3,
+        16,
+        50.0
+       ],
+       [
+        4,
+        16,
+        0.0
+       ],
+       [
+        5,
+        16,
+        0.0
+       ],
+       [
+        6,
+        16,
+        null
+       ],
+       [
+        7,
+        16,
+        null
+       ],
+       [
+        0,
+        17,
+        38.71
+       ],
+       [
+        1,
+        17,
+        3.23
+       ],
+       [
+        2,
+        17,
+        6.45
+       ],
+       [
+        3,
+        17,
+        19.35
+       ],
+       [
+        4,
+        17,
+        0.0
+       ],
+       [
+        5,
+        17,
+        0.0
+       ],
+       [
+        6,
+        17,
+        null
+       ],
+       [
+        7,
+        17,
+        null
+       ],
+       [
+        0,
+        18,
+        60.0
+       ],
+       [
+        1,
+        18,
+        0.0
+       ],
+       [
+        2,
+        18,
+        54.29
+       ],
+       [
+        3,
+        18,
+        0.0
+       ],
+       [
+        4,
+        18,
+        2.86
+       ],
+       [
+        5,
+        18,
+        0.0
+       ],
+       [
+        6,
+        18,
+        null
+       ],
+       [
+        7,
+        18,
+        null
+       ],
+       [
+        0,
+        19,
+        11.11
+       ],
+       [
+        1,
+        19,
+        66.67
+       ],
+       [
+        2,
+        19,
+        7.41
+       ],
+       [
+        3,
+        19,
+        0.0
+       ],
+       [
+        4,
+        19,
+        7.41
+       ],
+       [
+        5,
+        19,
+        0.0
+       ],
+       [
+        6,
+        19,
+        null
+       ],
+       [
+        7,
+        19,
+        null
+       ],
+       [
+        0,
+        20,
+        1.85
+       ],
+       [
+        1,
+        20,
+        74.07
+       ],
+       [
+        2,
+        20,
+        1.85
+       ],
+       [
+        3,
+        20,
+        79.63
+       ],
+       [
+        4,
+        20,
+        35.19
+       ],
+       [
+        5,
+        20,
+        0.0
+       ],
+       [
+        6,
+        20,
+        null
+       ],
+       [
+        7,
+        20,
+        null
+       ],
+       [
+        0,
+        21,
+        83.33
+       ],
+       [
+        1,
+        21,
+        0.0
+       ],
+       [
+        2,
+        21,
+        23.33
+       ],
+       [
+        3,
+        21,
+        0.0
+       ],
+       [
+        4,
+        21,
+        83.33
+       ],
+       [
+        5,
+        21,
+        0.0
+       ],
+       [
+        6,
+        21,
+        null
+       ],
+       [
+        7,
+        21,
+        null
+       ],
+       [
+        0,
+        22,
+        41.67
+       ],
+       [
+        1,
+        22,
+        36.11
+       ],
+       [
+        2,
+        22,
+        27.78
+       ],
+       [
+        3,
+        22,
+        23.61
+       ],
+       [
+        4,
+        22,
+        9.72
+       ],
+       [
+        5,
+        22,
+        1.39
+       ],
+       [
+        6,
+        22,
+        null
+       ],
+       [
+        7,
+        22,
+        null
+       ],
+       [
+        0,
+        23,
+        86.67
+       ],
+       [
+        1,
+        23,
+        0.0
+       ],
+       [
+        2,
+        23,
+        13.33
+       ],
+       [
+        3,
+        23,
+        0.0
+       ],
+       [
+        4,
+        23,
+        6.67
+       ],
+       [
+        5,
+        23,
+        0.0
+       ],
+       [
+        6,
+        23,
+        null
+       ],
+       [
+        7,
+        23,
+        null
+       ],
+       [
+        0,
+        24,
+        68.57
+       ],
+       [
+        1,
+        24,
+        0.0
+       ],
+       [
+        2,
+        24,
+        60.0
+       ],
+       [
+        3,
+        24,
+        0.0
+       ],
+       [
+        4,
+        24,
+        62.86
+       ],
+       [
+        5,
+        24,
+        0.0
+       ],
+       [
+        6,
+        24,
+        null
+       ],
+       [
+        7,
+        24,
+        null
+       ],
+       [
+        0,
+        25,
+        89.29
+       ],
+       [
+        1,
+        25,
+        0.0
+       ],
+       [
+        2,
+        25,
+        0.0
+       ],
+       [
+        3,
+        25,
+        3.57
+       ],
+       [
+        4,
+        25,
+        3.57
+       ],
+       [
+        5,
+        25,
+        0.0
+       ],
+       [
+        6,
+        25,
+        null
+       ],
+       [
+        7,
+        25,
+        null
+       ],
+       [
+        0,
+        26,
+        90.0
+       ],
+       [
+        1,
+        26,
+        10.0
+       ],
+       [
+        2,
+        26,
+        10.0
+       ],
+       [
+        3,
+        26,
+        0.0
+       ],
+       [
+        4,
+        26,
+        10.0
+       ],
+       [
+        5,
+        26,
+        0.0
+       ],
+       [
+        6,
+        26,
+        null
+       ],
+       [
+        7,
+        26,
+        null
+       ],
+       [
+        0,
+        27,
+        85.87
+       ],
+       [
+        1,
+        27,
+        55.43
+       ],
+       [
+        2,
+        27,
+        14.13
+       ],
+       [
+        3,
+        27,
+        26.09
+       ],
+       [
+        4,
+        27,
+        11.96
+       ],
+       [
+        5,
+        27,
+        0.0
+       ],
+       [
+        6,
+        27,
+        null
+       ],
+       [
+        7,
+        27,
+        null
+       ],
+       [
+        0,
+        28,
+        68.57
+       ],
+       [
+        1,
+        28,
+        34.29
+       ],
+       [
+        2,
+        28,
+        48.57
+       ],
+       [
+        3,
+        28,
+        0.0
+       ],
+       [
+        4,
+        28,
+        34.29
+       ],
+       [
+        5,
+        28,
+        0.0
+       ],
+       [
+        6,
+        28,
+        null
+       ],
+       [
+        7,
+        28,
+        null
+       ],
+       [
+        0,
+        29,
+        27.87
+       ],
+       [
+        1,
+        29,
+        93.44
+       ],
+       [
+        2,
+        29,
+        22.95
+       ],
+       [
+        3,
+        29,
+        21.31
+       ],
+       [
+        4,
+        29,
+        1.64
+       ],
+       [
+        5,
+        29,
+        0.0
+       ],
+       [
+        6,
+        29,
+        null
+       ],
+       [
+        7,
+        29,
+        null
+       ],
+       [
+        0,
+        30,
+        8.7
+       ],
+       [
+        1,
+        30,
+        0.0
+       ],
+       [
+        2,
+        30,
+        95.65
+       ],
+       [
+        3,
+        30,
+        0.0
+       ],
+       [
+        4,
+        30,
+        0.0
+       ],
+       [
+        5,
+        30,
+        0.0
+       ],
+       [
+        6,
+        30,
+        null
+       ],
+       [
+        7,
+        30,
+        null
+       ],
+       [
+        0,
+        31,
+        100.0
+       ],
+       [
+        1,
+        31,
+        18.18
+       ],
+       [
+        2,
+        31,
+        18.18
+       ],
+       [
+        3,
+        31,
+        9.09
+       ],
+       [
+        4,
+        31,
+        0.0
+       ],
+       [
+        5,
+        31,
+        0.0
+       ],
+       [
+        6,
+        31,
+        null
+       ],
+       [
+        7,
+        31,
+        null
+       ],
+       [
+        0,
+        32,
+        96.15
+       ],
+       [
+        1,
+        32,
+        96.15
+       ],
+       [
+        2,
+        32,
+        92.31
+       ],
+       [
+        3,
+        32,
+        3.85
+       ],
+       [
+        4,
+        32,
+        7.69
+       ],
+       [
+        5,
+        32,
+        0.0
+       ],
+       [
+        6,
+        32,
+        null
+       ],
+       [
+        7,
+        32,
+        null
+       ],
+       [
+        0,
+        33,
+        80.0
+       ],
+       [
+        1,
+        33,
+        0.0
+       ],
+       [
+        2,
+        33,
+        88.0
+       ],
+       [
+        3,
+        33,
+        4.0
+       ],
+       [
+        4,
+        33,
+        4.0
+       ],
+       [
+        5,
+        33,
+        0.0
+       ],
+       [
+        6,
+        33,
+        null
+       ],
+       [
+        7,
+        33,
+        null
+       ]
+      ],
+      "label": {
+       "show": false
+      },
+      "emphasis": {
+       "itemStyle": {
+        "shadowBlur": 6
+       }
+      }
+     }
+    ],
+    "queyi:meta": {
+     "n_samples": 1147,
+     "n_types": 34,
+     "assets": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "wunsequenced",
+      "compile-time"
+     ],
+     "constant_unknown_assets": [
+      "compile-time",
+      "wunsequenced"
+     ],
+     "gt50_blind_types": [
+      {
+       "type": "cross_tu_ub",
+       "row": 0,
+       "blind_pct": 100.0
+      },
+      {
+       "type": "strict_aliasing",
+       "row": 1,
+       "blind_pct": 100.0
+      },
+      {
+       "type": "uninitialized_read",
+       "row": 2,
+       "blind_pct": 100.0
+      },
+      {
+       "type": "volatile_misuse",
+       "row": 3,
+       "blind_pct": 92.9
+      },
+      {
+       "type": "endianness",
+       "row": 4,
+       "blind_pct": 89.3
+      },
+      {
+       "type": "deadlock",
+       "row": 5,
+       "blind_pct": 84.6
+      },
+      {
+       "type": "algorithm_misuse",
+       "row": 6,
+       "blind_pct": 77.1
+      },
+      {
+       "type": "logic_error",
+       "row": 7,
+       "blind_pct": 74.3
+      },
+      {
+       "type": "interrupt_safety",
+       "row": 8,
+       "blind_pct": 65.0
+      },
+      {
+       "type": "virtual_function",
+       "row": 9,
+       "blind_pct": 60.0
+      },
+      {
+       "type": "linker_odr",
+       "row": 10,
+       "blind_pct": 58.3
+      },
+      {
+       "type": "condition_variable",
+       "row": 11,
+       "blind_pct": 56.7
+      },
+      {
+       "type": "atomic_ub",
+       "row": 12,
+       "blind_pct": 53.8
+      }
+     ],
+     "source": "data/blindspot_676g_detection_matrix.json + data/681_type_stats_normalized.json",
+     "generated_by": "tools/figures_682.py",
+     "note": "热力图列顺序固定 ASSETS；退化两列整列 0（结构恒 unknown，不是检测失败）。"
+    }
+   },
+   "note": "复用 682 冻结图表配置（34 类归一化）"
+  },
+  "c2": {
+   "option": {
+    "title": {
+     "text": "C3 · A5 main endpoint across four splits (k=4, FD vs Random vs Static)",
+     "subtext": "same detection matrix (676f, 1137×8); only the data split changes. Δ = FD − pre-registered single-point Random; CI on Δ shown in tooltip.",
+     "left": "center",
+     "textStyle": {
+      "color": "#222222"
+     }
+    },
+    "tooltip": {
+     "trigger": "axis",
+     "formatter": "{b}<br/>FD {c0}% / Random {c1}% / Static {c2}%"
+    },
+    "legend": {
+     "top": 52,
+     "data": [
+      "FD (failure-driven)",
+      "Random (pre-registered seed)",
+      "Static baseline"
+     ]
+    },
+    "grid": {
+     "left": 60,
+     "right": 40,
+     "top": 110,
+     "bottom": 60
+    },
+    "xAxis": {
+     "type": "category",
+     "data": [
+      "original",
+      "family_random",
+      "family_stratified",
+      "strict_stratified"
+     ],
+     "axisLabel": {
+      "color": "#222222",
+      "rotate": 12
+     }
+    },
+    "yAxis": {
+     "type": "value",
+     "max": 70,
+     "name": "detection rate (%)",
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "series": [
+     {
+      "name": "FD (failure-driven)",
+      "type": "bar",
+      "barGap": "10%",
+      "data": [
+       54.5936,
+       57.2935,
+       55.536,
+       57.5704
+      ],
+      "itemStyle": {
+       "color": "#27ae60"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "formatter": "{c}%"
+      }
+     },
+     {
+      "name": "Random (pre-registered seed)",
+      "type": "bar",
+      "data": [
+       30.5654,
+       30.58,
+       32.5132,
+       31.8662
+      ],
+      "itemStyle": {
+       "color": "#2e86de"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "formatter": "{c}%"
+      }
+     },
+     {
+      "name": "Static baseline",
+      "type": "bar",
+      "data": [
+       24.735,
+       25.6591,
+       22.8471,
+       29.0493
+      ],
+      "itemStyle": {
+       "color": "#95a5a6"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "formatter": "{c}%"
+      }
+     }
+    ],
+    "queyi:meta": {
+     "rows": [
+      {
+       "split": "original",
+       "n_evaluation": 566,
+       "fd": 54.5936,
+       "random": 30.5654,
+       "static": 24.735,
+       "random_mean": 40.1713,
+       "delta_pp": 24.0283,
+       "delta_ci95_pp": [
+        20.5084,
+        27.5481
+       ],
+       "delta_vs_mean_pp": 14.4223,
+       "mcnemar_p": 2.2958874039497854e-41,
+       "fd_assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "cross-compile"
+       ]
+      },
+      {
+       "split": "family_random",
+       "n_evaluation": 569,
+       "fd": 57.2935,
+       "random": 30.58,
+       "static": 25.6591,
+       "random_mean": 40.907,
+       "delta_pp": 26.7135,
+       "delta_ci95_pp": [
+        23.078,
+        30.3491
+       ],
+       "delta_vs_mean_pp": 16.3865,
+       "mcnemar_p": 3.503246160812046e-46,
+       "fd_assets": [
+        "asan",
+        "tsan",
+        "ubsan",
+        "cross-compile"
+       ]
+      },
+      {
+       "split": "family_stratified",
+       "n_evaluation": 569,
+       "fd": 55.536,
+       "random": 32.5132,
+       "static": 22.8471,
+       "random_mean": 39.9257,
+       "delta_pp": 23.0228,
+       "delta_ci95_pp": [
+        19.1435,
+        26.9022
+       ],
+       "delta_vs_mean_pp": 15.6103,
+       "mcnemar_p": 4.078087318805367e-29,
+       "fd_assets": [
+        "asan",
+        "ubsan",
+        "tsan",
+        "compiler-warn"
+       ]
+      },
+      {
+       "split": "strict_stratified",
+       "n_evaluation": 568,
+       "fd": 57.5704,
+       "random": 31.8662,
+       "static": 29.0493,
+       "random_mean": 43.1452,
+       "delta_pp": 25.7042,
+       "delta_ci95_pp": [
+        22.1104,
+        29.2981
+       ],
+       "delta_vs_mean_pp": 14.4252,
+       "mcnemar_p": 2.2420775429197023e-44,
+       "fd_assets": [
+        "asan",
+        "tsan",
+        "ubsan",
+        "cross-compile"
+       ]
+      }
+     ],
+     "error_bars": "ECharts 无内置误差棒；Δ 的 95%CI 与 McNemar p 见下表（queyi:table）",
+     "table": [
+      {
+       "split": "original",
+       "delta_pp": 24.0283,
+       "delta_ci95_pp": [
+        20.5084,
+        27.5481
+       ],
+       "mcnemar_p": 2.2958874039497854e-41,
+       "delta_vs_random_mean_pp": 14.4223,
+       "n_evaluation": 566
+      },
+      {
+       "split": "family_random",
+       "delta_pp": 26.7135,
+       "delta_ci95_pp": [
+        23.078,
+        30.3491
+       ],
+       "mcnemar_p": 3.503246160812046e-46,
+       "delta_vs_random_mean_pp": 16.3865,
+       "n_evaluation": 569
+      },
+      {
+       "split": "family_stratified",
+       "delta_pp": 23.0228,
+       "delta_ci95_pp": [
+        19.1435,
+        26.9022
+       ],
+       "mcnemar_p": 4.078087318805367e-29,
+       "delta_vs_random_mean_pp": 15.6103,
+       "n_evaluation": 569
+      },
+      {
+       "split": "strict_stratified",
+       "delta_pp": 25.7042,
+       "delta_ci95_pp": [
+        22.1104,
+        29.2981
+       ],
+       "mcnemar_p": 2.2420775429197023e-44,
+       "delta_vs_random_mean_pp": 14.4252,
+       "n_evaluation": 568
+      }
+     ],
+     "source": "data/682_a5_split_comparison.json (682 B1)",
+     "generated_by": "tools/figures_682.py"
+    }
+   },
+   "note": "复用 682 冻结图表配置（34 类归一化）"
+  },
+  "c3": {
+   "option": {
+    "title": {
+     "text": "C2 · Blind-spot rate by family (8 families, n=1147)",
+     "subtext": "681-fixed aggregates; horizontal bars sorted low → high",
+     "left": "center",
+     "textStyle": {
+      "color": "#222222"
+     }
+    },
+    "tooltip": {
+     "trigger": "axis",
+     "axisPointer": {
+      "type": "shadow"
+     }
+    },
+    "grid": {
+     "left": 130,
+     "right": 80,
+     "top": 70,
+     "bottom": 40
+    },
+    "xAxis": {
+     "type": "value",
+     "max": 80,
+     "name": "blind rate (%)",
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "yAxis": {
+     "type": "category",
+     "data": [
+      "bounds",
+      "integer",
+      "memory",
+      "stl",
+      "language_oop",
+      "concurrency",
+      "alias_type",
+      "embedded_link"
+     ],
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "series": [
+     {
+      "name": "blind rate (%)",
+      "type": "bar",
+      "data": [
+       {
+        "value": 7.6,
+        "itemStyle": {
+         "color": "#2e86de"
+        }
+       },
+       {
+        "value": 11.3,
+        "itemStyle": {
+         "color": "#2e86de"
+        }
+       },
+       {
+        "value": 28.9,
+        "itemStyle": {
+         "color": "#2e86de"
+        }
+       },
+       {
+        "value": 33.6,
+        "itemStyle": {
+         "color": "#2e86de"
+        }
+       },
+       {
+        "value": 37.9,
+        "itemStyle": {
+         "color": "#2e86de"
+        }
+       },
+       {
+        "value": 57.3,
+        "itemStyle": {
+         "color": "#c0392b"
+        }
+       },
+       {
+        "value": 63.4,
+        "itemStyle": {
+         "color": "#c0392b"
+        }
+       },
+       {
+        "value": 67.4,
+        "itemStyle": {
+         "color": "#c0392b"
+        }
+       }
+      ],
+      "label": {
+       "show": true,
+       "position": "right",
+       "formatter": "{b}",
+       "color": "#222222"
+      },
+      "barWidth": 22
+     }
+    ],
+    "queyi:meta": {
+     "rows": [
+      {
+       "family": "bounds",
+       "n": 118,
+       "blind": 9,
+       "blind_pct": 7.6
+      },
+      {
+       "family": "integer",
+       "n": 115,
+       "blind": 13,
+       "blind_pct": 11.3
+      },
+      {
+       "family": "memory",
+       "n": 190,
+       "blind": 55,
+       "blind_pct": 28.9
+      },
+      {
+       "family": "stl",
+       "n": 140,
+       "blind": 47,
+       "blind_pct": 33.6
+      },
+      {
+       "family": "language_oop",
+       "n": 174,
+       "blind": 66,
+       "blind_pct": 37.9
+      },
+      {
+       "family": "concurrency",
+       "n": 225,
+       "blind": 129,
+       "blind_pct": 57.3
+      },
+      {
+       "family": "alias_type",
+       "n": 93,
+       "blind": 59,
+       "blind_pct": 63.4
+      },
+      {
+       "family": "embedded_link",
+       "n": 92,
+       "blind": 62,
+       "blind_pct": 67.4
+      }
+     ],
+     "source": "data/681_type_stats_normalized.json#family8",
+     "generated_by": "tools/figures_682.py",
+     "note": "家族名取自 681 归一化数据（memory/bounds/integer/alias_type/concurrency/stl/language_oop/embedded_link）；>50% 标红。"
+    }
+   },
+   "note": "复用 682 冻结图表配置（34 类归一化）"
+  },
+  "c4": {
+   "option": {
+    "title": {
+     "text": "C4 · Asset complementarity: exact Shapley contribution (n=566 eval)",
+     "subtext": "Shapley over all 2^8 subsets (exact); unique = samples only this asset catches; degenerate assets (wunsequenced/compile-time) contribute 0.",
+     "left": "center",
+     "textStyle": {
+      "color": "#222222"
+     }
+    },
+    "tooltip": {
+     "trigger": "axis",
+     "axisPointer": {
+      "type": "shadow"
+     },
+     "formatter": "详见 queyi:meta.table（含 c=评估集 catch / u=独占 catch）"
+    },
+    "grid": {
+     "left": 210,
+     "right": 90,
+     "top": 100,
+     "bottom": 40
+    },
+    "xAxis": {
+     "type": "value",
+     "name": "Shapley (pp)",
+     "max": 22,
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "yAxis": {
+     "type": "category",
+     "data": [
+      "compile-time  (c=0, u=0)",
+      "wunsequenced  (c=0, u=0)",
+      "linker  (c=4, u=4)",
+      "compiler-warn  (c=67, u=27)",
+      "cross-compile  (c=81, u=19)",
+      "tsan  (c=123, u=29)",
+      "ubsan  (c=129, u=44)",
+      "asan  (c=187, u=60)"
+     ],
+     "axisLabel": {
+      "color": "#222222"
+     }
+    },
+    "series": [
+     {
+      "name": "Shapley contribution (pp)",
+      "type": "bar",
+      "barWidth": 18,
+      "data": [
+       {
+        "value": 0.0,
+        "itemStyle": {
+         "color": "#95a5a6"
+        }
+       },
+       {
+        "value": 0.0,
+        "itemStyle": {
+         "color": "#95a5a6"
+        }
+       },
+       {
+        "value": 0.7067,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       },
+       {
+        "value": 7.3969,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       },
+       {
+        "value": 7.5,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       },
+       {
+        "value": 11.5342,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       },
+       {
+        "value": 13.404,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       },
+       {
+        "value": 19.5289,
+        "itemStyle": {
+         "color": "#8e44ad"
+        }
+       }
+      ],
+      "label": {
+       "show": true,
+       "position": "right",
+       "formatter": "{c}pp"
+      }
+     }
+    ],
+    "queyi:meta": {
+     "rows": [
+      {
+       "asset": "asan",
+       "shapley_pp": 19.5289,
+       "loo_delta_pp": -10.6007,
+       "eval_catch": 187,
+       "unique_catch": 60,
+       "degenerate": false
+      },
+      {
+       "asset": "ubsan",
+       "shapley_pp": 13.404,
+       "loo_delta_pp": -7.7739,
+       "eval_catch": 129,
+       "unique_catch": 44,
+       "degenerate": false
+      },
+      {
+       "asset": "tsan",
+       "shapley_pp": 11.5342,
+       "loo_delta_pp": -5.1237,
+       "eval_catch": 123,
+       "unique_catch": 29,
+       "degenerate": false
+      },
+      {
+       "asset": "cross-compile",
+       "shapley_pp": 7.5,
+       "loo_delta_pp": -3.3569,
+       "eval_catch": 81,
+       "unique_catch": 19,
+       "degenerate": false
+      },
+      {
+       "asset": "compiler-warn",
+       "shapley_pp": 7.3969,
+       "loo_delta_pp": -4.7703,
+       "eval_catch": 67,
+       "unique_catch": 27,
+       "degenerate": false
+      },
+      {
+       "asset": "linker",
+       "shapley_pp": 0.7067,
+       "loo_delta_pp": -0.7067,
+       "eval_catch": 4,
+       "unique_catch": 4,
+       "degenerate": false
+      },
+      {
+       "asset": "wunsequenced",
+       "shapley_pp": 0.0,
+       "loo_delta_pp": 0.0,
+       "eval_catch": 0,
+       "unique_catch": 0,
+       "degenerate": true
+      },
+      {
+       "asset": "compile-time",
+       "shapley_pp": 0.0,
+       "loo_delta_pp": 0.0,
+       "eval_catch": 0,
+       "unique_catch": 0,
+       "degenerate": true
+      }
+     ],
+     "linker_note": "linker: Shapley +0.71pp，评估集 catch 4 条、全部为独占 catch（其余资产都抓不到）⇒ 低边际但不可替代。（676l 全池口径另有「10 个 catch 全落在 asan/ubsan/tsan 的 unknown 里」的登记，两个口径分母不同，勿混用。）",
+     "degenerate_note": "compile-time / wunsequenced 全样本 unknown ⇒ Shapley=0、unique=0。",
+     "source": "data/682_asset_ablation.json (682 B3)",
+     "generated_by": "tools/figures_682.py"
+    }
+   },
+   "note": "复用 682 冻结图表配置（34 类归一化）"
+  },
+  "c5": {
+   "option": {
+    "title": {
+     "text": "C5 · 真实靶场 vs 自造语料：逐资产检出率",
+     "subtext": "同一 8 资产流水线；真实 n=110，自造 n=1147",
+     "left": "center"
+    },
+    "tooltip": {
+     "trigger": "axis"
+    },
+    "legend": {
+     "top": 56,
+     "data": [
+      "真实靶场（683）",
+      "自造语料（676g）"
+     ]
+    },
+    "grid": {
+     "left": 70,
+     "right": 40,
+     "top": 110,
+     "bottom": 60
+    },
+    "xAxis": {
+     "type": "category",
+     "data": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "wunsequenced",
+      "cross-compile",
+      "linker",
+      "compile-time"
+     ],
+     "axisLabel": {
+      "rotate": 30
+     }
+    },
+    "yAxis": {
+     "type": "value",
+     "name": "catch 率 %",
+     "max": 100
+    },
+    "series": [
+     {
+      "name": "真实靶场（683）",
+      "type": "bar",
+      "data": [
+       49.0909,
+       18.1818,
+       22.7273,
+       4.5455,
+       0,
+       20.0,
+       0,
+       0
+      ],
+      "itemStyle": {
+       "color": "#6ea8fe"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "fontSize": 10
+      }
+     },
+     {
+      "name": "自造语料（676g）",
+      "type": "bar",
+      "data": [
+       35.57,
+       23.54,
+       22.93,
+       12.47,
+       0.0,
+       10.64,
+       0.87,
+       0.0
+      ],
+      "itemStyle": {
+       "color": "#7ef0c0"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "fontSize": 10
+      }
+     }
+    ]
+   },
+   "note": "unknown 不进分母（unknown 率单独在矩阵 JSON 中报告）；wunsequenced / compile-time 在两侧均为 0%（恒 unknown）。"
+  },
+  "c6": {
+   "option": {
+    "title": {
+     "text": "C6 · 真实靶场项目覆盖",
+     "left": "center"
+    },
+    "tooltip": {
+     "trigger": "axis"
+    },
+    "grid": {
+     "left": 150,
+     "right": 40,
+     "top": 60,
+     "bottom": 40
+    },
+    "xAxis": {
+     "type": "value",
+     "name": "样本数"
+    },
+    "yAxis": {
+     "type": "category",
+     "data": [
+      "polkit",
+      "ncurses",
+      "libwebp",
+      "libssh",
+      "XZ Utils",
+      "WebKit",
+      "Unicode/LLVM/GCC 生态",
+      "SQLite（Chromium 内置）",
+      "Redis",
+      "HTTP/2 协议栈（nginx/httpd/Go 等）",
+      "Godot Engine",
+      "Chromium",
+      "CUPS",
+      "Boost",
+      "zlib",
+      "sudo",
+      "nginx",
+      "SQLite",
+      "PostgreSQL",
+      "ImageMagick",
+      "FreeType",
+      "Firefox",
+      "Apache HTTP Server",
+      "protobuf",
+      "libtiff",
+      "libpng",
+      "Qt",
+      "OpenSSH",
+      "FreeBSD",
+      "FFmpeg",
+      "Chromium/V8",
+      "libxml2",
+      "expat",
+      "glibc",
+      "OpenSSL",
+      "Linux kernel",
+      "curl"
+     ],
+     "axisLabel": {
+      "fontSize": 11
+     }
+    },
+    "series": [
+     {
+      "type": "bar",
+      "data": [
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       1,
+       2,
+       2,
+       2,
+       2,
+       2,
+       2,
+       2,
+       2,
+       2,
+       3,
+       3,
+       3,
+       3,
+       3,
+       3,
+       3,
+       3,
+       4,
+       6,
+       8,
+       10,
+       10,
+       16
+      ],
+      "itemStyle": {
+       "color": "#6ea8fe"
+      },
+      "label": {
+       "show": true,
+       "position": "right",
+       "fontSize": 10
+      }
+     }
+    ]
+   },
+   "note": "共 37 个项目（任务目标 ≥15）。"
+  },
+  "c7": {
+   "option": {
+    "title": {
+     "text": "C7 · 真实靶场缺陷类型分布（34 类词表）",
+     "left": "center"
+    },
+    "tooltip": {
+     "trigger": "axis"
+    },
+    "grid": {
+     "left": 60,
+     "right": 40,
+     "top": 60,
+     "bottom": 90
+    },
+    "xAxis": {
+     "type": "category",
+     "data": [
+      "out_of_bounds",
+      "logic_error",
+      "integer_overflow",
+      "use_after_free",
+      "null_pointer_deref",
+      "data_race",
+      "type_punning",
+      "double_free",
+      "memory_leak"
+     ],
+     "axisLabel": {
+      "rotate": 40,
+      "fontSize": 10
+     }
+    },
+    "yAxis": {
+     "type": "value",
+     "name": "样本数"
+    },
+    "series": [
+     {
+      "type": "bar",
+      "data": [
+       38,
+       31,
+       14,
+       10,
+       6,
+       4,
+       4,
+       2,
+       1
+      ],
+      "itemStyle": {
+       "color": "#ffb020"
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "fontSize": 10
+      }
+     }
+    ]
+   },
+   "note": "共 9 个类型。"
+  },
+  "c8": {
+   "option": {
+    "title": {
+     "text": "C8 · Operator 16 配置消融（literal；Pool A，k=4）",
+     "subtext": "等权 on/off 全枚举；同一冻结矩阵，仅权重变化",
+     "left": "center"
+    },
+    "tooltip": {
+     "trigger": "axis"
+    },
+    "grid": {
+     "left": 60,
+     "right": 40,
+     "top": 100,
+     "bottom": 60
+    },
+    "xAxis": {
+     "type": "category",
+     "data": [
+      "xxcx",
+      "xxcr",
+      "xnxx",
+      "xncx",
+      "xncr",
+      "fxxx",
+      "fxcx",
+      "fxcr",
+      "fnxx",
+      "fnxr",
+      "fncx",
+      "fncr",
+      "xxxx",
+      "xxxr",
+      "xnxr",
+      "fxxr"
+     ],
+     "axisLabel": {
+      "rotate": 40,
+      "fontSize": 10
+     }
+    },
+    "yAxis": {
+     "type": "value",
+     "name": "评估集检出率 %",
+     "min": 40,
+     "max": 60
+    },
+    "series": [
+     {
+      "type": "bar",
+      "data": [
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       56.0071,
+       51.5901,
+       51.5901,
+       51.5901,
+       51.5901
+      ],
+      "itemStyle": {
+       "color": "#7ef0c0"
+      },
+      "markLine": {
+       "data": [
+        {
+         "yAxis": 56.0071
+        }
+       ],
+       "label": {
+        "formatter": "fd_only 基线"
+       }
+      },
+      "label": {
+       "show": true,
+       "position": "top",
+       "fontSize": 10
+      }
+     }
+    ]
+   },
+   "note": "unique 模式 16 配置在 683_operator_ablation.json；literal 模式下含 novel 的配置与对应不含 novel 的配置选择一致（16/16 块验证，数学坍缩）。"
+  }
+ },
+ "split_table": [
+  {
+   "split": "original",
+   "fd": "54.5936%",
+   "random": "30.5654%",
+   "static": "24.735%",
+   "delta": "+24.03pp",
+   "p": "2.30e-41"
+  },
+  {
+   "split": "family_random",
+   "fd": "57.2935%",
+   "random": "30.58%",
+   "static": "25.6591%",
+   "delta": "+26.71pp",
+   "p": "3.50e-46"
+  },
+  {
+   "split": "family_stratified",
+   "fd": "55.536%",
+   "random": "32.5132%",
+   "static": "22.8471%",
+   "delta": "+23.02pp",
+   "p": "4.08e-29"
+  },
+  {
+   "split": "strict_stratified",
+   "fd": "57.5704%",
+   "random": "31.8662%",
+   "static": "29.0493%",
+   "delta": "+25.70pp",
+   "p": "2.24e-44"
+  }
+ ],
+ "toolchain_table": [
+  {
+   "asset": "asan",
+   "n": 200,
+   "agree": "93.5%",
+   "kappa": 0.864,
+   "gxx": "32.5%",
+   "clang": "33.5%",
+   "delta": "1.0pp"
+  },
+  {
+   "asset": "ubsan",
+   "n": 200,
+   "agree": "93.5%",
+   "kappa": 0.8434,
+   "gxx": "24.0%",
+   "clang": "26.0%",
+   "delta": "2.0pp"
+  }
+ ],
+ "toolchain_note": "clang 侧 = Ubuntu clang 18.1.3 实测；基线 = 676g（WSL g++ 13.3）。MinGW clang 22 的 ASan 不可用（缺运行库）——尝试记录，不上报数字。"
+}

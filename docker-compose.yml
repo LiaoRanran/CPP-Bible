@@ -1,0 +1,34 @@
+# docker-compose.yml — 683-E3
+#
+# 两个服务：
+#   queyi  : 研究数据链镜像（纯 Python 口径复算；默认跑数字对账 + 站点数据再生成）
+#   paper  : 论文编译镜像（复用仓库既有 docker/paper/Dockerfile，tectonic 编译）
+#
+# 用法：
+#   docker compose build queyi
+#   docker compose run --rm queyi python tools/analyze_683_oc.py --stage all
+#   docker compose run --rm paper          # 编译论文 PDF 到 research/latex/
+#
+# 诚实登记（683 验收）：本机（Windows, 2026-10-07 执行环境）**未安装 Docker**，
+# 因此本文件通过了 YAML 语法校验与路径核验，但**未在本机实测构建**；
+# 首次构建请按上方 digest 提示核对基础镜像。
+services:
+  queyi:
+    build:
+      context: .
+      dockerfile: docker/queyi/Dockerfile
+    image: queyi-research:1.0.0
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: ["bash", "-lc", "python tools/verify_paper_numbers.py"]
+
+  paper:
+    build:
+      context: .
+      dockerfile: docker/paper/Dockerfile
+    image: queyi-paper:1.0.0
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: ["bash", "-lc", "tectonic -X compile research/latex/queyi_neurips2027_v1.1.tex"]

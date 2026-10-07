@@ -1,0 +1,56 @@
+{
+ "title": {
+  "text": "C7 · 真实靶场缺陷类型分布（34 类词表）",
+  "left": "center"
+ },
+ "tooltip": {
+  "trigger": "axis"
+ },
+ "grid": {
+  "left": 60,
+  "right": 40,
+  "top": 60,
+  "bottom": 95
+ },
+ "xAxis": {
+  "type": "category",
+  "data": [
+   "out_of_bounds",
+   "logic_error",
+   "integer_overflow",
+   "use_after_free",
+   "null_pointer_deref",
+   "data_race",
+   "type_punning",
+   "double_free",
+   "memory_leak"
+  ],
+  "axisLabel": {
+   "rotate": 40,
+   "fontSize": 10
+  }
+ },
+ "yAxis": {
+  "type": "value",
+  "name": "样本数"
+ },
+ "series": [
+  {
+   "type": "bar",
+   "data": [
+    38,
+    31,
+    14,
+    10,
+    6,
+    4,
+    4,
+    2,
+    1
+   ],
+   "itemStyle": {
+    "color": "#e67e22"
+   }
+  }
+ ]
+}

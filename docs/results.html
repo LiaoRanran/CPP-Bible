@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results & Figures — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>结果与图表</h1>
+  <p class="sub">全部数字来自仓库冻结产物（676f 判定矩阵、682 敏感性、683 真实靶场与消融），
+  由图表的 ECharts 配置同源生成；离线时保留数字表格。</p>
+
+  <h2>1. 资产盲区热力图（34 类 × 8 资产）</h2>
+  <div class="chart-box"><div class="chart" id="c1" style="height:560px"></div>
+    <div class="chart-note" id="c1n">退化资产渲染为 n/a（不画 0%）：unknown 绝不当 miss。</div></div>
+
+  <h2>2. A5 主端点与多 split 敏感性</h2>
+  <div class="chart-box"><div class="chart" id="c2"></div>
+    <div class="chart-note" id="c2n"></div></div>
+  <table id="tbl-split">
+    <thead><tr><th>split</th><th>FD（演化选择）</th><th>Random（预注册单点）</th>
+      <th>Static</th><th>Δ (FD−单点)</th><th>p (McNemar)</th></tr></thead>
+    <tbody><tr><td colspan="6" class="muted">加载中…</td></tr></tbody>
+  </table>
+
+  <h2>3. 缺陷家族金字塔与资产互补性</h2>
+  <div class="grid-2">
+    <div class="chart-box"><div class="chart" id="c3" style="height:420px"></div>
+      <div class="chart-note" id="c3n"></div></div>
+    <div class="chart-box"><div class="chart" id="c4" style="height:420px"></div>
+      <div class="chart-note" id="c4n"></div></div>
+  </div>
+
+  <h2>4. 真实靶场 vs 自造样本检出率</h2>
+  <div class="chart-box"><div class="chart" id="c5"></div>
+    <div class="chart-note" id="c5n"></div></div>
+  <div class="grid-2">
+    <div class="chart-box"><div class="chart" id="c6" style="height:420px"></div>
+      <div class="chart-note" id="c6n">真实靶场：覆盖项目分布。</div></div>
+    <div class="chart-box"><div class="chart" id="c7" style="height:420px"></div>
+      <div class="chart-note" id="c7n">真实靶场：缺陷类型分布（34 类词表）。</div></div>
+  </div>
+
+  <h2>5. Operator 四分量消融（16 配置雷达）</h2>
+  <div class="chart-box"><div class="chart" id="c8"></div>
+    <div class="chart-note" id="c8n"></div></div>
+
+  <h2>6. 跨工具链一致性（clang 18 vs g++ 13.3）</h2>
+  <table id="tbl-kt">
+    <thead><tr><th>资产</th><th>n</th><th>一致率</th><th>κ</th>
+      <th>g++ catch%</th><th>clang catch%</th><th>Δ</th></tr></thead>
+    <tbody><tr><td colspan="7" class="muted">加载中…</td></tr></tbody>
+  </table>
+  <p class="honest" id="kt-honest">—</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+<script src="assets/app.js"></script>
+<script>
+(async () => {
+  try {
+    const C = await loadJSON("assets/data/charts.json");
+    for (const [id, spec] of Object.entries(C.charts)) {
+      await mountChart(id, spec.option, id + "n");
+      if (spec.note && el(id + "n")) el(id + "n").textContent = spec.note;
+    }
+    if (C.split_table) {
+      document.querySelector("#tbl-split tbody").innerHTML = C.split_table.map(r =>
+        `<tr><td>${r.split}</td><td>${r.fd}</td><td>${r.random}</td><td>${r.static}</td>
+         <td>${r.delta}</td><td>${r.p}</td></tr>`).join("");
+    }
+    if (C.toolchain_table) {
+      document.querySelector("#tbl-kt tbody").innerHTML = C.toolchain_table.map(r =>
+        `<tr><td>${r.asset}</td><td>${r.n}</td><td>${r.agree}</td><td>${r.kappa}</td>
+         <td>${r.gxx}</td><td>${r.clang}</td><td>${r.delta}</td></tr>`).join("");
+      if (C.toolchain_note) el("kt-honest").textContent = C.toolchain_note;
+    }
+  } catch (e) {
+    document.querySelectorAll(".chart").forEach(n => {
+      n.innerHTML = `<p class="chart-note">数据未生成（${e.message}）；先运行 tools/site_683_data.py</p>`;
+    });
+  }
+})();
+</script>
+</body>
+</html>

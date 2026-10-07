@@ -1,0 +1,80 @@
+{
+ "title": {
+  "text": "C8 · Operator 16 配置消融（literal；Pool A，k=4）",
+  "subtext": "等权 on/off 全枚举；compare to fd_only baseline (56.0071%)",
+  "left": "center"
+ },
+ "tooltip": {
+  "trigger": "axis"
+ },
+ "grid": {
+  "left": 60,
+  "right": 40,
+  "top": 100,
+  "bottom": 70
+ },
+ "xAxis": {
+  "type": "category",
+  "data": [
+   "xxcx",
+   "xxcr",
+   "xnxx",
+   "xncx",
+   "xncr",
+   "fxxx",
+   "fxcx",
+   "fxcr",
+   "fnxx",
+   "fnxr",
+   "fncx",
+   "fncr",
+   "xxxx",
+   "xxxr",
+   "xnxr",
+   "fxxr"
+  ],
+  "axisLabel": {
+   "rotate": 40,
+   "fontSize": 10
+  }
+ },
+ "yAxis": {
+  "type": "value",
+  "name": "评估集检出率 %",
+  "min": 45,
+  "max": 58
+ },
+ "series": [
+  {
+   "type": "bar",
+   "data": [
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    56.0071,
+    51.5901,
+    51.5901,
+    51.5901,
+    51.5901
+   ],
+   "itemStyle": {
+    "color": "#27ae60"
+   },
+   "markLine": {
+    "data": [
+     {
+      "yAxis": 56.0071
+     }
+    ]
+   }
+  }
+ ]
+}

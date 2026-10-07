@@ -1,0 +1,74 @@
+# release.yml — 683-E4：研究线（Queyi）发布工作流。
+#
+# 触发：tag（v*）。做三件真活（宁可不发，也不发一个数字对不上的包）：
+#   ① 论文编译（tectonic）→ PDF；
+#   ② 数据完整性 + 论文数字一致性门禁（verify_paper_numbers）；
+#   ③ 打包发布物（论文 PDF + 真实靶场数据集 + 冻结判定矩阵 + CITATION）并挂 Release。
+#
+# 与 ci.yml 的关系：ci.yml 管"入库质量"；本 workflow 只做"发布物 + 对账"，
+# 不重复跑重型测试（fail-fast：对账不过 ⇒ 不发）。
+name: Release (research line)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v1.0.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install minimal deps (pyyaml for gate tooling)
+        run: python -m pip install --upgrade pip pyyaml
+
+      - name: Paper numbers consistency gate
+        run: python tools/verify_paper_numbers.py
+
+      - name: Data integrity gate
+        run: python tools/data_integrity_676h.py
+
+      - name: Install tectonic (LaTeX, single binary)
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+
+      - name: Build paper PDF
+        run: |
+          set -euo pipefail
+          ./tectonic -X compile research/latex/queyi_neurips2027_v1.1.tex
+
+      - name: Assemble release bundle
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp research/latex/queyi_neurips2027_v1.1.pdf dist/ 2>/dev/null || true
+          cp data/683_real_world_benchmark.json dist/ 2>/dev/null || true
+          cp data/683_real_world_detection_matrix.json dist/ 2>/dev/null || true
+          cp data/683_real_world_candidates_verified.json dist/ 2>/dev/null || true
+          cp -r data/real_world dist/real_world 2>/dev/null || true
+          cp CITATION.cff dist/ 2>/dev/null || true
+          cp RELEASE_NOTES_v1.0.md dist/ 2>/dev/null || true
+          (cd dist && sha256sum * > SHA256SUMS.txt 2>/dev/null || true)
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**
+          generate_release_notes: false
+          body_path: RELEASE_NOTES_v1.0.md
+          fail_on_unmatched_files: false

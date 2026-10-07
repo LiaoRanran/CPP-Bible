@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>关于</h1>
+  <p class="sub">阙疑（Queyi）是一个独立研究工作与配套仓库：把"用哪些检测器"当作可在失败
+  中演化的对象，并以极端的可审计性要求约束每一步（四态判决、账本、Merkle、
+  工具完整性 fail-closed）。</p>
+
+  <h2>作者</h2>
+  <p>Ran Liao（阿信 / LiaoRanran）· Hefei University · 独立研究（无机构资助）。</p>
+
+  <h2>引用</h2>
+  <pre>@software{queyi2027,
+  title   = {Queyi: Failure-Driven Verifier Evolution for C++ Defect Detection},
+  author  = {Liao, Ran},
+  year    = {2027},
+  license = {Apache-2.0},
+  note    = {Preprint in preparation; datasets and scripts available in-repository}
+}</pre>
+  <p class="muted">机器可读引用：仓库根目录 <code class="inline">CITATION.cff</code>。</p>
+
+  <h2>AI 使用声明（必须透明）</h2>
+  <ul class="muted">
+    <li>本项目的实验脚本、数据分析与文档由<b>作者主导、AI 辅助</b>完成；
+      人类作者负责科学判断、方向决策与最终验收（每条 AI 产出都按验收协议检查）。</li>
+    <li>真实靶场 PoC 是<b>基于公开披露信息（NVD / 项目公告 / 修复 commit）的最小重构</b>，
+      由 AI 辅助撰写、由固定工具链实测检验其行为；原始项目代码未被复制。</li>
+    <li>CVE 元数据（描述 / CVSS / 时间）全部取自 NVD API 应答原文，无人工转述。</li>
+    <li>仓库内所有数字可由脚本逐条复算（<code class="inline">verify_paper_numbers</code>），
+      任何与论文/网站不一致都是 bug。</li>
+  </ul>
+
+  <h2>诚实边界（摘自 Claim Boundary）</h2>
+  <ul class="muted">
+    <li>检测器组合演化是一个<b>工程化形式化 + 治理</b>的贡献，不是新算法理论；
+      novelty 分量的字面定义与 failure 等价（数学坍缩）——已被证明并公开，
+      unique 修复变体在 683 消融中作为探索性结果报告。</li>
+    <li>样本主体为合成/半合成语料；真实靶场（110 条）以<b>重构</b>方式引入外部效度，
+      不声称等价于原始项目上下文。</li>
+    <li>工具链敏感性：见 <a href="results.html">Results</a> 的跨工具链一节；
+      任何 >10pp 的差异都被强制披露。</li>
+  </ul>
+
+  <h2>许可与致谢</h2>
+  <p class="muted">代码与数据：Apache-2.0。真实靶场样本基于公开安全公告与修复记录，
+  感谢 OpenSSL / curl / glibc / SQLite / libxml2 / FFmpeg / Chromium / Linux 等上游项目
+  公开披露缺陷与修复（每条样本在 benchmark JSON 中标注出处 URL）。</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · 本站无追踪器、无 cookie、无外部字体</footer>
+</body>
+</html>

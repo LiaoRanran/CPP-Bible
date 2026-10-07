@@ -1,0 +1,36 @@
+# research/pyproject.toml — 683-E6：研究线（Queyi）的最小包定义。
+#
+# 说明：仓库根 pyproject.toml 是**书籍工具链 CLI**（cpp-bible-toolchain）的定义，
+# 683 不动它（避免裹挟书籍发布面）。本文件只声明研究线的 Python 面：
+#   * 全部研究脚本只用标准库 + PyYAML（门禁工具顶层 import yaml）；
+#   * 无网络依赖（NVD 在线验证是可选步骤，结果已冻结落盘）；
+#   * 不发布到 PyPI（研究仓库自用），pyproject 仅用于可安装性与元数据一致性。
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "queyi-research"
+version = "1.0.0"
+description = "Queyi (阙疑) research line: failure-driven verifier evolution for C++ defect detection (datasets, benchmark, tooling)"
+readme = "README_RESEARCH.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Ran Liao", email = "1026708211@qq.com" }]
+keywords = ["cpp", "defect-detection", "sanitizers", "benchmark", "reproducibility"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = ["pyyaml>=6.0"]
+
+[project.optional-dependencies]
+# 真实检测链不在此包依赖内（需要宿主机的 WSL/MinGW/Clang 工具链，无法用 pip 表达）。
+dev = ["pytest>=7.0", "ruff>=0.5.0"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

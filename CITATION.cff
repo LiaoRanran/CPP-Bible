@@ -1,0 +1,39 @@
+# CITATION.cff — machine-readable citation for the Queyi (阙疑) research line
+# 规范：CFF 1.2.0（https://citation-file-format.github.io/）
+cff-version: 1.2.0
+message: "If you use the Queyi datasets, real-world benchmark, or tooling, please cite this repository."
+title: "Queyi: Failure-Driven Verifier Evolution for C++ Defect Detection (datasets, benchmark, and tooling)"
+abstract: >-
+  Queyi is a research line and reproducible toolchain for failure-driven evolution of
+  C++ defect detector portfolios: four-state verdicts (pass/fail/unknown/contradict),
+  an append-only ledger with Merkle integrity, and a deterministic portfolio operator E
+  scored by failure coverage / novelty / cost / redundancy. This repository also hosts
+  (a) a 1,147-sample x 8-asset frozen detection matrix, and (b) a real-world benchmark of
+  reconstructed C++ defects with traceable CVE/issue/commit provenance and NVD-verified
+  metadata.
+type: software
+authors:
+  - family-names: "Liao"
+    given-names: "Ran"
+    alias: "LiaoRanran"
+    affiliation: "Hefei University"
+    email: "1026708211@qq.com"
+license: Apache-2.0
+repository-code: "https://github.com/LiaoRanran/CPP-Bible"
+keywords:
+  - "C++ defect detection"
+  - "sanitizers"
+  - "detector portfolio"
+  - "benchmark"
+  - "reproducibility"
+  - "real-world vulnerabilities"
+version: "1.0.0"
+date-released: "2026-10-07"
+preferred-citation:
+  type: article
+  title: "Evolving Verifiers: Failure-Driven Portfolio Evolution for C++ Defect Detection"
+  authors:
+    - family-names: "Liao"
+      given-names: "Ran"
+  year: 2027
+  notes: "Manuscript in preparation (NeurIPS 2027 Evaluations & Datasets track). Preprint pending."

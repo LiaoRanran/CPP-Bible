@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
 
+> 研究线（阙疑 Queyi：失败驱动的 C++ 检测器组合演化 + 真实靶场基准）见
+> **[README_RESEARCH.md](README_RESEARCH.md)** 与研究报告官网 **[docs/](docs/index.html)**；
+> 本书正文（147 章）继续以本文件为入口。
+
 > **147 章 · 16 part · 约 25.6 万行 · 7515 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
 > 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
 

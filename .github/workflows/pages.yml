@@ -1,0 +1,75 @@
+# pages.yml — 683-D：研究报告官网（docs/）发布到 GitHub Pages。
+#
+# 范围说明（与既有 deploy.yml 的分工）：
+#   * deploy.yml  发布 web/ —— 书籍/前端交互站（656 C4，数据管线 + 前端真求值）；
+#   * 本 workflow 发布 docs/ —— 683 研究报告官网（论文/结果/真实靶场浏览器/Demo）。
+#   二者可以独立触发；仓库 Pages source 设为 "GitHub Actions" 时，
+#   后触发的部署覆盖前者 —— 若需同时展示，请将 web/ 构建产物拷入 docs/ 后再发布。
+#
+# 触发：仅当 docs/**（或数据生成脚本）变更时；构建前先跑数据自检，
+# 防止把"数据未生成"的空站发出去。
+name: Deploy research site (docs) to Pages
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "docs/**"
+      - "tools/site_683_data.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: research-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate site data from frozen artifacts (fail-closed)
+        run: |
+          set -euo pipefail
+          python tools/site_683_data.py
+          test -s docs/assets/data/core_numbers.json
+
+      - name: Verify site integrity (pages present + JSON parses)
+        run: |
+          set -euo pipefail
+          for p in index paper results realworld demo data reproduce about; do
+            test -f "docs/$p.html" || { echo "missing docs/$p.html"; exit 1; }
+          done
+          python - <<'PY'
+          import json, pathlib
+          for f in pathlib.Path("docs/assets/data").glob("*.json"):
+              json.loads(f.read_text(encoding="utf-8"))
+              print("ok:", f)
+          PY
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

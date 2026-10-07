@@ -1,0 +1,61 @@
+{
+ "generated_at": "2026-10-07T20:21:47+08:00",
+ "badges": [
+  {
+   "value": "1,147",
+   "label": "合成样本 × 8 资产全量矩阵"
+  },
+  {
+   "value": "110",
+   "label": "真实缺陷（可追溯 + PoC 落盘）"
+  },
+  {
+   "value": "8",
+   "label": "检测器资产（四态判决）"
+  },
+  {
+   "value": "18/34",
+   "label": "盲区 >50% 的缺陷类型（676g）"
+  },
+  {
+   "value": "+24.03pp",
+   "label": "A5 Δ vs 预注册随机单点（k=4）"
+  },
+  {
+   "value": "110",
+   "label": "NVD 在线验证 CVE"
+  }
+ ],
+ "table": [
+  {
+   "metric": "A5 主端点 FD 检出率（评估集，k=4）",
+   "value": "见 a5_676f_results.json",
+   "scope": "676f 冻结矩阵 1137×8；派生 571 / 评估 566；WSL g++ 13.3 双档"
+  },
+  {
+   "metric": "Δ (FD − 预注册随机单点)",
+   "value": "+24.03pp（p≈2e-41）",
+   "scope": "McNemar exact；95% CI 见 682 报告"
+  },
+  {
+   "metric": "盲区图（676g）",
+   "value": "18/34 类盲区 >50%",
+   "scope": "1147×8 全量；unknown 不计入 miss（退化资产渲染 n/a）"
+  },
+  {
+   "metric": "真实靶场 OR 检出率（683）",
+   "value": "59.0909%",
+   "scope": "110 条真实缺陷 × 8 资产；source-derived 重构"
+  },
+  {
+   "metric": "NVD 在线验证",
+   "value": "110/113 FOUND",
+   "scope": "services.nvd.nist.gov API v2.0；应答原文冻结"
+  },
+  {
+   "metric": "Operator 主预算最优（Pool A k=4）",
+   "value": "56.0071%",
+   "scope": "16 配置全枚举 + unique 变体；等权消融"
+  }
+ ]
+}

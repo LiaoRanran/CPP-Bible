@@ -1,0 +1,38 @@
+# .github/dependabot.yml — 683-E7：依赖自动更新
+#
+# 范围（刻意保守）：
+#   * github-actions：只升级 workflow 中 pin 的 actions（每周一次，最多 5 个 PR）；
+#   * pip：只针对根 pyproject.toml（书籍工具链 CLI 的依赖面）；
+#   * docker：只针对 docker/ 下自建镜像的基础镜像（queyi 研究镜像）。
+# 不做 npm（web/ 前端零运行时依赖，package-lock 是构建期工具）与无上限 PR——
+# 本仓库的信任根是"数字可复算"，依赖面越大越难审计。
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(actions)"
+    labels: ["dependencies", "ci"]
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(pip)"
+    labels: ["dependencies"]
+
+  - package-ecosystem: "docker"
+    directory: "/docker/queyi"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(docker)"
+    labels: ["dependencies", "docker"]

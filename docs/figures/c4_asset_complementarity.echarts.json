@@ -1,0 +1,181 @@
+{
+ "title": {
+  "text": "C4 · Asset complementarity: exact Shapley contribution (n=566 eval)",
+  "subtext": "Shapley over all 2^8 subsets (exact); unique = samples only this asset catches; degenerate assets (wunsequenced/compile-time) contribute 0.",
+  "left": "center",
+  "textStyle": {
+   "color": "#222222"
+  }
+ },
+ "tooltip": {
+  "trigger": "axis",
+  "axisPointer": {
+   "type": "shadow"
+  },
+  "formatter": "详见 queyi:meta.table（含 c=评估集 catch / u=独占 catch）"
+ },
+ "grid": {
+  "left": 210,
+  "right": 90,
+  "top": 100,
+  "bottom": 40
+ },
+ "xAxis": {
+  "type": "value",
+  "name": "Shapley (pp)",
+  "max": 22,
+  "axisLabel": {
+   "color": "#222222"
+  }
+ },
+ "yAxis": {
+  "type": "category",
+  "data": [
+   "compile-time  (c=0, u=0)",
+   "wunsequenced  (c=0, u=0)",
+   "linker  (c=4, u=4)",
+   "compiler-warn  (c=67, u=27)",
+   "cross-compile  (c=81, u=19)",
+   "tsan  (c=123, u=29)",
+   "ubsan  (c=129, u=44)",
+   "asan  (c=187, u=60)"
+  ],
+  "axisLabel": {
+   "color": "#222222"
+  }
+ },
+ "series": [
+  {
+   "name": "Shapley contribution (pp)",
+   "type": "bar",
+   "barWidth": 18,
+   "data": [
+    {
+     "value": 0.0,
+     "itemStyle": {
+      "color": "#95a5a6"
+     }
+    },
+    {
+     "value": 0.0,
+     "itemStyle": {
+      "color": "#95a5a6"
+     }
+    },
+    {
+     "value": 0.7067,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    },
+    {
+     "value": 7.3969,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    },
+    {
+     "value": 7.5,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    },
+    {
+     "value": 11.5342,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    },
+    {
+     "value": 13.404,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    },
+    {
+     "value": 19.5289,
+     "itemStyle": {
+      "color": "#8e44ad"
+     }
+    }
+   ],
+   "label": {
+    "show": true,
+    "position": "right",
+    "formatter": "{c}pp"
+   }
+  }
+ ],
+ "queyi:meta": {
+  "rows": [
+   {
+    "asset": "asan",
+    "shapley_pp": 19.5289,
+    "loo_delta_pp": -10.6007,
+    "eval_catch": 187,
+    "unique_catch": 60,
+    "degenerate": false
+   },
+   {
+    "asset": "ubsan",
+    "shapley_pp": 13.404,
+    "loo_delta_pp": -7.7739,
+    "eval_catch": 129,
+    "unique_catch": 44,
+    "degenerate": false
+   },
+   {
+    "asset": "tsan",
+    "shapley_pp": 11.5342,
+    "loo_delta_pp": -5.1237,
+    "eval_catch": 123,
+    "unique_catch": 29,
+    "degenerate": false
+   },
+   {
+    "asset": "cross-compile",
+    "shapley_pp": 7.5,
+    "loo_delta_pp": -3.3569,
+    "eval_catch": 81,
+    "unique_catch": 19,
+    "degenerate": false
+   },
+   {
+    "asset": "compiler-warn",
+    "shapley_pp": 7.3969,
+    "loo_delta_pp": -4.7703,
+    "eval_catch": 67,
+    "unique_catch": 27,
+    "degenerate": false
+   },
+   {
+    "asset": "linker",
+    "shapley_pp": 0.7067,
+    "loo_delta_pp": -0.7067,
+    "eval_catch": 4,
+    "unique_catch": 4,
+    "degenerate": false
+   },
+   {
+    "asset": "wunsequenced",
+    "shapley_pp": 0.0,
+    "loo_delta_pp": 0.0,
+    "eval_catch": 0,
+    "unique_catch": 0,
+    "degenerate": true
+   },
+   {
+    "asset": "compile-time",
+    "shapley_pp": 0.0,
+    "loo_delta_pp": 0.0,
+    "eval_catch": 0,
+    "unique_catch": 0,
+    "degenerate": true
+   }
+  ],
+  "linker_note": "linker: Shapley +0.71pp，评估集 catch 4 条、全部为独占 catch（其余资产都抓不到）⇒ 低边际但不可替代。（676l 全池口径另有「10 个 catch 全落在 asan/ubsan/tsan 的 unknown 里」的登记，两个口径分母不同，勿混用。）",
+  "degenerate_note": "compile-time / wunsequenced 全样本 unknown ⇒ Shapley=0、unique=0。",
+  "source": "data/682_asset_ablation.json (682 B3)",
+  "generated_by": "tools/figures_682.py"
+ }
+}

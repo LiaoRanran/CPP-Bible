@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>数据集</h1>
+  <p class="sub">阙疑的数据分两层：<b>合成/半合成语料</b>（1,147 条，用于 A5 主实验）
+  与 <b>真实靶场</b>（110 条真实缺陷重构，683 新增）。全部带机器可读元数据
+  （Croissant core + RAI 字段，682 批次起）。</p>
+
+  <div class="cards">
+    <div class="card"><div class="kpi">1,147</div><div class="muted">合成/半合成样本 × 8 资产全量判定矩阵
+      （1137 可测索引 + 10 条边界登记）</div></div>
+    <div class="card"><div class="kpi">110</div><div class="muted">真实缺陷重构（RW-001 … RW-110）
+      · 全部出处可追溯</div></div>
+    <div class="card"><div class="kpi">8</div><div class="muted">检测器资产（3 sanitizer + 4 本地 + 1 声明性）</div></div>
+    <div class="card"><div class="kpi">34</div><div class="muted">缺陷类型规范词表（跨全部批次统一）</div></div>
+  </div>
+
+  <h2>真实靶场的可追溯性（683）</h2>
+  <ul class="muted">
+    <li><b>NVD API 在线验证</b>：109 个唯一 CVE 全部经
+      <code class="inline">services.nvd.nist.gov/rest/json/cves/2.0</code> 在线查询确认，
+      应答原文（描述 / CVSS / 发布时间 / references）冻结在
+      <code class="inline">data/683_real_world_candidates_verified.json</code>。</li>
+    <li><b>修复链接</b>：NVD references 中提取到 51 条真实 fix commit 链接、18 条 issue 链接、
+      16 条 PR 链接（逐条落在 benchmark JSON 的 <code class="inline">refs_commit/refs_issue/refs_pr</code> 字段）。</li>
+    <li><b>PoC 落盘</b>：每条缺陷一个最小重构 <code class="inline">data/real_world/RW-xxx.cpp</code>
+      （单文件，&lt;200 行；头部注释内嵌元数据 = 单一事实源）。</li>
+  </ul>
+  <p class="honest">PoC 是<b>基于公开披露信息的最小重构</b>（source-derived），不是原始项目代码，
+  也不含武器化利用链；目的是测"检测器在真实缺陷类别上的能力"，不是提供利用。</p>
+
+  <h2>文件与下载（仓库内路径）</h2>
+  <table>
+    <thead><tr><th>内容</th><th>路径</th><th>格式</th></tr></thead>
+    <tbody>
+      <tr><td>真实靶场 PoC（110 条）</td><td><code class="inline">data/real_world/RW-*.cpp</code></td><td>C++17 源码</td></tr>
+      <tr><td>真实靶场元数据</td><td><code class="inline">data/683_real_world_benchmark.json</code></td><td>JSON</td></tr>
+      <tr><td>真实靶场判定矩阵（110×8）</td><td><code class="inline">data/683_real_world_detection_matrix.json</code></td><td>JSON</td></tr>
+      <tr><td>CVE 在线验证记录</td><td><code class="inline">data/683_real_world_candidates_verified.json</code></td><td>JSON（NVD 原文冻结）</td></tr>
+      <tr><td>合成语料判定矩阵（1147×8）</td><td><code class="inline">data/blindspot_676g_detection_matrix.json</code></td><td>JSON</td></tr>
+      <tr><td>Croissant core + RAI</td><td><code class="inline">data/croissant.json</code> · <code class="inline">data/rai_metadata.json</code></td><td>JSON-LD</td></tr>
+      <tr><td>数据集卡（合成语料）</td><td><code class="inline">data/holdout_expansion/DATASHEET.md</code></td><td>Markdown</td></tr>
+      <tr><td>数据集卡（真实靶场）</td><td><code class="inline">data/real_world/README.md</code></td><td>Markdown</td></tr>
+    </tbody>
+  </table>
+
+  <h2>许可与引用</h2>
+  <p class="muted">数据与代码：<b>Apache-2.0</b>（见仓库 LICENSE）。引用格式见
+    <a href="about.html">About / CITATION.cff</a>。真实靶场样本的"出处"指向各原项目与
+    NVD 记录；PoC 重构文本的版权归本仓库（Apache-2.0），保留来源声明。</p>
+  <p class="muted">隐私：数据集中不含任何个人数据（无姓名、邮箱、密钥）；
+    作者实名仅出现在 CITATION/论文作者信息中（可依会议要求匿名化）。</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+</body>
+</html>

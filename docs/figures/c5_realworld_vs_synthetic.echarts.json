@@ -1,0 +1,80 @@
+{
+ "title": {
+  "text": "C5 · 真实靶场 vs 自造语料：逐资产检出率",
+  "subtext": "真实 n=110 / 自造 n=1147；unknown 不进分母",
+  "left": "center"
+ },
+ "tooltip": {
+  "trigger": "axis"
+ },
+ "legend": {
+  "top": 56,
+  "data": [
+   "真实靶场（683）",
+   "自造语料（676g）"
+  ]
+ },
+ "grid": {
+  "left": 70,
+  "right": 40,
+  "top": 110,
+  "bottom": 60
+ },
+ "xAxis": {
+  "type": "category",
+  "data": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "wunsequenced",
+   "cross-compile",
+   "linker",
+   "compile-time"
+  ],
+  "axisLabel": {
+   "rotate": 30
+  }
+ },
+ "yAxis": {
+  "type": "value",
+  "name": "catch 率 %",
+  "max": 100
+ },
+ "series": [
+  {
+   "name": "真实靶场（683）",
+   "type": "bar",
+   "data": [
+    49.0909,
+    18.1818,
+    22.7273,
+    4.5455,
+    0,
+    20.0,
+    0,
+    0
+   ],
+   "itemStyle": {
+    "color": "#2e86de"
+   }
+  },
+  {
+   "name": "自造语料（676g）",
+   "type": "bar",
+   "data": [
+    35.57,
+    23.54,
+    22.93,
+    12.47,
+    0.0,
+    10.64,
+    0.87,
+    0.0
+   ],
+   "itemStyle": {
+    "color": "#27ae60"
+   }
+  }
+ ]
+}

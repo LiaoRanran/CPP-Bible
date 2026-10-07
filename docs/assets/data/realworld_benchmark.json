@@ -1,0 +1,4773 @@
+{
+ "generated_at": "2026-10-07T20:21:47+08:00",
+ "n_samples": 110,
+ "or_catch_rate_pct": 59.0909,
+ "online_verified_cves": 110,
+ "projects": [
+  "Apache HTTP Server",
+  "Boost",
+  "CUPS",
+  "Chromium",
+  "Chromium/V8",
+  "FFmpeg",
+  "Firefox",
+  "FreeBSD",
+  "FreeType",
+  "Godot Engine",
+  "HTTP/2 协议栈（nginx/httpd/Go 等）",
+  "ImageMagick",
+  "Linux kernel",
+  "OpenSSH",
+  "OpenSSL",
+  "PostgreSQL",
+  "Qt",
+  "Redis",
+  "SQLite",
+  "SQLite（Chromium 内置）",
+  "Unicode/LLVM/GCC 生态",
+  "WebKit",
+  "XZ Utils",
+  "curl",
+  "expat",
+  "glibc",
+  "libpng",
+  "libssh",
+  "libtiff",
+  "libwebp",
+  "libxml2",
+  "ncurses",
+  "nginx",
+  "polkit",
+  "protobuf",
+  "sudo",
+  "zlib"
+ ],
+ "types": [
+  "data_race",
+  "double_free",
+  "integer_overflow",
+  "logic_error",
+  "memory_leak",
+  "null_pointer_deref",
+  "out_of_bounds",
+  "type_punning",
+  "use_after_free"
+ ],
+ "years": [
+  "2012",
+  "2014",
+  "2015",
+  "2016",
+  "2017",
+  "2018",
+  "2019",
+  "2020",
+  "2021",
+  "2022",
+  "2023",
+  "2024"
+ ],
+ "samples": [
+  {
+   "rw_id": "RW-001",
+   "cve_id": "CVE-2014-0160",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2014,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+   "mechanism": "Heartbleed —— TLS heartbeat 响应长度取自攻击者声明的字段，",
+   "notes": "最小重构（source-derived，非原始项目代码）。ASan 应报 heap-buffer-overflow read。",
+   "poc_file": "data/real_world/RW-001.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-002",
+   "cve_id": "CVE-2022-0778",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0778",
+   "mechanism": "BN_mod_sqrt() 对非素数模的 Tonelli-Shanks 循环缺少出口，解析",
+   "notes": "危险步骤——进程会挂起；检测器以超时→miss 处理（真实盲区案例）。",
+   "poc_file": "data/real_world/RW-002.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-003",
+   "cve_id": "CVE-2021-3711",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2021,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3711",
+   "mechanism": "SM2 解密流程中密文字节长度被转换为 int 后参与缓冲区长度计算，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-003.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-004",
+   "cve_id": "CVE-2021-3712",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3712",
+   "mechanism": "ASN1_STRING 可能不以 NUL 结尾；将 data/len 当作 C 字符串交给",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow read。",
+   "poc_file": "data/real_world/RW-004.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-005",
+   "cve_id": "CVE-2023-0286",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "type_punning",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-0286",
+   "mechanism": "X.400 地址（ADDRESS 类型）在比较/渲染时被按 GENERAL_NAME 联合体",
+   "notes": "最小重构。UB 检测（-fsanitize=undefined 或 ASan 栈）应命中。",
+   "poc_file": "data/real_world/RW-005.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-006",
+   "cve_id": "CVE-2022-4450",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "double_free",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-4450",
+   "mechanism": "PEM_read_bio_ex 在特定畸形输入下对同一缓冲释放两次。",
+   "notes": "最小重构。ASan/LeakSanitizer 应报 double-free。",
+   "poc_file": "data/real_world/RW-006.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-007",
+   "cve_id": "CVE-2023-0215",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "use_after_free",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-0215",
+   "mechanism": "BIO 链清理顺序错误——对已被释放的 BIO 再次执行读取/清理。",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-007.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-008",
+   "cve_id": "CVE-2022-3602",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-3602",
+   "mechanism": "X.509 名称约束检查中，punycode 解码到固定 4 字节栈缓冲，越界写 1 字节。",
+   "notes": "最小重构。ASan 应报 stack-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-008.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-009",
+   "cve_id": "CVE-2015-1793",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "logic_error",
+   "year": 2015,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2015-1793",
+   "mechanism": "证书链验证中\"替代链\"处理缺陷——中间 CA 用合法链进入信任判断后，",
+   "notes": "最小重构。逻辑错误类：静态/告警资产通常全盲（真实盲区案例素材）。",
+   "poc_file": "data/real_world/RW-009.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-010",
+   "cve_id": "CVE-2016-2107",
+   "project": "OpenSSL",
+   "project_url": "https://www.openssl.org/",
+   "defect_type": "logic_error",
+   "year": 2016,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-2107",
+   "mechanism": "AES-NI CBC 路径下填充校验与 MAC 校验的顺序/短路使 padding oracle 成立",
+   "notes": "最小重构。信息泄露类逻辑缺陷：内存/UB 检测器全盲。",
+   "poc_file": "data/real_world/RW-010.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-011",
+   "cve_id": "CVE-2015-7547",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2016,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2015-7547",
+   "mechanism": "getaddrinfo 处理畸形 DNS 应答时，alloca 分配的栈缓冲长度计算错误，",
+   "notes": "最小重构（用户态模拟 DNS 应答重组）。ASan 应报 stack-buffer-overflow。",
+   "poc_file": "data/real_world/RW-011.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-012",
+   "cve_id": "CVE-2023-4911",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4911",
+   "mechanism": "Looney Tunables —— ld.so 解析 GLIBC_TUNABLES 时对 \"tunable=value\"",
+   "notes": "最小重构（解析器逻辑复刻，不提权步骤）。ASan 应报栈越界写。",
+   "poc_file": "data/real_world/RW-012.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-013",
+   "cve_id": "CVE-2021-33574",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "use_after_free",
+   "year": 2021,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-33574",
+   "mechanism": "mq_notify 通知线程结束后，通知注册结构在注销路径被再次访问（释放后使用）。",
+   "notes": "最小重构（用户态消息队列通知模型）。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-013.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-014",
+   "cve_id": "CVE-2022-23218",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-23218",
+   "mechanism": "svcunix_create 对调用者提供的路径直接 strcpy 进固定栈缓冲，",
+   "notes": "最小重构。ASan 应报 stack-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-014.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-015",
+   "cve_id": "CVE-2023-6246",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2024,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-6246",
+   "mechanism": "__vsyslog_internal 中消息长度计算与实际写入不一致，超长程序名/消息",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-015.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-016",
+   "cve_id": "CVE-2023-38545",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2023,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545",
+   "mechanism": "SOCKS5 握手：目标主机名超长（>255）时本应回退本地解析，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-016.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-017",
+   "cve_id": "CVE-2023-38546",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "LOW",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-38546",
+   "mechanism": "cookie 文件注入——libcurl 特定配置下可从\"外部\"文件读取 cookie，",
+   "notes": "最小重构。纯逻辑缺陷：内存/UB 检测器全盲（盲区素材）。",
+   "poc_file": "data/real_world/RW-017.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-018",
+   "cve_id": "CVE-2022-32221",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32221",
+   "mechanism": "307/308 重定向后，当请求体已被消费（如 PUT）时方法被错误改写成 POST，",
+   "notes": "最小重构。逻辑缺陷类。",
+   "poc_file": "data/real_world/RW-018.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-019",
+   "cve_id": "CVE-2016-8618",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "double_free",
+   "year": 2018,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-8618",
+   "mechanism": "curl_maprintf 出错路径与调用者清理路径对同一缓冲二次释放。",
+   "notes": "最小重构。ASan 应报 double-free（或 UAF）。",
+   "poc_file": "data/real_world/RW-019.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-020",
+   "cve_id": "CVE-2017-1000257",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2017,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000257",
+   "mechanism": "FTP 通配符（glob）响应解析时，服务端返回的超长文件名被拷贝进",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-020.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-021",
+   "cve_id": "CVE-2019-5482",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2019,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5482",
+   "mechanism": "TFTP 协议栈处理对端 OACK/DATA 包时，块尺寸字段来自网络且未校验，",
+   "notes": "最小重构。ASan 应报 stack-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-021.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-022",
+   "cve_id": "CVE-2020-8231",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "use_after_free",
+   "year": 2020,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8231",
+   "mechanism": "libcurl 连接复用（connection cache）——某 easy handle 已释放的",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-022.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-023",
+   "cve_id": "CVE-2021-23017",
+   "project": "nginx",
+   "project_url": "https://nginx.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-23017",
+   "mechanism": "resolver 解析 CNAME 时，DNS 应答中的压缩指针指向自身/越界，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write（1 byte）。",
+   "poc_file": "data/real_world/RW-023.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-024",
+   "cve_id": "CVE-2019-20372",
+   "project": "nginx",
+   "project_url": "https://nginx.org/",
+   "defect_type": "logic_error",
+   "year": 2020,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-20372",
+   "mechanism": "error_page 指向外部重定向时，未消费的请求体与请求行状态导致",
+   "notes": "最小重构。逻辑缺陷类（HTTP 解析状态机）。",
+   "poc_file": "data/real_world/RW-024.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-025",
+   "cve_id": "CVE-2021-41773",
+   "project": "Apache HTTP Server",
+   "project_url": "https://httpd.apache.org/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-41773",
+   "mechanism": "路径规范化（\".\" 处理）缺陷：%2e 编码的点使规范化函数返回失败但",
+   "notes": "最小重构。逻辑缺陷类。",
+   "poc_file": "data/real_world/RW-025.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-026",
+   "cve_id": "CVE-2021-42013",
+   "project": "Apache HTTP Server",
+   "project_url": "https://httpd.apache.org/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-42013",
+   "mechanism": "对 CVE-2021-41773 修复的不完整：双编码 %%32%65 组合在二次解码后",
+   "notes": "最小重构。逻辑缺陷（\"修复绕过\"模式）。",
+   "poc_file": "data/real_world/RW-026.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-027",
+   "cve_id": "CVE-2024-6387",
+   "project": "OpenSSH",
+   "project_url": "https://www.openssh.com/",
+   "defect_type": "data_race",
+   "year": 2024,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-6387",
+   "mechanism": "regreSSHion —— SIGALRM 处理器中调用非 async-signal-safe 的",
+   "notes": "最小重构：用真实线程复现\"信号处理器异步不安全调用\"的竞争窗口。",
+   "poc_file": "data/real_world/RW-027.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-028",
+   "cve_id": "CVE-2018-15473",
+   "project": "OpenSSH",
+   "project_url": "https://www.openssh.com/",
+   "defect_type": "logic_error",
+   "year": 2018,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-15473",
+   "mechanism": "认证流程对无效用户名提前返回（不进入延迟/伪造认证），响应时延与",
+   "notes": "最小重构。逻辑缺陷类（侧信道/信息泄露）。",
+   "poc_file": "data/real_world/RW-028.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-029",
+   "cve_id": "CVE-2022-23308",
+   "project": "libxml2",
+   "project_url": "https://gitlab.gnome.org/GNOME/libxml2",
+   "defect_type": "use_after_free",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-23308",
+   "mechanism": "xmlXPtrRangeToFunction / XML 指针范围求值中对已释放节点再次访问，",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-029.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-030",
+   "cve_id": "CVE-2022-29824",
+   "project": "libxml2",
+   "project_url": "https://gitlab.gnome.org/GNOME/libxml2",
+   "defect_type": "integer_overflow",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-29824",
+   "mechanism": "缓冲区长度累加（int）溢出为负/回绕，后续写入越界（xmlBuf 增长路径）。",
+   "notes": "最小重构。UBSan 应报 signed integer overflow；溢出后 ASan 报越界写。",
+   "poc_file": "data/real_world/RW-030.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-031",
+   "cve_id": "CVE-2023-28484",
+   "project": "libxml2",
+   "project_url": "https://gitlab.gnome.org/GNOME/libxml2",
+   "defect_type": "null_pointer_deref",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-28484",
+   "mechanism": "XML Schema 解析（xmlSchemaFixupComplexType）对畸形 schema 访问",
+   "notes": "最小重构。UBSan（null）或 ASan（SEGV near null）可命中。",
+   "poc_file": "data/real_world/RW-031.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-032",
+   "cve_id": "CVE-2017-9047",
+   "project": "libxml2",
+   "project_url": "https://gitlab.gnome.org/GNOME/libxml2",
+   "defect_type": "out_of_bounds",
+   "year": 2017,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-9047",
+   "mechanism": "xmlSnprintfElementContent 的递归拼接在复合内容模型上超过 5000 字节",
+   "notes": "最小重构。ASan 应报 stack-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-032.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-033",
+   "cve_id": "CVE-2022-37434",
+   "project": "zlib",
+   "project_url": "https://zlib.net/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-37434",
+   "mechanism": "inflateGetHeader 对 gzip 头 extra 字段长度复制越界（extra_max 与实际",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-033.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-034",
+   "cve_id": "CVE-2018-25032",
+   "project": "zlib",
+   "project_url": "https://zlib.net/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-25032",
+   "mechanism": "deflate 压缩特定\"未跟踪块\"模式时，sym_buf 写入量超过分配（内存破坏，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-034.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-035",
+   "cve_id": "CVE-2018-13785",
+   "project": "libpng",
+   "project_url": "http://www.libpng.org/pub/png/libpng.html",
+   "defect_type": "integer_overflow",
+   "year": 2018,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-13785",
+   "mechanism": "pngrutil.c 中 PNG 高度/行尺寸计算整数溢出（height * rowbytes），",
+   "notes": "最小重构。UBSan 先报 signed overflow；ASan 报堆越界写。",
+   "poc_file": "data/real_world/RW-035.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-036",
+   "cve_id": "CVE-2016-10087",
+   "project": "libpng",
+   "project_url": "http://www.libpng.org/pub/png/libpng.html",
+   "defect_type": "null_pointer_deref",
+   "year": 2017,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-10087",
+   "mechanism": "png_set_text_2 对无压缩文本块（ztxt/itxt）处理时，畸形块使内部",
+   "notes": "最小重构。ASan/UBSan 命中 NULL 解引用。",
+   "poc_file": "data/real_world/RW-036.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-037",
+   "cve_id": "CVE-2019-7317",
+   "project": "libpng",
+   "project_url": "http://www.libpng.org/pub/png/libpng.html",
+   "defect_type": "use_after_free",
+   "year": 2019,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-7317",
+   "mechanism": "png_image_free（简化 API）在错误路径已释放图像结构，调用者继续",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-037.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-038",
+   "cve_id": "CVE-2023-4863",
+   "project": "libwebp",
+   "project_url": "https://chromium.googlesource.com/webm/libwebp",
+   "defect_type": "out_of_bounds",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-4863",
+   "mechanism": "WebP lossless (VP8L) 解码时 Huffman 表构建缓冲区边界检查缺失，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-038.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-039",
+   "cve_id": "CVE-2020-15999",
+   "project": "FreeType",
+   "project_url": "https://freetype.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2020,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-15999",
+   "mechanism": "Pwn2Own 2020 —— 内嵌 PNG 位图的位图字体（sbix/CBDT）加载中，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-039.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-040",
+   "cve_id": "CVE-2022-27404",
+   "project": "FreeType",
+   "project_url": "https://freetype.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-27404",
+   "mechanism": "sfnt_init_face 对畸形 SFNT（TrueType）字体的表目录解析越界写。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow。",
+   "poc_file": "data/real_world/RW-040.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "compiler-warn",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "catch"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-041",
+   "cve_id": "CVE-2022-0561",
+   "project": "libtiff",
+   "project_url": "https://libtiff.gitlab.io/libtiff/",
+   "defect_type": "null_pointer_deref",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0561",
+   "mechanism": "TIFFReadDirectory 对 StripOffsets/StripByteCounts 缺失或零值的",
+   "notes": "最小重构。ASan/UBSan 命中空指针。",
+   "poc_file": "data/real_world/RW-041.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-042",
+   "cve_id": "CVE-2022-0562",
+   "project": "libtiff",
+   "project_url": "https://libtiff.gitlab.io/libtiff/",
+   "defect_type": "null_pointer_deref",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0562",
+   "mechanism": "TIFFReadDirectory 再一个空指针路径：畸形目录项使 codec 挂钩表为空",
+   "notes": "最小重构。ASan/UBSan 命中空指针。",
+   "poc_file": "data/real_world/RW-042.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-043",
+   "cve_id": "CVE-2016-5321",
+   "project": "libtiff",
+   "project_url": "https://libtiff.gitlab.io/libtiff/",
+   "defect_type": "out_of_bounds",
+   "year": 2017,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5321",
+   "mechanism": "DumpModeDecode（未压缩 raw 模式）中扫描行尺寸计算与实际读取不一致，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow read。",
+   "poc_file": "data/real_world/RW-043.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-044",
+   "cve_id": "CVE-2022-25315",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "integer_overflow",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-25315",
+   "mechanism": "storeAtts 中命名空间前缀/属性数组的容量计算整数溢出（ntmp 累加），",
+   "notes": "最小重构。UBSan 先报有符号溢出；ASan 报越界写。",
+   "poc_file": "data/real_world/RW-044.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-045",
+   "cve_id": "CVE-2016-0718",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "out_of_bounds",
+   "year": 2016,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0718",
+   "mechanism": "对恶意 UTF-8 编码的 XML 内容，多字节解码循环中输出缓冲推进越界",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-045.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-046",
+   "cve_id": "CVE-2022-40674",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "use_after_free",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-40674",
+   "mechanism": "doContent 中实体内容处理：缓冲 realloc 失败/重入路径保留旧指针，",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-046.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-047",
+   "cve_id": "CVE-2016-3714",
+   "project": "ImageMagick",
+   "project_url": "https://imagemagick.org/",
+   "defect_type": "logic_error",
+   "year": 2016,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-3714",
+   "mechanism": "ImageTragick —— 委托（delegate）命令模板中把用户控制的 URL/文件名",
+   "notes": "最小重构（只演示字符串拼接缺陷，不执行任何真实命令）。",
+   "poc_file": "data/real_world/RW-047.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-048",
+   "cve_id": "CVE-2021-20309",
+   "project": "ImageMagick",
+   "project_url": "https://imagemagick.org/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-20309",
+   "mechanism": "WriteTHUMBNAILImage（缩略图写出）中图像尺寸乘积整数溢出，",
+   "notes": "最小重构。UBSan 有符号溢出 + ASan 越界写。",
+   "poc_file": "data/real_world/RW-048.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-049",
+   "cve_id": "CVE-2020-12284",
+   "project": "FFmpeg",
+   "project_url": "https://ffmpeg.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2020,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-12284",
+   "mechanism": "cbs_jpeg（JPEG 码流解析）中熵段长度处理越界写。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-049.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-050",
+   "cve_id": "CVE-2016-1897",
+   "project": "FFmpeg",
+   "project_url": "https://ffmpeg.org/",
+   "defect_type": "logic_error",
+   "year": 2016,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-1897",
+   "mechanism": "HLS 播放列表解析允许 \"concat:\" 协议 + 本地文件路径，攻击者控制的",
+   "notes": "最小重构（只演示路径判定缺陷）。",
+   "poc_file": "data/real_world/RW-050.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-051",
+   "cve_id": "CVE-2023-49502",
+   "project": "FFmpeg",
+   "project_url": "https://ffmpeg.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2024,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-49502",
+   "mechanism": "vf_bwdif 反交错滤镜对奇数行尺寸/边界像素处理越界（堆缓冲区溢出）。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow。",
+   "poc_file": "data/real_world/RW-051.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-052",
+   "cve_id": "CVE-2021-42574",
+   "project": "Unicode/LLVM/GCC 生态",
+   "project_url": "https://trojansource.codes/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-42574",
+   "mechanism": "Trojan Source —— 源码注释/字符串中嵌入 Unicode 双向控制字符",
+   "notes": "最小重构：以转义序列构造（避免文件本身携带裸 bidi 字符），演示",
+   "poc_file": "data/real_world/RW-052.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-053",
+   "cve_id": "CVE-2021-30551",
+   "project": "Chromium/V8",
+   "project_url": "https://v8.dev/",
+   "defect_type": "type_punning",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-30551",
+   "mechanism": "V8 TurboFan 对 Map 迁移类型假设错误，优化后代码把一种 JS 对象",
+   "notes": "最小重构：用 C++ 联合体 + 错误类型标签模拟\"优化器假设与现实布局不一致\"。",
+   "poc_file": "data/real_world/RW-053.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-054",
+   "cve_id": "CVE-2020-16040",
+   "project": "Chromium/V8",
+   "project_url": "https://v8.dev/",
+   "defect_type": "type_punning",
+   "year": 2021,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-16040",
+   "mechanism": "V8 优化编译器在整数回绕（speculative number）假设上被绕过，",
+   "notes": "最小重构（模拟\"长度字段被以错误宽度读回\"的混淆）。",
+   "poc_file": "data/real_world/RW-054.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-055",
+   "cve_id": "CVE-2021-21224",
+   "project": "Chromium/V8",
+   "project_url": "https://v8.dev/",
+   "defect_type": "type_punning",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-21224",
+   "mechanism": "Pwn2Own 2021 Vancouver 致胜链的一环 —— TurboFan 对",
+   "notes": "最小重构（数值域混淆 → 位模式重解释）。UB/ASan 按路径命中。",
+   "poc_file": "data/real_world/RW-055.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-056",
+   "cve_id": "CVE-2021-37975",
+   "project": "Chromium",
+   "project_url": "https://www.chromium.org/",
+   "defect_type": "use_after_free",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-37975",
+   "mechanism": "Blink 渲染树中某元素在动画/布局清理时被释放，异步任务仍持有引用",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-056.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-057",
+   "cve_id": "CVE-2021-30663",
+   "project": "WebKit",
+   "project_url": "https://webkit.org/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-30663",
+   "mechanism": "WebKit 图像/画布尺寸计算整数溢出导致缓冲不足（恶意网页内存破坏）。",
+   "notes": "最小重构（C++ 复刻）。UBSan + ASan 命中。",
+   "poc_file": "data/real_world/RW-057.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-058",
+   "cve_id": "CVE-2020-26969",
+   "project": "Firefox",
+   "project_url": "https://www.mozilla.org/firefox/",
+   "defect_type": "out_of_bounds",
+   "year": 2020,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-26969",
+   "mechanism": "WebRender 对畸形显示列表（display list）的边界处理缺陷，",
+   "notes": "最小重构。ASan 应报越界。",
+   "poc_file": "data/real_world/RW-058.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "cross-compile",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-059",
+   "cve_id": "CVE-2022-31747",
+   "project": "Firefox",
+   "project_url": "https://www.mozilla.org/firefox/",
+   "defect_type": "use_after_free",
+   "year": 2022,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-31747",
+   "mechanism": "WebRTC 媒体通道关闭竞态：track 已被释放，统计回调仍访问其一",
+   "notes": "最小重构（含真实线程竞态窗口）。ASan 可命中 UAF；TSan 也可能报竞争。",
+   "poc_file": "data/real_world/RW-059.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-060",
+   "cve_id": "CVE-2022-35737",
+   "project": "SQLite",
+   "project_url": "https://sqlite.org/",
+   "defect_type": "integer_overflow",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-35737",
+   "mechanism": "printf 风格 %lld 角标处理在超大字符串参数（>2GB，或特定平台",
+   "notes": "最小重构（以 32 位截断复现，无需真分配 2GB）。UBSan 命中溢出。",
+   "poc_file": "data/real_world/RW-060.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-061",
+   "cve_id": "CVE-2020-15358",
+   "project": "SQLite",
+   "project_url": "https://sqlite.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2020,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-15358",
+   "mechanism": "multiSelectOrderBy（多列 ORDER BY）对表达式列表的处理越界，",
+   "notes": "最小重构（order-by 项数组从不含长度校验的解析器进入）。",
+   "poc_file": "data/real_world/RW-061.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-062",
+   "cve_id": "CVE-2019-13750",
+   "project": "SQLite（Chromium 内置）",
+   "project_url": "https://sqlite.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2019,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-13750",
+   "mechanism": "FTS3/4 分词器处理畸形 MATCH 查询段时片段边界校验缺失（越界读）。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow read。",
+   "poc_file": "data/real_world/RW-062.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-063",
+   "cve_id": "CVE-2022-1552",
+   "project": "PostgreSQL",
+   "project_url": "https://www.postgresql.org/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-1552",
+   "mechanism": "autovacuum 以更高权限执行用户可创建的维护函数（security definer 语义",
+   "notes": "最小重构（权限判定逻辑缺陷，不涉及内存安全）。",
+   "poc_file": "data/real_world/RW-063.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-064",
+   "cve_id": "CVE-2023-5868",
+   "project": "PostgreSQL",
+   "project_url": "https://www.postgresql.org/",
+   "defect_type": "memory_leak",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-5868",
+   "mechanism": "aggregate 函数（如某些 JSON/数组聚合）内存上下文计算错误，",
+   "notes": "最小重构。LeakSanitizer 应报 \"detected memory leaks\"。",
+   "poc_file": "data/real_world/RW-064.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-065",
+   "cve_id": "CVE-2021-41099",
+   "project": "Redis",
+   "project_url": "https://redis.io/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-41099",
+   "mechanism": "proto-max-bulk-len / SETRANGE 偏移处理整数溢出，越界写（配置相关）。",
+   "notes": "最小重构。UBSan 命中溢出，ASan 命中越界写。",
+   "poc_file": "data/real_world/RW-065.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-066",
+   "cve_id": "CVE-2021-22570",
+   "project": "protobuf",
+   "project_url": "https://protobuf.dev/",
+   "defect_type": "null_pointer_deref",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22570",
+   "mechanism": "解析重复出现的空包名（含多个 '.' 的畸形 descriptor）时",
+   "notes": "最小重构。ASan/UBSan 命中 NULL 解引用。",
+   "poc_file": "data/real_world/RW-066.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "compiler-warn",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "catch"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-067",
+   "cve_id": "CVE-2022-1941",
+   "project": "protobuf",
+   "project_url": "https://protobuf.dev/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-1941",
+   "mechanism": "解析深度/递归限制在 C++ 实现中可被绕过，超长嵌套消息造成",
+   "notes": "最小重构：展示\"递归深度限制被 1 层绕过\"的逻辑缺陷（无危险递归，",
+   "poc_file": "data/real_world/RW-067.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-068",
+   "cve_id": "CVE-2021-22569",
+   "project": "protobuf",
+   "project_url": "https://protobuf.dev/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22569",
+   "mechanism": "Java 端为主的解析歧义（同一字节流两种解析）在 C++ 侧的对应形态：",
+   "notes": "最小重构（\"同字节流两解\"的核心逻辑）。",
+   "poc_file": "data/real_world/RW-068.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-069",
+   "cve_id": "CVE-2012-2677",
+   "project": "Boost",
+   "project_url": "https://www.boost.org/",
+   "defect_type": "integer_overflow",
+   "year": 2012,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2012-2677",
+   "mechanism": "Boost.pool ordered_malloc 的块数×块大小乘积整数溢出，",
+   "notes": "最小重构。UBSan + ASan 命中。",
+   "poc_file": "data/real_world/RW-069.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "unknown"
+    },
+    "ubsan": {
+     "verdict": "unknown"
+    },
+    "tsan": {
+     "verdict": "unknown"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-070",
+   "cve_id": "CVE-2023-34410",
+   "project": "Qt",
+   "project_url": "https://www.qt.io/",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-34410",
+   "mechanism": "QSslSocket/TLS 后端在特定配置下跳过主机名验证（策略判定错误），",
+   "notes": "最小重构（验证策略逻辑）。",
+   "poc_file": "data/real_world/RW-070.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-071",
+   "cve_id": "CVE-2021-38593",
+   "project": "Qt",
+   "project_url": "https://www.qt.io/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-38593",
+   "mechanism": "QImage 尺寸计算（宽×高×深度）整数溢出，分配不足（图像解码路径）。",
+   "notes": "最小重构。UBSan + ASan 命中。",
+   "poc_file": "data/real_world/RW-071.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-072",
+   "cve_id": "CVE-2023-32762",
+   "project": "Qt",
+   "project_url": "https://www.qt.io/",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-32762",
+   "mechanism": "QHttp2 的 DATA/HEADERS 帧流控窗口计数错误，攻击者可让连接进入",
+   "notes": "最小重构（流控状态机缺陷；不实际联网）。",
+   "poc_file": "data/real_world/RW-072.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-073",
+   "cve_id": "CVE-2022-3432",
+   "project": "Godot Engine",
+   "project_url": "https://godotengine.org/",
+   "defect_type": "use_after_free",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-3432",
+   "mechanism": "资源加载器对同一资源对象释放后仍被引用（编辑器加载特制资源时",
+   "notes": "最小重构。ASan 应报 heap-use-after-free。",
+   "poc_file": "data/real_world/RW-073.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-074",
+   "cve_id": "CVE-2022-0847",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0847",
+   "mechanism": "Dirty Pipe —— 管道缓冲 page 的 flags 未初始化（关键：PIPE_BUF_FLAG_CAN_MERGE），",
+   "notes": "最小重构 —— **纯用户态逻辑复刻**（不调用任何内核接口）。展示",
+   "poc_file": "data/real_world/RW-074.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-075",
+   "cve_id": "CVE-2016-5195",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "data_race",
+   "year": 2016,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-5195",
+   "mechanism": "Dirty COW —— get_user_pages 与 COW 断链（FOLL_WRITE 重试）之间的",
+   "notes": "最小重构 —— **纯用户态线程竞态复刻**（不调用内核）。TSan 应报 data race。",
+   "poc_file": "data/real_world/RW-075.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-076",
+   "cve_id": "CVE-2022-0185",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0185",
+   "mechanism": "legacy_parse_param（fs_context 字符串选项）长度计算不当 —— 超长",
+   "notes": "最小重构 —— **用户态复刻** fs_context 参数拼接逻辑。",
+   "poc_file": "data/real_world/RW-076.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-077",
+   "cve_id": "CVE-2024-1086",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "use_after_free",
+   "year": 2024,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-1086",
+   "mechanism": "nf_tables nft_verdict_init 允许正数 drop error 导致双重释放，",
+   "notes": "最小重构 —— **用户态复刻** skb 引用计数/哈希表清理顺序。",
+   "poc_file": "data/real_world/RW-077.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-078",
+   "cve_id": "CVE-2021-33909",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-33909",
+   "mechanism": "Sequoia —— seq_file 路径名拼接中 size_t 下溢（~2GB 深目录路径），",
+   "notes": "最小重构 —— **用户态复刻**路径长度计算（不创建真实深目录）。",
+   "poc_file": "data/real_world/RW-078.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-079",
+   "cve_id": "CVE-2021-3156",
+   "project": "sudo",
+   "project_url": "https://www.sudo.ws/",
+   "defect_type": "out_of_bounds",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3156",
+   "mechanism": "Baron Samedit —— sudo -s 模式下 argv 解析：反斜杠转义把结尾 NUL",
+   "notes": "最小重构 —— **用户态复刻**参数解析（不执行 sudo 逻辑）。",
+   "poc_file": "data/real_world/RW-079.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-080",
+   "cve_id": "CVE-2019-18634",
+   "project": "sudo",
+   "project_url": "https://www.sudo.ws/",
+   "defect_type": "out_of_bounds",
+   "year": 2020,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-18634",
+   "mechanism": "pwfeedback 启用时，tgetpass 对超长密码输入的处理栈缓冲区溢出",
+   "notes": "最小重构 —— **用户态复刻**密码读取循环。",
+   "poc_file": "data/real_world/RW-080.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "compiler-warn",
+    "cross-compile",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "catch"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-081",
+   "cve_id": "CVE-2021-4034",
+   "project": "polkit",
+   "project_url": "https://gitlab.freedesktop.org/polkit/polkit",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-4034",
+   "mechanism": "PwnKit —— pkexec 处理 argc==0 时把 argv[0] 当路径读取，",
+   "notes": "最小重构 —— **用户态复刻** argc==0 参数处理。",
+   "poc_file": "data/real_world/RW-081.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-082",
+   "cve_id": "CVE-2024-2961",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2024,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-2961",
+   "mechanism": "iconv ISO-2022-CN-EXT 转换器对转义序列的目标数估计错误，",
+   "notes": "最小重构 —— **用户态复刻**多字节转义序列的写出逻辑。",
+   "poc_file": "data/real_world/RW-082.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-083",
+   "cve_id": "CVE-2019-5596",
+   "project": "FreeBSD",
+   "project_url": "https://www.freebsd.org/",
+   "defect_type": "logic_error",
+   "year": 2019,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5596",
+   "mechanism": "capsicum 能力模式下 F_GETOWN 等 fcntl 请求未受能力检查约束，",
+   "notes": "最小重构（权限判定遗漏）。",
+   "poc_file": "data/real_world/RW-083.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-084",
+   "cve_id": "CVE-2020-7457",
+   "project": "FreeBSD",
+   "project_url": "https://www.freebsd.org/",
+   "defect_type": "logic_error",
+   "year": 2020,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-7457",
+   "mechanism": "TCP 连接状态处理缺陷 —— connect() 对端在 SYN 窗口内的",
+   "notes": "最小重构（TCP 状态机迁移判定）。",
+   "poc_file": "data/real_world/RW-084.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-085",
+   "cve_id": "CVE-2021-29628",
+   "project": "FreeBSD",
+   "project_url": "https://www.freebsd.org/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-29628",
+   "mechanism": "ktls 发送路径中多个 TLS 记录共享同一 mbuf 时的清零顺序问题，",
+   "notes": "最小重构（记录边界状态判定）。",
+   "poc_file": "data/real_world/RW-085.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-086",
+   "cve_id": "CVE-2017-16995",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "integer_overflow",
+   "year": 2017,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-16995",
+   "mechanism": "eBPF 验证器 check_alu_op 符号扩展缺陷 —— 32 位立即数经",
+   "notes": "最小重构 —— **用户态复刻**验证器的符号扩展判定（不加载 eBPF）。",
+   "poc_file": "data/real_world/RW-086.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "compiler-warn",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "catch"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-087",
+   "cve_id": "CVE-2019-13272",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "logic_error",
+   "year": 2019,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-13272",
+   "mechanism": "ptrace PTRACE_TRACEME + suid 程序的父进程替换检查缺失，",
+   "notes": "最小重构 —— **用户态复刻**父进程信任判定。",
+   "poc_file": "data/real_world/RW-087.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-088",
+   "cve_id": "CVE-2021-3490",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "integer_overflow",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3490",
+   "mechanism": "eBPF ALU32 边界跟踪缺陷 —— 32 位操作后 verifier 的 umin/umax",
+   "notes": "最小重构 —— **用户态复刻**边界跟踪表。",
+   "poc_file": "data/real_world/RW-088.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-089",
+   "cve_id": "CVE-2021-26708",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "data_race",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-26708",
+   "mechanism": "vsock 传输层多线程竞态（Virtio）—— 一个线程释放 vsk 结构时另一",
+   "notes": "最小重构 —— **用户态线程复刻**（不调用内核 vsock）。",
+   "poc_file": "data/real_world/RW-089.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-090",
+   "cve_id": "CVE-2016-8655",
+   "project": "Linux kernel",
+   "project_url": "https://www.kernel.org/",
+   "defect_type": "data_race",
+   "year": 2016,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-8655",
+   "mechanism": "AF_PACKET 的 setsockopt(PACKET_RX_RING) 与 packet_set_ring 之间的",
+   "notes": "最小重构 —— **用户态线程复刻**环形缓冲重配置竞态。",
+   "poc_file": "data/real_world/RW-090.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-091",
+   "cve_id": "CVE-2023-29491",
+   "project": "ncurses",
+   "project_url": "https://invisible-island.net/ncurses/",
+   "defect_type": "out_of_bounds",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-29491",
+   "mechanism": "恶意 terminfo 数据库（HOME 下可放置）加载时缓冲越界写",
+   "notes": "最小重构。ASan 应报堆/栈越界写。",
+   "poc_file": "data/real_world/RW-091.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-092",
+   "cve_id": "CVE-2022-26691",
+   "project": "CUPS",
+   "project_url": "https://openprinting.github.io/cups/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-26691",
+   "mechanism": "认证字符串比较使用非常量时间/前缀宽松匹配，本地攻击者可绕过",
+   "notes": "最小重构（比较逻辑缺陷）。",
+   "poc_file": "data/real_world/RW-092.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-093",
+   "cve_id": "CVE-2022-1271",
+   "project": "XZ Utils",
+   "project_url": "https://tukaani.org/xz/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-1271",
+   "mechanism": "xzgrep/zgrep 脚本类工具中文件名处理缺陷（多项命令任意文件写）；",
+   "notes": "最小重构（工具链文件名拼接路径）。",
+   "poc_file": "data/real_world/RW-093.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-094",
+   "cve_id": "CVE-2021-45960",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "integer_overflow",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-45960",
+   "mechanism": "storeAtts 中前缀/属性哈希槽计数以 int 存储，构造大量唯一前缀的",
+   "notes": "最小重构。UBSan + ASan 命中。",
+   "poc_file": "data/real_world/RW-094.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "catch"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-095",
+   "cve_id": "CVE-2021-45943",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "null_pointer_deref",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-45943",
+   "mechanism": "XML_GetBuffer 在指定长度下返回 NULL 的分支未被调用方处理，",
+   "notes": "最小重构。ASan/UBSan 命中。",
+   "poc_file": "data/real_world/RW-095.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-096",
+   "cve_id": "CVE-2021-46143",
+   "project": "expat",
+   "project_url": "https://libexpat.github.io/",
+   "defect_type": "integer_overflow",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-46143",
+   "mechanism": "doProlog（DTD 处理）中组计数以 int 累加，构造深层/重复 DTD 组",
+   "notes": "最小重构。UBSan + ASan 命中。",
+   "poc_file": "data/real_world/RW-096.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-097",
+   "cve_id": "CVE-2021-3999",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2022,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3999",
+   "mechanism": "getcwd 在缓冲区恰好与路径等长时 off-by-one 单字节下溢写。",
+   "notes": "最小重构。ASan 应报 buffer-underflow/overflow（1 byte）。",
+   "poc_file": "data/real_world/RW-097.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-098",
+   "cve_id": "CVE-2022-32208",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2022,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32208",
+   "mechanism": "FTP PASV/EPSV 应答解析缺陷：非 IP 形式的应答被错误解析为地址，",
+   "notes": "最小重构。",
+   "poc_file": "data/real_world/RW-098.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-099",
+   "cve_id": "CVE-2023-27534",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27534",
+   "mechanism": "SFTP 路径中 \"~\" 展开缺陷 —— 构造的路径使 curl 相对攻击者选择的",
+   "notes": "最小重构（路径展开逻辑）。",
+   "poc_file": "data/real_world/RW-099.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-100",
+   "cve_id": "CVE-2018-1000005",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2018,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000005",
+   "mechanism": "FTP URL 路径（含通配符）处理堆越界读 —— 路径分段解析越界。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow read。",
+   "poc_file": "data/real_world/RW-100.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "catch"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-101",
+   "cve_id": "CVE-2021-22946",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22946",
+   "mechanism": "协议降级允许 —— 服务器可强制 client 在 STARTTLS/加密逻辑前",
+   "notes": "最小重构（协议状态判定）。",
+   "poc_file": "data/real_world/RW-101.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-102",
+   "cve_id": "CVE-2020-8177",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2020,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8177",
+   "mechanism": "curl -J（Content-Disposition 文件名）与 -i 组合时用服务器提供的",
+   "notes": "最小重构（文件名选取逻辑）。",
+   "poc_file": "data/real_world/RW-102.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-103",
+   "cve_id": "CVE-2018-0500",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2018,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-0500",
+   "mechanism": "SMTP 发送路径中地址解析堆越界写（用户名以 '<' 结尾的畸形地址）。",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-103.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-104",
+   "cve_id": "CVE-2021-22898",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "out_of_bounds",
+   "year": 2021,
+   "severity": "LOW",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22898",
+   "mechanism": "TELNET 选项协商（IAC 序列）处理栈缓冲区溢出。",
+   "notes": "最小重构。ASan 应报栈越界写。",
+   "poc_file": "data/real_world/RW-104.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "compiler-warn",
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "catch"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-105",
+   "cve_id": "CVE-2023-27536",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-27536",
+   "mechanism": "GSSAPI 委托（delegation）标志在连接复用间保留，前一次请求的",
+   "notes": "最小重构（连接复用状态泄漏）。",
+   "poc_file": "data/real_world/RW-105.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "unknown"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-106",
+   "cve_id": "CVE-2021-22947",
+   "project": "curl",
+   "project_url": "https://curl.se/",
+   "defect_type": "logic_error",
+   "year": 2021,
+   "severity": "MEDIUM",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-22947",
+   "mechanism": "STARTTLS 之前的服务器应答被注入到 TLS 阶段（响应注入），",
+   "notes": "最小重构（协议阶段状态混合）。",
+   "poc_file": "data/real_world/RW-106.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "ubsan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "catch"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-107",
+   "cve_id": "CVE-2023-44487",
+   "project": "HTTP/2 协议栈（nginx/httpd/Go 等）",
+   "project_url": "https://httpwg.org/specs/rfc9113.html",
+   "defect_type": "logic_error",
+   "year": 2023,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-44487",
+   "mechanism": "HTTP/2 Rapid Reset —— 客户端立即 RST_STREAM 每个请求流，",
+   "notes": "最小重构（流状态机计数）。C++ 服务器侧防护判定缺失。",
+   "poc_file": "data/real_world/RW-107.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-108",
+   "cve_id": "CVE-2015-0235",
+   "project": "glibc",
+   "project_url": "https://www.gnu.org/software/libc/",
+   "defect_type": "out_of_bounds",
+   "year": 2015,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2015-0235",
+   "mechanism": "GHOST —— gethostbyname 系列对超长（>255）主机名整数长度溢出，",
+   "notes": "最小重构。ASan 应报 heap-buffer-overflow write。",
+   "poc_file": "data/real_world/RW-108.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-109",
+   "cve_id": "CVE-2018-10933",
+   "project": "libssh",
+   "project_url": "https://www.libssh.org/",
+   "defect_type": "logic_error",
+   "year": 2018,
+   "severity": "CRITICAL",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2018-10933",
+   "mechanism": "认证状态机缺陷 —— 服务器在接受 SSH_MSG_USERAUTH_SUCCESS（本应只",
+   "notes": "最小重构（消息方向/状态机判定缺失）。",
+   "poc_file": "data/real_world/RW-109.cpp",
+   "or_verdict": "miss",
+   "caught_by": [],
+   "per_asset": {
+    "asan": {
+     "verdict": "miss"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  },
+  {
+   "rw_id": "RW-110",
+   "cve_id": "CVE-2016-0778",
+   "project": "OpenSSH",
+   "project_url": "https://www.openssh.com/",
+   "defect_type": "out_of_bounds",
+   "year": 2016,
+   "severity": "HIGH",
+   "source_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-0778",
+   "mechanism": "roaming 客户端（已废弃功能）对服务器位置变更通知处理时",
+   "notes": "最小重构。ASan 应报堆越界。",
+   "poc_file": "data/real_world/RW-110.cpp",
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ],
+   "per_asset": {
+    "asan": {
+     "verdict": "catch"
+    },
+    "ubsan": {
+     "verdict": "miss"
+    },
+    "tsan": {
+     "verdict": "miss"
+    },
+    "compiler-warn": {
+     "verdict": "miss"
+    },
+    "wunsequenced": {
+     "verdict": "unknown"
+    },
+    "cross-compile": {
+     "verdict": "miss"
+    },
+    "linker": {
+     "verdict": "miss"
+    },
+    "compile-time": {
+     "verdict": "unknown"
+    }
+   }
+  }
+ ]
+}

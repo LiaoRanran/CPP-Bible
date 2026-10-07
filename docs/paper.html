@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>论文</h1>
+  <p class="sub">《演化中的验证器：失败驱动的 C++ 缺陷检测器组合演化》
+  （Evolving Verifiers: Failure-Driven Portfolio Evolution for C++ Defect Detection）。
+  目标会议：NeurIPS 2027 Evaluations & Datasets（双盲投稿准备中）。</p>
+
+  <h2>摘要（机器摘要，非投稿全文）</h2>
+  <div class="card">
+    <p>静态与动态检测器各自的"盲区"已被反复观察，但少有人把<b>验证器组合的选择</b>本身
+    形式化为一个可在线演化的对象。阙疑提出：四态判决（pass/fail/unknown/contradict）+
+    append-only 账本 + Merkle 完整性 + 失败驱动演化算子 E。
+    E 在派生集（不含评估集信息）上以四分量（failure / novel / cost / redundancy）
+    迭代选择下一批检测器；在一套 1,147 样本 × 8 资产的全量判定矩阵上，
+    E 的选择在评估集上相对预注册随机单点预算取得 <b>+24.03pp</b>（McNemar p ≈ 2e-41），
+    且对 split、种子（5,000 次）与资产子集（255 个子集全枚举 + 精确 Shapley）稳健。
+    683 批次新增：<b>110 条真实缺陷重构靶场</b>（全部经 NVD API 在线验证 / 出处可追溯）、
+    跨工具链（clang 18 vs g++ 13.3）一致性与 operator 四分量全枚举消融。</p>
+  </div>
+
+  <h2>贡献（贡献边界按 Claim Boundary 严格限定）</h2>
+  <ol>
+    <li><b>问题形式化</b>：把"用哪些检测器"定义为在失败集上迭代的确定性算子 E；
+      novelty 分量的字面定义与 failure 分量数学等价——此坍缩被<b>如实证明并公开</b>，
+      并给出让 novelty 成为独立信号的修复变体（unique 模式，683 消融验证）。</li>
+    <li><b>真实性极强的证据链</b>：1,147 合成样本 × 8 资产全量实测矩阵（真实编译/运行为，
+      非重放）；判定口径（双档 -O0/-O2、TSan 退出码 66、检测器不可用 ⇒ unknown）全部冻结可复现。</li>
+    <li><b>真实靶场基准（683 新增）</b>：110 条真实缺陷（≥15 项目、≥10 类型），
+      每条带 CVE/issue/commit 出处、NVD 在线验证记录与最小重构 PoC 落盘。</li>
+    <li><b>诚实的失败解剖</b>：≥30 条 miss 深度归因（检测器能力盲区 / 配置缺口 /
+      样本复杂度 / 不可复现），≥20 条超预期 catch 案例。</li>
+    <li><b>可审计性</b>：append-only 账本 + Merkle 根 + 工具完整性 fail-closed 门禁；
+      论文每个数字可被脚本复算（verify_paper_numbers）。</li>
+  </ol>
+
+  <h2>已写入论文的 683 附录</h2>
+  <ul class="muted">
+    <li><b>Real-World Validation</b>：真实靶场基准构成、检出率、与合成样本对比（含效应量与 CI）。</li>
+    <li><b>Toolchain Sensitivity</b>：clang 18 vs g++ 13.3 一致性（κ）与差异 >10pp 的强制披露。</li>
+    <li><b>Operator Ablation（All 16 Configurations）</b>：2^4 全枚举 + unique 变体 + 7 基线并排。</li>
+  </ul>
+
+  <h2>核心数字（与仓库逐位一致）</h2>
+  <table id="pt">
+    <thead><tr><th>数字</th><th>值</th><th>来源产物</th></tr></thead>
+    <tbody><tr><td colspan="3" class="muted">加载中…</td></tr></tbody>
+  </table>
+  <p class="honest">本页为科研记录用途，不是投稿版本；投稿版（LaTeX/PDF）在
+  <code class="inline">research/latex/</code>，匿名化规则按会议要求执行。</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+<script src="assets/app.js"></script>
+<script>
+(async () => {
+  try {
+    const d = await loadJSON("assets/data/core_numbers.json");
+    document.querySelector("#pt tbody").innerHTML = d.table.map(r =>
+      `<tr><td>${r.metric}</td><td><b>${r.value}</b></td><td class="muted">${r.scope}</td></tr>`).join("");
+  } catch (e) { /* leave placeholder */ }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>阙疑 Queyi — failure-driven verifier evolution for C++ defect detection</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>让验证器在失败中演化</h1>
+    <p class="sub">阙疑（Queyi）是一个四态判决（pass / fail / unknown / contradict）+ append-only
+      账本 + Merkle 完整性 + <b>failure-driven evolution</b> 的 C++ 缺陷检测框架。
+      本站在 683 批次更新：新增 <b>真实靶场基准</b>（可追溯 CVE/issue 重构）、跨工具链验证、
+      operator 全枚举消融与开源发布材料。</p>
+    <div class="badges" id="badges">
+      <span class="badge"><b>…</b>加载核心数字</span>
+    </div>
+  </section>
+
+  <h2>它解决什么问题</h2>
+  <div class="cards">
+    <div class="card"><h3>不是"再训一个模型"</h3>
+      <p class="muted">阙疑把"用哪些检测器（8 个真实资产）"本身当作可演化的对象：
+      上一轮的失败样本驱动下一轮资产组合（operator E：failure / novel / cost / redundancy 四分量）。</p></div>
+    <div class="card"><h3>四态判决，不留"猜"</h3>
+      <p class="muted">catch / miss / unknown / contradict 严格区分：检测器不可用时是
+      <code class="inline">unknown</code>（不进伪造的 miss），双实现冲突时是
+      <code class="inline">contradict</code>。</p></div>
+    <div class="card"><h3>可审计的账本</h3>
+      <p class="muted">append-only 账本 + Merkle 根 + 每次判定的原始输出留存；
+      本仓库所有数字可由脚本逐条复算。</p></div>
+    <div class="card"><h3>真实靶场，不只是合成样本</h3>
+      <p class="muted">683 新增 <a href="realworld.html">真实靶场基准</a>：
+      每条缺陷带 CVE/NVD 在线验证记录、修复 commit 链接与最小可复现 PoC。</p></div>
+  </div>
+
+  <h2>核心结果（当前冻结数字）</h2>
+  <table id="core-table">
+    <thead><tr><th>指标</th><th>数值</th><th>口径与来源</th></tr></thead>
+    <tbody><tr><td colspan="3" class="muted">加载中…</td></tr></tbody>
+  </table>
+  <p class="honest">诚实边界：本站所有数字与论文/仓库 JSON 同源，由
+    <code class="inline">tools/site_683_data.py</code> 从仓库产物自动生成；
+    数字口径（样本、分母、工具链）在 Results 页逐项标注。</p>
+
+  <h2>从哪里开始</h2>
+  <div class="cards">
+    <div class="card"><h3><a href="realworld.html">真实靶场浏览器</a></h3>
+      <p class="muted">按项目 / 缺陷类型 / 年份筛选真实缺陷，查看每条 PoC 与 8 资产判定。</p></div>
+    <div class="card"><h3><a href="demo.html">交互 Demo</a></h3>
+      <p class="muted">选择一个预计算样本，看 8 个检测器各自报了什么。</p></div>
+    <div class="card"><h3><a href="results.html">结果与图表</a></h3>
+      <p class="muted">A5 主端点、盲区热力图、资产互补性、operator 消融雷达。</p></div>
+    <div class="card"><h3><a href="reproduce.html">一键复现</a></h3>
+      <p class="muted">论文编译、门禁、检测矩阵重放、Docker。</p></div>
+  </div>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · 数据与代码同源生成，无外部追踪器 ·
+  <a href="about.html">引用与 AI 使用声明</a></footer>
+<script src="assets/app.js"></script>
+<script>
+(async () => {
+  try {
+    const d = await loadJSON("assets/data/core_numbers.json");
+    el("badges").innerHTML = d.badges.map(b =>
+      `<span class="badge"><b>${b.value}</b>${b.label}</span>`).join("");
+    el("core-table").querySelector("tbody").innerHTML = d.table.map(r =>
+      `<tr><td>${r.metric}</td><td><b>${r.value}</b></td><td class="muted">${r.scope}</td></tr>`
+    ).join("");
+  } catch (e) {
+    el("badges").innerHTML = `<span class="badge">数据未生成：运行 tools/site_683_data.py</span>`;
+  }
+})();
+</script>
+</body>
+</html>

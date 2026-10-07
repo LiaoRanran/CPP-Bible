@@ -1,0 +1,243 @@
+{
+ "title": {
+  "text": "C3 · A5 main endpoint across four splits (k=4, FD vs Random vs Static)",
+  "subtext": "same detection matrix (676f, 1137×8); only the data split changes. Δ = FD − pre-registered single-point Random; CI on Δ shown in tooltip.",
+  "left": "center",
+  "textStyle": {
+   "color": "#222222"
+  }
+ },
+ "tooltip": {
+  "trigger": "axis",
+  "formatter": "{b}<br/>FD {c0}% / Random {c1}% / Static {c2}%"
+ },
+ "legend": {
+  "top": 52,
+  "data": [
+   "FD (failure-driven)",
+   "Random (pre-registered seed)",
+   "Static baseline"
+  ]
+ },
+ "grid": {
+  "left": 60,
+  "right": 40,
+  "top": 110,
+  "bottom": 60
+ },
+ "xAxis": {
+  "type": "category",
+  "data": [
+   "original",
+   "family_random",
+   "family_stratified",
+   "strict_stratified"
+  ],
+  "axisLabel": {
+   "color": "#222222",
+   "rotate": 12
+  }
+ },
+ "yAxis": {
+  "type": "value",
+  "max": 70,
+  "name": "detection rate (%)",
+  "axisLabel": {
+   "color": "#222222"
+  }
+ },
+ "series": [
+  {
+   "name": "FD (failure-driven)",
+   "type": "bar",
+   "barGap": "10%",
+   "data": [
+    54.5936,
+    57.2935,
+    55.536,
+    57.5704
+   ],
+   "itemStyle": {
+    "color": "#27ae60"
+   },
+   "label": {
+    "show": true,
+    "position": "top",
+    "formatter": "{c}%"
+   }
+  },
+  {
+   "name": "Random (pre-registered seed)",
+   "type": "bar",
+   "data": [
+    30.5654,
+    30.58,
+    32.5132,
+    31.8662
+   ],
+   "itemStyle": {
+    "color": "#2e86de"
+   },
+   "label": {
+    "show": true,
+    "position": "top",
+    "formatter": "{c}%"
+   }
+  },
+  {
+   "name": "Static baseline",
+   "type": "bar",
+   "data": [
+    24.735,
+    25.6591,
+    22.8471,
+    29.0493
+   ],
+   "itemStyle": {
+    "color": "#95a5a6"
+   },
+   "label": {
+    "show": true,
+    "position": "top",
+    "formatter": "{c}%"
+   }
+  }
+ ],
+ "queyi:meta": {
+  "rows": [
+   {
+    "split": "original",
+    "n_evaluation": 566,
+    "fd": 54.5936,
+    "random": 30.5654,
+    "static": 24.735,
+    "random_mean": 40.1713,
+    "delta_pp": 24.0283,
+    "delta_ci95_pp": [
+     20.5084,
+     27.5481
+    ],
+    "delta_vs_mean_pp": 14.4223,
+    "mcnemar_p": 2.2958874039497854e-41,
+    "fd_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ]
+   },
+   {
+    "split": "family_random",
+    "n_evaluation": 569,
+    "fd": 57.2935,
+    "random": 30.58,
+    "static": 25.6591,
+    "random_mean": 40.907,
+    "delta_pp": 26.7135,
+    "delta_ci95_pp": [
+     23.078,
+     30.3491
+    ],
+    "delta_vs_mean_pp": 16.3865,
+    "mcnemar_p": 3.503246160812046e-46,
+    "fd_assets": [
+     "asan",
+     "tsan",
+     "ubsan",
+     "cross-compile"
+    ]
+   },
+   {
+    "split": "family_stratified",
+    "n_evaluation": 569,
+    "fd": 55.536,
+    "random": 32.5132,
+    "static": 22.8471,
+    "random_mean": 39.9257,
+    "delta_pp": 23.0228,
+    "delta_ci95_pp": [
+     19.1435,
+     26.9022
+    ],
+    "delta_vs_mean_pp": 15.6103,
+    "mcnemar_p": 4.078087318805367e-29,
+    "fd_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ]
+   },
+   {
+    "split": "strict_stratified",
+    "n_evaluation": 568,
+    "fd": 57.5704,
+    "random": 31.8662,
+    "static": 29.0493,
+    "random_mean": 43.1452,
+    "delta_pp": 25.7042,
+    "delta_ci95_pp": [
+     22.1104,
+     29.2981
+    ],
+    "delta_vs_mean_pp": 14.4252,
+    "mcnemar_p": 2.2420775429197023e-44,
+    "fd_assets": [
+     "asan",
+     "tsan",
+     "ubsan",
+     "cross-compile"
+    ]
+   }
+  ],
+  "error_bars": "ECharts 无内置误差棒；Δ 的 95%CI 与 McNemar p 见下表（queyi:table）",
+  "table": [
+   {
+    "split": "original",
+    "delta_pp": 24.0283,
+    "delta_ci95_pp": [
+     20.5084,
+     27.5481
+    ],
+    "mcnemar_p": 2.2958874039497854e-41,
+    "delta_vs_random_mean_pp": 14.4223,
+    "n_evaluation": 566
+   },
+   {
+    "split": "family_random",
+    "delta_pp": 26.7135,
+    "delta_ci95_pp": [
+     23.078,
+     30.3491
+    ],
+    "mcnemar_p": 3.503246160812046e-46,
+    "delta_vs_random_mean_pp": 16.3865,
+    "n_evaluation": 569
+   },
+   {
+    "split": "family_stratified",
+    "delta_pp": 23.0228,
+    "delta_ci95_pp": [
+     19.1435,
+     26.9022
+    ],
+    "mcnemar_p": 4.078087318805367e-29,
+    "delta_vs_random_mean_pp": 15.6103,
+    "n_evaluation": 569
+   },
+   {
+    "split": "strict_stratified",
+    "delta_pp": 25.7042,
+    "delta_ci95_pp": [
+     22.1104,
+     29.2981
+    ],
+    "mcnemar_p": 2.2420775429197023e-44,
+    "delta_vs_random_mean_pp": 14.4252,
+    "n_evaluation": 568
+   }
+  ],
+  "source": "data/682_a5_split_comparison.json (682 B1)",
+  "generated_by": "tools/figures_682.py"
+ }
+}

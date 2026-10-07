@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reproduce — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>复现</h1>
+  <p class="sub">三条路径：① 纯 Python 复算（不需要编译器，几分钟）；② 全量真实检测（需要
+  WSL g++ 13.3 + MinGW g++ 13.1 + clang，数十分钟）；③ Docker（论文/门禁/数据链自检）。</p>
+
+  <h2>① 纯 Python 复算（无编译器依赖）</h2>
+  <pre># A5 主端点 + 消融（复用冻结矩阵，不重跑检测）
+python data/676f_analysis.py
+python tools/analyze_682_sensitivity.py --stage all
+python tools/analyze_683_oc.py --stage all      # 16+16 配置消融 + 7 基线
+
+# 论文数字一致性（105+ 个数字逐个对账）
+python tools/verify_paper_numbers.py
+python tools/paper_quality_gate_670c2.py</pre>
+
+  <h2>② 真实靶场全链（需要编译器）</h2>
+  <pre># 1) CVE 在线验证（NVD API；断点续跑；~10 分钟）
+python tools/collect_realworld_683.py --stage verify
+
+# 2) 真实靶场 8 资产检测（110 样本 × 8 资产；增量 checkpoint）
+python data/realworld_683_runner.py --stage manifest
+python data/realworld_683_runner.py --stage detect
+python data/realworld_683_runner.py --stage merge
+
+# 3) 跨工具链 / 跨平台（clang 18 vs g++ 13.3；Windows vs WSL）
+python tools/cross_toolchain_683.py --stage b1
+python tools/cross_toolchain_683.py --stage b2
+python tools/cross_toolchain_683.py --stage report</pre>
+
+  <h2>③ Docker（论文编译 + 门禁 + 数据完整性）</h2>
+  <pre>docker compose build
+docker compose run --rm queyi python -m pytest tests -x -q
+docker compose run --rm queyi tectonic -X compile research/latex/queyi_neurips2027_v1.1.tex</pre>
+
+  <h2>环境（本仓库 683 批次实测）</h2>
+  <table>
+    <thead><tr><th>组件</th><th>版本</th><th>用途</th></tr></thead>
+    <tbody>
+      <tr><td>WSL Ubuntu g++</td><td>13.3.0</td><td>asan / ubsan / tsan（双档 -O0/-O2）</td></tr>
+      <tr><td>WSL Ubuntu clang++</td><td>18.1.3</td><td>跨工具链对比（683-B1）</td></tr>
+      <tr><td>MinGW g++</td><td>13.1.0</td><td>compiler-warn / cross-compile / linker</td></tr>
+      <tr><td>MinGW clang++</td><td>22.1.8</td><td>cross-compile 对照（ASan 不可用，见 683-B 报告）</td></tr>
+      <tr><td>Python</td><td>3.14</td><td>全部分析脚本（无第三方依赖之外的框架）</td></tr>
+    </tbody>
+  </table>
+  <p class="honest">复现提示：Full 检测链依赖 WSL；纯 Python 复算路径（①）不需要 WSL，
+  可直接核验论文与本站的全部数字。数据文件与脚本均在本仓库，
+  无外部服务依赖（NVD API 仅用于 683-A1 的在线验证记录，已冻结落盘）。</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+</body>
+</html>

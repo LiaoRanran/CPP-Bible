@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo — 阙疑 Queyi</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
+  <nav class="links">
+    <a href="index.html">Home</a><a href="paper.html">Paper</a>
+    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
+    <a href="demo.html">Demo</a><a href="data.html">Data</a>
+    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
+  </nav>
+</div></header>
+
+<main>
+  <h1>交互 Demo：8 资产怎么判这段代码</h1>
+  <p class="sub">下面每个样本都已在仓库内<b>真实跑过</b> 8 资产流水线（asan / ubsan / tsan /
+  compiler-warn / wunsequenced / cross-compile / linker / compile-time，
+  WSL g++ 13.3 双档 -O0/-O2 + 本机 MinGW），这里展示的是<b>冻结的实测结果</b>，
+  不是浏览器端模拟。</p>
+
+  <div class="controls">
+    <select id="sample-pick"><option>加载中…</option></select>
+    <span class="pill" id="sample-kind">—</span>
+    <button class="btn ghost" id="btn-copy">复制代码</button>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <h3>代码</h3>
+      <pre id="code-box" style="max-height:460px">…</pre>
+      <p class="kv" id="sample-desc">—</p>
+    </div>
+    <div>
+      <h3>8 资产判定</h3>
+      <table id="verdict-table">
+        <thead><tr><th>资产</th><th>判定</th><th>原始输出摘要</th></tr></thead>
+        <tbody><tr><td colspan="3" class="muted">—</td></tr></tbody>
+      </table>
+      <p class="kv" id="or-line">—</p>
+    </div>
+  </div>
+
+  <h2>为什么有些资产永远 unknown？</h2>
+  <p class="muted">在本工具链下：<code class="inline">wunsequenced</code> —— MinGW g++ 13.1
+  不认 <code class="inline">-Wunsequenced</code>（选项报错被显式识别，不当作命中）；
+  <code class="inline">compile-time</code> —— 无本地检测器（声明性资产）。
+  这两个资产对任何样本都返回 <code class="inline">unknown</code>（无支持、无反驳），
+  <b>绝不冒充 miss</b>。这一口径在 673u 修复、676g 全量复验。</p>
+  <p class="honest">本 Demo 为静态预计算演示（GitHub Pages 无后端）。
+  要看任意代码的真实检测，请按 <a href="reproduce.html">Reproduce</a> 在本仓库运行
+  <code class="inline">python data/realworld_683_runner.py --stage detect</code>。</p>
+</main>
+
+<footer>阙疑 Queyi · Apache-2.0 · <a href="about.html">引用与 AI 使用声明</a></footer>
+<script src="assets/app.js"></script>
+<script>
+let DATA = null, cur = null;
+
+function show(id) {
+  cur = DATA.samples.find(s => s.id === id);
+  if (!cur) return;
+  el("sample-kind").textContent = cur.kind === "realworld" ? "真实靶场样本" : "合成样本";
+  el("code-box").textContent = cur.code;
+  el("sample-desc").innerHTML = `<b>${cur.id}</b> ｜ ${cur.desc || ""}`;
+  const tb = document.querySelector("#verdict-table tbody");
+  tb.innerHTML = Object.entries(cur.per_asset).map(([a, v]) => `<tr>
+    <td>${a}</td><td>${verdictPill(v.verdict)}</td>
+    <td class="muted">${(v.note || "").replace(/</g, "&lt;").slice(0, 300)}</td></tr>`).join("");
+  el("or-line").innerHTML =
+    `OR 判定：${verdictPill(cur.or_verdict)} ｜ 命中：${(cur.caught_by || []).join(", ") || "—"}`;
+}
+
+(async () => {
+  try {
+    DATA = await loadJSON("assets/data/demo_samples.json");
+    const sel = el("sample-pick");
+    sel.innerHTML = DATA.samples.map(s =>
+      `<option value="${s.id}">${s.id} — ${s.desc ? s.desc.slice(0, 46) : ""}</option>`).join("");
+    sel.onchange = () => show(sel.value);
+    el("btn-copy").onclick = () => {
+      navigator.clipboard && navigator.clipboard.writeText(cur ? cur.code : "");
+    };
+    show(DATA.samples[0].id);
+  } catch (e) {
+    el("sample-pick").innerHTML = `<option>数据未生成：${e.message}</option>`;
+  }
+})();
+</script>
+</body>
+</html>

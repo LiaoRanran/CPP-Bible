@@ -1,0 +1,532 @@
+{
+ "generated_at": "2026-10-07T20:21:47+08:00",
+ "samples": [
+  {
+   "id": "RW-001",
+   "kind": "realworld",
+   "desc": "CVE-2014-0160 · OpenSSL · out_of_bounds",
+   "code": "// RW-001 | CVE-2014-0160 | OpenSSL | defect_type: out_of_bounds\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2014-0160\n// project_url: https://www.openssl.org/\n// year: 2014 | severity: HIGH | source_type: cve\n// mechanism: Heartbleed —— TLS heartbeat 响应长度取自攻击者声明的字段，\n//   未与请求实际载荷长度校验，导致越界读取（信息泄露）。\n// notes: 最小重构（source-derived，非原始项目代码）。ASan 应报 heap-buffer-overflow read。\n#include <cstdint>\n#include <cstdio>\n#include <cstring>\n#include <vector>\n\nstruct HeartbeatRequest {\n    uint16_t claimed_len;          // attacker-controlled: \"echo this many bytes\"\n    std::vector<uint8_t> payload;  // actual payload received\n};\n\n// BUG: copies `claimed_len` bytes from the request instead of min(claimed_len, actual)\nstd::vector<uint8_t> build_heartbeat_response(const uint8_t* req_buf, size_t req_len) {\n    uint16_t claimed = 0;\n    std::memcpy(&claimed, req_buf, sizeof(claimed));  // payload_length field\n    std::vector<uint8_t> resp(3 + claimed);\n    resp[0] = 0x02;                                   // heartbeat response\n    std::memcpy(&resp[1], &claimed, sizeof(claimed)); // echo claimed length\n    std::memcpy(&resp[3], req_buf + 3, claimed);      // <-- OOB read when claimed > req_len - 3\n    (void)req_len;\n    return resp;\n}\n\nint main() {\n    // Attacker sends 1-byte payload but claims 64 bytes (\"heartbleed\" primitive)\n    uint8_t request[4] = {0x40, 0x00, 0x41};  // claimed_len = 0x0040 = 64, payload = \"A\"\n    std::vector<uint8_t> resp = build_heartbeat_response(request, 4);\n    std::printf(\"response size = %zu\\n\", resp.size());\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ]
+  },
+  {
+   "id": "RW-002",
+   "kind": "realworld",
+   "desc": "CVE-2022-0778 · OpenSSL · logic_error",
+   "code": "// RW-002 | CVE-2022-0778 | OpenSSL | defect_type: logic_error\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2022-0778\n// project_url: https://www.openssl.org/\n// year: 2022 | severity: HIGH | source_type: cve\n// mechanism: BN_mod_sqrt() 对非素数模的 Tonelli-Shanks 循环缺少出口，解析\n//   携带非法显式曲线参数的证书时进入死循环（DoS）。676g 用同一 CVE 构造过\n//   expG 无限循环样本；本条是独立的最小重构（不同的循环骨架）。\n// notes: 危险步骤——进程会挂起；检测器以超时→miss 处理（真实盲区案例）。\n#include <cstdio>\n#include <cstdint>\n\n// Simplified Tonelli-Shanks skeleton: for non-prime modulus `p` the loop below\n// never reaches q == 1, because the order assumptions do not hold.\nuint64_t bn_mod_sqrt_looping(uint64_t a, uint64_t p) {\n    if (a == 0) return 0;\n    // find q, s with p-1 = q * 2^s\n    uint64_t q = p - 1;\n    int s = 0;\n    while (((q & 1u) == 0) && q != 0) { q >>= 1; ++s; }\n    if (s == 0) return (a % p); // p ≡ 3 mod 4 special case\n\n    // find a quadratic non-residue z (no bound check when p is not prime)\n    uint64_t z = 2;\n    while (true) { // <-- for composite p this search itself may never terminate\n        uint64_t e = (p - 1) / 2;\n        uint64_t r = 1, b = z;\n        while (e) {\n            if (e & 1u) r = (r * b) % p;\n            b = (b * b) % p;\n            e >>= 1;\n        }\n        if (r == p - 1) break;\n        ++z;\n        if (z == p) { // dead end for composite p: restart forever (the real bug path)\n            z = 2;\n        }\n    }\n    // main loop (as in the real implementation; exits only under prime-modulus math)\n    uint64_t c = z, r = a, t = a, m = s;\n    while (t != 1) {\n        uint64_t i = 1, t2 = (t * t) % p;\n        while (t2 != 1) { t2 = (t2 * t2) % p; ++i; if (i == m) { /* keep looping */ break; } }\n        uint64_t b = c;\n        for (uint64_t j = 0; j + i < m; ++j) b = (b * b) % p;\n        r = (r * b) % p; c = (b * b) % p; t = (t * c) % p; m = i;\n    }\n    return r;\n}\n\nint main() {\n    std::printf(\"sqrt mod (composite modulus, attacker-supplied)\\n\");\n    // p = 15 is composite -> the loop structure above does not terminate.\n    uint64_t r = bn_mod_sqrt_looping(9, 15);\n    std::printf(\"unreachable for crafted input: %llu\\n\", (unsigned long long)r);\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "miss",
+   "caught_by": []
+  },
+  {
+   "id": "RW-003",
+   "kind": "realworld",
+   "desc": "CVE-2021-3711 · OpenSSL · out_of_bounds",
+   "code": "// RW-003 | CVE-2021-3711 | OpenSSL | defect_type: out_of_bounds\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2021-3711\n// project_url: https://www.openssl.org/\n// year: 2021 | severity: HIGH | source_type: cve\n// mechanism: SM2 解密流程中密文字节长度被转换为 int 后参与缓冲区长度计算，\n//   长度不匹配时可写入超出分配大小的缓冲区（堆溢出）。\n// notes: 最小重构。ASan 应报 heap-buffer-overflow write。\n#include <cstdint>\n#include <cstdio>\n#include <cstring>\n#include <vector>\n\nstruct SM2Ciphertext {\n    std::vector<uint8_t> c1; // 65 bytes point\n    std::vector<uint8_t> c3; // digest\n    std::vector<uint8_t> c2; // encrypted data\n};\n\n// BUG: output buffer sized for `declared_len` (attacker-controlled) but copy uses c2.size()\nint sm2_decrypt(const SM2Ciphertext& ct, std::vector<uint8_t>& out, int declared_len) {\n    out.resize(static_cast<size_t>(declared_len)); // small, e.g. 16\n    std::memcpy(out.data(), ct.c2.data(), ct.c2.size()); // copies 48 bytes -> overflow\n    return 0;\n}\n\nint main() {\n    SM2Ciphertext ct{};\n    ct.c2.assign(48, 0xAB);      // actual ciphertext payload: 48 bytes\n    std::vector<uint8_t> plain;\n    int declared_len = 16;       // derived from malformed ASN.1 length fields\n    sm2_decrypt(ct, plain, declared_len);\n    std::printf(\"plaintext size = %zu\\n\", plain.size());\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ]
+  },
+  {
+   "id": "RW-004",
+   "kind": "realworld",
+   "desc": "CVE-2021-3712 · OpenSSL · out_of_bounds",
+   "code": "// RW-004 | CVE-2021-3712 | OpenSSL | defect_type: out_of_bounds\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2021-3712\n// project_url: https://www.openssl.org/\n// year: 2021 | severity: MEDIUM | source_type: cve\n// mechanism: ASN1_STRING 可能不以 NUL 结尾；将 data/len 当作 C 字符串交给\n//   printf 类函数时读越界（证书打印/日志路径）。\n// notes: 最小重构。ASan 应报 heap-buffer-overflow read。\n#include <cstdint>\n#include <cstdio>\n#include <cstring>\n#include <vector>\n\n// Mirrors ASN1_STRING: length-tracked bytes that may not be NUL-terminated.\nstruct ASN1_String {\n    std::vector<uint8_t> data;\n    long length;\n};\n\n// BUG: treats the ASN1_STRING as a C string (\"%s\") instead of \"%.*s\".\nvoid print_asn1_string(const ASN1_String& s) {\n    std::printf(\"value = %s\\n\", reinterpret_cast<const char*>(s.data.data()));\n}\n\nint main() {\n    ASN1_String s;\n    s.data.assign(8, 'X'); // no NUL terminator (DER-encoded value)\n    s.length = 8;\n    print_asn1_string(s);  // reads past the 8-byte allocation\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "cross-compile"
+   ]
+  },
+  {
+   "id": "RW-005",
+   "kind": "realworld",
+   "desc": "CVE-2023-0286 · OpenSSL · type_punning",
+   "code": "// RW-005 | CVE-2023-0286 | OpenSSL | defect_type: type_punning\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2023-0286\n// project_url: https://www.openssl.org/\n// year: 2023 | severity: HIGH | source_type: cve\n// mechanism: X.400 地址（ADDRESS 类型）在比较/渲染时被按 GENERAL_NAME 联合体\n//   的另一分支解释，类型混淆导致按错误布局读取数据。\n// notes: 最小重构。UB 检测（-fsanitize=undefined 或 ASan 栈）应命中。\n#include <cstdint>\n#include <cstdio>\n#include <cstring>\n#include <vector>\n\nenum NameType { GEN_EMAIL = 1, GEN_OTHERNAME = 5, GEN_ADDRESS = 7 };\n\nstruct GeneralName {\n    int type;\n    union {\n        struct { char* email; } email_name;\n        struct { char* data; int len; } other_name;\n        struct { char* address; int addr_len; } address; // X.400\n    } u;\n};\n\n// BUG: assumes any non-EMAIL name is `other_name` and reads the len field,\n// which for ADDRESS misinterprets the layout (type confusion / union misuse).\nvoid render_name(const GeneralName* n) {\n    if (n->type == GEN_EMAIL) {\n        std::printf(\"email: %s\\n\", n->u.email_name.email);\n    } else {\n        // reads OTHERNAME layout even when type == GEN_ADDRESS\n        char* p = n->u.other_name.data;\n        int len = n->u.other_name.len;   // for ADDRESS this reads the wrong union member\n        std::printf(\"other: %.*s (len=%d)\\n\", len > 0 && len < 64 ? len : 0, p, len);\n    }\n}\n\nint main() {\n    GeneralName n{};\n    n.type = GEN_ADDRESS;\n    n.u.address.address = (char*)\"x400-crafted-payload\";\n    n.u.address.addr_len = 0x40000000; // crafted huge length lands in the union\n    render_name(&n);\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "miss",
+   "caught_by": []
+  },
+  {
+   "id": "RW-006",
+   "kind": "realworld",
+   "desc": "CVE-2022-4450 · OpenSSL · double_free",
+   "code": "// RW-006 | CVE-2022-4450 | OpenSSL | defect_type: double_free\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2022-4450\n// project_url: https://www.openssl.org/\n// year: 2023 | severity: HIGH | source_type: cve\n// mechanism: PEM_read_bio_ex 在特定畸形输入下对同一缓冲释放两次。\n// notes: 最小重构。ASan/LeakSanitizer 应报 double-free。\n#include <cstdio>\n#include <cstdlib>\n#include <cstring>\n\n// Simplified PEM reader: error paths both free the decoded buffer.\nchar* pem_decode(const char* input, size_t in_len, bool* ok) {\n    char* buf = static_cast<char*>(std::malloc(in_len + 1));\n    std::memcpy(buf, input, in_len);\n    buf[in_len] = '\\0';\n\n    if (in_len > 0 && input[0] == '-') { // crafted marker triggers the error path\n        std::free(buf);\n        *ok = false;\n        // BUG: falls through to the common cleanup which frees again\n    }\n    *ok = true;\n    return buf; // caller frees buf ... but the error path already freed it\n}\n\nint main() {\n    bool ok = false;\n    const char* crafted = \"--BROKEN PEM HEADER--\";\n    char* out = pem_decode(crafted, std::strlen(crafted), &ok);\n    if (!ok) {\n        std::free(out); // second free of the same pointer\n    }\n    std::printf(\"decoded=%p\\n\", (void*)out);\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "cross-compile"
+   ]
+  },
+  {
+   "id": "RW-007",
+   "kind": "realworld",
+   "desc": "CVE-2023-0215 · OpenSSL · use_after_free",
+   "code": "// RW-007 | CVE-2023-0215 | OpenSSL | defect_type: use_after_free\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2023-0215\n// project_url: https://www.openssl.org/\n// year: 2023 | severity: HIGH | source_type: cve\n// mechanism: BIO 链清理顺序错误——对已被释放的 BIO 再次执行读取/清理。\n// notes: 最小重构。ASan 应报 heap-use-after-free。\n#include <cstdio>\n#include <cstring>\n\nstruct BIO {\n    char* data;\n    BIO* next;\n};\n\nBIO* bio_new(const char* s) {\n    BIO* b = new BIO{};\n    b->data = new char[std::strlen(s) + 1];\n    std::strcpy(b->data, s);\n    b->next = nullptr;\n    return b;\n}\n\n// BUG: frees the BIO but leaves the caller's pointer dangling; the error path\n// then performs one more read on it (cleanup-after-free order).\nint bio_read_callback(BIO* b, char* out, size_t n) {\n    delete[] b->data;\n    delete b;                       // node freed here ...\n    if (out) {\n        std::memcpy(out, b->data, n); // ... then read through the dangling pointer\n    }\n    return 0;\n}\n\nint main() {\n    BIO* b = bio_new(\"certificate-bytes\");\n    char buf[32];\n    bio_read_callback(b, buf, 8);   // use-after-free read\n    std::printf(\"read %d bytes after free\\n\", 8);\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ]
+  },
+  {
+   "id": "RW-008",
+   "kind": "realworld",
+   "desc": "CVE-2022-3602 · OpenSSL · out_of_bounds",
+   "code": "// RW-008 | CVE-2022-3602 | OpenSSL | defect_type: out_of_bounds\n// source_url: https://nvd.nist.gov/vuln/detail/CVE-2022-3602\n// project_url: https://www.openssl.org/\n// year: 2022 | severity: HIGH | source_type: cve\n// mechanism: X.509 名称约束检查中，punycode 解码到固定 4 字节栈缓冲，越界写 1 字节。\n// notes: 最小重构。ASan 应报 stack-buffer-overflow write。\n#include <cstdint>\n#include <cstdio>\n#include <cstring>\n\n// Fixed 4-byte stack buffer as in the vulnerable helper.\nint punycode_decode_one(const char* label, size_t label_len, char* out4) {\n    size_t n = label_len;\n    if (n > 4) {\n        n = 4; // bounds \"check\" applied to the input, not the copy target size\n    }\n    // BUG: decode writes u32 as 1..4 bytes; a 4th byte plus terminator overflows out4\n    for (size_t i = 0; i < n; ++i) {\n        out4[i] = label[i];\n    }\n    out4[n] = '\\0'; // one past the end when n == 4\n    return (int)n;\n}\n\nint main() {\n    const char* label = \"abcd\"; // 4-char punycode label (attacker \"xn--\" name)\n    char stack_buf[4];\n    punycode_decode_one(label, std::strlen(label), stack_buf);\n    std::printf(\"decoded: %s\\n\", stack_buf);\n    return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": ""
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "tsan": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": ""
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": ""
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": ""
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan"
+   ]
+  },
+  {
+   "id": "expA_sample_001",
+   "kind": "synthetic",
+   "desc": "use_after_free · expA（合成语料）",
+   "code": "// 676c 扩样-A: planted C++ defect candidate (generated sample)\n// SPDX-License-Identifier: Apache-2.0\n#include <cstdio>\nint main() {\n  int* p = new int[8];\n  p[0] = 42;\n  delete[] p;\n  int v = p[0]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot\n  (void)v;\n  return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": "asan 两档均无报告[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=807)   Write of size 4 at 0x720800000024 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmp04wakn72/sample_005.c; -O2(rc=0) 无输出]"
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "tsan": {
+     "verdict": "catch",
+     "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=1065)   Read of size 4 at 0x720800000020 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmpzf76h292/sample_001.c]（档位 -O0,-O2）"
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": "无告警"
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced（detector unavailable: compiler does not recognize -Wunsequenced）"
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": "两编译器输出一致"
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": "链接成功"
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": "无本地检测器"
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ]
+  },
+  {
+   "id": "expA_sample_002",
+   "kind": "synthetic",
+   "desc": "use_after_free · expA（合成语料）",
+   "code": "// 676c 扩样-A: planted C++ defect candidate (generated sample)\n// SPDX-License-Identifier: Apache-2.0\n#include <cstdio>\nint main() {\n  int* p = new int[8];\n  p[3] = 42;\n  delete[] p;\n  int v = p[3]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot\n  (void)v;\n  return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "tsan": {
+     "verdict": "catch",
+     "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=1420)   Read of size 4 at 0x72080000002c by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmpq7vy_4vu/sample_002.c]（档位 -O0,-O2）"
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": "无告警"
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced（detector unavailable: compiler does not recognize -Wunsequenced）"
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": "两编译器输出一致"
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": "链接成功"
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": "无本地检测器"
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ]
+  },
+  {
+   "id": "expA_sample_003",
+   "kind": "synthetic",
+   "desc": "use_after_free · expA（合成语料）",
+   "code": "// 676c 扩样-A: planted C++ defect candidate (generated sample)\n// SPDX-License-Identifier: Apache-2.0\n#include <cstdio>\nint main() {\n  int* p = new int[8];\n  p[5] = 42;\n  delete[] p;\n  int v = p[5]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot\n  (void)v;\n  return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "miss",
+     "note": "asan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "tsan": {
+     "verdict": "catch",
+     "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=2983)   Read of size 4 at 0x720800000034 by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmpcgg1fdxp/sample_003.c]（档位 -O0,-O2）"
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": "无告警"
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced（detector unavailable: compiler does not recognize -Wunsequenced）"
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": "两编译器输出一致"
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": "链接成功"
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": "无本地检测器"
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "tsan"
+   ]
+  },
+  {
+   "id": "expA_sample_004",
+   "kind": "synthetic",
+   "desc": "use_after_free · expA（合成语料）",
+   "code": "// 676c 扩样-A: planted C++ defect candidate (generated sample)\n// SPDX-License-Identifier: Apache-2.0\n#include <cstdio>\nint main() {\n  int* p = new int[8];\n  p[7] = 42;\n  delete[] p;\n  int v = p[7]; // <<PLANTED-DEFECT>> use-after-free: read freed heap slot\n  (void)v;\n  return 0;\n}\n",
+   "per_asset": {
+    "asan": {
+     "verdict": "catch",
+     "note": "asan 命中[-O0(rc=1) ================================================================= ==3093==ERROR: AddressSanitizer: heap-use-after-free on address 0x50300000005c at pc 0x555555555296 bp 0x7fffffffe0b0 sp 0x7fffffffe0a]（档位 -O0,-O2）"
+    },
+    "ubsan": {
+     "verdict": "miss",
+     "note": "ubsan 两档均无报告[-O0(rc=0) 无输出; -O2(rc=0) 无输出]"
+    },
+    "tsan": {
+     "verdict": "catch",
+     "note": "tsan 命中[-O0(rc=66) ================== WARNING: ThreadSanitizer: heap-use-after-free (pid=3337)   Read of size 4 at 0x72080000003c by main thread:     #0 main /mnt/c/Users/ASUS/AppData/Local/Temp/tmp_x9bc4y5/sample_004.c]（档位 -O0,-O2）"
+    },
+    "compiler-warn": {
+     "verdict": "miss",
+     "note": "无告警"
+    },
+    "wunsequenced": {
+     "verdict": "unknown",
+     "note": "检测器不可用(wunsequenced)：编译器不认 -Wunsequenced（detector unavailable: compiler does not recognize -Wunsequenced）"
+    },
+    "cross-compile": {
+     "verdict": "miss",
+     "note": "两编译器输出一致"
+    },
+    "linker": {
+     "verdict": "miss",
+     "note": "链接成功"
+    },
+    "compile-time": {
+     "verdict": "unknown",
+     "note": "无本地检测器"
+    }
+   },
+   "or_verdict": "catch",
+   "caught_by": [
+    "asan",
+    "tsan"
+   ]
+  }
+ ]
+}
