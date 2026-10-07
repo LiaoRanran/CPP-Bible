@@ -1,0 +1,1301 @@
+{
+ "A1_project": {
+  "by_project": {
+   "OpenSSL": {
+    "n": 10,
+    "or_catch": 6,
+    "or_catch_rate_pct": 60.0,
+    "category": "System library",
+    "asset_catch_counts": {
+     "asan": 5,
+     "cross-compile": 2,
+     "tsan": 1
+    },
+    "miss": 4,
+    "failure_mode": "partial"
+   },
+   "glibc": {
+    "n": 8,
+    "or_catch": 5,
+    "or_catch_rate_pct": 62.5,
+    "category": "System library",
+    "asset_catch_counts": {
+     "asan": 5,
+     "cross-compile": 3,
+     "tsan": 1
+    },
+    "miss": 3,
+    "failure_mode": "partial"
+   },
+   "curl": {
+    "n": 16,
+    "or_catch": 9,
+    "or_catch_rate_pct": 56.25,
+    "category": "Network",
+    "asset_catch_counts": {
+     "asan": 8,
+     "cross-compile": 2,
+     "tsan": 2,
+     "ubsan": 4,
+     "compiler-warn": 1
+    },
+    "miss": 7,
+    "failure_mode": "partial"
+   },
+   "nginx": {
+    "n": 2,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Web/server",
+    "asset_catch_counts": {},
+    "miss": 2,
+    "failure_mode": "blind"
+   },
+   "Apache HTTP Server": {
+    "n": 2,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Web/server",
+    "asset_catch_counts": {},
+    "miss": 2,
+    "failure_mode": "blind"
+   },
+   "OpenSSH": {
+    "n": 3,
+    "or_catch": 2,
+    "or_catch_rate_pct": 66.67,
+    "category": "Network",
+    "asset_catch_counts": {
+     "tsan": 1,
+     "asan": 1
+    },
+    "miss": 1,
+    "failure_mode": "partial"
+   },
+   "libxml2": {
+    "n": 4,
+    "or_catch": 4,
+    "or_catch_rate_pct": 100.0,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "cross-compile": 3,
+     "asan": 3,
+     "ubsan": 2,
+     "tsan": 2
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "zlib": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0,
+    "category": "System library",
+    "asset_catch_counts": {
+     "asan": 2
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "libpng": {
+    "n": 3,
+    "or_catch": 2,
+    "or_catch_rate_pct": 66.67,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 2,
+     "ubsan": 1,
+     "tsan": 2
+    },
+    "miss": 1,
+    "failure_mode": "partial"
+   },
+   "libwebp": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "FreeType": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 2,
+     "cross-compile": 1,
+     "tsan": 1,
+     "compiler-warn": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "libtiff": {
+    "n": 3,
+    "or_catch": 3,
+    "or_catch_rate_pct": 100.0,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 3,
+     "ubsan": 2,
+     "tsan": 2
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "expat": {
+    "n": 6,
+    "or_catch": 6,
+    "or_catch_rate_pct": 100.0,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 5,
+     "ubsan": 4,
+     "tsan": 2,
+     "cross-compile": 2
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "ImageMagick": {
+    "n": 2,
+    "or_catch": 1,
+    "or_catch_rate_pct": 50.0,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 1,
+     "ubsan": 1,
+     "tsan": 1
+    },
+    "miss": 1,
+    "failure_mode": "partial"
+   },
+   "FFmpeg": {
+    "n": 3,
+    "or_catch": 2,
+    "or_catch_rate_pct": 66.67,
+    "category": "Parsing/Media",
+    "asset_catch_counts": {
+     "asan": 2
+    },
+    "miss": 1,
+    "failure_mode": "partial"
+   },
+   "Unicode/LLVM/GCC 生态": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   },
+   "Chromium/V8": {
+    "n": 3,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Browser/App",
+    "asset_catch_counts": {},
+    "miss": 3,
+    "failure_mode": "blind"
+   },
+   "Chromium": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "tsan": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "WebKit": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "Firefox": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0,
+    "category": "Browser/App",
+    "asset_catch_counts": {
+     "ubsan": 1,
+     "tsan": 2,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "SQLite": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "ubsan": 1,
+     "asan": 1,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "SQLite（Chromium 内置）": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "PostgreSQL": {
+    "n": 2,
+    "or_catch": 1,
+    "or_catch_rate_pct": 50.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1
+    },
+    "miss": 1,
+    "failure_mode": "partial"
+   },
+   "Redis": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "tsan": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "protobuf": {
+    "n": 3,
+    "or_catch": 1,
+    "or_catch_rate_pct": 33.33,
+    "category": "Network",
+    "asset_catch_counts": {
+     "asan": 1,
+     "ubsan": 1,
+     "tsan": 1,
+     "compiler-warn": 1
+    },
+    "miss": 2,
+    "failure_mode": "partial"
+   },
+   "Boost": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   },
+   "Qt": {
+    "n": 3,
+    "or_catch": 1,
+    "or_catch_rate_pct": 33.33,
+    "category": "Framework",
+    "asset_catch_counts": {
+     "asan": 1,
+     "ubsan": 1
+    },
+    "miss": 2,
+    "failure_mode": "partial"
+   },
+   "Godot Engine": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "tsan": 1,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "Linux kernel": {
+    "n": 10,
+    "or_catch": 4,
+    "or_catch_rate_pct": 40.0,
+    "category": "OS/kernel",
+    "asset_catch_counts": {
+     "tsan": 2,
+     "asan": 2,
+     "cross-compile": 2,
+     "ubsan": 1,
+     "compiler-warn": 1
+    },
+    "miss": 6,
+    "failure_mode": "partial"
+   },
+   "sudo": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 2,
+     "tsan": 1,
+     "ubsan": 1,
+     "compiler-warn": 1,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "polkit": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   },
+   "FreeBSD": {
+    "n": 3,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "OS/kernel",
+    "asset_catch_counts": {},
+    "miss": 3,
+    "failure_mode": "blind"
+   },
+   "ncurses": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "tsan": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "CUPS": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   },
+   "XZ Utils": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "category": "Other/App",
+    "asset_catch_counts": {
+     "asan": 1,
+     "cross-compile": 1
+    },
+    "miss": 0,
+    "failure_mode": "OK"
+   },
+   "HTTP/2 协议栈（nginx/httpd/Go 等）": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   },
+   "libssh": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "category": "Other/App",
+    "asset_catch_counts": {},
+    "miss": 1,
+    "failure_mode": "blind"
+   }
+  },
+  "n_projects": 37,
+  "rank_top": [
+   {
+    "project": "libxml2",
+    "n": 4,
+    "rate": 100.0
+   },
+   {
+    "project": "libtiff",
+    "n": 3,
+    "rate": 100.0
+   },
+   {
+    "project": "expat",
+    "n": 6,
+    "rate": 100.0
+   },
+   {
+    "project": "OpenSSH",
+    "n": 3,
+    "rate": 66.67
+   },
+   {
+    "project": "libpng",
+    "n": 3,
+    "rate": 66.67
+   },
+   {
+    "project": "FFmpeg",
+    "n": 3,
+    "rate": 66.67
+   },
+   {
+    "project": "glibc",
+    "n": 8,
+    "rate": 62.5
+   },
+   {
+    "project": "OpenSSL",
+    "n": 10,
+    "rate": 60.0
+   }
+  ],
+  "rank_bottom": [
+   {
+    "project": "FreeBSD",
+    "n": 3,
+    "rate": 0.0
+   },
+   {
+    "project": "Chromium/V8",
+    "n": 3,
+    "rate": 0.0
+   },
+   {
+    "project": "Qt",
+    "n": 3,
+    "rate": 33.33
+   },
+   {
+    "project": "protobuf",
+    "n": 3,
+    "rate": 33.33
+   },
+   {
+    "project": "Linux kernel",
+    "n": 10,
+    "rate": 40.0
+   },
+   {
+    "project": "curl",
+    "n": 16,
+    "rate": 56.25
+   },
+   {
+    "project": "OpenSSL",
+    "n": 10,
+    "rate": 60.0
+   },
+   {
+    "project": "glibc",
+    "n": 8,
+    "rate": 62.5
+   }
+  ],
+  "category_aggregate": {
+   "System library": {
+    "n": 20,
+    "or_catch": 13,
+    "rate": 65.0
+   },
+   "Network": {
+    "n": 22,
+    "or_catch": 12,
+    "rate": 54.55
+   },
+   "Web/server": {
+    "n": 4,
+    "or_catch": 0,
+    "rate": 0.0
+   },
+   "Parsing/Media": {
+    "n": 23,
+    "or_catch": 20,
+    "rate": 86.96
+   },
+   "Other/App": {
+    "n": 20,
+    "or_catch": 13,
+    "rate": 65.0
+   },
+   "Browser/App": {
+    "n": 5,
+    "or_catch": 2,
+    "rate": 40.0
+   },
+   "Framework": {
+    "n": 3,
+    "or_catch": 1,
+    "rate": 33.33
+   },
+   "OS/kernel": {
+    "n": 13,
+    "or_catch": 4,
+    "rate": 30.77
+   }
+  }
+ },
+ "A2_year": {
+  "by_year": {
+   "2014": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0,
+    "top_types": [
+     [
+      "out_of_bounds",
+      1
+     ]
+    ]
+   },
+   "2022": {
+    "n": 30,
+    "or_catch": 20,
+    "or_catch_rate_pct": 66.67,
+    "top_types": [
+     [
+      "out_of_bounds",
+      9
+     ],
+     [
+      "logic_error",
+      8
+     ],
+     [
+      "integer_overflow",
+      5
+     ]
+    ]
+   },
+   "2021": {
+    "n": 22,
+    "or_catch": 12,
+    "or_catch_rate_pct": 54.55,
+    "top_types": [
+     [
+      "logic_error",
+      6
+     ],
+     [
+      "integer_overflow",
+      6
+     ],
+     [
+      "out_of_bounds",
+      5
+     ]
+    ]
+   },
+   "2023": {
+    "n": 16,
+    "or_catch": 8,
+    "or_catch_rate_pct": 50.0,
+    "top_types": [
+     [
+      "logic_error",
+      6
+     ],
+     [
+      "out_of_bounds",
+      5
+     ],
+     [
+      "type_punning",
+      1
+     ]
+    ]
+   },
+   "2015": {
+    "n": 2,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "top_types": [
+     [
+      "logic_error",
+      1
+     ],
+     [
+      "out_of_bounds",
+      1
+     ]
+    ]
+   },
+   "2016": {
+    "n": 11,
+    "or_catch": 7,
+    "or_catch_rate_pct": 63.64,
+    "top_types": [
+     [
+      "out_of_bounds",
+      4
+     ],
+     [
+      "logic_error",
+      3
+     ],
+     [
+      "data_race",
+      2
+     ]
+    ]
+   },
+   "2024": {
+    "n": 4,
+    "or_catch": 3,
+    "or_catch_rate_pct": 75.0,
+    "top_types": [
+     [
+      "out_of_bounds",
+      2
+     ],
+     [
+      "data_race",
+      1
+     ],
+     [
+      "use_after_free",
+      1
+     ]
+    ]
+   },
+   "2017": {
+    "n": 3,
+    "or_catch": 3,
+    "or_catch_rate_pct": 100.0,
+    "top_types": [
+     [
+      "out_of_bounds",
+      2
+     ],
+     [
+      "integer_overflow",
+      1
+     ]
+    ]
+   },
+   "2019": {
+    "n": 5,
+    "or_catch": 3,
+    "or_catch_rate_pct": 60.0,
+    "top_types": [
+     [
+      "out_of_bounds",
+      2
+     ],
+     [
+      "logic_error",
+      2
+     ],
+     [
+      "use_after_free",
+      1
+     ]
+    ]
+   },
+   "2020": {
+    "n": 10,
+    "or_catch": 6,
+    "or_catch_rate_pct": 60.0,
+    "top_types": [
+     [
+      "out_of_bounds",
+      5
+     ],
+     [
+      "logic_error",
+      3
+     ],
+     [
+      "use_after_free",
+      1
+     ]
+    ]
+   },
+   "2018": {
+    "n": 5,
+    "or_catch": 2,
+    "or_catch_rate_pct": 40.0,
+    "top_types": [
+     [
+      "logic_error",
+      2
+     ],
+     [
+      "out_of_bounds",
+      2
+     ],
+     [
+      "integer_overflow",
+      1
+     ]
+    ]
+   },
+   "2012": {
+    "n": 1,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "top_types": [
+     [
+      "integer_overflow",
+      1
+     ]
+    ]
+   }
+  },
+  "trend": {
+   "years": [
+    "2012",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024"
+   ],
+   "first_rate": 0.0,
+   "last_rate": 75.0,
+   "caveat": "逐年 n 小（最大 30），趋势仅描述性，不推断因果"
+  }
+ },
+ "A3_severity": {
+  "by_severity": {
+   "CRITICAL": {
+    "n": 8,
+    "or_catch": 5,
+    "or_catch_rate_pct": 62.5,
+    "asset_catch_counts": {
+     "asan": 5,
+     "cross-compile": 3,
+     "ubsan": 1
+    }
+   },
+   "HIGH": {
+    "n": 65,
+    "or_catch": 39,
+    "or_catch_rate_pct": 60.0,
+    "asset_catch_counts": {
+     "asan": 30,
+     "cross-compile": 13,
+     "tsan": 14,
+     "compiler-warn": 4,
+     "ubsan": 8
+    }
+   },
+   "MEDIUM": {
+    "n": 34,
+    "or_catch": 21,
+    "or_catch_rate_pct": 61.76,
+    "asset_catch_counts": {
+     "asan": 19,
+     "cross-compile": 6,
+     "tsan": 11,
+     "ubsan": 11,
+     "compiler-warn": 1
+    }
+   },
+   "LOW": {
+    "n": 3,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0,
+    "asset_catch_counts": {}
+   }
+  },
+  "corr_severity_catch": "HIGH/MEDIUM 占比高；严重度与检出率的关系见 by_severity（样本量有限，谨慎解读）"
+ },
+ "A4_type": {
+  "real_by_type": {
+   "out_of_bounds": {
+    "n": 38,
+    "or_catch": 32,
+    "or_catch_rate_pct": 84.21
+   },
+   "logic_error": {
+    "n": 31,
+    "or_catch": 1,
+    "or_catch_rate_pct": 3.23
+   },
+   "type_punning": {
+    "n": 4,
+    "or_catch": 0,
+    "or_catch_rate_pct": 0.0
+   },
+   "double_free": {
+    "n": 2,
+    "or_catch": 2,
+    "or_catch_rate_pct": 100.0
+   },
+   "use_after_free": {
+    "n": 10,
+    "or_catch": 10,
+    "or_catch_rate_pct": 100.0
+   },
+   "data_race": {
+    "n": 4,
+    "or_catch": 3,
+    "or_catch_rate_pct": 75.0
+   },
+   "integer_overflow": {
+    "n": 14,
+    "or_catch": 10,
+    "or_catch_rate_pct": 71.43
+   },
+   "null_pointer_deref": {
+    "n": 6,
+    "or_catch": 6,
+    "or_catch_rate_pct": 100.0
+   },
+   "memory_leak": {
+    "n": 1,
+    "or_catch": 1,
+    "or_catch_rate_pct": 100.0
+   }
+  },
+  "selfmade_overlap": {
+   "logic_error": {
+    "n": 17,
+    "catch": 6,
+    "or_catch_rate_pct": 35.29
+   },
+   "type_punning": {
+    "n": 20,
+    "catch": 10,
+    "or_catch_rate_pct": 50.0
+   },
+   "integer_overflow": {
+    "n": 26,
+    "catch": 22,
+    "or_catch_rate_pct": 84.62
+   },
+   "out_of_bounds": {
+    "n": 20,
+    "catch": 20,
+    "or_catch_rate_pct": 100.0
+   },
+   "null_pointer_deref": {
+    "n": 15,
+    "catch": 15,
+    "or_catch_rate_pct": 100.0
+   },
+   "data_race": {
+    "n": 14,
+    "catch": 14,
+    "or_catch_rate_pct": 100.0
+   },
+   "use_after_free": {
+    "n": 7,
+    "catch": 7,
+    "or_catch_rate_pct": 100.0
+   },
+   "double_free": {
+    "n": 3,
+    "catch": 3,
+    "or_catch_rate_pct": 100.0
+   },
+   "memory_leak": {
+    "n": 1,
+    "catch": 1,
+    "or_catch_rate_pct": 100.0
+   }
+  },
+  "comparison_real_vs_selfmade": [
+   {
+    "type": "out_of_bounds",
+    "real_n": 38,
+    "real_rate": 84.21,
+    "selfmade_n": 20,
+    "selfmade_rate": 100.0,
+    "diff_pp": -15.79
+   },
+   {
+    "type": "logic_error",
+    "real_n": 31,
+    "real_rate": 3.23,
+    "selfmade_n": 17,
+    "selfmade_rate": 35.29,
+    "diff_pp": -32.06
+   },
+   {
+    "type": "type_punning",
+    "real_n": 4,
+    "real_rate": 0.0,
+    "selfmade_n": 20,
+    "selfmade_rate": 50.0,
+    "diff_pp": -50.0
+   },
+   {
+    "type": "double_free",
+    "real_n": 2,
+    "real_rate": 100.0,
+    "selfmade_n": 3,
+    "selfmade_rate": 100.0,
+    "diff_pp": 0.0
+   },
+   {
+    "type": "use_after_free",
+    "real_n": 10,
+    "real_rate": 100.0,
+    "selfmade_n": 7,
+    "selfmade_rate": 100.0,
+    "diff_pp": 0.0
+   },
+   {
+    "type": "data_race",
+    "real_n": 4,
+    "real_rate": 75.0,
+    "selfmade_n": 14,
+    "selfmade_rate": 100.0,
+    "diff_pp": -25.0
+   },
+   {
+    "type": "integer_overflow",
+    "real_n": 14,
+    "real_rate": 71.43,
+    "selfmade_n": 26,
+    "selfmade_rate": 84.62,
+    "diff_pp": -13.19
+   },
+   {
+    "type": "null_pointer_deref",
+    "real_n": 6,
+    "real_rate": 100.0,
+    "selfmade_n": 15,
+    "selfmade_rate": 100.0,
+    "diff_pp": 0.0
+   },
+   {
+    "type": "memory_leak",
+    "real_n": 1,
+    "real_rate": 100.0,
+    "selfmade_n": 1,
+    "selfmade_rate": 100.0,
+    "diff_pp": 0.0
+   }
+  ],
+  "note": "676g 自造口径用 70 类 taxonomy，仅 6 类与真实靶场 9 类重叠；其余不具可比性"
+ },
+ "A5_unique": {
+  "n_or_catch": 65,
+  "n_unique_hit": 27,
+  "unique_fraction_pct": 41.54,
+  "sole_catcher_counts": {
+   "asan": 18,
+   "cross-compile": 3,
+   "tsan": 3,
+   "ubsan": 3
+  },
+  "removal_impact": {
+   "asan": 18,
+   "ubsan": 3,
+   "tsan": 3,
+   "compiler-warn": 0,
+   "wunsequenced": 0,
+   "cross-compile": 3,
+   "linker": 0,
+   "compile-time": 0
+  },
+  "unique_hit_by_type": {
+   "out_of_bounds": 16,
+   "double_free": 2,
+   "data_race": 2,
+   "use_after_free": 2,
+   "integer_overflow": 3,
+   "memory_leak": 1,
+   "logic_error": 1
+  },
+  "unique_hit_examples": [
+   {
+    "rw_id": "RW-001",
+    "cve": "CVE-2014-0160",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-003",
+    "cve": "CVE-2021-3711",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-006",
+    "cve": "CVE-2022-4450",
+    "type": "double_free",
+    "sole_asset": "cross-compile"
+   },
+   {
+    "rw_id": "RW-008",
+    "cve": "CVE-2022-3602",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-015",
+    "cve": "CVE-2023-6246",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-016",
+    "cve": "CVE-2023-38545",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-019",
+    "cve": "CVE-2016-8618",
+    "type": "double_free",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-020",
+    "cve": "CVE-2017-1000257",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-027",
+    "cve": "CVE-2024-6387",
+    "type": "data_race",
+    "sole_asset": "tsan"
+   },
+   {
+    "rw_id": "RW-029",
+    "cve": "CVE-2022-23308",
+    "type": "use_after_free",
+    "sole_asset": "cross-compile"
+   },
+   {
+    "rw_id": "RW-032",
+    "cve": "CVE-2017-9047",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-033",
+    "cve": "CVE-2022-37434",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-034",
+    "cve": "CVE-2018-25032",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-043",
+    "cve": "CVE-2016-5321",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   },
+   {
+    "rw_id": "RW-045",
+    "cve": "CVE-2016-0718",
+    "type": "out_of_bounds",
+    "sole_asset": "asan"
+   }
+  ]
+ },
+ "B1_operator": {
+  "asset_catch_rate": {
+   "asan": 0.4909,
+   "ubsan": 0.1818,
+   "tsan": 0.2273,
+   "compiler-warn": 0.0455,
+   "wunsequenced": 0.0,
+   "cross-compile": 0.2,
+   "linker": 0.0,
+   "compile-time": 0.0
+  },
+  "operator_order": [
+   "asan",
+   "tsan",
+   "cross-compile",
+   "ubsan",
+   "compiler-warn",
+   "wunsequenced",
+   "linker",
+   "compile-time"
+  ],
+  "by_k": {
+   "1": {
+    "fd_selection": [
+     "asan"
+    ],
+    "fd_rate": 49.09,
+    "op_selection": [
+     "asan"
+    ],
+    "op_rate": 49.09,
+    "delta_pp": 0.0
+   },
+   "2": {
+    "fd_selection": [
+     "asan",
+     "ubsan"
+    ],
+    "fd_rate": 53.64,
+    "op_selection": [
+     "asan",
+     "ubsan"
+    ],
+    "op_rate": 53.64,
+    "delta_pp": 0.0
+   },
+   "3": {
+    "fd_selection": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "fd_rate": 56.36,
+    "op_selection": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "op_rate": 56.36,
+    "delta_pp": 0.0
+   },
+   "4": {
+    "fd_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "fd_rate": 59.09,
+    "op_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "op_rate": 59.09,
+    "delta_pp": 0.0
+   },
+   "5": {
+    "fd_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn"
+    ],
+    "fd_rate": 59.09,
+    "op_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn"
+    ],
+    "op_rate": 59.09,
+    "delta_pp": 0.0
+   },
+   "6": {
+    "fd_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "wunsequenced"
+    ],
+    "fd_rate": 59.09,
+    "op_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "wunsequenced"
+    ],
+    "op_rate": 59.09,
+    "delta_pp": 0.0
+   },
+   "7": {
+    "fd_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "wunsequenced",
+     "linker"
+    ],
+    "fd_rate": 59.09,
+    "op_selection": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "wunsequenced",
+     "linker"
+    ],
+    "op_rate": 59.09,
+    "delta_pp": 0.0
+   }
+  },
+  "conclusion": "真实靶场 110 上算子 literal 模式选择与 FD 贪心选择在 k=1..7 完全一致/几乎一致（novel≡failure≡frequency 坍缩在真实数据上同样成立），Δ≈0，确认 686 硬伤：演化算子无召回增益（与自造语料 677c 结论一致）。"
+ },
+ "B2_repro": {
+  "n": 110,
+  "full_or_catch": 65,
+  "full_rate": 59.09,
+  "cross_platform_or_catch": 26,
+  "cross_platform_rate": 23.64,
+  "drop_if_no_WSL_pp": 35.45,
+  "sanitizer_only_catch": 39,
+  "sanitizer_sole_catch": {
+   "asan": 18,
+   "tsan": 3,
+   "ubsan": 3
+  },
+  "asset_availability_note": "wunsequenced/compile-time 本机 MinGW 恒 unknown；asan/ubsan/tsan 需 Linux/WSL 运行时，纯 Windows-native 不可用；cross-compile/linker/compiler-warn 为非 Linux 专用（仍依赖本机编译器）。",
+  "wall_seconds_by_asset": {
+   "asan": 416.42,
+   "ubsan": 412.18,
+   "tsan": 431.62,
+   "compiler-warn": 22.87,
+   "wunsequenced": 3.48,
+   "cross-compile": 1026.18,
+   "linker": 37.21,
+   "compile-time": 0.42
+  }
+ }
+}
