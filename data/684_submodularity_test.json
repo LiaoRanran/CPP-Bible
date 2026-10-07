@@ -1,0 +1,38 @@
+{
+  "n_samples": 1137,
+  "n_subsets_enumerated": 256,
+  "total_triples": 17496,
+  "violations_count": 0,
+  "violations_pct": 0.0,
+  "submodular": true,
+  "sample_violations": [],
+  "curvature_standard_kappa": 0.758824,
+  "curvature_task_formula_per_asset": {
+    "asan": -3.682539682539683,
+    "compile-time": null,
+    "compiler-warn": -11.018181818181818,
+    "cross-compile": -15.463414634146343,
+    "linker": -69.6,
+    "tsan": -8.084507042253522,
+    "ubsan": -6.7317073170731705,
+    "wunsequenced": null
+  },
+  "greedy_set": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+  ],
+  "greedy_value": 665,
+  "greedy_rate_pct": 58.4872,
+  "optimal_set": [
+    "asan",
+    "compiler-warn",
+    "tsan",
+    "ubsan"
+  ],
+  "optimal_value": 665,
+  "optimal_rate_pct": 58.4872,
+  "greedy_over_optimal_ratio": 1.0,
+  "guarantee_1_minus_1e": 0.632121
+}

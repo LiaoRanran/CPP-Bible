@@ -1,0 +1,185 @@
+{
+  "n_samples": 1137,
+  "assets": [
+    "asan",
+    "compile-time",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan",
+    "wunsequenced"
+  ],
+  "catch_per_asset": {
+    "asan": 399,
+    "compile-time": 0,
+    "compiler-warn": 143,
+    "cross-compile": 170,
+    "linker": 10,
+    "tsan": 255,
+    "ubsan": 268,
+    "wunsequenced": 0
+  },
+  "A2_submodularity": {
+    "submodular": true,
+    "violations_count": 0,
+    "total_triples": 17496,
+    "violations_pct": 0.0,
+    "curvature_standard_kappa": 0.758824,
+    "greedy_set": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn"
+    ],
+    "greedy_rate_pct": 58.4872,
+    "optimal_set": [
+      "asan",
+      "compiler-warn",
+      "tsan",
+      "ubsan"
+    ],
+    "optimal_rate_pct": 58.4872,
+    "greedy_over_optimal_ratio": 1.0,
+    "guarantee_1_minus_1e": 0.632121
+  },
+  "A4_degenerate": {
+    "full8": {
+      "pool": [
+        "asan",
+        "compile-time",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "tsan",
+        "ubsan",
+        "wunsequenced"
+      ],
+      "greedy_set": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+      ],
+      "greedy_value": 665,
+      "greedy_rate_pct": 58.4872,
+      "random_mean_value": 483.4225,
+      "random_mean_rate_pct": 42.5174,
+      "greedy_minus_random_mean_pp": 15.9699,
+      "n_candidates": 8,
+      "n_degenerate_in_pool": 3
+    },
+    "poolA_5nondeg": {
+      "pool": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "tsan",
+        "ubsan"
+      ],
+      "greedy_set": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+      ],
+      "greedy_value": 665,
+      "greedy_rate_pct": 58.4872,
+      "random_mean_value": 630.2115,
+      "random_mean_rate_pct": 55.4276,
+      "greedy_minus_random_mean_pp": 3.0597,
+      "n_candidates": 5,
+      "n_degenerate_in_pool": 0
+    },
+    "poolBC_6incllinker": {
+      "pool": [
+        "asan",
+        "compiler-warn",
+        "cross-compile",
+        "linker",
+        "tsan",
+        "ubsan"
+      ],
+      "greedy_set": [
+        "asan",
+        "compiler-warn",
+        "tsan",
+        "ubsan"
+      ],
+      "greedy_value": 665,
+      "greedy_rate_pct": 58.4872,
+      "random_mean_value": 578.9695,
+      "random_mean_rate_pct": 50.9208,
+      "greedy_minus_random_mean_pp": 7.5664,
+      "n_candidates": 6,
+      "n_degenerate_in_pool": 1
+    }
+  },
+  "B3_adaptive": {
+    "n_train": 569,
+    "n_test": 568,
+    "strategies": {
+      "Static": {
+        "assets": [
+          "compiler-warn",
+          "cross-compile",
+          "linker",
+          "compile-time"
+        ],
+        "train_selected_on": "fixed",
+        "test_rate_pct": 29.0493
+      },
+      "FD_greedy": {
+        "assets": [
+          "asan",
+          "tsan",
+          "ubsan",
+          "compiler-warn"
+        ],
+        "train_selected_on": "derivation(train)",
+        "test_rate_pct": 59.331
+      },
+      "FD_frequency": {
+        "assets": [
+          "asan",
+          "tsan",
+          "ubsan",
+          "cross-compile"
+        ],
+        "train_selected_on": "derivation(train) catch-count top-k (676f method)",
+        "test_rate_pct": 57.5704
+      },
+      "Random_single": {
+        "assets": [
+          "wunsequenced",
+          "cross-compile",
+          "tsan",
+          "compile-time"
+        ],
+        "train_selected_on": "seed=20260930",
+        "test_rate_pct": 31.8662
+      },
+      "Random_mean2000": {
+        "assets": "mean over 2000 draws",
+        "train_selected_on": "seed=20260930",
+        "test_rate_pct": 43.5211
+      },
+      "Oracle": {
+        "assets": [
+          "asan",
+          "compiler-warn",
+          "tsan",
+          "ubsan"
+        ],
+        "train_selected_on": "evaluation(test) [leaky upper bound]",
+        "test_rate_pct": 59.331
+      },
+      "Adaptive_1p3": {
+        "assets": "asan + 3 (bayes-predicted group)",
+        "train_selected_on": "derivation(train) for bayes model",
+        "test_rate_pct": 57.7465,
+        "group_prediction_accuracy_pct": 28.3451
+      }
+    }
+  }
+}
