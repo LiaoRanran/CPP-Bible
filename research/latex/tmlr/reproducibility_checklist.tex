@@ -1,0 +1,33 @@
+% reproducibility_checklist.tex — TMLR 增量段（C2）
+% 用法：在 queyi_tmlr.tex 正文末、附录前 \input{reproducibility_checklist}
+
+\section*{Reproducibility Checklist}
+
+\paragraph{Data}
+\begin{itemize}
+  \item Holdout (41) and corpus (64) measurable samples: \texttt{data/holdout\_reveal\_5\_672h.json}, \texttt{data/external\_corpus\_reveal\_672h.json}.
+  \item A5 full matrix ($1137\times8$): \texttt{data/a5\_676f\_matrix\_*.jsonl}; clone-aware: \texttt{data/677b\_a5\_results\_*.json}; non-degenerate: \texttt{data/677c\_a5\_nondegenerate\_results.json}.
+  \item Blind-spot map ($1147\times8$): \texttt{data/blindspot\_676g\_stats.json}.
+  \item Provenance: three-valued; real-source 74/74 verified. License: permissive benchmarking.
+\end{itemize}
+
+\paragraph{Code}
+\begin{itemize}
+  \item Detectors, benchmarks, A5/clone-aware/non-degenerate re-runs, evolution operator: \texttt{tools/}.
+  \item Recompute entry: \texttt{REPRODUCE.md}, \texttt{bash docker/paper/run\_all.sh} (fail-loud); \texttt{tools/verify\_paper\_numbers.py}.
+  \item Deps: \texttt{requirements.txt} / \texttt{uv.lock} (ruff==0.6.9, mypy==2.3.1).
+  \item Seed: A5 main endpoint seed = 20260930 (logged); experiment-level unseeded count = 0 (audited, disclosed).
+\end{itemize}
+
+\paragraph{Evaluation}
+\begin{itemize}
+  \item Metrics: holdout/corpus recall, three-arm $\Delta$ (FD vs Static/Random), McNemar $p$, Cohen's $h$, e-value, blind-spot ratio, 8-asset union/single catch.
+  \item Protocol: pre-registered \texttt{uninterpretable} clause (tie analysis $\Delta$ crossing 0 triggers it); exact McNemar + Wilson CI + BH/Holm.
+  \item Audit: 118 checks / 113 consistent / 0 hard errors.
+\end{itemize}
+
+\paragraph{Governance}
+\begin{itemize}
+  \item Append-only ledger (452 events, Merkle-rooted, \texttt{tools/tool\_integrity.py}); controlled directories zero-write.
+  \item Four-state verdict + failure-driven evolution (executable form, two collapse points disclosed).
+\end{itemize}

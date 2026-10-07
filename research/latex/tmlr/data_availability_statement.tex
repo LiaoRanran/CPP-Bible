@@ -1,0 +1,34 @@
+% data_availability_statement.tex — TMLR 增量段（C2）
+% 用法：在 queyi_tmlr.tex 正文末、附录前 \input{data_availability_statement}
+
+\section{Data and Code Availability}
+
+This work's empirical claims are backed by fully released artifacts. To preserve
+double-blind review, an \textbf{anonymous snapshot} of the repository (stripped of
+author identity, institution, and internal path strings) is provided as supplementary
+material; the public version is released upon acceptance.
+
+\begin{itemize}
+  \item \textbf{Holdout \& corpus benchmarks.} 41 holdout and 64 corpus measurable
+        samples with per-sample provenance, at
+        \texttt{data/holdout\_reveal\_5\_672h.json} and
+        \texttt{data/external\_corpus\_reveal\_672h.json}.
+  \item \textbf{A5 falsification experiment.} The full $1137\times 8$ detection matrix
+        and the clone-aware / non-degenerate-pool re-runs at
+        \texttt{data/a5\_676f\_matrix\_*.jsonl}, \texttt{data/677b\_a5\_results\_*.json},
+        \texttt{data/677c\_a5\_nondegenerate\_results.json}.
+  \item \textbf{Blind-spot map.} $1147\times 8$ capability-boundary matrix at
+        \texttt{data/blindspot\_676g\_stats.json}.
+  \item \textbf{Reproduction entry point.} \texttt{REPRODUCE.md} and
+        \texttt{bash docker/paper/run\_all.sh} (fail-loud; any inconsistency exits non-zero).
+        Every headline number has a one-line recompute command
+        (\texttt{tools/verify\_paper\_numbers.py}; 118 checks / 113 consistent / 0 hard errors).
+  \item \textbf{Trust anchor.} An append-only ledger of 452 events with a Merkle root
+        (\texttt{tools/tool\_integrity.py}) covers the controlled directories; no
+        post-hoc editing of verified evidence is possible.
+\end{itemize}
+
+All datasets are released under a permissive license suitable for benchmarking; no
+personal data is contained. Compute is a standard x64 machine with g++/clang and WSL;
+the sanitizer branch depends on WSL, and its absence silently downgrades 15 samples to
+\texttt{unknown} (registered as a known environment bias, not a hideable defect).

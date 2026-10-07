@@ -21,7 +21,7 @@ import sys
 from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.0.tex")
+TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.1.tex")
 
 # 全文禁止
 STRICT = [

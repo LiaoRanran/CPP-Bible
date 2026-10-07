@@ -28,8 +28,8 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MD = os.path.join(ROOT, "research", "paper_v1.0.md")
-TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.0.tex")
+MD = os.path.join(ROOT, "research", "paper_shturl.md")
+TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.1.tex")
 
 # (name, [tokens]) —— 每个 token 必须在两边都出现（token 已做规范化后的字面量）
 # 语言分叉项用 (name, tokens_md, tokens_tex) 三元组。

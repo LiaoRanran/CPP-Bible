@@ -75,7 +75,7 @@
 | `research/submission_checklist.md` | 673k + **677a 政策横幅** | ⚠️ 历史清单（产物指向 v1.0 时代）；D&B 政策已标注过时 |
 | `research/latex/arxiv_submission/queyi_neurips2027_v1.1.tex` | **v1.3 (677d)** | ✅ current（v1.1 tex 的逐字节拷贝，677d 已同步） |
 | `research/latex/arxiv_submission/README.txt` | **v1.3 (677d)** | ✅ current（677d repack 记录；677a/676m 记录标 superseded） |
-| `research/latex/queyi_neurips2027.tex` | 旧 canonical（build.ps1 引用） | 🔴 **未同步**（与 v1.1 差 ~1900 行，非逐字节拷贝；需专门决定命运） |
+| `research/latex/queyi_neurips2027.tex` | 旧 canonical | 🟡 **已归档**（678 批次移至 `research/latex/archive/queyi_neurips2027.tex`；build.ps1 现指向 v1.1；若需追溯旧内容见归档副本） |
 
 ### 3.3 数据与规范
 

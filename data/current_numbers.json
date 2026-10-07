@@ -285,5 +285,50 @@
   "posthoc_power": "FD 两个对照的观测功效都是 1.0（效应极大）；post-hoc power 不得当设计期功效",
   "e_process": "FD 对比的 e-value 达 1.7e7~2.5e8（远超 Ville 阈值 20）⇒ 任意时刻也可拒绝",
   "delta_for_planned_study": "±5pp 精度需 holdout 236 / corpus 378 样本（在观测 p̂ 处现算）"
+},
+"a5_experiments": {
+ "note": "A5 全量(676f) + clone-aware(677b) + 非退化池(677c) + 盲区地图(676g)。本段为 678 批次新增，与 VERSION.md §2 对齐；不改动上方 holdout/corpus 既有数字。",
+ "source_batches": ["676f", "677b", "677c", "676g"],
+ "full_pool_676f": {
+  "n": 566,
+  "fd_rate_pct": 54.59,
+  "random_rate_pct": 30.57,
+  "static_rate_pct": 24.74,
+  "delta_fd_vs_random_pp": 24.03,
+  "delta_fd_vs_static_pp": 29.85,
+  "ci_pp": [20.5, 27.5],
+  "mcnemar_p": 2.3e-41,
+  "tie_analysis_delta_pp": 0.0,
+  "source": "data/a5_676f_results.json"
+ },
+ "clone_aware_677b": {
+  "splits_delta_pp": [23.0, 26.7],
+  "splits_p_max": 4.1e-29,
+  "tie_delta_pp": [-0.53, 0.0],
+  "effective_n": [133, 140],
+  "design_effect": [4.05, 4.26],
+  "ci_widening_x": [1.78, 2.10],
+  "note": "clone-family-aware 重切分后主端点不降反略升，并列仍归零 ⇒ 模板泄漏已排除",
+  "source": "data/677b_a5_results_*.json, data/677b_cluster_bootstrap.json"
+ },
+ "nondegenerate_pool_677c": {
+  "strict_pool_k_significant": [1, 2, 3],
+  "optimal_delta_pp": 11.31,
+  "optimal_p": 6.02e-8,
+  "k4_delta_pp": 0.0,
+  "k4_selection_collision": 0.2,
+  "degenerate_contribution_point_pp": 24.03,
+  "degenerate_contribution_to_mean_pp": 12.81,
+  "source": "data/677c_a5_nondegenerate_results.json"
+ },
+ "blindspot_676g": {
+  "n": 1147,
+  "catch": 707,
+  "miss": 440,
+  "blindspot_ratio_pct": 38.4,
+  "blind_types_gt_50pct": 18,
+  "total_types": 70,
+  "source": "data/blindspot_676g_stats.json"
  }
+}
 }

@@ -13,7 +13,7 @@ $ErrorActionPreference = "Stop"
 
 $Here   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Root   = Resolve-Path (Join-Path $Here "..\..")
-$Tex    = Join-Path $Here "queyi_neurips2027.tex"
+$Tex    = Join-Path $Here "queyi_neurips2027_v1.1.tex"
 
 # 1. 定位 tectonic
 $Tectonic = $env:TECTONIC
@@ -37,7 +37,7 @@ try {
 }
 
 # 3. 页数报告
-$Log = Join-Path $Here "queyi_neurips2027.log"
+$Log = Join-Path $Here "queyi_neurips2027_v1.1.log"
 if (Test-Path $Log) {
     $m = Select-String -Path $Log -Pattern "Output written on .*\((\d+) pages" | Select-Object -First 1
     if ($m) { Write-Host "[build] 总页数: $($m.Matches[0].Groups[1].Value)" }

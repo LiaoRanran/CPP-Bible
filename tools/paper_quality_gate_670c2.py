@@ -26,9 +26,9 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LATEX = os.path.join(ROOT, "research", "latex")
-TEX = os.path.join(LATEX, "queyi_neurips2027_v1.0.tex")
-AUX = os.path.join(LATEX, "queyi_neurips2027_v1.0.aux")
-LOG = os.path.join(LATEX, "queyi_neurips2027_v1.0.log")
+TEX = os.path.join(LATEX, "queyi_neurips2027_v1.1.tex")
+AUX = os.path.join(LATEX, "queyi_neurips2027_v1.1.aux")
+LOG = os.path.join(LATEX, "queyi_neurips2027_v1.1.log")
 ABLATION_PLAN = os.path.join(ROOT, "data", "experiments", "ablation_plan_671b.json")
 
 MAIN_PAGE_LIMIT = 9

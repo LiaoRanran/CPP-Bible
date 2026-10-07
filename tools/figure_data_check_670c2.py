@@ -19,7 +19,7 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.0.tex")
+TEX = os.path.join(ROOT, "research", "latex", "queyi_neurips2027_v1.1.tex")
 HOLDOUT = os.path.join(ROOT, "data", "holdout_reveal_3_665.json")
 EXTERNAL = os.path.join(ROOT, "data", "external_corpus_reveal_665.json")
 # 671a 扩样后的权威源（reveal_update_672h.json::holdout.after / corpus.after）；
