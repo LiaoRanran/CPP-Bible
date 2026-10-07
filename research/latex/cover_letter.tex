@@ -10,6 +10,14 @@
 %  exploratory. Track E&D (double-blind); template neurips_2025 placeholder
 %  (third-party, unmodified). Version of record: research/latex/VERSION.md
 %  Compile: pdflatex cover_letter.tex   (standalone; no bib needed)
+%  ---------------------------------------------------------------------
+%  687 sync (unified merge batch): contribution 3 now includes the submodular
+%  formalization (greedy attains the optimum, ratio 1.0; adaptive ceiling +2.3pp;
+%  stable under 5% detector noise, <=0.11pp drop); headline adds the 110-defect
+%  real-CVE benchmark (NVD 110/110 online-verified; OR 59.09%, indistinguishable
+%  from synthetic p=0.60); family gradient corrected to memory 15.7%. Narrative word
+%  count 384 (<=500 excluding the numbered list; 683 incl. list). Mirrors
+%  research/cover_letter.md v1.3+687.
 % =====================================================================
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -67,12 +75,16 @@ LLM-generated technical knowledge?'' an \emph{externally checkable} one.
         \texttt{original-external-artifact}. Rates carry a four-state caliber
         (\texttt{unknown} first-class): the denominator alone moves the corpus rate by
         \textbf{9.9pp}.
-  \item \textbf{A full-scale falsification experiment (A5), with robustness measured.}
+  \item \textbf{A full-scale falsification experiment (A5), formalized as submodular
+        maximization, with robustness measured.}
         \textbf{1137} samples $\times$ \textbf{8} assets $=$ \textbf{9096} real
         \texttt{detect} calls (derivation 571 / evaluation 566, $k{=}4$): FD \textbf{54.6\%}
         vs.\ Random \textbf{30.6\%} ($\Delta$ \textbf{+24.03pp}, $p{=}2.3\times10^{-41}$)
-        and vs.\ Static \textbf{24.7\%} (\textbf{+29.9pp}). The pre-registered parallel
-        analysis collapses to $\Delta$ \textbf{0.0pp}, so we register it as
+        and vs.\ Static \textbf{24.7\%} (\textbf{+29.9pp}). Asset selection is formalized as
+        \textbf{monotone submodular maximization}: the greedy choice attains the optimum here
+        (ratio 1.0, exhaustive check), the \textbf{adaptive ceiling is only +2.3pp}, and the
+        selection is stable under 5\% detector noise ($\le0.11$pp drop). The pre-registered
+        parallel analysis collapses to $\Delta$ \textbf{0.0pp}, so we register it as
         \emph{direction-only} (\texttt{uninterpretable}) with the \emph{selection} effect at
         $\approx$\,\textbf{+7--12pp}; a \emph{clone-family re-split} leaves the endpoint
         unchanged (\textbf{+23.0--+26.7pp}), excluding template leakage, while a
@@ -80,7 +92,7 @@ LLM-generated technical knowledge?'' an \emph{externally checkable} one.
   \item \textbf{A capability-boundary map of the instrument.} On the \textbf{1147 $\times$ 8}
         matrix, sample-level detection is \textbf{61.6\%} and the blind spot \textbf{38.4\%};
         \textbf{13 of 34} types exceed 50\% blind (deadlock 84.6\%, endianness 89.3\%; family
-        gradient memory 15.2\% $\to$ link/ODR 67.7\%). This is an \emph{instrument-boundary}
+        gradient memory 15.7\% $\to$ link/ODR 67.7\%). This is an \emph{instrument-boundary}
         statistic measured on our corpus with our 8-asset pool --- it does \textbf{not} claim
         that 38.4\% of real-world C++ defects are undetectable --- and it scopes every
         headline number to the \emph{visible} region.
@@ -120,8 +132,11 @@ a capability-boundary map of the instrument itself (sample-level detection \text
 \textbf{not} imply that 38.4\% of real-world C++ defects are undetectable. Provenance in the corpus
 is three-valued: 968 \texttt{self-authored}, 74 \texttt{source-derived-reconstruction} (single-file
 teaching reconstructions of real CVEs/issues, \textbf{not} original production code), and 0
-\texttt{original-external-artifact}. The e-process layer is \emph{exploratory} (priors and
-alternative grids not pre-registered) and supports no confirmatory claim.
+\texttt{original-external-artifact}. A \textbf{110-defect real-CVE benchmark} (all sample CVEs
+verified online via the NVD API, raw responses frozen) reads \textbf{59.09\%} OR detection ---
+statistically indistinguishable from the synthetic corpus ($p{=}0.60$) --- with \textbf{93.5\%}
+cross-toolchain agreement (clang 18 vs.\ g++ 13.3). The e-process layer is \emph{exploratory}
+(priors and alternative grids not pre-registered) and supports no confirmatory claim.
 
 \paragraph{Honest limitations (stated up front).}
 The two headline rates depend on a specific WSL sanitizer environment and \textbf{fail silently} when

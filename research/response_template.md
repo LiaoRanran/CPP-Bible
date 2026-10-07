@@ -3,7 +3,7 @@
 > **用法**：引用审稿人原话（`Reviewer:`），再给回复（`Response:`），并标出改动位置（`Change:`）。
 > **纪律**：不辩解、不回避；**承认的缺口原样承认**（与论文立场一致）。
 > **数字基线**：`data/current_numbers.json`（schema `queyi-current-numbers/672h`）+ `data/a5_676f_results.json`（A5 全量）+ `data/blindspot_676g_stats.json`（盲区地图）。**回复中不得出现未落盘数字。**
-> **677a 口径（回复时必须一致）**：① "verifier" = **evidence-acquisition 装置**，`pass` ≠ 语义真值；② 盲区 38.4% 为 **instrument-boundary** 统计（"on our corpus with our 8-asset instrument"）；③ 高盲区类型 **18/70**；④ VC 73.8% **无 CI**（全枚举，描述性）；⑤ e-process 为 **exploratory**（不得当证据强度）；⑥ `planted=false` = **source-derived reconstruction**（非原始生产代码）；⑦ Track 名为 **E&D**（2026 起由 D&B 更名），**通常双盲**；模板为 2025 placeholder，Croissant/RAI 元数据为**待办**。版本 of record：`research/latex/VERSION.md`。
+> **677a 口径（回复时必须一致）**：① "verifier" = **evidence-acquisition 装置**，`pass` ≠ 语义真值；② 盲区 38.4% 为 **instrument-boundary** 统计（"on our corpus with our 8-asset instrument"）；③ 高盲区类型 **13/34**；④ VC 73.8% **无 CI**（全枚举，描述性）；⑤ e-process 为 **exploratory**（不得当证据强度）；⑥ `planted=false` = **source-derived reconstruction**（非原始生产代码）；⑦ Track 名为 **E&D**（2026 起由 D&B 更名），**通常双盲**；模板为 2025 placeholder，Croissant/RAI 元数据为**待办**。版本 of record：`research/latex/VERSION.md`。
 
 ---
 
@@ -11,7 +11,7 @@
 
 - 同步全部数字至 **672h/673u/676f/676g** 权威源（holdout **82.9%** (34/41)、corpus **62.5%** (40/64)、**对照 FPR 0.0% (0/11)**——一个早期草案曾报 2 例对照假阳性，系 `wunsequenced` 恒 catch 缺陷所致，673u 已修复，头条率逐位不变）。
 - **A5 已在全量池上跑完，并已复核（677b/677c）**（1137 样本 × 8 资产 = 9096 次真实 detect；派生 571 / 评估 566，k=4）：FD **54.6%** vs Random **30.6%**（Δ **+24.0pp**，p=2.3×10⁻⁴¹）vs Static **24.7%**（+29.9pp）；并列分析 k=4 仍归零（Δ=0.0pp，p=1.0）⇒ **direction-only**，**不是** "FD > Random"。**677c**：严格非退化池（5 资产）上 k=1/2/3 仍显著（最优 **+11.31pp**，p=6.0×10⁻⁸），**k=4 归零是选集碰撞（1/C(5,4)=0.2）**，退化资产贡献 +24.03pp/+12.81pp ⇒ **选择效应 ≈ +7~12pp**。**677b**：clone-aware 重切分（474 家族 / strict 420 分量、克隆对跨越=0）后主端点与并列归零**均不变** ⇒ 模板泄漏**已排除**；家族级 cluster bootstrap ⇒ **有效 n≈133–140**、A5 区间须按 **1.78–2.10×** 放宽。
-- 新增 **检测器能力边界地图**（676g）：1147×8 矩阵，检出 **61.6%**、盲区 **38.4%**、**18/70** 类 >50%；**逐格 ~5% 跑间不稳定**（676f 自证）一并登记。
+- 新增 **检测器能力边界地图**（676g）：1147×8 矩阵，检出 **61.6%**、盲区 **38.4%**、**13/34** 类 >50%；**逐格 ~5% 跑间不稳定**（676f 自证）一并登记。
 - 随机臂在 672h 为**仪器级代理**；A5 的全量预算匹配对照已补上，**Static 臂仍为口径重分箱**。
 - 全部率值补 Clopper–Pearson 95% CI；配对对比补精确 McNemar + Cohen's $h$ + Δ CI。
 - 明确 `UNVERIFIED` 协议（缺依赖时报未验证，不报误导性低分）。
