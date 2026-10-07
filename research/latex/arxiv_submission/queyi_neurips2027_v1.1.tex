@@ -27,8 +27,9 @@
 %        reconstructions"; (H) engineering incident logs moved to Appendix~\ref{app:incidents}
 %        so the main text carries findings, not project management.
 %      - Numbers are identical to v1.1 (676m) except one *artifact-alignment* fix:
-%        "15 of 70" high-blind-spot types -> "18 of 70" (recomputed from
-%        data/blindspot_676g_stats.json, the 676g authoritative artifact).
+%        "15 of 70" high-blind-spot types -> "18 of 70" (677a) -> "13 of 34" (681:
+%        label-normalized recompute from the repaired matrix; authoritative artifact
+%        data/681_type_stats_normalized.json. Sample-level 38.4%/707/440 unchanged).
 %  v1.1 (673c): red-team critique revisions + humanization. ALL NUMBERS IDENTICAL TO v1.0.
 %  v1.0 (673a): all numbers synced to the authoritative numbers artifact (schema 672h).
 %  Engine: tectonic (XeTeX) / pdflatex+bibtex.
@@ -63,10 +64,10 @@
 \title{Evolving Verifiers: Failure-Driven Evidence\\ Acquisition with Auditable Provenance}
 
 \author{%
-  Anonymous Author(s) \\
-  Affiliation \\
-  Address \\
-  \texttt{email} \\
+  Ran Liao \\
+  School of Artificial Intelligence and Big Data \\
+  Hefei University, Hefei, Anhui, China \\
+  \texttt{1026708211@qq.com} \\
 }
 
 \begin{document}
@@ -593,7 +594,7 @@ reproducible, historical ones only under an unchanged-ruleset assumption, and th
 re-run detectors (Appendix~\ref{app:pinning}).
 
 \paragraph{Instrument boundary; A5's remaining gaps (all measured).}
-Over $1147$ samples \textbf{38.4\%} are blind spots ($18$ of $70$ types exceed $50\%$), so every
+Over $1147$ samples \textbf{38.4\%} are blind spots ($13$ of $34$ normalized types exceed $50\%$), so every
 rate here speaks about the \emph{visible} region only (Appendix~\ref{app:blindspot}). For A5, power
 is closed ($n{=}566$) and \emph{identification} is not (Appendix~\ref{app:threats_quantified}).
 \emph{Two measured corrections to that reading.} \textbf{Effective sample size:} the samples are
@@ -1690,7 +1691,7 @@ C++ defects are undetectable, and it is expected to move whenever the corpus or 
 moves. It is \emph{not} uniform: \textbf{41.0\%} [38.0, 44.1] on \texttt{planted=true}
 versus \textbf{21.6\%} [13.8, 32.3] on the $74$ source-derived reconstructions---self-authored
 defects are \emph{harder} for our pool than reconstructed real ones, the opposite of the usual
-``we built the exam'' worry (and with $n{=}74$ the interval is wide). \textbf{18 of 70} types exceed $50\%$ blind:
+``we built the exam'' worry (and with $n{=}74$ the interval is wide). \textbf{13 of 34} normalized types exceed $50\%$ blind:
 uninitialized read, state machine, memory-order, resource exhaustion, compiler bug, infinite loop,
 timing side channel, deadlock, volatile misuse, endianness, algorithm misuse, lock-priority
 inversion, cross-TU UB, ABA, interrupt safety. \emph{Consequence:} no rate in this paper says
@@ -1746,10 +1747,11 @@ asset (asan)---so more than half of what the pool finds is \emph{not} findable b
 Coverage by asset: asan 35.6\%, ubsan 23.5\%, tsan 22.9\%, compiler-warn 12.5\%, cross-compile
 10.6\%, linker 0.9\%. (All of the above is \emph{on our corpus with our 8-asset instrument}; see
 the scope statement at the head of this appendix.)
-\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 18 of 70 types):
-uninitialized read, state machine, memory-order, resource exhaustion, compiler bug, infinite loop,
-timing side channel, deadlock, volatile misuse, endianness, algorithm misuse, lock-priority
-inversion, cross-TU UB, ABA, interrupt safety. \textbf{Planted status matters:} blind-spot ratio is
+\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 13 of 34 normalized types):
+uninitialized read, cross-TU UB, strict aliasing, volatile misuse, endianness, deadlock, algorithm
+misuse, logic error, interrupt safety, virtual function, linker/ODR, condition variable, atomic UB.
+(Memory order and move semantics sit exactly at $50.0\%$ and are not counted.)
+\textbf{Planted status matters:} blind-spot ratio is
 41.0\% (95\% CI [38.0, 44.1]) on \texttt{planted=true} but \emph{21.6\%} ([13.8, 32.3]) on the
 $74$ \emph{source-derived reconstructions}---self-authored defects are \emph{harder} for us than
 reconstructed real ones, which is the
