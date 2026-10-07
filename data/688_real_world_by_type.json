@@ -1,0 +1,171 @@
+{
+ "real_by_type": {
+  "out_of_bounds": {
+   "n": 38,
+   "or_catch": 32,
+   "or_catch_rate_pct": 84.21
+  },
+  "logic_error": {
+   "n": 31,
+   "or_catch": 1,
+   "or_catch_rate_pct": 3.23
+  },
+  "type_punning": {
+   "n": 4,
+   "or_catch": 0,
+   "or_catch_rate_pct": 0.0
+  },
+  "double_free": {
+   "n": 2,
+   "or_catch": 2,
+   "or_catch_rate_pct": 100.0
+  },
+  "use_after_free": {
+   "n": 10,
+   "or_catch": 10,
+   "or_catch_rate_pct": 100.0
+  },
+  "data_race": {
+   "n": 4,
+   "or_catch": 3,
+   "or_catch_rate_pct": 75.0
+  },
+  "integer_overflow": {
+   "n": 14,
+   "or_catch": 10,
+   "or_catch_rate_pct": 71.43
+  },
+  "null_pointer_deref": {
+   "n": 6,
+   "or_catch": 6,
+   "or_catch_rate_pct": 100.0
+  },
+  "memory_leak": {
+   "n": 1,
+   "or_catch": 1,
+   "or_catch_rate_pct": 100.0
+  }
+ },
+ "selfmade_overlap": {
+  "logic_error": {
+   "n": 17,
+   "catch": 6,
+   "or_catch_rate_pct": 35.29
+  },
+  "type_punning": {
+   "n": 20,
+   "catch": 10,
+   "or_catch_rate_pct": 50.0
+  },
+  "integer_overflow": {
+   "n": 26,
+   "catch": 22,
+   "or_catch_rate_pct": 84.62
+  },
+  "out_of_bounds": {
+   "n": 20,
+   "catch": 20,
+   "or_catch_rate_pct": 100.0
+  },
+  "null_pointer_deref": {
+   "n": 15,
+   "catch": 15,
+   "or_catch_rate_pct": 100.0
+  },
+  "data_race": {
+   "n": 14,
+   "catch": 14,
+   "or_catch_rate_pct": 100.0
+  },
+  "use_after_free": {
+   "n": 7,
+   "catch": 7,
+   "or_catch_rate_pct": 100.0
+  },
+  "double_free": {
+   "n": 3,
+   "catch": 3,
+   "or_catch_rate_pct": 100.0
+  },
+  "memory_leak": {
+   "n": 1,
+   "catch": 1,
+   "or_catch_rate_pct": 100.0
+  }
+ },
+ "comparison_real_vs_selfmade": [
+  {
+   "type": "out_of_bounds",
+   "real_n": 38,
+   "real_rate": 84.21,
+   "selfmade_n": 20,
+   "selfmade_rate": 100.0,
+   "diff_pp": -15.79
+  },
+  {
+   "type": "logic_error",
+   "real_n": 31,
+   "real_rate": 3.23,
+   "selfmade_n": 17,
+   "selfmade_rate": 35.29,
+   "diff_pp": -32.06
+  },
+  {
+   "type": "type_punning",
+   "real_n": 4,
+   "real_rate": 0.0,
+   "selfmade_n": 20,
+   "selfmade_rate": 50.0,
+   "diff_pp": -50.0
+  },
+  {
+   "type": "double_free",
+   "real_n": 2,
+   "real_rate": 100.0,
+   "selfmade_n": 3,
+   "selfmade_rate": 100.0,
+   "diff_pp": 0.0
+  },
+  {
+   "type": "use_after_free",
+   "real_n": 10,
+   "real_rate": 100.0,
+   "selfmade_n": 7,
+   "selfmade_rate": 100.0,
+   "diff_pp": 0.0
+  },
+  {
+   "type": "data_race",
+   "real_n": 4,
+   "real_rate": 75.0,
+   "selfmade_n": 14,
+   "selfmade_rate": 100.0,
+   "diff_pp": -25.0
+  },
+  {
+   "type": "integer_overflow",
+   "real_n": 14,
+   "real_rate": 71.43,
+   "selfmade_n": 26,
+   "selfmade_rate": 84.62,
+   "diff_pp": -13.19
+  },
+  {
+   "type": "null_pointer_deref",
+   "real_n": 6,
+   "real_rate": 100.0,
+   "selfmade_n": 15,
+   "selfmade_rate": 100.0,
+   "diff_pp": 0.0
+  },
+  {
+   "type": "memory_leak",
+   "real_n": 1,
+   "real_rate": 100.0,
+   "selfmade_n": 1,
+   "selfmade_rate": 100.0,
+   "diff_pp": 0.0
+  }
+ ],
+ "note": "676g 自造口径用 70 类 taxonomy，仅 6 类与真实靶场 9 类重叠；其余不具可比性"
+}

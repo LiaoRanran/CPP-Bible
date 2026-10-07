@@ -1,0 +1,122 @@
+{
+ "n_or_catch": 65,
+ "n_unique_hit": 27,
+ "unique_fraction_pct": 41.54,
+ "sole_catcher_counts": {
+  "asan": 18,
+  "cross-compile": 3,
+  "tsan": 3,
+  "ubsan": 3
+ },
+ "removal_impact": {
+  "asan": 18,
+  "ubsan": 3,
+  "tsan": 3,
+  "compiler-warn": 0,
+  "wunsequenced": 0,
+  "cross-compile": 3,
+  "linker": 0,
+  "compile-time": 0
+ },
+ "unique_hit_by_type": {
+  "out_of_bounds": 16,
+  "double_free": 2,
+  "data_race": 2,
+  "use_after_free": 2,
+  "integer_overflow": 3,
+  "memory_leak": 1,
+  "logic_error": 1
+ },
+ "unique_hit_examples": [
+  {
+   "rw_id": "RW-001",
+   "cve": "CVE-2014-0160",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-003",
+   "cve": "CVE-2021-3711",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-006",
+   "cve": "CVE-2022-4450",
+   "type": "double_free",
+   "sole_asset": "cross-compile"
+  },
+  {
+   "rw_id": "RW-008",
+   "cve": "CVE-2022-3602",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-015",
+   "cve": "CVE-2023-6246",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-016",
+   "cve": "CVE-2023-38545",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-019",
+   "cve": "CVE-2016-8618",
+   "type": "double_free",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-020",
+   "cve": "CVE-2017-1000257",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-027",
+   "cve": "CVE-2024-6387",
+   "type": "data_race",
+   "sole_asset": "tsan"
+  },
+  {
+   "rw_id": "RW-029",
+   "cve": "CVE-2022-23308",
+   "type": "use_after_free",
+   "sole_asset": "cross-compile"
+  },
+  {
+   "rw_id": "RW-032",
+   "cve": "CVE-2017-9047",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-033",
+   "cve": "CVE-2022-37434",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-034",
+   "cve": "CVE-2018-25032",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-043",
+   "cve": "CVE-2016-5321",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  },
+  {
+   "rw_id": "RW-045",
+   "cve": "CVE-2016-0718",
+   "type": "out_of_bounds",
+   "sole_asset": "asan"
+  }
+ ]
+}

@@ -1,0 +1,227 @@
+{
+ "by_year": {
+  "2014": {
+   "n": 1,
+   "or_catch": 1,
+   "or_catch_rate_pct": 100.0,
+   "top_types": [
+    [
+     "out_of_bounds",
+     1
+    ]
+   ]
+  },
+  "2022": {
+   "n": 30,
+   "or_catch": 20,
+   "or_catch_rate_pct": 66.67,
+   "top_types": [
+    [
+     "out_of_bounds",
+     9
+    ],
+    [
+     "logic_error",
+     8
+    ],
+    [
+     "integer_overflow",
+     5
+    ]
+   ]
+  },
+  "2021": {
+   "n": 22,
+   "or_catch": 12,
+   "or_catch_rate_pct": 54.55,
+   "top_types": [
+    [
+     "logic_error",
+     6
+    ],
+    [
+     "integer_overflow",
+     6
+    ],
+    [
+     "out_of_bounds",
+     5
+    ]
+   ]
+  },
+  "2023": {
+   "n": 16,
+   "or_catch": 8,
+   "or_catch_rate_pct": 50.0,
+   "top_types": [
+    [
+     "logic_error",
+     6
+    ],
+    [
+     "out_of_bounds",
+     5
+    ],
+    [
+     "type_punning",
+     1
+    ]
+   ]
+  },
+  "2015": {
+   "n": 2,
+   "or_catch": 0,
+   "or_catch_rate_pct": 0.0,
+   "top_types": [
+    [
+     "logic_error",
+     1
+    ],
+    [
+     "out_of_bounds",
+     1
+    ]
+   ]
+  },
+  "2016": {
+   "n": 11,
+   "or_catch": 7,
+   "or_catch_rate_pct": 63.64,
+   "top_types": [
+    [
+     "out_of_bounds",
+     4
+    ],
+    [
+     "logic_error",
+     3
+    ],
+    [
+     "data_race",
+     2
+    ]
+   ]
+  },
+  "2024": {
+   "n": 4,
+   "or_catch": 3,
+   "or_catch_rate_pct": 75.0,
+   "top_types": [
+    [
+     "out_of_bounds",
+     2
+    ],
+    [
+     "data_race",
+     1
+    ],
+    [
+     "use_after_free",
+     1
+    ]
+   ]
+  },
+  "2017": {
+   "n": 3,
+   "or_catch": 3,
+   "or_catch_rate_pct": 100.0,
+   "top_types": [
+    [
+     "out_of_bounds",
+     2
+    ],
+    [
+     "integer_overflow",
+     1
+    ]
+   ]
+  },
+  "2019": {
+   "n": 5,
+   "or_catch": 3,
+   "or_catch_rate_pct": 60.0,
+   "top_types": [
+    [
+     "out_of_bounds",
+     2
+    ],
+    [
+     "logic_error",
+     2
+    ],
+    [
+     "use_after_free",
+     1
+    ]
+   ]
+  },
+  "2020": {
+   "n": 10,
+   "or_catch": 6,
+   "or_catch_rate_pct": 60.0,
+   "top_types": [
+    [
+     "out_of_bounds",
+     5
+    ],
+    [
+     "logic_error",
+     3
+    ],
+    [
+     "use_after_free",
+     1
+    ]
+   ]
+  },
+  "2018": {
+   "n": 5,
+   "or_catch": 2,
+   "or_catch_rate_pct": 40.0,
+   "top_types": [
+    [
+     "logic_error",
+     2
+    ],
+    [
+     "out_of_bounds",
+     2
+    ],
+    [
+     "integer_overflow",
+     1
+    ]
+   ]
+  },
+  "2012": {
+   "n": 1,
+   "or_catch": 0,
+   "or_catch_rate_pct": 0.0,
+   "top_types": [
+    [
+     "integer_overflow",
+     1
+    ]
+   ]
+  }
+ },
+ "trend": {
+  "years": [
+   "2012",
+   "2014",
+   "2015",
+   "2016",
+   "2017",
+   "2018",
+   "2019",
+   "2020",
+   "2021",
+   "2022",
+   "2023",
+   "2024"
+  ],
+  "first_rate": 0.0,
+  "last_rate": 75.0,
+  "caveat": "逐年 n 小（最大 30），趋势仅描述性，不推断因果"
+ }
+}

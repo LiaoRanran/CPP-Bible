@@ -1,0 +1,45 @@
+{
+ "by_severity": {
+  "CRITICAL": {
+   "n": 8,
+   "or_catch": 5,
+   "or_catch_rate_pct": 62.5,
+   "asset_catch_counts": {
+    "asan": 5,
+    "cross-compile": 3,
+    "ubsan": 1
+   }
+  },
+  "HIGH": {
+   "n": 65,
+   "or_catch": 39,
+   "or_catch_rate_pct": 60.0,
+   "asset_catch_counts": {
+    "asan": 30,
+    "cross-compile": 13,
+    "tsan": 14,
+    "compiler-warn": 4,
+    "ubsan": 8
+   }
+  },
+  "MEDIUM": {
+   "n": 34,
+   "or_catch": 21,
+   "or_catch_rate_pct": 61.76,
+   "asset_catch_counts": {
+    "asan": 19,
+    "cross-compile": 6,
+    "tsan": 11,
+    "ubsan": 11,
+    "compiler-warn": 1
+   }
+  },
+  "LOW": {
+   "n": 3,
+   "or_catch": 0,
+   "or_catch_rate_pct": 0.0,
+   "asset_catch_counts": {}
+  }
+ },
+ "corr_severity_catch": "HIGH/MEDIUM 占比高；严重度与检出率的关系见 by_severity（样本量有限，谨慎解读）"
+}
