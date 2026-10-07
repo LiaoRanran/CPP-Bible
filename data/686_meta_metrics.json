@@ -1,0 +1,51 @@
+{
+  "batch": "686",
+  "framework": "meta-evaluation of the Queyi evaluation apparatus",
+  "metrics": [
+    {
+      "name": "calibration",
+      "definition": "装置声明检出率与其在独立真值上实际检出率之差",
+      "method": "独立靶场(683)实测覆盖 vs 声明口径；代理=逐格不稳定率(676f ~5% => 单回合率 ±~2pp)",
+      "current_value": "pending_683_real_target",
+      "rating": "undecided",
+      "source": "676f run-to-run 4.9% flip; 683 pending"
+    },
+    {
+      "name": "discrimination",
+      "definition": "装置区分好/差资产组合的能力 = FD覆盖率超过随机选集的比例",
+      "method": "A5 2000 resamples: FD strictly beats random draw",
+      "current_value": "AUC≈0.976 (97.6% of 2000); vs random-mean gain +16pp full / +7-12pp mechanism",
+      "rating": "good",
+      "source": "A5 676f / 685 / 686_b1"
+    },
+    {
+      "name": "stability",
+      "definition": "评估结果在检测器噪声/跑间不稳定下是否稳定",
+      "method": "inject eps noise, measure selection Jaccard + clean-eval drop (B4); measured run-to-run flip (676f)",
+      "current_value": "eps=5% Jaccard0.97/drop0.10pp; eps=15% Jaccard0.89/drop0.37pp; eps=20% onset; eps=50% collapse",
+      "rating": "good",
+      "source": "686_noise_counterfactual.json / 676f"
+    },
+    {
+      "name": "fairness",
+      "definition": "装置对各 defect_type 覆盖的公平性（系统性盲区）",
+      "method": "per-type blind-spot rate; count types >50% blind; blind-spot range",
+      "current_value": "18/70 types >50% blind; range 0%-94.3% (deadlock); memory 15.2% -> link/ODR 67.7%",
+      "rating": "poor (true property of object, not a flaw)",
+      "source": "blindspot_676g_stats.json"
+    },
+    {
+      "name": "efficiency",
+      "definition": "评估成本效益比 = 覆盖贡献 / 运行成本",
+      "method": "cost-weighted (no runtime field) -> proxy = Shapley marginal coverage (682)",
+      "current_value": "asan 19.53 > ubsan > tsan > cross-compile > compiler-warn > linker 0.71 > degenerate ~0",
+      "rating": "concentrated (asan-dominated)",
+      "source": "682 Shapley / no cost field (future work per 685)"
+    }
+  ],
+  "summary": {
+    "computable_now": 4,
+    "pending_683": 1,
+    "key_honest_caveat": "calibration requires 683 real target; efficiency cost-weighted requires runtime data (absent in matrix)"
+  }
+}
