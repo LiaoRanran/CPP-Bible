@@ -1,0 +1,360 @@
+{
+ "schema": "queyi-681-type-stats-normalized/v1",
+ "generated_by": "tools/repair_681_labels.py",
+ "source_matrix": "data/blindspot_676g_detection_matrix.json（681 修复后）",
+ "n_samples": 1147,
+ "n_types": 34,
+ "types_gt50_blind": 13,
+ "types_gt50_blind_list": [
+  "cross_tu_ub",
+  "strict_aliasing",
+  "uninitialized_read",
+  "volatile_misuse",
+  "endianness",
+  "deadlock",
+  "algorithm_misuse",
+  "logic_error",
+  "interrupt_safety",
+  "virtual_function",
+  "linker_odr",
+  "condition_variable",
+  "atomic_ub"
+ ],
+ "sample_level": {
+  "blind": 440,
+  "blind_pct": 38.4,
+  "detect_pct": 61.6
+ },
+ "per_type": {
+  "algorithm_misuse": {
+   "n": 35,
+   "blind": 27,
+   "blind_pct": 77.1,
+   "detect": 8,
+   "detect_pct": 22.9,
+   "group": "stl_iterator"
+  },
+  "alignment": {
+   "n": 27,
+   "blind": 8,
+   "blind_pct": 29.6,
+   "detect": 19,
+   "detect_pct": 70.4,
+   "group": "type_alias_alignment"
+  },
+  "atomic_ub": {
+   "n": 65,
+   "blind": 35,
+   "blind_pct": 53.8,
+   "detect": 30,
+   "detect_pct": 46.2,
+   "group": "concurrency_order"
+  },
+  "bit_operation": {
+   "n": 54,
+   "blind": 9,
+   "blind_pct": 16.7,
+   "detect": 45,
+   "detect_pct": 83.3,
+   "group": "integer_ub"
+  },
+  "condition_variable": {
+   "n": 30,
+   "blind": 17,
+   "blind_pct": 56.7,
+   "detect": 13,
+   "detect_pct": 43.3,
+   "group": "liveness"
+  },
+  "cross_tu_ub": {
+   "n": 7,
+   "blind": 7,
+   "blind_pct": 100.0,
+   "detect": 0,
+   "detect_pct": 0.0,
+   "group": "logic_or_api"
+  },
+  "data_race": {
+   "n": 23,
+   "blind": 1,
+   "blind_pct": 4.3,
+   "detect": 22,
+   "detect_pct": 95.7,
+   "group": "data_race"
+  },
+  "deadlock": {
+   "n": 65,
+   "blind": 55,
+   "blind_pct": 84.6,
+   "detect": 10,
+   "detect_pct": 15.4,
+   "group": "liveness"
+  },
+  "double_free": {
+   "n": 15,
+   "blind": 2,
+   "blind_pct": 13.3,
+   "detect": 13,
+   "detect_pct": 86.7,
+   "group": "memory_lifetime"
+  },
+  "endianness": {
+   "n": 28,
+   "blind": 25,
+   "blind_pct": 89.3,
+   "detect": 3,
+   "detect_pct": 10.7,
+   "group": "type_alias_alignment"
+  },
+  "integer_overflow": {
+   "n": 61,
+   "blind": 4,
+   "blind_pct": 6.6,
+   "detect": 57,
+   "detect_pct": 93.4,
+   "group": "integer_ub"
+  },
+  "interrupt_safety": {
+   "n": 20,
+   "blind": 13,
+   "blind_pct": 65.0,
+   "detect": 7,
+   "detect_pct": 35.0,
+   "group": "embedded_platform"
+  },
+  "iterator_invalidation": {
+   "n": 35,
+   "blind": 13,
+   "blind_pct": 37.1,
+   "detect": 22,
+   "detect_pct": 62.9,
+   "group": "stl_iterator"
+  },
+  "lambda_capture": {
+   "n": 30,
+   "blind": 5,
+   "blind_pct": 16.7,
+   "detect": 25,
+   "detect_pct": 83.3,
+   "group": "virtual_or_oop"
+  },
+  "linker_odr": {
+   "n": 24,
+   "blind": 14,
+   "blind_pct": 58.3,
+   "detect": 10,
+   "detect_pct": 41.7,
+   "group": "type_alias_alignment"
+  },
+  "logic_error": {
+   "n": 35,
+   "blind": 26,
+   "blind_pct": 74.3,
+   "detect": 9,
+   "detect_pct": 25.7,
+   "group": "logic_or_api"
+  },
+  "memory_leak": {
+   "n": 28,
+   "blind": 3,
+   "blind_pct": 10.7,
+   "detect": 25,
+   "detect_pct": 89.3,
+   "group": "memory_lifetime"
+  },
+  "memory_order": {
+   "n": 42,
+   "blind": 21,
+   "blind_pct": 50.0,
+   "detect": 21,
+   "detect_pct": 50.0,
+   "group": "concurrency_order"
+  },
+  "memory_safety": {
+   "n": 11,
+   "blind": 0,
+   "blind_pct": 0.0,
+   "detect": 11,
+   "detect_pct": 100.0,
+   "group": "memory_lifetime"
+  },
+  "move_semantics": {
+   "n": 30,
+   "blind": 15,
+   "blind_pct": 50.0,
+   "detect": 15,
+   "detect_pct": 50.0,
+   "group": "memory_lifetime"
+  },
+  "null_pointer_deref": {
+   "n": 26,
+   "blind": 0,
+   "blind_pct": 0.0,
+   "detect": 26,
+   "detect_pct": 100.0,
+   "group": "null_deref"
+  },
+  "other_ub": {
+   "n": 72,
+   "blind": 10,
+   "blind_pct": 13.9,
+   "detect": 62,
+   "detect_pct": 86.1,
+   "group": "generic_ub"
+  },
+  "out_of_bounds": {
+   "n": 92,
+   "blind": 9,
+   "blind_pct": 9.8,
+   "detect": 83,
+   "detect_pct": 90.2,
+   "group": "out_of_bounds"
+  },
+  "raii_violation": {
+   "n": 31,
+   "blind": 12,
+   "blind_pct": 38.7,
+   "detect": 19,
+   "detect_pct": 61.3,
+   "group": "memory_lifetime"
+  },
+  "register_ub": {
+   "n": 20,
+   "blind": 9,
+   "blind_pct": 45.0,
+   "detect": 11,
+   "detect_pct": 55.0,
+   "group": "embedded_platform"
+  },
+  "smart_pointer": {
+   "n": 30,
+   "blind": 3,
+   "blind_pct": 10.0,
+   "detect": 27,
+   "detect_pct": 90.0,
+   "group": "memory_lifetime"
+  },
+  "stl_container_ub": {
+   "n": 35,
+   "blind": 3,
+   "blind_pct": 8.6,
+   "detect": 32,
+   "detect_pct": 91.4,
+   "group": "stl_iterator"
+  },
+  "strict_aliasing": {
+   "n": 15,
+   "blind": 15,
+   "blind_pct": 100.0,
+   "detect": 0,
+   "detect_pct": 0.0,
+   "group": "type_alias_alignment"
+  },
+  "string_ub": {
+   "n": 35,
+   "blind": 4,
+   "blind_pct": 11.4,
+   "detect": 31,
+   "detect_pct": 88.6,
+   "group": "stl_iterator"
+  },
+  "type_punning": {
+   "n": 23,
+   "blind": 11,
+   "blind_pct": 47.8,
+   "detect": 12,
+   "detect_pct": 52.2,
+   "group": "type_alias_alignment"
+  },
+  "uninitialized_read": {
+   "n": 20,
+   "blind": 20,
+   "blind_pct": 100.0,
+   "detect": 0,
+   "detect_pct": 0.0,
+   "group": "uninitialized_read"
+  },
+  "use_after_free": {
+   "n": 25,
+   "blind": 0,
+   "blind_pct": 0.0,
+   "detect": 25,
+   "detect_pct": 100.0,
+   "group": "memory_lifetime"
+  },
+  "virtual_function": {
+   "n": 30,
+   "blind": 18,
+   "blind_pct": 60.0,
+   "detect": 12,
+   "detect_pct": 40.0,
+   "group": "virtual_or_oop"
+  },
+  "volatile_misuse": {
+   "n": 28,
+   "blind": 26,
+   "blind_pct": 92.9,
+   "detect": 2,
+   "detect_pct": 7.1,
+   "group": "embedded_platform"
+  }
+ },
+ "family8": {
+  "memory": {
+   "n": 190,
+   "blind": 55,
+   "blind_pct": 28.9
+  },
+  "bounds": {
+   "n": 118,
+   "blind": 9,
+   "blind_pct": 7.6
+  },
+  "integer": {
+   "n": 115,
+   "blind": 13,
+   "blind_pct": 11.3
+  },
+  "alias_type": {
+   "n": 93,
+   "blind": 59,
+   "blind_pct": 63.4
+  },
+  "concurrency": {
+   "n": 225,
+   "blind": 129,
+   "blind_pct": 57.3
+  },
+  "stl": {
+   "n": 140,
+   "blind": 47,
+   "blind_pct": 33.6
+  },
+  "language_oop": {
+   "n": 174,
+   "blind": 66,
+   "blind_pct": 37.9
+  },
+  "embedded_link": {
+   "n": 92,
+   "blind": 62,
+   "blind_pct": 67.4
+  }
+ },
+ "repair_summary": {
+  "defect_type_changes": 413,
+  "expected_verdict_changes": 34,
+  "by_batch": {
+   "holdout": 41,
+   "corpus": 64,
+   "expA": 45,
+   "expB": 35,
+   "expC": 103,
+   "expE": 60,
+   "expG": 65
+  },
+  "verdict_by_batch": {
+   "expE": 34
+  }
+ }
+}

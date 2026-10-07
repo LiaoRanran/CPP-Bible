@@ -1,0 +1,3554 @@
+{
+ "schema": "queyi-681-label-repair-log/v1",
+ "generated_by": "tools/repair_681_labels.py",
+ "n_type_changes": 413,
+ "n_verdict_changes": 34,
+ "type_changes": [
+  {
+   "uid": "holdout:h41",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h42",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h43",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h44",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h45",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h46",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h47",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h48",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h49",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h50",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h51",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h52",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h53",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h54",
+   "batch": "holdout",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h55",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h56",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h57",
+   "batch": "holdout",
+   "old": "CONC",
+   "new": "data_race",
+   "rule": "§3.3/§4.2 并发家族证据细分（label=CONC）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h58",
+   "batch": "holdout",
+   "old": "CONC",
+   "new": "data_race",
+   "rule": "§3.3/§4.2 并发家族证据细分（label=CONC）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h59",
+   "batch": "holdout",
+   "old": "CONC",
+   "new": "data_race",
+   "rule": "§3.3/§4.2 并发家族证据细分（label=CONC）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h60",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h1",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h5",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h7",
+   "batch": "holdout",
+   "old": "leak",
+   "new": "memory_leak",
+   "rule": "SCHEMA §3.3：resource_leak→memory_leak（含 fd 泄漏）；`leak` 为其简写",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h8",
+   "batch": "holdout",
+   "old": "RAII/UB",
+   "new": "raii_violation",
+   "rule": "词表 #6 raii_violation（RAII 释放/析构违例）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h14",
+   "batch": "holdout",
+   "old": "ODR",
+   "new": "linker_odr",
+   "rule": "SCHEMA §3.3：cross_tu_ub（多重定义/ODR）→ linker_odr",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h15",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h21",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h22",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h23",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h24",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h25",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h26",
+   "batch": "holdout",
+   "old": "memory",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=memory）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h27",
+   "batch": "holdout",
+   "old": "memory",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=memory）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h28",
+   "batch": "holdout",
+   "old": "memory",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=memory）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h29",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h30",
+   "batch": "holdout",
+   "old": "memory",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=memory）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h31",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h32",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h33",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h34",
+   "batch": "holdout",
+   "old": "memory-order",
+   "new": "memory_order",
+   "rule": "词表 #19 memory_order（连字符为拼写变体）",
+   "evidence": ""
+  },
+  {
+   "uid": "holdout:h40",
+   "batch": "holdout",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": ""
+  },
+  {
+   "uid": "corpus:d3f-01",
+   "batch": "corpus",
+   "old": "MEM",
+   "new": "memory_safety",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": "mem new[] 配 delete（非 delete[]）⇒ 分配/释放函数不匹配（asan alloc-dealloc-mismatch） #include <cstdio> int main(){ int* a = new int[4]; a[0]=1; std::printf(\"%d\\n\", a[0]); delete a; return 0; }  c++ core guidelines r.11（避免显式 new/delet"
+  },
+  {
+   "uid": "corpus:d3f-02",
+   "batch": "corpus",
+   "old": "MEM",
+   "new": "out_of_bounds",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": "mem memcpy 长度写错一字节 ⇒ 堆缓冲区越界写（asan heap-buffer-overflow） #include <cstring> #include <cstdio> int main(){ char* p = new char[4]; std::memcpy(p, \"abcd\", 5); std::printf(\"%c\\n\", p[0]); delete[] p; return 0; }  cppreference『"
+  },
+  {
+   "uid": "corpus:d3f-03",
+   "batch": "corpus",
+   "old": "MEM",
+   "new": "out_of_bounds",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": "mem strcpy 写入比目标缓冲区长的串 ⇒ 栈缓冲区越界写（asan stack-buffer-overflow） #include <cstring> #include <cstdio> int main(){ char buf[4]; std::strcpy(buf, \"0123456789\"); std::printf(\"%s\\n\", buf); return 0; }  cppreference『未定义行为』：栈缓冲区越界"
+  },
+  {
+   "uid": "corpus:d3f-04",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub lambda 捕获局部变量的引用并在其作用域外调用 ⇒ 悬垂引用读（asan） #include <functional> #include <cstdio> std::function<int()> g; void setup(){ int x = 7; g = [&x]{ return x; }; } int main(){ setup(); std::printf(\"%d\\n\", g()); return 0; }  c++"
+  },
+  {
+   "uid": "corpus:d3f-05",
+   "batch": "corpus",
+   "old": "MEM",
+   "new": "use_after_free",
+   "rule": "§3.3/§4.2 MEM 家族证据细分（label=MEM）",
+   "evidence": "mem vector 作用域结束后继续解引用其元素的指针 ⇒ use-after-free（asan） #include <vector> #include <cstdio> int main(){ int* p=nullptr; { std::vector<int> v{1,2,3}; p = &v[1]; } std::printf(\"%d\\n\", *p); return 0; }  公开教学陷阱：容器析构后仍用迭代器/指针"
+  },
+  {
+   "uid": "corpus:d3f-06",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 累加超过 int_max ⇒ 有符号整数溢出（ubsan runtime error） #include <cstdio> int main(){ int s=0; int v=2147483647; s = v + 1; std::printf(\"%d\\n\", s); return 0; }  cppreference『未定义行为』：有符号整数溢出"
+  },
+  {
+   "uid": "corpus:d3f-07",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "bit_operation",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 左移负位数 ⇒ ub（ubsan shift exponent is negative） #include <cstdio> int main(){ int n=2; int x = n << -1; std::printf(\"%d\\n\", x); return 0; }  cppreference『未定义行为』：负移位计数"
+  },
+  {
+   "uid": "corpus:d3f-08",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "integer_overflow",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 运行期整数除零 ⇒ ub（ubsan division by zero） #include <cstdio> int main(int argc, char**){ int z = argc - 1; int y = 10 / z; std::printf(\"%d\\n\", y); return 0; }  cppreference『未定义行为』：除零（运行期除零 ub）"
+  },
+  {
+   "uid": "corpus:d3f-09",
+   "batch": "corpus",
+   "old": "CONC",
+   "new": "data_race",
+   "rule": "§3.3/§4.2 并发家族证据细分（label=CONC）",
+   "evidence": "conc 两线程无同步自增同一全局 ⇒ 数据竞争（tsan） #include <thread> #include <cstdio> int g=0; void w(){ for(int i=0;i<200000;++i) ++g; } int main(){ std::thread a(w), b(w); a.join(); b.join(); std::printf(\"%d\\n\", g); return 0; }  cpprefer"
+  },
+  {
+   "uid": "corpus:d3f-10",
+   "batch": "corpus",
+   "old": "CONC",
+   "new": "data_race",
+   "rule": "§3.3/§4.2 并发家族证据细分（label=CONC）",
+   "evidence": "conc 两线程并发 push_back 同一 vector ⇒ 数据竞争（tsan） #include <thread> #include <vector> #include <cstdio> std::vector<int> v; void w(){ for(int i=0;i<5000;++i) v.push_back(i); } int main(){ std::thread a(w), b(w); a.join(); b.jo"
+  },
+  {
+   "uid": "corpus:d3f-11",
+   "batch": "corpus",
+   "old": "API",
+   "new": "logic_error",
+   "rule": "SCHEMA §3.2：logic_error 覆盖「非 UB 语义/API/状态缺陷」",
+   "evidence": "api printf 用 %d 打印 double ⇒ 格式串类型不匹配（-wformat 告警） #include <cstdio> int main(){ double d = 1.5; std::printf(\"%d\\n\", d); return 0; }  c++ core guidelines es.20 / 公开教学：stdio 格式串与实参类型不匹配"
+  },
+  {
+   "uid": "corpus:d3f-12",
+   "batch": "corpus",
+   "old": "API",
+   "new": "logic_error",
+   "rule": "SCHEMA §3.2：logic_error 覆盖「非 UB 语义/API/状态缺陷」",
+   "evidence": "api 非 void 函数有无 return 的分支 ⇒ -wreturn-type 告警（读取返回值是 ub） #include <cstdio> int f(int x){ if (x > 0) return x; } int main(){ std::printf(\"%d\\n\", f(1)); return 0; }  c++ core guidelines f.44 / 公开教学：控制流存在不返回值路径"
+  },
+  {
+   "uid": "corpus:d3f-13",
+   "batch": "corpus",
+   "old": "API",
+   "new": "logic_error",
+   "rule": "SCHEMA §3.2：logic_error 覆盖「非 UB 语义/API/状态缺陷」",
+   "evidence": "api 负数与 sizeof 结果比较 ⇒ 隐式转换为无符号 ⇒ 逻辑永假（-wsign-compare 告警） #include <cstdio> int main(){ int n = -1; if (n < sizeof(int)) std::printf(\"less\\n\"); else std::printf(\"not-less\\n\"); return 0; }  c++ core guidelines es.100 / 公开教"
+  },
+  {
+   "uid": "corpus:d3f-14",
+   "batch": "corpus",
+   "old": "API",
+   "new": "logic_error",
+   "rule": "SCHEMA §3.2：logic_error 覆盖「非 UB 语义/API/状态缺陷」",
+   "evidence": "api if 条件里写成赋值 ⇒ -wparentheses 告警（经典 = / == 混淆） #include <cstdio> int main(){ int x = 0; if (x = 1) std::printf(\"truthy\\n\"); return 0; }  c++ core guidelines es.42 / 公开教学：条件里写赋值（= 与 == 混淆）"
+  },
+  {
+   "uid": "corpus:d3f-15",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 数组初始化里对同一变量两次自增 ⇒ 求值顺序未定（g++/clang++ 可能给出不同数组内容） #include <cstdio> int main(){ int i = 0; int a[2] = { i++, i++ }; std::printf(\"%d %d\\n\", a[0], a[1]); return 0; }  cppreference『求值顺序』条目：同一表达式内对同一标量多次无中间序列点的修改是 ub"
+  },
+  {
+   "uid": "corpus:d3f-16",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 函数实参中含对同一变量的副作用 ⇒ 实参求值顺序未指定（不同编译器可能不同输出） #include <cstdio> int bump(int& x){ return ++x; } int show(int a, int b){ return a * 10 + b; } int main(){ int i = 0; std::printf(\"%d\\n\", show(bump(i), bump(i))); return 0; }  "
+  },
+  {
+   "uid": "corpus:d3e-01",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "integer_overflow",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 有符号整数溢出是 ub（非回绕） int main(){int x=2147483647;x+=1;return x;} cppreference: undefined behavior（有符号溢出）"
+  },
+  {
+   "uid": "corpus:d3e-02",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 两线程无同步并发写同一非原子对象 #include <thread> int g=0; int main(){std::thread a([]{for(int i=0;i<100000;i++)g++;});std::thread b([]{for(int i=0;i<100000;i++)g++;});a.join();b.join();} cppreference: undefined behavior（数据竞争）"
+  },
+  {
+   "uid": "corpus:d3e-03",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 数组越界读写 int main(){int a[4]={0};int i=5;a[i]=1;return a[i];} cppreference: undefined behavior（越界）"
+  },
+  {
+   "uid": "corpus:d3e-04",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "null_pointer_deref",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 解引用空指针 int main(){int*p=nullptr;*p=1;return *p;} cppreference: undefined behavior（空指针解引用）"
+  },
+  {
+   "uid": "corpus:d3e-05",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 整数除零 int main(){volatile int a=1;volatile int b=0;return a/b;} cppreference: undefined behavior（除零）"
+  },
+  {
+   "uid": "corpus:d3e-06",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 读取未初始化标量（ub；-wmaybe-uninitialized 可提示） int f(){int x;return x*2;} int main(){return f();} cppreference: undefined behavior（未初始化读取）"
+  },
+  {
+   "uid": "corpus:d3e-07",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "strict_aliasing",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 严格别名：通过不兼容类型指针访问对象 int f(float*p){*(int*)p=1;return (int)*p;} int main(){float x=0;return f(&x);} cppreference: reinterpret_cast / strict aliasing"
+  },
+  {
+   "uid": "corpus:d3e-08",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 对同一指针二次 delete int main(){int*p=new int(1);delete p;delete p;return 0;} cppreference: new/delete（二次释放）"
+  },
+  {
+   "uid": "corpus:d3e-09",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 释放后使用（use-after-free） int main(){int*p=new int(7);delete p;return *p;} cppreference: delete expression（释放后使用）"
+  },
+  {
+   "uid": "corpus:d3e-10",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "bit_operation",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 左移位数 ≥ 类型位宽（ub） int main(){int x=1;return x<<33;} cppreference: shift operators（移位越界）"
+  },
+  {
+   "uid": "corpus:d3e-11",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 返回悬垂引用（生命周期结束） int& f(){int x=1;return x;} int main(){int&r=f();return r;} cppreference: lifetime（返回局部引用）"
+  },
+  {
+   "uid": "corpus:d3e-12",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 容器扩容后使用失效迭代器 #include <vector> int main(){std::vector<int> v={1,2,3};int*p=&v[0];v.resize(1000);return *p;} cppreference: std::vector（迭代器失效）"
+  },
+  {
+   "uid": "corpus:d3e-13",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 函数实参求值顺序未指定（非 ub） int f(int,int){return 0;} int main(){int i=0;return f(i++,i++);} cppreference: order of evaluation（未指定）"
+  },
+  {
+   "uid": "corpus:d3e-14",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 同一表达式内多次修改标量（c++17 前 ub，之后多为未指定） int main(){int i=0;i=i++ + ++i;return i;} cppreference: evaluation order（未序列化）"
+  },
+  {
+   "uid": "corpus:d3e-19",
+   "batch": "corpus",
+   "old": "memory-order",
+   "new": "memory_order",
+   "rule": "词表 #19 memory_order（连字符为拼写变体）",
+   "evidence": "memory-order relaxed 原子操作不保证跨线程顺序（非 ub 但可能丢失更新） #include <atomic> #include <thread> std::atomic<int> x{0}; int main(){std::thread t1([]{x.fetch_add(1,std::memory_order_relaxed);});std::thread t2([]{x.fetch_add(1,std::mem"
+  },
+  {
+   "uid": "corpus:d3e-20",
+   "batch": "corpus",
+   "old": "historical",
+   "new": "other_ub",
+   "rule": "历史登记样本（un-pinned）；证据不足细分，按 §4.2 回落 other_ub",
+   "evidence": "historical auto_ptr 拷贝即转移所有权（c++98 妥协，c++17 移除） #include <memory> int main(){std::auto_ptr<int> a(new int(1));std::auto_ptr<int> b(a);return *b;} cppreference: std::auto_ptr（c++98 已弃用）"
+  },
+  {
+   "uid": "corpus:d3-01",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "integer_overflow",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 有符号整数溢出是 ub（非回绕） int main(){int x=2147483647;x+=1;return x;} cppreference: undefined behavior（有符号溢出）"
+  },
+  {
+   "uid": "corpus:d3-03",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 数组越界读写 int main(){int a[4]={0};int i=5;a[i]=1;return a[i];} cppreference: undefined behavior（越界）"
+  },
+  {
+   "uid": "corpus:d3-04",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "null_pointer_deref",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 解引用空指针 int main(){int*p=nullptr;*p=1;return *p;} cppreference: undefined behavior（空指针解引用）"
+  },
+  {
+   "uid": "corpus:d3-05",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 整数除零 int main(){volatile int a=1;volatile int b=0;return a/b;} cppreference: undefined behavior（除零）"
+  },
+  {
+   "uid": "corpus:d3-06",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 读取未初始化标量（ub；-wmaybe-uninitialized 可提示） int f(){int x;return x*2;} int main(){return f();} cppreference: undefined behavior（未初始化读取）"
+  },
+  {
+   "uid": "corpus:d3-07",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "strict_aliasing",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 严格别名：通过不兼容类型指针访问对象 int f(float*p){*(int*)p=1;return (int)*p;} int main(){float x=0;return f(&x);} cppreference: reinterpret_cast / strict aliasing"
+  },
+  {
+   "uid": "corpus:d3-08",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified f(g(),h()) 求值顺序未指定 int g(){return 1;}int h(){return 2;}int f(int,int){return 0;} int main(){return f(g(),h());} 标准 [expr.call]：实参求值顺序未指定"
+  },
+  {
+   "uid": "corpus:d3-09",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 同一表达式内对同一变量多次无序列修改 int main(){int i=0;i=i++;return i;} 标准 [expr.post.incr]（c++17 前 i=i++ 未定义/未指定争议）"
+  },
+  {
+   "uid": "corpus:d3-10",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 有符号负数右移是实现定义（非 ub） #include <cstdio> int main(){int x=-8;std::printf(\"%d\\n\", x>>1);} 标准 [expr.shift]：负数右移实现定义"
+  },
+  {
+   "uid": "corpus:d3-11",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified char 是否有符号是实现定义 #include <cstdio> int main(){char c=-1;std::printf(\"%d\\n\",(int)c,(int)(unsigned char)c);} 标准 [basic.fundamental]：char 符号性实现定义"
+  },
+  {
+   "uid": "corpus:d3-12",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 同一表达式在 gcc/clang 上打印顺序不同 #include <cstdio> int g(){std::printf(\"g\");return 1;}int h(){std::printf(\"h\");return 2;} void f(int,int){} int main(){f(g(),h());} 标准 [expr.order]：函数实参顺序跨编译器差异"
+  },
+  {
+   "uid": "corpus:d3-14",
+   "batch": "corpus",
+   "old": "compiler-diff",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.3：meta 标签（编译器差异）按证据细分；证据不足回落 other_ub",
+   "evidence": "compiler-diff vector<bool> 是位压缩特化，&v[0] 不可取 #include <vector> int main(){std::vector<bool> v(4);auto p=&v[0];(void)p;} 标准 [vector.bool]：vector<bool> 特化"
+  },
+  {
+   "uid": "corpus:d3-15",
+   "batch": "corpus",
+   "old": "compiler-diff",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.3：meta 标签（编译器差异）按证据细分；证据不足回落 other_ub",
+   "evidence": "compiler-diff 依赖名查找时机在编译器间曾有分歧 #include <cstdio> void f(double){std::printf(\"double\");} template<class t>void g(t t){f(t);} void f(int){std::printf(\"int\");} int main(){g(1);} 标准 [temp.dep.candidate]：两阶段查找（历史分歧）"
+  },
+  {
+   "uid": "corpus:d3-18",
+   "batch": "corpus",
+   "old": "ambiguity",
+   "new": "other_ub",
+   "rule": "歧义标注；证据不足细分，按 §4.2 回落 other_ub",
+   "evidence": "ambiguity memory_order_relaxed 不建立同步，读可能看不到写 #include <atomic> #include <thread> #include <cstdio> std::atomic<int> f{0};int d=0; int main(){std::thread w([]{d=42;f.store(1,std::memory_order_relaxed);});while(f.load(std:"
+  },
+  {
+   "uid": "corpus:d3-19",
+   "batch": "corpus",
+   "old": "compiler-bug",
+   "new": "other_ub",
+   "rule": "编译器缺陷类（非本仓缺陷）；按 §4.2 回落 other_ub",
+   "evidence": "compiler-bug 同源代码在 g++/clang++ -o2 结果可能不同 int f(float*p){*(int*)p=1;return (int)*p;} int main(){float x=0;return f(&x);} 编译器社区已知：-o2 下严格别名分歧（同 d3-07 的优化面）"
+  },
+  {
+   "uid": "corpus:d3-21",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub use-after-free：delete 后继续读写该对象 #include <cstdio> int main(){int* p=new int(1);delete p;*p=2;std::printf(\"%d\\n\",*p);} cppreference: undefined behavior（释放后使用）"
+  },
+  {
+   "uid": "corpus:d3-22",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub double free：同一指针 delete 两次 int main(){int* p=new int(1);delete p;delete p;return 0;} cppreference: undefined behavior（重复释放）"
+  },
+  {
+   "uid": "corpus:d3-23",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub new[] 与 delete 不匹配 int main(){int* p=new int[8];delete p;return 0;} 标准 [expr.delete]：形式须匹配（new[] ↔ delete[]）"
+  },
+  {
+   "uid": "corpus:d3-24",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 栈缓冲区越界写（stack-buffer-overflow） #include <cstdio> int main(){int a[4]={0};for(int i=0;i<=4;i++)a[i]=i;std::printf(\"%d\\n\",a[3]);} cppreference: undefined behavior（越界）"
+  },
+  {
+   "uid": "corpus:d3-25",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 堆缓冲区越界写（heap-buffer-overflow） #include <cstdio> int main(){int* a=new int[4]{0};a[4]=1;std::printf(\"%d\\n\",a[4]);delete[] a;} cppreference: undefined behavior（堆越界）"
+  },
+  {
+   "uid": "corpus:d3-26",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 有符号乘法溢出（非回绕） #include <cstdio> int main(){int x=100000;int y=100000;std::printf(\"%d\\n\",x*y);} 标准 [expr.mul]：有符号乘法溢出 ub"
+  },
+  {
+   "uid": "corpus:d3-27",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "integer_overflow",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub -int_min 溢出 #include <climits> #include <cstdio> int main(){int x=int_min;int y=-x;std::printf(\"%d\\n\",y);} 标准 [expr.unary.op]：int_min 取负 ub"
+  },
+  {
+   "uid": "corpus:d3-28",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "bit_operation",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 左移位数 >= 类型位宽 #include <cstdio> int main(){int x=1;std::printf(\"%d\\n\",x<<32);} 标准 [expr.shift]：位移位数不小于类型宽度 ub"
+  },
+  {
+   "uid": "corpus:d3-29",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 同一表达式里既改又读同一标量（未序列） #include <cstdio> int main(){int i=0;i=i+++1;std::printf(\"%d\\n\",i);} 标准 [intro.execution]（c++17 前的序列点规则）"
+  },
+  {
+   "uid": "corpus:d3-30",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 数组下标与自增混用造成的未序列修改 #include <cstdio> int main(){int a[4]={0};int i=0;a[i]=i++;std::printf(\"%d\\n\",a[0]);} 标准 [expr.ass]：赋值实参求值顺序（c++17 前后）"
+  },
+  {
+   "uid": "corpus:d3-31",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 返回局部变量地址并在调用方使用 int* f(){int x=7;return &x;} int main(){return *f();} 标准 [stmt.return]：返回局部变量地址/引用"
+  },
+  {
+   "uid": "corpus:d3-32",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 有返回值的函数走到末尾不 return int f(int x){if(x>0)return 1;} int main(){return f(-1);} 标准 [dcl.fct]：非 void 函数缺 return"
+  },
+  {
+   "uid": "corpus:d3-33",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 有符号与无符号比较导致意外语义 #include <cstdio> int main(){int x=-1;unsigned y=1u;std::printf(\"%d\\n\",x<y);} 标准 [expr]（有符号/无符号比较的常见坑）"
+  },
+  {
+   "uid": "corpus:d3-34",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "out_of_bounds",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 把字符串字面量当可写 char* 修改 int main(){char* p=\"abc\";p[0]='x';return 0;} 标准 [basic.string.literal]：字符串字面量不可写"
+  },
+  {
+   "uid": "corpus:d3-35",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "other_ub",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub vector 扩容后继续使用旧迭代器 #include <vector> #include <cstdio> int main(){std::vector<int> v{1,2,3};auto it=v.begin();v.reserve(1024);std::printf(\"%d\\n\",*it);} cppreference: ub（迭代器失效）"
+  },
+  {
+   "uid": "corpus:d3-36",
+   "batch": "corpus",
+   "old": "UB",
+   "new": "alignment",
+   "rule": "§4.2 UB 家族证据细分（label=UB）",
+   "evidence": "ub 把对齐要求更高的对象放进对齐不足的存储里访问（misaligned address） #include <cstdio> struct alignas(8) l{long long v;}; int main(){alignas(2) char buf[sizeof(l)+8];l* p=reinterpret_cast<l*>(buf);p->v=1;std::printf(\"%lld\\n\",p->v);} 标准 [basic."
+  },
+  {
+   "uid": "corpus:d3-37",
+   "batch": "corpus",
+   "old": "unspecified",
+   "new": "other_ub",
+   "rule": "SCHEMA §4.2 回落规则；证据 expected_detector=wunsequenced（未指定求值顺序）",
+   "evidence": "unspecified 同一段依赖溢出 ub 的代码在两个编译器上输出不同 #include <cstdio> int main(){int x=2147483647;x+=1;std::printf(\"%d\\n\",x);} 标准 [expr.compound]：依赖 ub 的优化强度跨编译器不同"
+  },
+  {
+   "uid": "expA:sample_001",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_001.json"
+  },
+  {
+   "uid": "expA:sample_002",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_002.json"
+  },
+  {
+   "uid": "expA:sample_003",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_003.json"
+  },
+  {
+   "uid": "expA:sample_004",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_004.json"
+  },
+  {
+   "uid": "expA:sample_005",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_005.json"
+  },
+  {
+   "uid": "expA:sample_006",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_006.json"
+  },
+  {
+   "uid": "expA:sample_007",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_007.json"
+  },
+  {
+   "uid": "expA:sample_008",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_008.json"
+  },
+  {
+   "uid": "expA:sample_009",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_009.json"
+  },
+  {
+   "uid": "expA:sample_010",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_010.json"
+  },
+  {
+   "uid": "expA:sample_011",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_011.json"
+  },
+  {
+   "uid": "expA:sample_012",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_012.json"
+  },
+  {
+   "uid": "expA:sample_013",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_013.json"
+  },
+  {
+   "uid": "expA:sample_014",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_014.json"
+  },
+  {
+   "uid": "expA:sample_015",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_015.json"
+  },
+  {
+   "uid": "expA:sample_016",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_016.json"
+  },
+  {
+   "uid": "expA:sample_017",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_017.json"
+  },
+  {
+   "uid": "expA:sample_018",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_018.json"
+  },
+  {
+   "uid": "expA:sample_019",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_019.json"
+  },
+  {
+   "uid": "expA:sample_020",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_020.json"
+  },
+  {
+   "uid": "expA:sample_021",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_021.json"
+  },
+  {
+   "uid": "expA:sample_022",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_022.json"
+  },
+  {
+   "uid": "expA:sample_023",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_023.json"
+  },
+  {
+   "uid": "expA:sample_024",
+   "batch": "expA",
+   "old": "memory_safety",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_024.json"
+  },
+  {
+   "uid": "expA:sample_080",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_080.json"
+  },
+  {
+   "uid": "expA:sample_081",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_081.json"
+  },
+  {
+   "uid": "expA:sample_082",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_082.json"
+  },
+  {
+   "uid": "expA:sample_083",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_083.json"
+  },
+  {
+   "uid": "expA:sample_084",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_084.json"
+  },
+  {
+   "uid": "expA:sample_085",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_085.json"
+  },
+  {
+   "uid": "expA:sample_086",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_086.json"
+  },
+  {
+   "uid": "expA:sample_087",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_087.json"
+  },
+  {
+   "uid": "expA:sample_088",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_088.json"
+  },
+  {
+   "uid": "expA:sample_089",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_089.json"
+  },
+  {
+   "uid": "expA:sample_090",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_090.json"
+  },
+  {
+   "uid": "expA:sample_091",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_091.json"
+  },
+  {
+   "uid": "expA:sample_092",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_092.json"
+  },
+  {
+   "uid": "expA:sample_093",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_093.json"
+  },
+  {
+   "uid": "expA:sample_094",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "other_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_094.json"
+  },
+  {
+   "uid": "expA:sample_095",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "other_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_095.json"
+  },
+  {
+   "uid": "expA:sample_096",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "other_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_096.json"
+  },
+  {
+   "uid": "expA:sample_097",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_097.json"
+  },
+  {
+   "uid": "expA:sample_098",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_098.json"
+  },
+  {
+   "uid": "expA:sample_099",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_099.json"
+  },
+  {
+   "uid": "expA:sample_100",
+   "batch": "expA",
+   "old": "undefined_behavior",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_100.json"
+  },
+  {
+   "uid": "expB:sample_B041",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B041.json"
+  },
+  {
+   "uid": "expB:sample_B042",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B042.json"
+  },
+  {
+   "uid": "expB:sample_B043",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B043.json"
+  },
+  {
+   "uid": "expB:sample_B044",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B044.json"
+  },
+  {
+   "uid": "expB:sample_B045",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B045.json"
+  },
+  {
+   "uid": "expB:sample_B046",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B046.json"
+  },
+  {
+   "uid": "expB:sample_B047",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B047.json"
+  },
+  {
+   "uid": "expB:sample_B048",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B048.json"
+  },
+  {
+   "uid": "expB:sample_B049",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B049.json"
+  },
+  {
+   "uid": "expB:sample_B050",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B050.json"
+  },
+  {
+   "uid": "expB:sample_B051",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B051.json"
+  },
+  {
+   "uid": "expB:sample_B052",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B052.json"
+  },
+  {
+   "uid": "expB:sample_B053",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B053.json"
+  },
+  {
+   "uid": "expB:sample_B054",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B054.json"
+  },
+  {
+   "uid": "expB:sample_B055",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B055.json"
+  },
+  {
+   "uid": "expB:sample_B056",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B056.json"
+  },
+  {
+   "uid": "expB:sample_B057",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B057.json"
+  },
+  {
+   "uid": "expB:sample_B058",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B058.json"
+  },
+  {
+   "uid": "expB:sample_B059",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B059.json"
+  },
+  {
+   "uid": "expB:sample_B060",
+   "batch": "expB",
+   "old": "resource_leak",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B060.json"
+  },
+  {
+   "uid": "expB:sample_B081",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B081.json"
+  },
+  {
+   "uid": "expB:sample_B082",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B082.json"
+  },
+  {
+   "uid": "expB:sample_B083",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B083.json"
+  },
+  {
+   "uid": "expB:sample_B084",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B084.json"
+  },
+  {
+   "uid": "expB:sample_B085",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B085.json"
+  },
+  {
+   "uid": "expB:sample_B086",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B086.json"
+  },
+  {
+   "uid": "expB:sample_B087",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B087.json"
+  },
+  {
+   "uid": "expB:sample_B088",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B088.json"
+  },
+  {
+   "uid": "expB:sample_B089",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B089.json"
+  },
+  {
+   "uid": "expB:sample_B090",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B090.json"
+  },
+  {
+   "uid": "expB:sample_B091",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "alignment",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B091.json"
+  },
+  {
+   "uid": "expB:sample_B092",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B092.json"
+  },
+  {
+   "uid": "expB:sample_B093",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B093.json"
+  },
+  {
+   "uid": "expB:sample_B099",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "type_punning",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B099.json"
+  },
+  {
+   "uid": "expB:sample_B100",
+   "batch": "expB",
+   "old": "other_ub",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_B100.json"
+  },
+  {
+   "uid": "expC:sample_091",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_091.json"
+  },
+  {
+   "uid": "expC:sample_092",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_092.json"
+  },
+  {
+   "uid": "expC:sample_093",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_093.json"
+  },
+  {
+   "uid": "expC:sample_094",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_094.json"
+  },
+  {
+   "uid": "expC:sample_095",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_095.json"
+  },
+  {
+   "uid": "expC:sample_096",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_096.json"
+  },
+  {
+   "uid": "expC:sample_097",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_097.json"
+  },
+  {
+   "uid": "expC:sample_098",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_098.json"
+  },
+  {
+   "uid": "expC:sample_099",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_099.json"
+  },
+  {
+   "uid": "expC:sample_100",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_100.json"
+  },
+  {
+   "uid": "expC:sample_101",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_101.json"
+  },
+  {
+   "uid": "expC:sample_102",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_102.json"
+  },
+  {
+   "uid": "expC:sample_103",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_103.json"
+  },
+  {
+   "uid": "expC:sample_104",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_104.json"
+  },
+  {
+   "uid": "expC:sample_105",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_105.json"
+  },
+  {
+   "uid": "expC:sample_106",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_106.json"
+  },
+  {
+   "uid": "expC:sample_114",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_114.json"
+  },
+  {
+   "uid": "expC:sample_115",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_115.json"
+  },
+  {
+   "uid": "expC:sample_116",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_116.json"
+  },
+  {
+   "uid": "expC:sample_117",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_117.json"
+  },
+  {
+   "uid": "expC:sample_118",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_118.json"
+  },
+  {
+   "uid": "expC:sample_119",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_119.json"
+  },
+  {
+   "uid": "expC:sample_120",
+   "batch": "expC",
+   "old": "cross_tu_ub",
+   "new": "linker_odr",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_120.json"
+  },
+  {
+   "uid": "expC:sample_121",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_121.json"
+  },
+  {
+   "uid": "expC:sample_122",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_122.json"
+  },
+  {
+   "uid": "expC:sample_123",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_123.json"
+  },
+  {
+   "uid": "expC:sample_124",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_124.json"
+  },
+  {
+   "uid": "expC:sample_125",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_125.json"
+  },
+  {
+   "uid": "expC:sample_126",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_126.json"
+  },
+  {
+   "uid": "expC:sample_127",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_127.json"
+  },
+  {
+   "uid": "expC:sample_128",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_128.json"
+  },
+  {
+   "uid": "expC:sample_129",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_129.json"
+  },
+  {
+   "uid": "expC:sample_130",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_130.json"
+  },
+  {
+   "uid": "expC:sample_131",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_131.json"
+  },
+  {
+   "uid": "expC:sample_132",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_132.json"
+  },
+  {
+   "uid": "expC:sample_133",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_133.json"
+  },
+  {
+   "uid": "expC:sample_134",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_134.json"
+  },
+  {
+   "uid": "expC:sample_135",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_135.json"
+  },
+  {
+   "uid": "expC:sample_136",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_136.json"
+  },
+  {
+   "uid": "expC:sample_137",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_137.json"
+  },
+  {
+   "uid": "expC:sample_138",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_138.json"
+  },
+  {
+   "uid": "expC:sample_139",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_139.json"
+  },
+  {
+   "uid": "expC:sample_140",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "bit_operation",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_140.json"
+  },
+  {
+   "uid": "expC:sample_141",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_141.json"
+  },
+  {
+   "uid": "expC:sample_142",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_142.json"
+  },
+  {
+   "uid": "expC:sample_143",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_143.json"
+  },
+  {
+   "uid": "expC:sample_144",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_144.json"
+  },
+  {
+   "uid": "expC:sample_145",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_145.json"
+  },
+  {
+   "uid": "expC:sample_146",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_146.json"
+  },
+  {
+   "uid": "expC:sample_147",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_147.json"
+  },
+  {
+   "uid": "expC:sample_148",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_148.json"
+  },
+  {
+   "uid": "expC:sample_149",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_149.json"
+  },
+  {
+   "uid": "expC:sample_150",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_150.json"
+  },
+  {
+   "uid": "expC:sample_151",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_151.json"
+  },
+  {
+   "uid": "expC:sample_152",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_152.json"
+  },
+  {
+   "uid": "expC:sample_153",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_153.json"
+  },
+  {
+   "uid": "expC:sample_154",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_154.json"
+  },
+  {
+   "uid": "expC:sample_155",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_155.json"
+  },
+  {
+   "uid": "expC:sample_156",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_156.json"
+  },
+  {
+   "uid": "expC:sample_157",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_157.json"
+  },
+  {
+   "uid": "expC:sample_158",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_158.json"
+  },
+  {
+   "uid": "expC:sample_159",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_159.json"
+  },
+  {
+   "uid": "expC:sample_160",
+   "batch": "expC",
+   "old": "optimization_dependent",
+   "new": "strict_aliasing",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_160.json"
+  },
+  {
+   "uid": "expC:sample_161",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_161.json"
+  },
+  {
+   "uid": "expC:sample_162",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_162.json"
+  },
+  {
+   "uid": "expC:sample_163",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_163.json"
+  },
+  {
+   "uid": "expC:sample_164",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_164.json"
+  },
+  {
+   "uid": "expC:sample_165",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_165.json"
+  },
+  {
+   "uid": "expC:sample_166",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_166.json"
+  },
+  {
+   "uid": "expC:sample_167",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_167.json"
+  },
+  {
+   "uid": "expC:sample_168",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_168.json"
+  },
+  {
+   "uid": "expC:sample_169",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_169.json"
+  },
+  {
+   "uid": "expC:sample_170",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_170.json"
+  },
+  {
+   "uid": "expC:sample_171",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_171.json"
+  },
+  {
+   "uid": "expC:sample_172",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_172.json"
+  },
+  {
+   "uid": "expC:sample_173",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_173.json"
+  },
+  {
+   "uid": "expC:sample_174",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_174.json"
+  },
+  {
+   "uid": "expC:sample_175",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_175.json"
+  },
+  {
+   "uid": "expC:sample_176",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_176.json"
+  },
+  {
+   "uid": "expC:sample_177",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_177.json"
+  },
+  {
+   "uid": "expC:sample_178",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_178.json"
+  },
+  {
+   "uid": "expC:sample_179",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_179.json"
+  },
+  {
+   "uid": "expC:sample_180",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_180.json"
+  },
+  {
+   "uid": "expC:sample_181",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_181.json"
+  },
+  {
+   "uid": "expC:sample_182",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "double_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_182.json"
+  },
+  {
+   "uid": "expC:sample_183",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_183.json"
+  },
+  {
+   "uid": "expC:sample_184",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_184.json"
+  },
+  {
+   "uid": "expC:sample_185",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_185.json"
+  },
+  {
+   "uid": "expC:sample_186",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_186.json"
+  },
+  {
+   "uid": "expC:sample_187",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_187.json"
+  },
+  {
+   "uid": "expC:sample_188",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "memory_leak",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_188.json"
+  },
+  {
+   "uid": "expC:sample_189",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_189.json"
+  },
+  {
+   "uid": "expC:sample_190",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_190.json"
+  },
+  {
+   "uid": "expC:sample_191",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_191.json"
+  },
+  {
+   "uid": "expC:sample_192",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_192.json"
+  },
+  {
+   "uid": "expC:sample_193",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_193.json"
+  },
+  {
+   "uid": "expC:sample_194",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_194.json"
+  },
+  {
+   "uid": "expC:sample_195",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_195.json"
+  },
+  {
+   "uid": "expC:sample_196",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_196.json"
+  },
+  {
+   "uid": "expC:sample_197",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_197.json"
+  },
+  {
+   "uid": "expC:sample_198",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_198.json"
+  },
+  {
+   "uid": "expC:sample_199",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_199.json"
+  },
+  {
+   "uid": "expC:sample_200",
+   "batch": "expC",
+   "old": "conditional_trigger",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_200.json"
+  },
+  {
+   "uid": "expE:sample_E111",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E111.json"
+  },
+  {
+   "uid": "expE:sample_E112",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E112.json"
+  },
+  {
+   "uid": "expE:sample_E113",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E113.json"
+  },
+  {
+   "uid": "expE:sample_E114",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E114.json"
+  },
+  {
+   "uid": "expE:sample_E115",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E115.json"
+  },
+  {
+   "uid": "expE:sample_E116",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E116.json"
+  },
+  {
+   "uid": "expE:sample_E117",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E117.json"
+  },
+  {
+   "uid": "expE:sample_E118",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E118.json"
+  },
+  {
+   "uid": "expE:sample_E119",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E119.json"
+  },
+  {
+   "uid": "expE:sample_E120",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E120.json"
+  },
+  {
+   "uid": "expE:sample_E121",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E121.json"
+  },
+  {
+   "uid": "expE:sample_E122",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E122.json"
+  },
+  {
+   "uid": "expE:sample_E123",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E123.json"
+  },
+  {
+   "uid": "expE:sample_E124",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E124.json"
+  },
+  {
+   "uid": "expE:sample_E125",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E125.json"
+  },
+  {
+   "uid": "expE:sample_E126",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E126.json"
+  },
+  {
+   "uid": "expE:sample_E127",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E127.json"
+  },
+  {
+   "uid": "expE:sample_E128",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E128.json"
+  },
+  {
+   "uid": "expE:sample_E129",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E129.json"
+  },
+  {
+   "uid": "expE:sample_E130",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E130.json"
+  },
+  {
+   "uid": "expE:sample_E131",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E131.json"
+  },
+  {
+   "uid": "expE:sample_E132",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E132.json"
+  },
+  {
+   "uid": "expE:sample_E133",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E133.json"
+  },
+  {
+   "uid": "expE:sample_E134",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E134.json"
+  },
+  {
+   "uid": "expE:sample_E135",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E135.json"
+  },
+  {
+   "uid": "expE:sample_E136",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E136.json"
+  },
+  {
+   "uid": "expE:sample_E137",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E137.json"
+  },
+  {
+   "uid": "expE:sample_E138",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E138.json"
+  },
+  {
+   "uid": "expE:sample_E139",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E139.json"
+  },
+  {
+   "uid": "expE:sample_E140",
+   "batch": "expE",
+   "old": "aba_problem",
+   "new": "atomic_ub",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E140.json"
+  },
+  {
+   "uid": "expE:sample_E141",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E141.json"
+  },
+  {
+   "uid": "expE:sample_E142",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E142.json"
+  },
+  {
+   "uid": "expE:sample_E143",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E143.json"
+  },
+  {
+   "uid": "expE:sample_E144",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E144.json"
+  },
+  {
+   "uid": "expE:sample_E145",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E145.json"
+  },
+  {
+   "uid": "expE:sample_E146",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E146.json"
+  },
+  {
+   "uid": "expE:sample_E147",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E147.json"
+  },
+  {
+   "uid": "expE:sample_E148",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E148.json"
+  },
+  {
+   "uid": "expE:sample_E149",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E149.json"
+  },
+  {
+   "uid": "expE:sample_E150",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E150.json"
+  },
+  {
+   "uid": "expE:sample_E151",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E151.json"
+  },
+  {
+   "uid": "expE:sample_E152",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E152.json"
+  },
+  {
+   "uid": "expE:sample_E153",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E153.json"
+  },
+  {
+   "uid": "expE:sample_E154",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E154.json"
+  },
+  {
+   "uid": "expE:sample_E155",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E155.json"
+  },
+  {
+   "uid": "expE:sample_E156",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E156.json"
+  },
+  {
+   "uid": "expE:sample_E157",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E157.json"
+  },
+  {
+   "uid": "expE:sample_E158",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E158.json"
+  },
+  {
+   "uid": "expE:sample_E159",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E159.json"
+  },
+  {
+   "uid": "expE:sample_E160",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E160.json"
+  },
+  {
+   "uid": "expE:sample_E161",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E161.json"
+  },
+  {
+   "uid": "expE:sample_E162",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E162.json"
+  },
+  {
+   "uid": "expE:sample_E163",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E163.json"
+  },
+  {
+   "uid": "expE:sample_E164",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E164.json"
+  },
+  {
+   "uid": "expE:sample_E165",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E165.json"
+  },
+  {
+   "uid": "expE:sample_E166",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E166.json"
+  },
+  {
+   "uid": "expE:sample_E167",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E167.json"
+  },
+  {
+   "uid": "expE:sample_E168",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E168.json"
+  },
+  {
+   "uid": "expE:sample_E169",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E169.json"
+  },
+  {
+   "uid": "expE:sample_E170",
+   "batch": "expE",
+   "old": "lock_priority_inversion",
+   "new": "deadlock",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_E170.json"
+  },
+  {
+   "uid": "expG:sample_G001",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G001.json"
+  },
+  {
+   "uid": "expG:sample_G002",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G002.json"
+  },
+  {
+   "uid": "expG:sample_G003",
+   "batch": "expG",
+   "old": "null_deref",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G003.json"
+  },
+  {
+   "uid": "expG:sample_G006",
+   "batch": "expG",
+   "old": "type_confusion",
+   "new": "type_punning",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G006.json"
+  },
+  {
+   "uid": "expG:sample_G007",
+   "batch": "expG",
+   "old": "null_deref",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G007.json"
+  },
+  {
+   "uid": "expG:sample_G008",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G008.json"
+  },
+  {
+   "uid": "expG:sample_G009",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G009.json"
+  },
+  {
+   "uid": "expG:sample_G013",
+   "batch": "expG",
+   "old": "pointer_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G013.json"
+  },
+  {
+   "uid": "expG:sample_G014",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G014.json"
+  },
+  {
+   "uid": "expG:sample_G015",
+   "batch": "expG",
+   "old": "stack_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G015.json"
+  },
+  {
+   "uid": "expG:sample_G016",
+   "batch": "expG",
+   "old": "null_deref",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G016.json"
+  },
+  {
+   "uid": "expG:sample_G017",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G017.json"
+  },
+  {
+   "uid": "expG:sample_G018",
+   "batch": "expG",
+   "old": "stack_overflow_write",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G018.json"
+  },
+  {
+   "uid": "expG:sample_G019",
+   "batch": "expG",
+   "old": "infinite_loop",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G019.json"
+  },
+  {
+   "uid": "expG:sample_G021",
+   "batch": "expG",
+   "old": "state_machine",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G021.json"
+  },
+  {
+   "uid": "expG:sample_G023",
+   "batch": "expG",
+   "old": "null_deref",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G023.json"
+  },
+  {
+   "uid": "expG:sample_G024",
+   "batch": "expG",
+   "old": "race_condition",
+   "new": "data_race",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G024.json"
+  },
+  {
+   "uid": "expG:sample_G025",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G025.json"
+  },
+  {
+   "uid": "expG:sample_G026",
+   "batch": "expG",
+   "old": "stack_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G026.json"
+  },
+  {
+   "uid": "expG:sample_G027",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G027.json"
+  },
+  {
+   "uid": "expG:sample_G029",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G029.json"
+  },
+  {
+   "uid": "expG:sample_G030",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G030.json"
+  },
+  {
+   "uid": "expG:sample_G031",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G031.json"
+  },
+  {
+   "uid": "expG:sample_G032",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G032.json"
+  },
+  {
+   "uid": "expG:sample_G033",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G033.json"
+  },
+  {
+   "uid": "expG:sample_G037",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G037.json"
+  },
+  {
+   "uid": "expG:sample_G038",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G038.json"
+  },
+  {
+   "uid": "expG:sample_G041",
+   "batch": "expG",
+   "old": "info_leak",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G041.json"
+  },
+  {
+   "uid": "expG:sample_G044",
+   "batch": "expG",
+   "old": "state_machine",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G044.json"
+  },
+  {
+   "uid": "expG:sample_G050",
+   "batch": "expG",
+   "old": "stack_overflow_write",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G050.json"
+  },
+  {
+   "uid": "expG:sample_G051",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G051.json"
+  },
+  {
+   "uid": "expG:sample_G052",
+   "batch": "expG",
+   "old": "null_deref",
+   "new": "null_pointer_deref",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G052.json"
+  },
+  {
+   "uid": "expG:sample_G055",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G055.json"
+  },
+  {
+   "uid": "expG:sample_G057",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G057.json"
+  },
+  {
+   "uid": "expG:sample_G058",
+   "batch": "expG",
+   "old": "division_by_zero",
+   "new": "integer_overflow",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G058.json"
+  },
+  {
+   "uid": "expG:sample_G059",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G059.json"
+  },
+  {
+   "uid": "expG:sample_G060",
+   "batch": "expG",
+   "old": "pointer_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G060.json"
+  },
+  {
+   "uid": "expG:sample_G061",
+   "batch": "expG",
+   "old": "pointer_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G061.json"
+  },
+  {
+   "uid": "expG:sample_G063",
+   "batch": "expG",
+   "old": "stack_overflow_write",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G063.json"
+  },
+  {
+   "uid": "expG:sample_G064",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G064.json"
+  },
+  {
+   "uid": "expG:sample_G065",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G065.json"
+  },
+  {
+   "uid": "expG:sample_G066",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G066.json"
+  },
+  {
+   "uid": "expG:sample_G067",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G067.json"
+  },
+  {
+   "uid": "expG:sample_G068",
+   "batch": "expG",
+   "old": "info_leak",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G068.json"
+  },
+  {
+   "uid": "expG:sample_G069",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G069.json"
+  },
+  {
+   "uid": "expG:sample_G070",
+   "batch": "expG",
+   "old": "stack_overflow_write",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G070.json"
+  },
+  {
+   "uid": "expG:sample_G071",
+   "batch": "expG",
+   "old": "heap_underflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G071.json"
+  },
+  {
+   "uid": "expG:sample_G072",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G072.json"
+  },
+  {
+   "uid": "expG:sample_G073",
+   "batch": "expG",
+   "old": "stack_overflow_write",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G073.json"
+  },
+  {
+   "uid": "expG:sample_G075",
+   "batch": "expG",
+   "old": "state_machine",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G075.json"
+  },
+  {
+   "uid": "expG:sample_G076",
+   "batch": "expG",
+   "old": "state_machine",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G076.json"
+  },
+  {
+   "uid": "expG:sample_G080",
+   "batch": "expG",
+   "old": "type_confusion",
+   "new": "type_punning",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G080.json"
+  },
+  {
+   "uid": "expG:sample_G082",
+   "batch": "expG",
+   "old": "race_condition",
+   "new": "data_race",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G082.json"
+  },
+  {
+   "uid": "expG:sample_G083",
+   "batch": "expG",
+   "old": "race_condition",
+   "new": "data_race",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G083.json"
+  },
+  {
+   "uid": "expG:sample_G084",
+   "batch": "expG",
+   "old": "race_condition",
+   "new": "data_race",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G084.json"
+  },
+  {
+   "uid": "expG:sample_G086",
+   "batch": "expG",
+   "old": "timing_side_channel",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G086.json"
+  },
+  {
+   "uid": "expG:sample_G088",
+   "batch": "expG",
+   "old": "resource_exhaustion",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G088.json"
+  },
+  {
+   "uid": "expG:sample_G089",
+   "batch": "expG",
+   "old": "resource_exhaustion",
+   "new": "logic_error",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G089.json"
+  },
+  {
+   "uid": "expG:sample_G090",
+   "batch": "expG",
+   "old": "heap_underflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G090.json"
+  },
+  {
+   "uid": "expG:sample_G091",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G091.json"
+  },
+  {
+   "uid": "expG:sample_G092",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G092.json"
+  },
+  {
+   "uid": "expG:sample_G093",
+   "batch": "expG",
+   "old": "heap_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G093.json"
+  },
+  {
+   "uid": "expG:sample_G094",
+   "batch": "expG",
+   "old": "global_overflow",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G094.json"
+  },
+  {
+   "uid": "expG:sample_G096",
+   "batch": "expG",
+   "old": "heap_overread",
+   "new": "out_of_bounds",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G096.json"
+  },
+  {
+   "uid": "expG:sample_G099",
+   "batch": "expG",
+   "old": "compiler_warning",
+   "new": "use_after_free",
+   "rule": "A2：以权威逐样本 JSON 为准（676m 迁移后）",
+   "evidence": "authoritative sample_sample_G099.json"
+  }
+ ],
+ "verdict_changes": [
+  {
+   "uid": "expE:sample_E076",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E077",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E078",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E079",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E080",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E081",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E082",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E083",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E084",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E085",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E086",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E088",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E089",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E090",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E091",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E092",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E093",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E094",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E095",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E096",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E097",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E098",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E099",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E100",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E101",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E102",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E104",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E105",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E106",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E108",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E109",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E176",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E191",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  },
+  {
+   "uid": "expE:sample_E198",
+   "batch": "expE",
+   "old": "catch",
+   "new": "miss",
+   "rule": "A2/A5：与权威 JSON / 676m 修正件对齐（含 expE 34 条 hung 口径）"
+  }
+ ],
+ "unresolved": [],
+ "matrix_vs_676m_expected_diffs": 38
+}
