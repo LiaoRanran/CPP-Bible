@@ -173,9 +173,19 @@ follow_imports = "skip"
 # `import pytest`）。本仓不需要对 pytest 内部做类型检查 ⇒ 不跟进它的子树（连带掐断
 # pytest→numpy 的解析），比逐库打补丁更稳。@pytest.mark / fixture 等**用法**检查不受影响
 # （那些由 pytest 的 .pyi 提供，仍在解析面内；只有 pytest 内部的实现模块被跳过）。
+# 680 A 收口：CI quality job 只装 pyyaml+hypothesis（**不装 pytest**）⇒ 仅
+# `follow_imports="skip"` 不足以免除 import-not-found（本地装了 pytest，长期看不见）。
 [[tool.mypy.overrides]]
 module = ["pytest", "pytest.*", "_pytest", "_pytest.*"]
 follow_imports = "skip"
+ignore_missing_imports = true
+
+# 680 A 新增：`tools/audit_676k_source.py` 顶层 `import requests`；CI quality job 未装
+# requests ⇒ mypy 报 import-untyped/import-not-found（本地装了 requests 且带 py.typed，
+# 故长期看不见）。与 yaml.* / opentimestamps.* 同款：集中声明环境缺口，不散写 ignore。
+[[tool.mypy.overrides]]
+module = ["requests", "requests.*"]
+ignore_missing_imports = true
 
 # 666 A1 备注：660 B6 把协议内核 canonical 迁到 queyi-verifier 后，本仓
 # `tools/queyi_core_*.py` / `tools/queyi_data_models_645.py` 是**薄 wrapper**
