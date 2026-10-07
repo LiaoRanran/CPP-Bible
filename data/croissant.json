@@ -1,0 +1,1168 @@
+{
+ "@context": {
+  "@language": "en",
+  "@vocab": "https://schema.org/",
+  "sc": "https://schema.org/",
+  "cr": "http://mlcommons.org/croissant/",
+  "rai": "http://mlcommons.org/croissant/RAI/",
+  "dct": "http://purl.org/dc/terms/",
+  "prov": "http://www.w3.org/ns/prov#",
+  "queyi": "https://github.com/LiaoRanran/CPP-Bible/vocab#",
+  "citeAs": "cr:citeAs",
+  "column": "cr:column",
+  "conformsTo": "dct:conformsTo",
+  "data": {
+   "@id": "cr:data",
+   "@type": "@json"
+  },
+  "dataType": {
+   "@id": "cr:dataType",
+   "@type": "@vocab"
+  },
+  "examples": {
+   "@id": "cr:examples",
+   "@type": "@json"
+  },
+  "equivalentProperty": "cr:equivalentProperty",
+  "extract": "cr:extract",
+  "field": "cr:field",
+  "fileProperty": "cr:fileProperty",
+  "fileObject": "cr:fileObject",
+  "fileSet": "cr:fileSet",
+  "format": "cr:format",
+  "includes": "cr:includes",
+  "isLiveDataset": "cr:isLiveDataset",
+  "jsonPath": "cr:jsonPath",
+  "key": "cr:key",
+  "md5": "cr:md5",
+  "parentField": "cr:parentField",
+  "path": "cr:path",
+  "recordSet": "cr:recordSet",
+  "references": "cr:references",
+  "regex": "cr:regex",
+  "repeated": "cr:repeated",
+  "replace": "cr:replace",
+  "samplingRate": "cr:samplingRate",
+  "separator": "cr:separator",
+  "source": "cr:source",
+  "subField": "cr:subField",
+  "transform": "cr:transform"
+ },
+ "@type": "sc:Dataset",
+ "dct:conformsTo": [
+  "http://mlcommons.org/croissant/1.0",
+  "http://mlcommons.org/croissant/RAI/1.0"
+ ],
+ "name": "queyi-detector-blindspot-corpus",
+ "alternateName": "阙疑 · C++ 检测器能力边界语料库（1147 样本 × 8 资产）",
+ "description": "C++ 未定义行为与并发/嵌入式缺陷的检测器能力边界评测语料库：1147 条可编译片段 × 8 个检测资产 = 9176 个**真实执行**的判定格，无模拟分数。每条样本带 34 项闭集缺陷类型、人工植入标记、独立检测器判据（expected_verdict）与源码。全池 OR 口径检出率 **61.6%**、盲区率 **38.4%**；34 类中 13 类盲区率 >50%。本数据集服务于「验证器能力边界能否被外部度量」这一评测问题：它同时给出①逐格真实判定；②跨批次统一的标签词表；③来源三分类（自撰/真源重写/外部原物=0）。五个 Croissant recordSet：样本索引（1137）、检测判定矩阵（1147×8）、34 类词表与盲区统计（内联）、8 族聚合（内联）。RAI 字段（NeurIPS 2026 E&D 要求）包括数据局限、偏差、预期用例、社会影响、合成数据声明与来源溯源。",
+ "version": "682.1",
+ "datePublished": "2026-10-07",
+ "dateModified": "2026-10-07T18:18:21+08:00",
+ "license": "https://www.apache.org/licenses/LICENSE-2.0",
+ "url": "https://github.com/LiaoRanran/CPP-Bible",
+ "sameAs": "https://liaoranran.github.io/CPP-Bible",
+ "creator": {
+  "@type": "sc:Person",
+  "name": "Ran Liao",
+  "affiliation": {
+   "@type": "sc:Organization",
+   "name": "Hefei University"
+  }
+ },
+ "publisher": {
+  "@type": "sc:Organization",
+  "name": "CPP-Bible / Queyi Project"
+ },
+ "keywords": [
+  "C++",
+  "undefined behavior",
+  "sanitizer",
+  "static analysis",
+  "detector blind spots",
+  "dataset",
+  "evaluation",
+  "Croissant",
+  "reproducibility",
+  "four-state verdict"
+ ],
+ "isAccessibleForFree": true,
+ "citeAs": "Liao, R. (2026). queyi-detector-blindspot-corpus: C++ detector capability boundary dataset (1147 samples x 8 assets) [Data set]. https://github.com/LiaoRanran/CPP-Bible",
+ "queyi:stats": {
+  "n_samples": 1147,
+  "n_defect_types": 34,
+  "n_detectors": 8,
+  "detection_rate_pct": 61.6,
+  "blindspot_rate_pct": 38.4,
+  "blindspot_ratio": 0.3836,
+  "or_catch": 707,
+  "or_miss": 440,
+  "or_unknown": 0,
+  "types_gt50_blind": 13,
+  "detectors": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "wunsequenced",
+   "cross-compile",
+   "linker",
+   "compile-time"
+  ],
+  "usable_detectors": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "degenerate_detectors": {
+   "compile-time": "无本地检测器 ⇒ 恒 unknown",
+   "wunsequenced": "本机 MinGW g++ 13.1 不认 -Wunsequenced ⇒ 恒 unknown"
+  },
+  "a5_subset": {
+   "n": 1137,
+   "split": "676f original",
+   "n_derivation": 571,
+   "n_evaluation": 566,
+   "primary_k": 4,
+   "fd_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "fd_rate_pct": 54.5936,
+   "random_rate_pct": 30.5654,
+   "delta_fd_minus_random_pp": 24.0283,
+   "mcnemar_p": 2.2958874039497854e-41,
+   "source": "data/682_a5_split_comparison.json（682 B1 产物）"
+  }
+ },
+ "queyi:labelProvenance": {
+  "source_breakdown_expansion_batches": {
+   "self-authored": 968,
+   "source-derived-reconstruction": 74,
+   "original-external-artifact": 0,
+   "n_expansion": 1042,
+   "derivation_rule": "planted=true ⇒ self-authored；planted=false ⇒ source-derived-reconstruction（SCHEMA.md §2.1.2）"
+  },
+  "planted_true": 1009,
+  "planted_false": 74,
+  "planted_null": 64,
+  "planted_true_pct_all": 87.97,
+  "planted_true_pct_labelled": 93.17,
+  "label_agreement": "AI self-consistency only: Cohen's kappa = 0.77 (defect_type, unified 15-class canon), 0.69 (expected_verdict), 0.71 (planted) on n=131 blind re-annotation; NOT human IAA.",
+  "repair_681": {
+   "generated_by": "tools/repair_681_labels.py",
+   "type_changes": 413,
+   "expected_verdict_changes": 34,
+   "note": "仅重派生 defects_type/expected_verdict 两列；per_asset/or_verdict_all8 等观测字段未改"
+  }
+ },
+ "queyi:environment": {
+  "local_gcc": "g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0",
+  "local_clang": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+  "wsl_gcc": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "os": "win32"
+ },
+ "queyi:platformNotes": "全部判定在本机 Windows + WSL Ubuntu 环境实测（sanitizer 类资产走 WSL g++ 13.3.0）；该环境三元组是判定矩阵的前提条件。缺 WSL 时 sanitizer 类样本降级 unknown ⇒ 检出率下降（属环境依赖，不是能力变化）。",
+ "queyi:reproduction": "data/holdout_expansion/SCHEMA.md（标注规范）；仓库 README「评测数据集与数据质量」节（门禁命令）。",
+ "distribution": [
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/holdout_expansion/DATASHEET.md",
+   "name": "DATASHEET.md",
+   "contentUrl": "data/holdout_expansion/DATASHEET.md",
+   "encodingFormat": "text/markdown",
+   "sha256": "0eca88f2308b7674b9cd48585a973f23d6bd2cb1a97d3ac9cfe71c4b3762ad63",
+   "contentSize": "17542",
+   "queyi:group": "docs",
+   "description": "数据卡（Gebru 九节格式，676m 版 + 677a 来源三分类）"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/holdout_expansion/SCHEMA.md",
+   "name": "SCHEMA.md",
+   "contentUrl": "data/holdout_expansion/SCHEMA.md",
+   "encodingFormat": "text/markdown",
+   "sha256": "bb504848612aa6f0f855f22a831363e990e29f1a18e35f5d7162452ad8924798",
+   "contentSize": "13416",
+   "queyi:group": "docs",
+   "description": "逐样本标注的唯一字段规范（34 类闭集、行号口径、provenance 枚举）"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/a5_676f_sample_manifest.json",
+   "name": "a5_676f_sample_manifest.json",
+   "contentUrl": "data/a5_676f_sample_manifest.json",
+   "encodingFormat": "application/json",
+   "sha256": "922d56f20b7c6adde41aaf2f62f8a3f2d19077ba87341b6291f2ab63c94a93d9",
+   "contentSize": "663660",
+   "queyi:group": "index",
+   "description": "A5 实验样本清单（1137 条：defect_type/defect_group/planted/expected_verdict/split 等；含确定性分层切分规则）"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/blindspot_676g_detection_matrix.json",
+   "name": "blindspot_676g_detection_matrix.json",
+   "contentUrl": "data/blindspot_676g_detection_matrix.json",
+   "encodingFormat": "application/json",
+   "sha256": "184febbe0c2bb5007925822691b6598942e885863c1c0ff243a068fdd761ef82",
+   "contentSize": "2950802",
+   "queyi:group": "matrix",
+   "description": "1147×8 检测判定矩阵（每格为真实 detect() 调用结果；681 修复标签后）"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/blindspot_676g_stats.json",
+   "name": "blindspot_676g_stats.json",
+   "contentUrl": "data/blindspot_676g_stats.json",
+   "encodingFormat": "application/json",
+   "sha256": "6d80549b266078a50ae0be45eae7e8adc3c45cb48a3e8895cc733ef1ec425ecb",
+   "contentSize": "159570",
+   "queyi:group": "stats",
+   "description": "676g 盲区统计（total/by_type/by_asset/complementarity；6710 口径）"
+  },
+  {
+   "@type": "cr:FileObject",
+   "@id": "data/681_type_stats_normalized.json",
+   "name": "681_type_stats_normalized.json",
+   "contentUrl": "data/681_type_stats_normalized.json",
+   "encodingFormat": "application/json",
+   "sha256": "f1da9792a24184cbad6492bc6fa52b7a3aa1e2b100c7465de98cdc4a001c06b6",
+   "contentSize": "6741",
+   "queyi:group": "stats",
+   "description": "681 修复后的 34 类归一化统计（盲区率、family8 聚合；本文件统计字段的事实源）"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expA",
+   "name": "holdout_expansion/expA",
+   "description": "扩样批次 expA：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expA/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expB",
+   "name": "holdout_expansion/expB",
+   "description": "扩样批次 expB：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expB/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expC",
+   "name": "holdout_expansion/expC",
+   "description": "扩样批次 expC：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expC/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expD",
+   "name": "holdout_expansion/expD",
+   "description": "扩样批次 expD：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expD/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expE",
+   "name": "holdout_expansion/expE",
+   "description": "扩样批次 expE：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expE/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expF",
+   "name": "holdout_expansion/expF",
+   "description": "扩样批次 expF：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expF/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  },
+  {
+   "@type": "cr:FileSet",
+   "@id": "data/holdout_expansion/expG",
+   "name": "holdout_expansion/expG",
+   "description": "扩样批次 expG：逐样本标注（sample_*.json）与源码（*.cpp/*.h，只读）",
+   "includes": [
+    "data/holdout_expansion/expG/**"
+   ],
+   "encodingFormat": "application/json + text/x-c++src",
+   "queyi:group": "corpus"
+  }
+ ],
+ "recordSet": [
+  {
+   "@type": "cr:RecordSet",
+   "@id": "queyi-sample-index",
+   "name": "样本索引（A5 清单）",
+   "description": "1137 条 A5 实验样本的元数据（来源清单 data/a5_676f_sample_manifest.json）。split 为 676f 原 split（分层 sha256 奇偶，确定性）。",
+   "key": [
+    "queyi-sample-index/sample_id"
+   ],
+   "source": [
+    {
+     "fileObject": {
+      "@id": "data/a5_676f_sample_manifest.json"
+     },
+     "extract": {
+      "jsonPath": "$.samples[*]"
+     }
+    }
+   ],
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/sample_id",
+     "name": "sample_id",
+     "dataType": "sc:Text",
+     "description": "样本唯一 id",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "sample_id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/source_batch",
+     "name": "source_batch",
+     "dataType": "sc:Text",
+     "description": "来源批次（expA–expG / holdout / corpus_672h）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "source_batch"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/defect_type",
+     "name": "defect_type",
+     "dataType": "sc:Text",
+     "description": "缺陷类型（34 项闭集，词表见 data/holdout_expansion/SCHEMA.md §3）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "defect_type"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/defect_group",
+     "name": "defect_group",
+     "dataType": "sc:Text",
+     "description": "缺陷粗分组（15 类，与 676k TAXONOMY 对齐）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "defect_group"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/planted",
+     "name": "planted",
+     "dataType": "sc:Boolean",
+     "description": "是否本项目人工植入（true）/ 非自造（false）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "planted"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/expected_verdict",
+     "name": "expected_verdict",
+     "dataType": "sc:Text",
+     "description": "独立检测器判据：catch=至少一资产有诊断报告；miss=无报告（含挂起）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "expected_verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/expected_detectors",
+     "name": "expected_detectors",
+     "dataType": "sc:Text",
+     "description": "预期命中的资产名列表",
+     "repeated": true,
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "expected_detectors"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/severity",
+     "name": "severity",
+     "dataType": "sc:Text",
+     "description": "严重度 low/medium/high",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "severity"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-sample-index/split",
+     "name": "split",
+     "dataType": "sc:Text",
+     "description": "676f 原 split：derivation（571）/ evaluation（566）",
+     "source": {
+      "fileObject": {
+       "@id": "data/a5_676f_sample_manifest.json"
+      },
+      "extract": {
+       "jsonPath": "split"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "queyi-detection-matrix",
+   "name": "检测判定矩阵（1147×8）",
+   "description": "每条样本在 8 个检测资产下的真实 verdict（每格一次真实 detect() 调用，execution_model=real_per_asset_detect）。聚合口径：OR——任一 catch ⇒ catch；全 unknown ⇒ unknown。",
+   "key": [
+    "queyi-detection-matrix/sample_id"
+   ],
+   "source": [
+    {
+     "fileObject": {
+      "@id": "data/blindspot_676g_detection_matrix.json"
+     },
+     "extract": {
+      "jsonPath": "$.samples[*]"
+     }
+    }
+   ],
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/sample_id",
+     "name": "sample_id",
+     "dataType": "sc:Text",
+     "description": "样本唯一 id",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "sample_id"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/defect_type",
+     "name": "defect_type",
+     "dataType": "sc:Text",
+     "description": "缺陷类型（681 修复后，34 项闭集）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "defect_type"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/expected_verdict",
+     "name": "expected_verdict",
+     "dataType": "sc:Text",
+     "description": "独立检测器判据（681 修复后）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "expected_verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/planted",
+     "name": "planted",
+     "dataType": "sc:Boolean",
+     "description": "人工植入标记（可缺失 ⇒ null）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "planted"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/hung_flag",
+     "name": "hung_flag",
+     "dataType": "sc:Boolean",
+     "description": "样本是否挂起（自旋死锁/自死锁/cv 永久等待 ⇒ 判据为 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "hung_flag"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_asan",
+     "name": "verdict_asan",
+     "dataType": "sc:Text",
+     "description": "资产 asan 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.asan.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_ubsan",
+     "name": "verdict_ubsan",
+     "dataType": "sc:Text",
+     "description": "资产 ubsan 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.ubsan.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_tsan",
+     "name": "verdict_tsan",
+     "dataType": "sc:Text",
+     "description": "资产 tsan 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.tsan.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_compiler_warn",
+     "name": "verdict_compiler_warn",
+     "dataType": "sc:Text",
+     "description": "资产 compiler-warn 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.compiler-warn.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_cross_compile",
+     "name": "verdict_cross_compile",
+     "dataType": "sc:Text",
+     "description": "资产 cross-compile 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.cross-compile.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_linker",
+     "name": "verdict_linker",
+     "dataType": "sc:Text",
+     "description": "资产 linker 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.linker.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_wunsequenced",
+     "name": "verdict_wunsequenced",
+     "dataType": "sc:Text",
+     "description": "资产 wunsequenced 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.wunsequenced.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/verdict_compile_time",
+     "name": "verdict_compile_time",
+     "dataType": "sc:Text",
+     "description": "资产 compile-time 的真实判定（catch/miss/unknown；unknown 绝不当 miss）",
+     "source": {
+      "fileObject": {
+       "@id": "data/blindspot_676g_detection_matrix.json"
+      },
+      "extract": {
+       "jsonPath": "per_asset.compile-time.verdict"
+      }
+     }
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-detection-matrix/platform_notes",
+     "name": "platform_notes",
+     "dataType": "sc:Text",
+     "description": "运行平台注记（常量字段）：本机检测环境为 WSL Ubuntu g++ 13.3.0 （sanitizer 类资产）、MinGW g++ 13.1.0、clang 22.1.8；缺 WSL 时 sanitizer 类降级 unknown——这是环境依赖，不是能力变化",
+     "value": "WSL g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0 / local g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0 / clang clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)"
+    }
+   ],
+   "queyi:note": "platform_notes 为常量字段（value 而非抽取）：矩阵无逐样本平台注记，以环境常量如实表达，不虚构逐样本值。verdict_* 字段的 jsonPath 指向 per_asset.<asset>.verdict；诊断摘要（note）与墙钟保留在矩阵文件内。"
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "queyi-defect-taxonomy",
+   "name": "缺陷类型词表与盲区统计（34 类）",
+   "description": "681 修复后的 34 类缺陷类型：粗分组、样本数、盲区数与盲区率（盲区 = 6 个可用资产的并集未捕获）。内联 data ⇒ 自包含，无外部依赖。",
+   "key": [
+    "queyi-defect-taxonomy/defect_type"
+   ],
+   "data": [
+    {
+     "queyi-defect-taxonomy/defect_type": "cross_tu_ub",
+     "queyi-defect-taxonomy/defect_group": "logic_or_api",
+     "queyi-defect-taxonomy/n_samples": 7,
+     "queyi-defect-taxonomy/blind": 7,
+     "queyi-defect-taxonomy/blind_pct": 100.0,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "strict_aliasing",
+     "queyi-defect-taxonomy/defect_group": "type_alias_alignment",
+     "queyi-defect-taxonomy/n_samples": 15,
+     "queyi-defect-taxonomy/blind": 15,
+     "queyi-defect-taxonomy/blind_pct": 100.0,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "uninitialized_read",
+     "queyi-defect-taxonomy/defect_group": "uninitialized_read",
+     "queyi-defect-taxonomy/n_samples": 20,
+     "queyi-defect-taxonomy/blind": 20,
+     "queyi-defect-taxonomy/blind_pct": 100.0,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "volatile_misuse",
+     "queyi-defect-taxonomy/defect_group": "embedded_platform",
+     "queyi-defect-taxonomy/n_samples": 28,
+     "queyi-defect-taxonomy/blind": 26,
+     "queyi-defect-taxonomy/blind_pct": 92.9,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "endianness",
+     "queyi-defect-taxonomy/defect_group": "type_alias_alignment",
+     "queyi-defect-taxonomy/n_samples": 28,
+     "queyi-defect-taxonomy/blind": 25,
+     "queyi-defect-taxonomy/blind_pct": 89.3,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "deadlock",
+     "queyi-defect-taxonomy/defect_group": "liveness",
+     "queyi-defect-taxonomy/n_samples": 65,
+     "queyi-defect-taxonomy/blind": 55,
+     "queyi-defect-taxonomy/blind_pct": 84.6,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "algorithm_misuse",
+     "queyi-defect-taxonomy/defect_group": "stl_iterator",
+     "queyi-defect-taxonomy/n_samples": 35,
+     "queyi-defect-taxonomy/blind": 27,
+     "queyi-defect-taxonomy/blind_pct": 77.1,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "logic_error",
+     "queyi-defect-taxonomy/defect_group": "logic_or_api",
+     "queyi-defect-taxonomy/n_samples": 35,
+     "queyi-defect-taxonomy/blind": 26,
+     "queyi-defect-taxonomy/blind_pct": 74.3,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "interrupt_safety",
+     "queyi-defect-taxonomy/defect_group": "embedded_platform",
+     "queyi-defect-taxonomy/n_samples": 20,
+     "queyi-defect-taxonomy/blind": 13,
+     "queyi-defect-taxonomy/blind_pct": 65.0,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "virtual_function",
+     "queyi-defect-taxonomy/defect_group": "virtual_or_oop",
+     "queyi-defect-taxonomy/n_samples": 30,
+     "queyi-defect-taxonomy/blind": 18,
+     "queyi-defect-taxonomy/blind_pct": 60.0,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "linker_odr",
+     "queyi-defect-taxonomy/defect_group": "type_alias_alignment",
+     "queyi-defect-taxonomy/n_samples": 24,
+     "queyi-defect-taxonomy/blind": 14,
+     "queyi-defect-taxonomy/blind_pct": 58.3,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "condition_variable",
+     "queyi-defect-taxonomy/defect_group": "liveness",
+     "queyi-defect-taxonomy/n_samples": 30,
+     "queyi-defect-taxonomy/blind": 17,
+     "queyi-defect-taxonomy/blind_pct": 56.7,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "atomic_ub",
+     "queyi-defect-taxonomy/defect_group": "concurrency_order",
+     "queyi-defect-taxonomy/n_samples": 65,
+     "queyi-defect-taxonomy/blind": 35,
+     "queyi-defect-taxonomy/blind_pct": 53.8,
+     "queyi-defect-taxonomy/gt50_blind": true
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "memory_order",
+     "queyi-defect-taxonomy/defect_group": "concurrency_order",
+     "queyi-defect-taxonomy/n_samples": 42,
+     "queyi-defect-taxonomy/blind": 21,
+     "queyi-defect-taxonomy/blind_pct": 50.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "move_semantics",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 30,
+     "queyi-defect-taxonomy/blind": 15,
+     "queyi-defect-taxonomy/blind_pct": 50.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "type_punning",
+     "queyi-defect-taxonomy/defect_group": "type_alias_alignment",
+     "queyi-defect-taxonomy/n_samples": 23,
+     "queyi-defect-taxonomy/blind": 11,
+     "queyi-defect-taxonomy/blind_pct": 47.8,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "register_ub",
+     "queyi-defect-taxonomy/defect_group": "embedded_platform",
+     "queyi-defect-taxonomy/n_samples": 20,
+     "queyi-defect-taxonomy/blind": 9,
+     "queyi-defect-taxonomy/blind_pct": 45.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "raii_violation",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 31,
+     "queyi-defect-taxonomy/blind": 12,
+     "queyi-defect-taxonomy/blind_pct": 38.7,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "iterator_invalidation",
+     "queyi-defect-taxonomy/defect_group": "stl_iterator",
+     "queyi-defect-taxonomy/n_samples": 35,
+     "queyi-defect-taxonomy/blind": 13,
+     "queyi-defect-taxonomy/blind_pct": 37.1,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "alignment",
+     "queyi-defect-taxonomy/defect_group": "type_alias_alignment",
+     "queyi-defect-taxonomy/n_samples": 27,
+     "queyi-defect-taxonomy/blind": 8,
+     "queyi-defect-taxonomy/blind_pct": 29.6,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "bit_operation",
+     "queyi-defect-taxonomy/defect_group": "integer_ub",
+     "queyi-defect-taxonomy/n_samples": 54,
+     "queyi-defect-taxonomy/blind": 9,
+     "queyi-defect-taxonomy/blind_pct": 16.7,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "lambda_capture",
+     "queyi-defect-taxonomy/defect_group": "virtual_or_oop",
+     "queyi-defect-taxonomy/n_samples": 30,
+     "queyi-defect-taxonomy/blind": 5,
+     "queyi-defect-taxonomy/blind_pct": 16.7,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "other_ub",
+     "queyi-defect-taxonomy/defect_group": "generic_ub",
+     "queyi-defect-taxonomy/n_samples": 72,
+     "queyi-defect-taxonomy/blind": 10,
+     "queyi-defect-taxonomy/blind_pct": 13.9,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "double_free",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 15,
+     "queyi-defect-taxonomy/blind": 2,
+     "queyi-defect-taxonomy/blind_pct": 13.3,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "string_ub",
+     "queyi-defect-taxonomy/defect_group": "stl_iterator",
+     "queyi-defect-taxonomy/n_samples": 35,
+     "queyi-defect-taxonomy/blind": 4,
+     "queyi-defect-taxonomy/blind_pct": 11.4,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "memory_leak",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 28,
+     "queyi-defect-taxonomy/blind": 3,
+     "queyi-defect-taxonomy/blind_pct": 10.7,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "smart_pointer",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 30,
+     "queyi-defect-taxonomy/blind": 3,
+     "queyi-defect-taxonomy/blind_pct": 10.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "out_of_bounds",
+     "queyi-defect-taxonomy/defect_group": "out_of_bounds",
+     "queyi-defect-taxonomy/n_samples": 92,
+     "queyi-defect-taxonomy/blind": 9,
+     "queyi-defect-taxonomy/blind_pct": 9.8,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "stl_container_ub",
+     "queyi-defect-taxonomy/defect_group": "stl_iterator",
+     "queyi-defect-taxonomy/n_samples": 35,
+     "queyi-defect-taxonomy/blind": 3,
+     "queyi-defect-taxonomy/blind_pct": 8.6,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "integer_overflow",
+     "queyi-defect-taxonomy/defect_group": "integer_ub",
+     "queyi-defect-taxonomy/n_samples": 61,
+     "queyi-defect-taxonomy/blind": 4,
+     "queyi-defect-taxonomy/blind_pct": 6.6,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "data_race",
+     "queyi-defect-taxonomy/defect_group": "data_race",
+     "queyi-defect-taxonomy/n_samples": 23,
+     "queyi-defect-taxonomy/blind": 1,
+     "queyi-defect-taxonomy/blind_pct": 4.3,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "memory_safety",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 11,
+     "queyi-defect-taxonomy/blind": 0,
+     "queyi-defect-taxonomy/blind_pct": 0.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "null_pointer_deref",
+     "queyi-defect-taxonomy/defect_group": "null_deref",
+     "queyi-defect-taxonomy/n_samples": 26,
+     "queyi-defect-taxonomy/blind": 0,
+     "queyi-defect-taxonomy/blind_pct": 0.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    },
+    {
+     "queyi-defect-taxonomy/defect_type": "use_after_free",
+     "queyi-defect-taxonomy/defect_group": "memory_lifetime",
+     "queyi-defect-taxonomy/n_samples": 25,
+     "queyi-defect-taxonomy/blind": 0,
+     "queyi-defect-taxonomy/blind_pct": 0.0,
+     "queyi-defect-taxonomy/gt50_blind": false
+    }
+   ],
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/defect_type",
+     "name": "defect_type",
+     "dataType": "sc:Text",
+     "description": "缺陷类型（34 项闭集）"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/defect_group",
+     "name": "defect_group",
+     "dataType": "sc:Text",
+     "description": "粗分组（15 类）"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/n_samples",
+     "name": "n_samples",
+     "dataType": "sc:Integer",
+     "description": "该类型样本数"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/blind",
+     "name": "blind",
+     "dataType": "sc:Integer",
+     "description": "该类型盲区样本数（并集未捕获）"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/blind_pct",
+     "name": "blind_pct",
+     "dataType": "sc:Float",
+     "description": "盲区率（%）"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-defect-taxonomy/gt50_blind",
+     "name": "gt50_blind",
+     "dataType": "sc:Boolean",
+     "description": "盲区率是否 >50%"
+    }
+   ]
+  },
+  {
+   "@type": "cr:RecordSet",
+   "@id": "queyi-family8-stats",
+   "name": "家族聚合盲区统计（8 族）",
+   "description": "type→group→family 的聚合层：8 个家族各自的样本数与盲区率（681 修复后）。",
+   "key": [
+    "queyi-family8-stats/family"
+   ],
+   "data": [
+    {
+     "queyi-family8-stats/family": "memory",
+     "queyi-family8-stats/n_samples": 190,
+     "queyi-family8-stats/blind": 55,
+     "queyi-family8-stats/blind_pct": 28.9
+    },
+    {
+     "queyi-family8-stats/family": "bounds",
+     "queyi-family8-stats/n_samples": 118,
+     "queyi-family8-stats/blind": 9,
+     "queyi-family8-stats/blind_pct": 7.6
+    },
+    {
+     "queyi-family8-stats/family": "integer",
+     "queyi-family8-stats/n_samples": 115,
+     "queyi-family8-stats/blind": 13,
+     "queyi-family8-stats/blind_pct": 11.3
+    },
+    {
+     "queyi-family8-stats/family": "alias_type",
+     "queyi-family8-stats/n_samples": 93,
+     "queyi-family8-stats/blind": 59,
+     "queyi-family8-stats/blind_pct": 63.4
+    },
+    {
+     "queyi-family8-stats/family": "concurrency",
+     "queyi-family8-stats/n_samples": 225,
+     "queyi-family8-stats/blind": 129,
+     "queyi-family8-stats/blind_pct": 57.3
+    },
+    {
+     "queyi-family8-stats/family": "stl",
+     "queyi-family8-stats/n_samples": 140,
+     "queyi-family8-stats/blind": 47,
+     "queyi-family8-stats/blind_pct": 33.6
+    },
+    {
+     "queyi-family8-stats/family": "language_oop",
+     "queyi-family8-stats/n_samples": 174,
+     "queyi-family8-stats/blind": 66,
+     "queyi-family8-stats/blind_pct": 37.9
+    },
+    {
+     "queyi-family8-stats/family": "embedded_link",
+     "queyi-family8-stats/n_samples": 92,
+     "queyi-family8-stats/blind": 62,
+     "queyi-family8-stats/blind_pct": 67.4
+    }
+   ],
+   "field": [
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-family8-stats/family",
+     "name": "family",
+     "dataType": "sc:Text",
+     "description": "家族名（memory/bounds/integer/alias_type/concurrency/stl/language_oop/embedded_link）"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-family8-stats/n_samples",
+     "name": "n_samples",
+     "dataType": "sc:Integer",
+     "description": "家族样本数"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-family8-stats/blind",
+     "name": "blind",
+     "dataType": "sc:Integer",
+     "description": "家族盲区样本数"
+    },
+    {
+     "@type": "cr:Field",
+     "@id": "queyi-family8-stats/blind_pct",
+     "name": "blind_pct",
+     "dataType": "sc:Float",
+     "description": "家族盲区率（%）"
+    }
+   ]
+  }
+ ],
+ "rai:dataLimitations": [
+  "语言限 C++（无其他语言样本）。",
+  "语料以自撰教学化片段为主：87.97%（全体口径）的样本为人工植入；非自撰的 74 条是从真实 CVE/GitHub issue **等价重写**的单文件片段（source-derived-reconstruction），**不含任何原始外部代码原物**；另有 64 条 planted 未定。",
+  "不能用于估计真实世界缺陷分布：样本构造偏向可演示性，批内克隆率 62.2%（仅 572 种代码结构）。",
+  "类型分布不均衡：最大类 out_of_bounds 92 条，最小类 cross_tu_ub 7 条。",
+  "判定矩阵绑定本机环境（g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0 / g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0）与 8 个具体资产；不推荐外推到其他工具链组合。wunsequenced / compile-time 两个资产恒为 unknown（本机无对应检测器）⇒ 任何以 8 资产为分母的「未知率」都被这两个常量资产抬高。",
+  "所有「检出率」都必须在 OR 口径（任一资产 catch）与 unknown 不当 miss 的前提下读数；单独引用某一资产的 catch 率时须带该资产名与分母。"
+ ],
+ "rai:dataBiases": [
+  "植入偏差：93.17%（有标签口径）/ 87.97%（全体口径）为人工植入 —— 人工构造的缺陷往往比真实缺陷更「典型」，会系统性抬升可检出性。",
+  "构造偏差：样本为可直接编译运行的最小片段（无构建系统、无第三方依赖、无跨进程场景），真实工程中的构建期/链接期/运行期耦合被剥离。",
+  "克隆偏差：全库仅 572 种不同代码结构（批内克隆率 62.2%）；跨批近克隆 103 对（676k）。统计时若不按 clone-family 切分，会在家族内泄漏（677b 已给出 clone-aware split 对照）。",
+  "类别失衡：34 类中 13 类盲区率 >50%（最高四类 100%：cross_tu_ub / strict_aliasing / uninitialized_read 及 volatile_misuse 92.9%）⇒ 类别级结论只在该类样本数（20–92）内成立。",
+  "来源偏差：74 条 CVE 重写样本经教学化简化（剥离原始上下文），其「真实感」弱于原物；本库不能声称覆盖 CVE 分布。",
+  "标签不确定性：单标注者 + AI self-consistency（kappa=0.77）；未经人类第三方 IAA。676k 统一 15 类词表后 kappa 从 0.59（原始词表）升至 0.77，说明词表定义本身影响一致性读数。"
+ ],
+ "rai:personalSensitiveInformation": "None. 样本为 C++ 代码片段与缺陷标注，不含个人数据、人口统计属性、地理位置、健康/政治/宗教信息或用户行为数据。少量样本的来源字段引用公开 CVE 编号与开源项目名（如 Shellshock、Dirty Pipe 的公开记录），不含个人信息。",
+ "rai:dataUseCases": [
+  "已确立效度：检测器/净化器能力边界审计 —— 度量「给定资产组合能覆盖哪类缺陷、在哪些类型上系统性失明」，以及资产互补性与边际贡献（Shapley/LOO 可直接在判定矩阵上复算）。",
+  "已确立效度：验证器选择策略的评测 —— failure-driven 选择 vs 随机 vs 静态基线的同预算对照（预注册 k=4；1137 子集，详见仓库 682 敏感性分析）。",
+  "已确立效度：标签质量与词表研究 —— 跨批标签统一、κ 一致性、近克隆检测的方法学案例。",
+  "未确立效度：训练缺陷分类器/LLM —— 语料为教学化片段、类别失衡、标签经 AI 自洽性校验而非人类 IAA，不构成监督学习基准。",
+  "未确立效度：推断真实世界缺陷率、评估生产代码质量、跨语言泛化。"
+ ],
+ "rai:dataSocialImpact": "正面：把「检测器到底能看见什么」变成可复现、可打断、可否证的公开证据；揭示 sanitizer/静态分析的系统性盲区（38.4%），有助于抵制「上工具即安全」的错觉；全部源码与判定可离线复现，不依赖付费服务。风险：把盲区率误读为「代码质量差」或「工具无用」；把自撰语料的表现误读为真实工程表现；把 AI self-consistency 的 κ=0.77 误当人类标注者一致性。缓解：数据卡与 README 明确 scope；所有率均带分母与口径；本 RAI 字段逐条声明局限。",
+ "rai:hasSyntheticData": true,
+ "rai:hasSyntheticDataNote": "True：样本为人工编写或对公开缺陷记录的等价重写（无生成模型合成、无数据增强）。「合成」在这里指由作者构造而非从现有代码库采样。",
+ "prov:wasDerivedFrom": [
+  "https://github.com/LiaoRanran/CPP-Bible —— 主仓：样本、检测器与判定矩阵的产生地（本数据集随仓库分发）。",
+  "data/holdout_expansion/DATASHEET.md —— 数据卡：含 74 条 source-derived 样本的 CVE/GitHub issue 来源字段（source.{type,id,url,project,commit,simplification}）。"
+ ],
+ "prov:wasGeneratedBy": [
+  "corpus-construction：扩样生成 data/expansion_676c*/**（676c 批次，expA–expG 共 1042 条）；每条含 sample_*.json 标注 + 可编译源码；固定种子见各自脚本。",
+  "label-migration：676m 标签迁移（56→33 类词表 + 行号/文件定位修正，308/1042 改写）→ 677a 增补 provenance → 681 跨源标签修复（413 行 defect_type + 34 行 expected_verdict 重派生，已落盘 data/681_标签修复日志.json）。",
+  "detection-run：8 资产真机检测 tools/holdout_reveal_661.py::detect（673u 修复版，sha256_16=4c7a9e3d8a35faa6），每样本×每资产一次真实调用，execution_model=real_per_asset_detect；矩阵 1147×8，零缺失格。",
+  "label-quality-audit：676k AI 盲化双标注（n=131）：Cohen's kappa —— defect_type 0.77（统一 15 类）/0.59（原始词表）、expected_verdict 0.69、planted 0.71；此为 AI self-consistency，非人类 IAA。"
+ ],
+ "rai:dataCollection": "样本由项目作者编写（自撰）或从公开缺陷记录（CVE/GitHub issue）等价重写为单文件可编译片段；无爬取、无用户数据、无众包。判定矩阵由本机 8 个检测资产真实执行产生（非人工打分）。",
+ "rai:dataCollectionType": [
+  "Manual Human Curation",
+  "Document analysis",
+  "Direct measurement",
+  "Software Collection"
+ ],
+ "rai:dataAnnotationProtocol": "单标注者（作者）依 SCHEMA.md 的 34 类闭集与行号口径标注 defect_type/位置/严重度/植入标记；expected_verdict 为独立检测器判据（catch=至少一资产有报告；挂起=miss）。676k 以 AI 盲化双标注做自洽性审计（κ 见上），人类第三方 IAA 仍未做（开放威胁 T17）。",
+ "rai:dataAnnotationPlatform": [
+  "Local annotation files (JSON, one per sample)",
+  "tools/fix_676m_schema.py (deterministic label migration)"
+ ],
+ "rai:annotationsPerItem": "1 (single annotator) + AI blind re-annotation for agreement audit",
+ "rai:dataReleaseMaintenancePlan": "随论文仓库长期维护（GitHub LiaoRanran/CPP-Bible）；判定矩阵与统计按批次版本化（676f/676g/681/682…）；每次标签或检测器变更产生新批次文件而不原地覆盖；弃用策略：旧批次保留在仓库内并在 VERSION.md 登记，不做静默替换。"
+}

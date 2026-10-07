@@ -1,0 +1,151 @@
+{
+ "schema": "queyi-682-rai-metadata/v1",
+ "generated_by": "tools/gen_682_metadata.py",
+ "generated_at": "2026-10-07T18:18:21+08:00",
+ "purpose": "RAI 元数据展开版：与 data/croissant.json 内 RAI 字段**同源同值**，补齐 Croissant RAI 规范（v1.0）中的其他维度和人类可读说明。NeurIPS 2026 E&D 要求 RAI 最小字段集嵌入 Croissant 文件（已满足）；本文件用于论文附录引用与审稿快速阅读。",
+ "conformance": {
+  "croissant_core": "http://mlcommons.org/croissant/1.0",
+  "croissant_rai": "http://mlcommons.org/croissant/RAI/1.0",
+  "neurips_2026_minimal_rai_fields_required": [
+   "rai:dataLimitations",
+   "rai:dataBiases",
+   "rai:personalSensitiveInformation",
+   "rai:dataUseCases",
+   "rai:dataSocialImpact",
+   "rai:hasSyntheticData",
+   "prov:wasDerivedFrom",
+   "prov:wasGeneratedBy"
+  ],
+  "note_on_hasSyntheticData": "rai:hasSyntheticData 出现在 NeurIPS 2026 Hosting Guidelines 的最小字段表中，但不在 Croissant RAI v1.0 的 20 属性表内（后者发布于 2024-03，此后可能已扩展）——本文件按 NeurIPS 指南保留该字段名。"
+ },
+ "minimal_rai_fields": {
+  "rai:dataLimitations": [
+   "语言限 C++（无其他语言样本）。",
+   "语料以自撰教学化片段为主：87.97%（全体口径）的样本为人工植入；非自撰的 74 条是从真实 CVE/GitHub issue **等价重写**的单文件片段（source-derived-reconstruction），**不含任何原始外部代码原物**；另有 64 条 planted 未定。",
+   "不能用于估计真实世界缺陷分布：样本构造偏向可演示性，批内克隆率 62.2%（仅 572 种代码结构）。",
+   "类型分布不均衡：最大类 out_of_bounds 92 条，最小类 cross_tu_ub 7 条。",
+   "判定矩阵绑定本机环境（g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0 / g++ (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 13.1.0）与 8 个具体资产；不推荐外推到其他工具链组合。wunsequenced / compile-time 两个资产恒为 unknown（本机无对应检测器）⇒ 任何以 8 资产为分母的「未知率」都被这两个常量资产抬高。",
+   "所有「检出率」都必须在 OR 口径（任一资产 catch）与 unknown 不当 miss 的前提下读数；单独引用某一资产的 catch 率时须带该资产名与分母。"
+  ],
+  "rai:dataBiases": [
+   "植入偏差：93.17%（有标签口径）/ 87.97%（全体口径）为人工植入 —— 人工构造的缺陷往往比真实缺陷更「典型」，会系统性抬升可检出性。",
+   "构造偏差：样本为可直接编译运行的最小片段（无构建系统、无第三方依赖、无跨进程场景），真实工程中的构建期/链接期/运行期耦合被剥离。",
+   "克隆偏差：全库仅 572 种不同代码结构（批内克隆率 62.2%）；跨批近克隆 103 对（676k）。统计时若不按 clone-family 切分，会在家族内泄漏（677b 已给出 clone-aware split 对照）。",
+   "类别失衡：34 类中 13 类盲区率 >50%（最高四类 100%：cross_tu_ub / strict_aliasing / uninitialized_read 及 volatile_misuse 92.9%）⇒ 类别级结论只在该类样本数（20–92）内成立。",
+   "来源偏差：74 条 CVE 重写样本经教学化简化（剥离原始上下文），其「真实感」弱于原物；本库不能声称覆盖 CVE 分布。",
+   "标签不确定性：单标注者 + AI self-consistency（kappa=0.77）；未经人类第三方 IAA。676k 统一 15 类词表后 kappa 从 0.59（原始词表）升至 0.77，说明词表定义本身影响一致性读数。"
+  ],
+  "rai:personalSensitiveInformation": "None. 样本为 C++ 代码片段与缺陷标注，不含个人数据、人口统计属性、地理位置、健康/政治/宗教信息或用户行为数据。少量样本的来源字段引用公开 CVE 编号与开源项目名（如 Shellshock、Dirty Pipe 的公开记录），不含个人信息。",
+  "rai:dataUseCases": [
+   "已确立效度：检测器/净化器能力边界审计 —— 度量「给定资产组合能覆盖哪类缺陷、在哪些类型上系统性失明」，以及资产互补性与边际贡献（Shapley/LOO 可直接在判定矩阵上复算）。",
+   "已确立效度：验证器选择策略的评测 —— failure-driven 选择 vs 随机 vs 静态基线的同预算对照（预注册 k=4；1137 子集，详见仓库 682 敏感性分析）。",
+   "已确立效度：标签质量与词表研究 —— 跨批标签统一、κ 一致性、近克隆检测的方法学案例。",
+   "未确立效度：训练缺陷分类器/LLM —— 语料为教学化片段、类别失衡、标签经 AI 自洽性校验而非人类 IAA，不构成监督学习基准。",
+   "未确立效度：推断真实世界缺陷率、评估生产代码质量、跨语言泛化。"
+  ],
+  "rai:dataSocialImpact": "正面：把「检测器到底能看见什么」变成可复现、可打断、可否证的公开证据；揭示 sanitizer/静态分析的系统性盲区（38.4%），有助于抵制「上工具即安全」的错觉；全部源码与判定可离线复现，不依赖付费服务。风险：把盲区率误读为「代码质量差」或「工具无用」；把自撰语料的表现误读为真实工程表现；把 AI self-consistency 的 κ=0.77 误当人类标注者一致性。缓解：数据卡与 README 明确 scope；所有率均带分母与口径；本 RAI 字段逐条声明局限。",
+  "rai:hasSyntheticData": true,
+  "prov:wasDerivedFrom": [
+   "https://github.com/LiaoRanran/CPP-Bible —— 主仓：样本、检测器与判定矩阵的产生地（本数据集随仓库分发）。",
+   "data/holdout_expansion/DATASHEET.md —— 数据卡：含 74 条 source-derived 样本的 CVE/GitHub issue 来源字段（source.{type,id,url,project,commit,simplification}）。"
+  ],
+  "prov:wasGeneratedBy": [
+   "corpus-construction：扩样生成 data/expansion_676c*/**（676c 批次，expA–expG 共 1042 条）；每条含 sample_*.json 标注 + 可编译源码；固定种子见各自脚本。",
+   "label-migration：676m 标签迁移（56→33 类词表 + 行号/文件定位修正，308/1042 改写）→ 677a 增补 provenance → 681 跨源标签修复（413 行 defect_type + 34 行 expected_verdict 重派生，已落盘 data/681_标签修复日志.json）。",
+   "detection-run：8 资产真机检测 tools/holdout_reveal_661.py::detect（673u 修复版，sha256_16=4c7a9e3d8a35faa6），每样本×每资产一次真实调用，execution_model=real_per_asset_detect；矩阵 1147×8，零缺失格。",
+   "label-quality-audit：676k AI 盲化双标注（n=131）：Cohen's kappa —— defect_type 0.77（统一 15 类）/0.59（原始词表）、expected_verdict 0.69、planted 0.71；此为 AI self-consistency，非人类 IAA。"
+  ]
+ },
+ "croissant_rai_v1_extra_dimensions": {
+  "rai:dataCollection": "样本由项目作者编写（自撰）或从公开缺陷记录（CVE/GitHub issue）等价重写为单文件可编译片段；无爬取、无用户数据、无众包。判定矩阵由本机 8 个检测资产真实执行产生（非人工打分）。",
+  "rai:dataCollectionType": [
+   "Manual Human Curation",
+   "Document analysis",
+   "Direct measurement",
+   "Software Collection"
+  ],
+  "rai:dataAnnotationProtocol": "单标注者（作者）依 SCHEMA.md 的 34 类闭集与行号口径标注 defect_type/位置/严重度/植入标记；expected_verdict 为独立检测器判据（catch=至少一资产有报告；挂起=miss）。676k 以 AI 盲化双标注做自洽性审计（κ 见上），人类第三方 IAA 仍未做（开放威胁 T17）。",
+  "rai:dataAnnotationPlatform": [
+   "Local annotation files (JSON, one per sample)",
+   "tools/fix_676m_schema.py (deterministic label migration)"
+  ],
+  "rai:annotationsPerItem": "1 (single annotator) + AI blind re-annotation for agreement audit",
+  "rai:dataReleaseMaintenancePlan": "随论文仓库长期维护（GitHub LiaoRanran/CPP-Bible）；判定矩阵与统计按批次版本化（676f/676g/681/682…）；每次标签或检测器变更产生新批次文件而不原地覆盖；弃用策略：旧批次保留在仓库内并在 VERSION.md 登记，不做静默替换。"
+ },
+ "structured": {
+  "data_sources": {
+   "self_authored": {
+    "n": 968,
+    "scope": "1042 扩样中的自撰片段"
+   },
+   "source_derived_reconstruction": {
+    "n": 74,
+    "scope": "CVE/GitHub issue 等价重写（单文件教学化）"
+   },
+   "original_external_artifact": {
+    "n": 0,
+    "scope": "本库不含原始外部代码；若将来收录须附许可与来源"
+   },
+   "legacy_and_holdout": "105 条（holdout 41 + corpus 64）为早期批次，口径同上",
+   "authoritative": "data/holdout_expansion/SCHEMA.md §2.1（provenance 枚举）"
+  },
+  "annotation_process": {
+   "annotators": 1,
+   "second_pass": "AI blind re-annotation (676k, n=131) + 682 批次 25% AI re-annotation",
+   "agreement": {
+    "defect_type_canon_15class_kappa": 0.773385,
+    "defect_type_raw_kappa": 0.588221,
+    "expected_verdict_kappa": 0.688992,
+    "planted_kappa": 0.708477,
+    "caliber": "AI self-consistency, NOT human IAA"
+   },
+   "label_migrations": [
+    "676m: 56→33 类 + 定位修正（308/1042 改写）",
+    "677a: provenance 派生",
+    "681: 跨源标签修复（413 + 34 行）"
+   ],
+   "open_threat": "T17 —— 人类第三方标注复核仍未做"
+  },
+  "known_biases": {
+   "planted_share": "93.2%（有标签口径 1009/1083）；全体口径 88.0%（含 64 条 null）",
+   "language": "C++ only",
+   "environment": "WSL g++ 13.3.0 / MinGW g++ 13.1.0 / clang 22.1.8（win32）",
+   "clone_rate_pct": 62.2,
+   "distinct_structures": 572,
+   "class_imbalance": "n∈[7, 92]；13 类盲区率>50%",
+   "teaching_fragments": "无构建系统/无第三方依赖；构建期与运行期耦合被剥离"
+  },
+  "privacy_and_ethics": {
+   "personal_data": "none",
+   "sensitive_attributes": "none",
+   "consent": "not applicable（无人类受试者）",
+   "ethics_review": "not required（不含人类受试者/动物/敏感数据）",
+   "dual_use": "低风险：缺陷语料可被用于改进检测器（正向）或被误读为代码质量指标（已在局限声明）"
+  },
+  "scope_and_limits": {
+   "valid_for": [
+    "检测器能力边界审计",
+    "资产互补性/边际贡献分析",
+    "验证器选择策略评测",
+    "标签词表方法学研究"
+   ],
+   "invalid_for": [
+    "真实世界缺陷率推断",
+    "生产代码质量评分",
+    "缺陷分类器训练基准",
+    "跨语言泛化声明"
+   ],
+   "key_numbers_disclaimer": "所有比例须带分母与口径（OR、unknown 不当 miss、6 可用资产 vs 8 资产池）"
+  },
+  "maintenance": {
+   "repository": "https://github.com/LiaoRanran/CPP-Bible",
+   "versioning": "批次式（676f/676g/681/682…）；不原地覆盖既有产物",
+   "update_policy": "标签或检测器变更 ⇒ 新批次文件 + VERSION.md 登记",
+   "contact": "1026708211@qq.com"
+  }
+ },
+ "honest_notes": [
+  "本文件由脚本生成（tools/gen_682_metadata.py）；minimal_rai_fields 与 data/croissant.json 的同名字段由同一次运行产生 ⇒ 不可能漂移。",
+  "Croissant 官方验证器（mlcroissant）与在线 RAI 编辑器的实测结果登记在 data/682_规范调研摘要.md 与验收报告中。"
+ ]
+}

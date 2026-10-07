@@ -128,6 +128,21 @@ bash docker/paper/run_all.sh
 > **两个必须同读的限定**：① 92.9% 的样本是人工植入，本数据集测的是**仪器**而非真实缺陷分布；
 > ② 62.2% 的批内模板克隆率意味着**有效独立样本量远小于 1042**，且**不可用于训练模型**。
 
+### 机器可读元数据（682：Croissant + RAI）
+
+| 文件 | 内容 | 校验 |
+|------|------|------|
+| [`data/croissant.json`](data/croissant.json) | **Croissant core 1.0 + RAI 1.0**（同文件）：4 个 recordSet（1137 样本索引 / 1147×8 判定矩阵 / 34 类词表 / 8 族聚合）；13 个 FileObject 带 SHA-256 与大小；7 个 FileSet 覆盖扩样目录 | 官方 `mlcroissant` 库加载**通过**（4 recordSet / 13 文件全解析） |
+| [`data/rai_metadata.json`](data/rai_metadata.json) | RAI 展开版（与 croissant.json 内 8 个最小 RAI 字段**同源同值** + RAI v1.0 其余维度） | 自检 C6「同源」逐字段比对 |
+| [`data/682_规范调研摘要.md`](data/682_规范调研摘要.md) | NeurIPS 2026 E&D 硬性要求 + Croissant core/RAI 规范摘要（全部带官方来源 URL） | — |
+| [`data/682_metadata_selfcheck.json`](data/682_metadata_selfcheck.json) | 8 项自检（必填字段 / 统计一致 / 哈希复算 / RAI 在场 / 官方校验） | `python tools/gen_682_metadata.py --stage check` |
+
+数据卡摘要（datasheet）：**1147 样本 × 8 资产 = 9176 个真实判定格**，34 类缺陷闭集，
+OR 口径检出率 **61.6%** / 盲区 **38.4%**；来源三分类 self-authored **968** /
+source-derived-reconstruction **74** / original-external-artifact **0**（扩样 1042 口径）。
+**标签一致性是 AI 自洽性（κ=0.77），不是人类 IAA**；数据集**不含个人数据**。
+完整 RAI 声明（局限 / 偏差 / 用例 / 社会影响 / 合成数据 / 溯源）见上述两文件。
+
 ## 快速开始
 
 ```bash

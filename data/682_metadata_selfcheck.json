@@ -1,0 +1,85 @@
+{
+ "schema": "queyi-682-metadata-selfcheck/v1",
+ "generated_at": "2026-10-07T18:18:21+08:00",
+ "checks": [
+  {
+   "id": "C1a",
+   "name": "croissant.json 必填字段齐",
+   "ok": true,
+   "detail": "缺：[]"
+  },
+  {
+   "id": "C1b",
+   "name": "RAI 8 最小字段齐",
+   "ok": true,
+   "detail": "缺：[]"
+  },
+  {
+   "id": "C1c",
+   "name": "@type == sc:Dataset",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C1d",
+   "name": "recordSet ≥4 且含 key/field",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C2a",
+   "name": "样本数 1147",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C2b",
+   "name": "类型数 34",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C2c",
+   "name": "检测器数 8",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C2d",
+   "name": "检出率 61.6 / 盲区率 38.4",
+   "ok": true,
+   "detail": "61.6/38.4"
+  },
+  {
+   "id": "C3",
+   "name": "FileObject sha256/contentSize 复算一致",
+   "ok": true,
+   "detail": "不一致：[]"
+  },
+  {
+   "id": "C4",
+   "name": "distribution 路径全部存在",
+   "ok": true,
+   "detail": "缺：[]"
+  },
+  {
+   "id": "C5",
+   "name": "RAI 字段非空",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C6",
+   "name": "rai_metadata.json 与 croissant RAI 同源",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "id": "C7",
+   "name": "关键免责在场（AI self-consistency / 非人类 IAA）",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "verdict": "pass"
+}
