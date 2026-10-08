@@ -23,7 +23,7 @@
 # 因此本 Dockerfile **从未被实际构建过**。它经过：
 #   * 逐行包名核对（Ubuntu 22.04 jammy 官方仓库存在性）；
 #   * 与 docs/ENVIRONMENT.md 的版本表一致性核对；
-# 但**没有** `docker build` 的实际证据。首次构建请先看 `scripts/verify_environment.sh`。
+# 但**没有** `docker build` 的实际证据。首次构建请先看 `Scripts/verify_environment.sh`。
 #
 # 为什么放 docker/reproduce/ 而不是仓库根
 # ---------------------------------------
@@ -94,7 +94,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    # 复现脚本需要的环境变量（scripts/reproduce_all.sh 会读）
+    # 复现脚本需要的环境变量（Scripts/reproduce_all.sh 会读）
     QUEYI_REPRO_ROOT=/workspace \
     QUEYI_SKIP_WUNSEQUENCED=1
 
@@ -152,9 +152,9 @@ USER queyi
 ENV PATH="/home/queyi/.local/bin:${PATH}" \
     LD_LIBRARY_PATH="/usr/lib/gcc/x86_64-linux-gnu/12:${LD_LIBRARY_PATH}"
 
-# 入口：一键复现（scripts/reproduce_all.sh）
+# 入口：一键复现（Scripts/reproduce_all.sh）
 ENTRYPOINT ["/bin/bash", "-lc"]
-CMD ["scripts/reproduce_all.sh"]
+CMD ["Scripts/reproduce_all.sh"]
 
 LABEL org.opencontainers.image.title="queyi-reproduce" \
       org.opencontainers.image.description="Queyi full-chain reproducibility image (untested build, see header)" \

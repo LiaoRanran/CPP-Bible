@@ -78,8 +78,8 @@ matrix = load_json_cached(ROOT / "data" / "blindspot_676g_detection_matrix.json"
 
 | 我想… | 用哪个 |
 |---|---|
-| 体检环境（编译器/sanitizer/已知坑） | `../scripts/verify_environment.sh` |
-| 一键复现 | `../scripts/reproduce_all.sh` |
+| 体检环境（编译器/sanitizer/已知坑） | `../Scripts/verify_environment.sh` |
+| 一键复现 | `../Scripts/reproduce_all.sh` |
 | 校验冻结产物 sha256 | `gen_693_manifest.py --check` |
 | 全面数据完整性检查 | `verify_data_integrity.py` |
 | 论文数字对账 | `verify_paper_numbers.py` |

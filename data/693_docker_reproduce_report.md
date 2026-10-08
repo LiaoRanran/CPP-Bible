@@ -1,7 +1,7 @@
 # 693-B4 · Docker 复现阶段验证报告（宿主机实测 + 容器未实测）
 
 - 生成：2026-10-08（693 批次）
-- 脚本：`scripts/reproduce_all.sh` / `scripts/verify_environment.sh`
+- 脚本：`Scripts/reproduce_all.sh` / `Scripts/verify_environment.sh`
 - 产物：`docker/reproduce/Dockerfile`、`docker/reproduce/docker-compose.yml`、`.dockerignore`、
   `docs/ENVIRONMENT.md`、`requirements.txt`、`data/693_data_manifest.sha256`
 
@@ -25,7 +25,7 @@ S0–S2 与论文门禁。任何人拿到一台装了 Docker 的机器，应当�
 
 ---
 
-## 2. 宿主机实测记录（`bash scripts/reproduce_all.sh --out out/693_reproduce`）
+## 2. 宿主机实测记录（`bash Scripts/reproduce_all.sh --out out/693_reproduce`）
 
 ```
 [reproduce] S0 环境体检

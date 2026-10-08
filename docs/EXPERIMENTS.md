@@ -16,7 +16,7 @@
 ## 1. 一键复现（推荐入口）
 
 ```bash
-bash scripts/reproduce_all.sh --out out/693_reproduce
+bash Scripts/reproduce_all.sh --out out/693_reproduce
 ```
 
 五个阶段，前一步失败即停（fail-loud）：

@@ -56,14 +56,14 @@ git clone https://github.com/LiaoRanran/CPP-Bible.git
 cd CPP-Bible
 
 # ① 环境体检（明确告诉你哪些资产在本机不可用，不静默降级）
-bash scripts/verify_environment.sh --report
+bash Scripts/verify_environment.sh --report
 
 # ② 纯 Python 数据链（不需要任何编译器）—— 论文数字对账 + 完整性
 python tools/verify_paper_numbers.py         # 数字 vs 权威源，fail-closed
 python tools/gen_693_manifest.py --check     # 14 项冻结产物 sha256 完整性
 
 # ③ 一键复现（环境体检 → 完整性 → 数字复算 → 门禁 → 报告）
-bash scripts/reproduce_all.sh --out out/693_reproduce
+bash Scripts/reproduce_all.sh --out out/693_reproduce
 ```
 
 完整检测链（需要 WSL g++ 13.3 + MinGW g++ 13.1 + clang++）：
@@ -97,7 +97,7 @@ docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
 | `data/holdout_expansion/` | 评测集（1042 条扩样 + 1094 个源文件），规范见 `SCHEMA.md`、数据卡见 `DATASHEET.md` |
 | `data/annotation_package/` | **人类标注材料包**（145 条去标识化样本 + 标注指南 + 校准题） |
 | `tools/` | 门禁、判决、分析、复现脚本（均带 `--check` 自检） |
-| `scripts/` | `reproduce_all.sh` / `verify_environment.sh`（693-B 一键复现） |
+| `Scripts/` | `reproduce_all.sh` / `verify_environment.sh`（693-B 一键复现） |
 | `docker/reproduce/` | 复现镜像（多阶段构建；**未实测**） |
 | `docs/` | `ENVIRONMENT.md`（环境锁定）与研究报告 |
 | `tests/` | pytest 套件（fast / slow 两阶段） |

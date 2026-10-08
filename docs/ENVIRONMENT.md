@@ -144,7 +144,7 @@ export WSL_UTF8=1
 export WSLENV=WSL_UTF8/u
 
 # 4) 自检
-bash scripts/verify_environment.sh --profile=wsl-gcc-13.3
+bash Scripts/verify_environment.sh --profile=wsl-gcc-13.3
 ```
 
 ---
@@ -163,7 +163,7 @@ bash scripts/verify_environment.sh --profile=wsl-gcc-13.3
 首次在有 Docker 的机器上执行时请按此顺序：
 
 ```bash
-bash scripts/verify_environment.sh --profile=docker-ubuntu-22.04   # 先体检
+bash Scripts/verify_environment.sh --profile=docker-ubuntu-22.04   # 先体检
 docker compose -f docker/reproduce/docker-compose.yml build
 docker compose -f docker/reproduce/docker-compose.yml run --rm verify-env
 docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce

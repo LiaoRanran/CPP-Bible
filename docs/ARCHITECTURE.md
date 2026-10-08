@@ -93,7 +93,7 @@ CI（`.github/workflows/ci.yml::research-gate`）逐条比对，缺一错一即 
 - 主稿：`research/latex/queyi_neurips2027_v1.1.tex`
 - 数字对账：`tools/verify_paper_numbers.py`（fail-closed）
 - 门禁：`tools/paper_quality_gate_670c2.py`（页数 / 摘要 / TODO 占位）
-- 一键复现：`scripts/reproduce_all.sh`
+- 一键复现：`Scripts/reproduce_all.sh`
 
 ---
 
@@ -118,7 +118,7 @@ CI（`.github/workflows/ci.yml::research-gate`）逐条比对，缺一错一即 
 | `data/holdout_expansion/` | 评测集（源 + 逐样本 JSON） | ✅ |
 | `data/annotation_package/` | 人类标注材料包（去标识化） | ✅ |
 | `tools/` | 门禁 / 判决 / 分析 / 复现脚本 | — |
-| `scripts/` | 一键复现与环境体检 | — |
+| `Scripts/` | 一键复现与环境体检 | — |
 | `docker/reproduce/` | 复现镜像 | — |
 | `docs/` | 规范与研究报告 | ✅ |
 | `research/latex/` | 论文主稿 | ⚠ 投稿冻结期内只写"建议"文件 |

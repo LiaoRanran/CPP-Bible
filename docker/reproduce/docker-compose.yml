@@ -13,7 +13,7 @@
 #   * `./data`  → `/workspace/data`（**读写**：复现会往里写新产物）
 #   * `./docs`  → `/workspace/docs`（读写：报告输出）
 #   * 源码其余部分走镜像内的 COPY（构建时快照），保证"镜像 = 代码版本"可追溯。
-#     ⚠ 因此**改了 tools/ 或 scripts/ 必须重新 build**，只挂 data/ 是不够的。
+#     ⚠ 因此**改了 tools/ 或 Scripts/ 必须重新 build**，只挂 data/ 是不够的。
 #
 # 诚实登记（693 红线 7）
 # ======================
@@ -34,7 +34,7 @@ services:
       QUEYI_REPRO_ROOT: /workspace
       QUEYI_SKIP_WUNSEQUENCED: "1"
       TZ: UTC
-    command: ["scripts/reproduce_all.sh"]
+    command: ["Scripts/reproduce_all.sh"]
 
   verify-env:
     build:
@@ -43,6 +43,6 @@ services:
     image: queyi-reproduce:693
     working_dir: /workspace
     entrypoint: ["/bin/bash", "-lc"]
-    command: ["scripts/verify_environment.sh"]
+    command: ["Scripts/verify_environment.sh"]
     environment:
       TZ: UTC

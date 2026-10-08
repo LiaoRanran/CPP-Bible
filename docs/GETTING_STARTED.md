@@ -24,7 +24,7 @@ git clone https://github.com/LiaoRanran/CPP-Bible.git
 cd CPP-Bible
 
 # ① 环境体检 —— 会明确告诉你哪些资产在本机不可用（不做静默降级）
-bash scripts/verify_environment.sh --report
+bash Scripts/verify_environment.sh --report
 
 # ② 冻结产物完整性（14 项权威产物 sha256）
 python tools/gen_693_manifest.py --check

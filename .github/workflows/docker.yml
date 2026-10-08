@@ -3,7 +3,7 @@ name: Docker Reproduce
 # 693-C3 · 复现镜像构建与自检
 #
 # 触发策略：
-#   * push/PR 只改 docker/reproduce/** scripts/** docs/ENVIRONMENT.md requirements.txt 时才跑
+#   * push/PR 只改 docker/reproduce/** Scripts/** docs/ENVIRONMENT.md requirements.txt 时才跑
 #     （避免每次提交都花 runner 分钟去构建一个没人用的镜像）；
 #   * 打 tag 时必跑（发布前确认镜像能构建）；
 #   * 支持手工触发。
@@ -20,7 +20,7 @@ on:
     tags: ['v*']        # 打 tag 时无条件跑（发布前确认镜像可构建）
     paths:
       - 'docker/reproduce/**'
-      - 'scripts/**'
+      - 'Scripts/**'
       - 'docs/ENVIRONMENT.md'
       - 'requirements.txt'
       - '.dockerignore'
@@ -29,7 +29,7 @@ on:
     branches: [main, master]
     paths:
       - 'docker/reproduce/**'
-      - 'scripts/**'
+      - 'Scripts/**'
       - 'docs/ENVIRONMENT.md'
       - 'requirements.txt'
       - '.dockerignore'
@@ -73,7 +73,7 @@ jobs:
     - name: Environment check inside image
       run: |
         docker run --rm queyi-reproduce:693 \
-          bash -lc 'scripts/verify_environment.sh --profile=docker-ubuntu-22.04' || {
+          bash -lc 'Scripts/verify_environment.sh --profile=docker-ubuntu-22.04' || {
             echo "::warning::环境体检在容器内未全绿（详见上方输出）"
           }
 
@@ -109,10 +109,10 @@ jobs:
         load: true
         cache-from: type=gha
 
-    - name: Run scripts/reproduce_all.sh in container
+    - name: Run Scripts/reproduce_all.sh in container
       run: |
         docker run --rm -v "$PWD/out:/workspace/out" queyi-reproduce:693 \
-          bash -lc 'scripts/reproduce_all.sh --out out/693_ci'
+          bash -lc 'Scripts/reproduce_all.sh --out out/693_ci'
 
     - name: Upload reproduce report
       uses: actions/upload-artifact@v7

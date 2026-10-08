@@ -77,7 +77,7 @@ class EnvironmentError_(QueyiError):  # noqa: N818  （后缀避免与内置 OSE
     """
 
     def __init__(self, message: str, hint: str = "") -> None:
-        super().__init__(message, hint or "bash scripts/verify_environment.sh --report")
+        super().__init__(message, hint or "bash Scripts/verify_environment.sh --report")
 
 
 class GateFailure(QueyiError):
