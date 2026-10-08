@@ -157,6 +157,15 @@ ignore_missing_imports = true
 module = "opentimestamps.*"
 ignore_missing_imports = true
 
+# 693-D1：`tools/utils/` 是 693 新建的共用基础设施包（异常 / 日志 / 缓存数据访问）。
+# 脚本与测试以 `sys.path.insert(0, 'tools')` 引入它 ⇒ mypy 从仓库根解析不到 `utils.*`。
+# 与 yaml.* / numpy.* 同因同款（**环境性解析缺口**，不是本仓代码债）⇒ 同口径集中声明，
+# 而不是在十余处 import 上散写 `# type: ignore`。
+# 注：改本文件须 `python tools/tool_integrity.py --update` 重钉（pyproject 在 test_config 哈希面内）。
+[[tool.mypy.overrides]]
+module = "utils.*"
+ignore_missing_imports = true
+
 # 672h 系统硬化：`numpy` 的 stub 缺口（**环境性**，不是本仓代码债）。
 # 病根：numpy 2.5.x 的 `__init__.pyi` 用 Python 3.12+ 的 `type` 语句，而本仓 mypy pin
 # `python_version = "3.11"` ⇒ mypy 在解析该 stub 时直接 `[syntax]` 报错并 **Bail**，

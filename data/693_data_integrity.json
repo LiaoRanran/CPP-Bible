@@ -1,0 +1,59 @@
+{
+ "schema": "queyi-693-data-integrity/v1",
+ "generated_by": "tools/verify_data_integrity.py",
+ "generated_at": "2026-10-08T21:29:58+08:00",
+ "checks": {
+  "existence": {
+   "n": 7,
+   "missing": [],
+   "ok": 7
+  },
+  "schema": {
+   "n": 7,
+   "errors": []
+  },
+  "sha256_manifest": {
+   "n": 14,
+   "missing": 0,
+   "mismatch": 0,
+   "ok": 14
+  },
+  "matrix_1147": {
+   "file": "blindspot_676g_detection_matrix.json",
+   "checked": true,
+   "n_samples_declared": 1147,
+   "n_samples_actual": 1147,
+   "n_matrix_keys": 1147,
+   "bad_verdicts": [],
+   "bad_types": [],
+   "unknown_count": 0,
+   "catch_count": 0,
+   "miss_count": 0,
+   "n_bad_verdicts": 0,
+   "count_catch": 1216,
+   "count_miss": 5598,
+   "count_unknown": 2362,
+   "count_contradiction": 0
+  },
+  "matrix_110": {
+   "file": "683_real_world_detection_matrix.json",
+   "checked": true,
+   "n_samples_declared": 110,
+   "n_samples_actual": 110,
+   "n_matrix_keys": 0,
+   "bad_verdicts": [],
+   "bad_types": [],
+   "unknown_count": 0,
+   "catch_count": 0,
+   "miss_count": 0,
+   "n_bad_verdicts": 0,
+   "count_catch": 126,
+   "count_miss": 530,
+   "count_unknown": 224,
+   "count_contradiction": 0
+  }
+ },
+ "vocabulary_size": 34,
+ "problems": [],
+ "verdict": "pass"
+}

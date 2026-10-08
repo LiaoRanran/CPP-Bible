@@ -1,0 +1,71 @@
+{
+ "schema": "queyi-693-perf-bench/v1",
+ "generated_by": "tools/bench_693_data_access.py",
+ "generated_at": "2026-10-08T20:43:13+08:00",
+ "python": "3.13.14",
+ "repeat": 5,
+ "targets": {
+  "blindspot_676g_detection_matrix.json": {
+   "desc": "冻结检测矩阵 1147×8",
+   "size_kb": 2881.6,
+   "cold": {
+    "first_ms": 42.62,
+    "median_ms": 42.85,
+    "min_ms": 42.49
+   },
+   "cached": {
+    "first_ms": 0.39,
+    "median_ms": 0.29,
+    "min_ms": 0.26
+   },
+   "cache_speedup_x": 147.8,
+   "peak_bytes_stream_sha256": 2106886,
+   "peak_bytes_whole_file_sha256": 2959788,
+   "peak_memory_saved_bytes": 852902
+  },
+  "683_real_world_detection_matrix.json": {
+   "desc": "真实靶场矩阵 110×8",
+   "size_kb": 241.8,
+   "cold": {
+    "first_ms": 3.62,
+    "median_ms": 3.49,
+    "min_ms": 3.44
+   },
+   "cached": {
+    "first_ms": 0.31,
+    "median_ms": 0.3,
+    "min_ms": 0.28
+   },
+   "cache_speedup_x": 11.6,
+   "peak_bytes_stream_sha256": 256845,
+   "peak_bytes_whole_file_sha256": 256605,
+   "peak_memory_saved_bytes": -240
+  },
+  "676m_a5_matrix_corrected.json": {
+   "desc": "A5 修正矩阵",
+   "size_kb": 800.7,
+   "cold": {
+    "first_ms": 13.48,
+    "median_ms": 13.18,
+    "min_ms": 12.66
+   },
+   "cached": {
+    "first_ms": 0.44,
+    "median_ms": 0.33,
+    "min_ms": 0.29
+   },
+   "cache_speedup_x": 39.9,
+   "peak_bytes_stream_sha256": 829180,
+   "peak_bytes_whole_file_sha256": 828940,
+   "peak_memory_saved_bytes": -240
+  }
+ },
+ "pipeline_simulation": {
+  "file": "blindspot_676g_detection_matrix.json",
+  "n_reads": 4,
+  "naive_total_ms": 175.07,
+  "cached_total_ms": 1.04,
+  "saved_ms": 174.02,
+  "saved_pct": 99.4
+ }
+}
