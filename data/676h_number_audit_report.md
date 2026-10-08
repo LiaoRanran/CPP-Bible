@@ -1,6 +1,6 @@
 # 676h · 论文数字可追溯性审计报告
 
-- 生成时间：2026-10-07T23:29:50+08:00
+- 生成时间：2026-10-08T19:38:28+08:00
 - 被审计稿件：`research/latex/queyi_neurips2027_v1.1.tex`（正文 None 页 / 全稿 37 页，取自编译日志）
 - 权威源：14 个文件
 - 检察条数：**130**，其中 consistent 116，硬 missing（active）0，软 missing（not_printed 等）0，skipped/no_source 0

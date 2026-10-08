@@ -1,7 +1,7 @@
 {
  "schema": "queyi-current-numbers/672h",
  "revision": "681",
- "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致） ｜ 672k W6 统计重做已并入 ｜ 678 W3 增补 a5_experiments ｜ 681 W3 增补 repair_681（跨源标签修复 + legacy 归一化）并把类型级数字更新为 34/13",
+ "generated_by": "672h W3（扩样后重算：holdout 41 / corpus 64；三路复现一致） ｜ 672k W6 统计重做已并入 ｜ 678 W3 增补 a5_experiments ｜ 681 W3 增补 repair_681（跨源标签修复 + legacy 归一化）并把类型级数字更新为 34/13 ｜ 692 W3 增补 692_environment / 692_fair_comparison / 692_llm_audit（环境配对 + 公平外部对比 + LLM 第四臂；均不新增正文数字）",
  "generated_at": "2026-10-01",
  "note": "本文件只放当前最新核心数字（672h 扩样后）。历史轨迹见 data/experiments/reveal_update_672f.json 与 reveal_update_671a.json；扩样登记见 data/holdout_reveal_5_672h.json 与 data/external_corpus_reveal_672h.json。",
  "seed": 20260930,
@@ -605,5 +605,259 @@
    "data/691_standardization_highlight.md",
    "data/691_overclaim_audit.md"
   ]
+ },
+ "692_environment": {
+  "source": "data/692_environment_paired_experiment.json（脚本 tools/analyze_692_environment.py，只读冻结矩阵，0 次 detect）",
+  "protocol_version": "queyi-measurement-protocol/692",
+  "profiles": {
+   "wsl-gcc-13.3": {
+    "os": "Ubuntu 24.04.4 LTS (WSL2)",
+    "compiler_version": "13.3.0",
+    "sanitizer_runtime": "libasan.so/libubsan.so/libtsan.so (GCC 13, /usr/lib/gcc/x86_64-linux-gnu/13/)",
+    "container_image": null
+   },
+   "windows-native-mingw": {
+    "os": "Windows 11 (10.0.26200)",
+    "compiler_version": "13.1.0 / 22.1.8",
+    "sanitizer_runtime": "无（MinGW 不带 ASan 动态运行时；clang 缺 libclang_rt.asan_dynamic，689 已实测登记）",
+    "container_image": null
+   }
+  },
+  "frame": "A5 evaluation split n=566（同时算 real-world 110 锚点）",
+  "eval_566": {
+   "E1_wsl_full": {
+    "catch": 340,
+    "miss": 226,
+    "unknown": 0,
+    "catch_rate_pct": 60.0707,
+    "conditional_recall_pct": 60.0707
+   },
+   "E2_native_unaware": {
+    "catch": 140,
+    "miss": 426,
+    "unknown": 0,
+    "catch_rate_pct": 24.735
+   },
+   "E2_native_aware": {
+    "catch": 140,
+    "miss": 0,
+    "unknown": 426,
+    "unknown_rate_pct": 75.265,
+    "conditional_recall": "undefined（分母 0：无可信负例）"
+   },
+   "delta_catch_rate_pp_unaware": 35.3357,
+   "delta_unknown_pp_unaware": 0.0,
+   "delta_unknown_pp_aware": -75.265,
+   "mcnemar": {
+    "b_e1_only": 200,
+    "c_e2_only": 0,
+    "exact_p": 1.2446030555722283e-60,
+    "delta_ci95_pp_wald": [
+     31.3976,
+     39.2738
+    ]
+   },
+   "silent_signature": {
+    "lost_e1_catches": 200,
+    "lost_share_of_e1_catch_pct": 58.8235,
+    "e2_reported_negatives": 426,
+    "e2_negatives_that_e1_catches": 200,
+    "share_of_e2_negatives_pct": 46.9484
+   }
+  },
+  "real_world_110_anchor": {
+   "E1_pct": 59.0909,
+   "E1_catch": 65,
+   "E2_pct": 23.6364,
+   "E2_catch": 26,
+   "lost_e1_catches": 39,
+   "anchor_matches_688": true
+  },
+  "capability_retreat_sweep": {
+   "n_configs": 63,
+   "n_configs_with_unsound_negatives": 62,
+   "window_counts_by_retention": {
+    "100_pct": 0,
+    "99_pct": 0,
+    "95_pct": 1,
+    "90_pct": 7,
+    "80_pct": 18,
+    "50_pct": 49
+   },
+   "widest_silent_window": {
+    "missing_assets": [
+     "linker"
+    ],
+    "retention_pct": 98.8236,
+    "unsound_negatives": 22
+   },
+   "denominator_pathology_extreme": {
+    "config": "keep linker only",
+    "catch_rate_pct": 0.707,
+    "conditional_recall_pct": 100.0
+   }
+  },
+  "note": "E2 的 3 资产为实测（Windows 冻结列）；E2 的 unknown 为协议层判定。conditional_recall 在 E2 不可计算。"
+ },
+ "692_fair_comparison": {
+  "source": "data/692_fair_comparison_results.json（脚本 tools/run_692_fair_comparison.py；协议先落盘 data/692_fair_comparison_protocol.md）",
+  "frame": {
+   "n": 566,
+   "runnable": 538,
+   "no_source_unknown": 28,
+   "declared_positives": 322,
+   "declared_negatives": 244
+  },
+  "tools": {
+   "clang-tidy": "LLVM 22.1.8 (MSYS2/MinGW, Windows native)",
+   "cppcheck": "2.21.0 (MSYS2/MinGW, Windows native, 本批安装)"
+  },
+  "calibers": {
+   "T1_clang_tidy_C_main": {
+    "conditional_recall_pct": 94.1176,
+    "false_report_rate_pct": 97.4026,
+    "frame_coverage_pct": 94.8763,
+    "zero_discrimination": true
+   },
+   "T2_clang_tidy_C_A": {
+    "conditional_recall_pct": 34.9673,
+    "false_report_rate_pct": 13.8528,
+    "frame_coverage_pct": 94.8763,
+    "zero_discrimination": false
+   },
+   "T3_cppcheck_warning": {
+    "conditional_recall_pct": 49.6732,
+    "false_report_rate_pct": 18.1034,
+    "frame_coverage_pct": 95.053,
+    "zero_discrimination": false
+   },
+   "T4_cppcheck_broad": {
+    "conditional_recall_pct": 50.6536,
+    "false_report_rate_pct": 19.3966,
+    "frame_coverage_pct": 95.053,
+    "zero_discrimination": false
+   }
+  },
+  "queiy_or_reference": {
+   "conditional_recall_pct": 93.7888,
+   "false_report_rate_pct": 15.5738,
+   "frame_coverage_pct": 100.0
+  },
+  "cross_disagreement": {
+   "T1_clang_tidy_C_main": {
+    "queyi_catch_tool_silent": 18,
+    "tool_report_queyi_no_catch": 213,
+    "tool_silent_by_group": {
+     "optimization_sensitive": 7,
+     "language_semantics": 5,
+     "odr_link": 5,
+     "memory_safety": 1
+    }
+   },
+   "T2_clang_tidy_C_A": {
+    "queyi_catch_tool_silent": 209,
+    "tool_report_queyi_no_catch": 30,
+    "tool_silent_by_group": {
+     "stl": 60,
+     "concurrency": 57,
+     "undefined_behavior": 22,
+     "embedded": 17,
+     "real_world": 15,
+     "language_semantics": 11,
+     "legacy": 7,
+     "optimization_sensitive": 7,
+     "memory_safety": 5,
+     "odr_link": 5,
+     "conditional_trigger": 3
+    }
+   },
+   "T3_cppcheck_warning": {
+    "queyi_catch_tool_silent": 160,
+    "tool_report_queyi_no_catch": 36,
+    "tool_silent_by_group": {
+     "concurrency": 58,
+     "stl": 27,
+     "real_world": 25,
+     "embedded": 17,
+     "undefined_behavior": 12,
+     "legacy": 6,
+     "language_semantics": 5,
+     "memory_safety": 5,
+     "odr_link": 5
+    }
+   },
+   "T4_cppcheck_broad": {
+    "queyi_catch_tool_silent": 157,
+    "tool_report_queyi_no_catch": 39,
+    "tool_silent_by_group": {
+     "concurrency": 58,
+     "stl": 27,
+     "real_world": 25,
+     "embedded": 16,
+     "undefined_behavior": 11,
+     "legacy": 6,
+     "language_semantics": 5,
+     "odr_link": 5,
+     "memory_safety": 4
+    }
+   }
+  },
+  "note": "观察性对比（convergent validity），非排行榜；不 claim superiority。T2 为 673e 事后口径，本批先声明为探索性。"
+ },
+ "692_llm_audit": {
+  "source": "data/692_llm_audit_results.json（脚本 tools/run_692_llm_audit.py；协议 data/692_llm_audit_protocol.md）",
+  "design": {
+   "n_selected": 80,
+   "seed": 6921,
+   "models": [
+    {
+     "slot": "A_glm-4.5",
+     "model_id": "glm-4.5"
+    },
+    {
+     "slot": "B_glm-4-flash",
+     "model_id": "glm-4-flash"
+    }
+   ],
+   "prompts": [
+    "p1",
+    "p2"
+   ],
+   "temperature": 0,
+   "calls_recorded": 480
+  },
+  "per_model": {
+   "A_glm-4.5": {
+    "conditional_recall_pct": 100.0,
+    "false_report_rate_pct": 72.0,
+    "prompt_invariance_pct": 87.5,
+    "ece": 0.2927,
+    "contradiction_n": 1,
+    "unknown_n": 18
+   },
+   "B_glm-4-flash": {
+    "conditional_recall_pct": 95.0,
+    "false_report_rate_pct": 85.0,
+    "prompt_invariance_pct": 96.25,
+    "ece": 0.45,
+    "contradiction_n": 0,
+    "unknown_n": 0
+   }
+  },
+  "cross_asset": {
+   "A_glm-4.5": {
+    "agreement_pct": 66.129,
+    "jaccard_catch": 0.6182,
+    "llm_only_catch": 21,
+    "sanitizer_only_catch": 0
+   },
+   "B_glm-4-flash": {
+    "agreement_pct": 52.5,
+    "jaccard_catch": 0.4795,
+    "llm_only_catch": 37,
+    "sanitizer_only_catch": 1
+   }
+  },
+  "note": "LLM = 第 4 类 evidence asset，非 oracle；truth 参照为 expected_verdict；人类 IAA 仍为 0。"
  }
 }

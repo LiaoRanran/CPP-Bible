@@ -235,8 +235,9 @@ Every headline number is recomputed from landed artifacts by a single command; t
 dependency (WSL + g++ + \texttt{setarch}) is declared, and a missing dependency yields
 \texttt{UNVERIFIED} rather than a misleading low score. Statistical plans were pre-registered before
 the reveals and recomputed through two independent paths (differences $<0.1$pp). Code is Apache-2.0
-with DCO sign-off. Croissant and Responsible-AI metadata are \textbf{registered pre-submission
-TODOs} (the 2027 specification is not yet released), not yet shipped.
+with DCO sign-off. Croissant and Responsible-AI metadata are \textbf{generated and self-checked}
+(the 2027 specification is not yet released, so the shipped form is 2026-conformant; the generated
+JSON-LD and its 13 self-checks are part of the artifact).
 
 \paragraph{On ``how do you handle untrusted LLM input / prompt injection''.}
 Registered as an explicit threat (T15). Architectural mitigation: \textbf{LLM output never becomes a

@@ -1,6 +1,6 @@
 {
   "schema": "queyi-676h/number-audit",
-  "generated_at": "2026-10-07T23:29:50+08:00",
+  "generated_at": "2026-10-08T19:38:28+08:00",
   "tex": "research/latex/queyi_neurips2027_v1.1.tex",
   "sources": {
     "current_numbers": "data/current_numbers.json",
@@ -14220,6 +14220,221 @@
         "line": 1640,
         "token": "25",
         "snippet": "\\texttt{deallocuse}); d3-22 (\\texttt{NewDelete} / \\texttt{doubleFree}); d3-25"
+      }
+    ]
+  },
+  "batch_692_selfcheck": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "B692-01",
+        "name": "692-A 三组件自洽（E1/E2 catch+miss+unknown = 566）",
+        "ok": true,
+        "detail": "340/140/140"
+      },
+      {
+        "id": "B692-02",
+        "name": "692-A aware 口径负例归零、catch 与 unaware 一致",
+        "ok": true,
+        "detail": "aware miss=0 unknown=426"
+      },
+      {
+        "id": "B692-03",
+        "name": "692-A Δcatch 与两帧率一致（unaware）",
+        "ok": true,
+        "detail": "delta=35.3357"
+      },
+      {
+        "id": "B692-04",
+        "name": "692-A 静默集合自洽（lost = E2 负例中的 E1 命中 ≤ E2 负例）",
+        "ok": true,
+        "detail": "lost=200 / neg=426"
+      },
+      {
+        "id": "B692-05",
+        "name": "692-A 真实 110 锚点复现 688（65 / 26）",
+        "ok": true,
+        "detail": "65/26"
+      },
+      {
+        "id": "B692-06",
+        "name": "692-A 扫描窗口计数与逐行一致（63 配置外/窗口内重算）",
+        "ok": true,
+        "detail": "n=63 window=1 recomputed=1"
+      },
+      {
+        "id": "B692-07",
+        "name": "692-A 满能力行无可信性损失（unsound=0 / sound=226）",
+        "ok": true,
+        "detail": "0/226"
+      },
+      {
+        "id": "B692-08",
+        "name": "692-A measurement_context_id 不变式全真",
+        "ok": true,
+        "detail": "same_context_same_id=True, environment_change_changes_id=True, configuration_change_changes_id=True"
+      },
+      {
+        "id": "B692-10",
+        "name": "692-B 帧计数（566 / 538 可跑 / 28 无源）",
+        "ok": true,
+        "detail": "566/538/28"
+      },
+      {
+        "id": "B692-11:T1_clang_tidy_C_main",
+        "name": "T1_clang_tidy_C_main 分层求和 = 各层大小",
+        "ok": true,
+        "detail": "pos 288+18+16=322; neg 225+6+13=244"
+      },
+      {
+        "id": "B692-12:T1_clang_tidy_C_main",
+        "name": "T1_clang_tidy_C_main 整帧 coverage 自洽",
+        "ok": true,
+        "detail": "94.88 vs 94.8763"
+      },
+      {
+        "id": "B692-11:T2_clang_tidy_C_A",
+        "name": "T2_clang_tidy_C_A 分层求和 = 各层大小",
+        "ok": true,
+        "detail": "pos 107+199+16=322; neg 32+199+13=244"
+      },
+      {
+        "id": "B692-12:T2_clang_tidy_C_A",
+        "name": "T2_clang_tidy_C_A 整帧 coverage 自洽",
+        "ok": true,
+        "detail": "94.88 vs 94.8763"
+      },
+      {
+        "id": "B692-11:T3_cppcheck_warning",
+        "name": "T3_cppcheck_warning 分层求和 = 各层大小",
+        "ok": true,
+        "detail": "pos 152+154+16=322; neg 42+190+12=244"
+      },
+      {
+        "id": "B692-12:T3_cppcheck_warning",
+        "name": "T3_cppcheck_warning 整帧 coverage 自洽",
+        "ok": true,
+        "detail": "95.05 vs 95.053"
+      },
+      {
+        "id": "B692-11:T4_cppcheck_broad",
+        "name": "T4_cppcheck_broad 分层求和 = 各层大小",
+        "ok": true,
+        "detail": "pos 155+151+16=322; neg 45+187+12=244"
+      },
+      {
+        "id": "B692-12:T4_cppcheck_broad",
+        "name": "T4_cppcheck_broad 整帧 coverage 自洽",
+        "ok": true,
+        "detail": "95.05 vs 95.053"
+      },
+      {
+        "id": "B692-15",
+        "name": "692-B declared negatives 构成已登记（232 planted + 12 干净对照 = 244）",
+        "ok": true,
+        "detail": "232+12"
+      },
+      {
+        "id": "B692-16:T1_clang_tidy_C_main",
+        "name": "T1_clang_tidy_C_main 干净对照层求和自洽（n=12；T1 应 100%）",
+        "ok": true,
+        "detail": "12/0/0 rate=100.0"
+      },
+      {
+        "id": "B692-16:T2_clang_tidy_C_A",
+        "name": "T2_clang_tidy_C_A 干净对照层求和自洽（n=12；T1 应 100%）",
+        "ok": true,
+        "detail": "0/12/0 rate=0.0"
+      },
+      {
+        "id": "B692-16:T3_cppcheck_warning",
+        "name": "T3_cppcheck_warning 干净对照层求和自洽（n=12；T1 应 100%）",
+        "ok": true,
+        "detail": "3/9/0 rate=25.0"
+      },
+      {
+        "id": "B692-16:T4_cppcheck_broad",
+        "name": "T4_cppcheck_broad 干净对照层求和自洽（n=12；T1 应 100%）",
+        "ok": true,
+        "detail": "3/9/0 rate=25.0"
+      },
+      {
+        "id": "B692-13",
+        "name": "692-B T1 零判别力已如实标记（FP ≥95%）",
+        "ok": true,
+        "detail": "fp=97.4026"
+      },
+      {
+        "id": "B692-14",
+        "name": "692-B T2 交叉分歧 2×2 求和 = 可判定样本数",
+        "ok": true,
+        "detail": "pairs=537"
+      },
+      {
+        "id": "B692-20:A_glm-4.5",
+        "name": "A_glm-4.5 分层求和 = 各层大小（40/40）",
+        "ok": true,
+        "detail": "pos 37+0+3=40; neg 18+7+15=40"
+      },
+      {
+        "id": "B692-21:A_glm-4.5",
+        "name": "A_glm-4.5 prompt 不变性计数自洽",
+        "ok": true,
+        "detail": "70/80"
+      },
+      {
+        "id": "B692-23:A_glm-4.5",
+        "name": "A_glm-4.5 干净对照层已登记（本帧仅 1 条 ⇒ 不足以读 FP）",
+        "ok": true,
+        "detail": "n=1 reported=0"
+      },
+      {
+        "id": "B692-20:B_glm-4-flash",
+        "name": "B_glm-4-flash 分层求和 = 各层大小（40/40）",
+        "ok": true,
+        "detail": "pos 38+2+0=40; neg 34+6+0=40"
+      },
+      {
+        "id": "B692-21:B_glm-4-flash",
+        "name": "B_glm-4-flash prompt 不变性计数自洽",
+        "ok": true,
+        "detail": "77/80"
+      },
+      {
+        "id": "B692-23:B_glm-4-flash",
+        "name": "B_glm-4-flash 干净对照层已登记（本帧仅 1 条 ⇒ 不足以读 FP）",
+        "ok": true,
+        "detail": "n=1 reported=1"
+      },
+      {
+        "id": "B692-22:A_glm-4.5",
+        "name": "A_glm-4.5 交叉资产 2×2 求和 = n_judged",
+        "ok": true,
+        "detail": "62/62"
+      },
+      {
+        "id": "B692-22:B_glm-4-flash",
+        "name": "B_glm-4-flash 交叉资产 2×2 求和 = n_judged",
+        "ok": true,
+        "detail": "80/80"
+      },
+      {
+        "id": "B692-24",
+        "name": "692-C 补全预算敏感性已并排登记（A@700 与 A@2000 两轮都在）",
+        "ok": true,
+        "detail": "unknown@700=46 unknown@2000=18"
+      },
+      {
+        "id": "B692-30:data/692_environment_report.md",
+        "name": "data/692_environment_report.md 关键数字在场（7 项）",
+        "ok": true,
+        "detail": "全在场"
+      },
+      {
+        "id": "B692-30:data/692_fair_comparison_report.md",
+        "name": "data/692_fair_comparison_report.md 关键数字在场（6 项）",
+        "ok": true,
+        "detail": "全在场"
       }
     ]
   }

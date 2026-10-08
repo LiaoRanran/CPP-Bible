@@ -89,7 +89,7 @@ Partly correct, and we label precisely. The **static arm is a caliber re-binning
 Because our object of study is not code repair but **verification of knowledge claims**. SWE-bench measures whether a model can patch an issue; we measure whether a claim is true under an explicit boundary triple. Adapting SWE-bench would change the construct (Construct validity). We cite the SWE-bench contamination line as **motivation** for external-sample-first design.
 
 ### On "reproducibility"
-Every headline number is recomputed from landed artifacts by a single command; the environment dependency (WSL + g++ + `setarch`) is declared; a missing dependency yields `UNVERIFIED`. Code is Apache-2.0 with DCO sign-off. Croissant and Responsible-AI metadata are **registered pre-submission TODOs** (the 2027 metadata specification is not yet released), not yet shipped.
+Every headline number is recomputed from landed artifacts by a single command; the environment dependency (WSL + g++ + `setarch`) is declared; a missing dependency yields `UNVERIFIED`. Code is Apache-2.0 with DCO sign-off. Croissant and Responsible-AI metadata are **generated and self-checked** (13/13, `data/682_metadata_selfcheck.json`); the 2027 metadata specification is not yet released, so the shipped form is 2026-conformant.
 
 ### On "how do you handle untrusted LLM input / prompt injection"
 We register this as an explicit threat (T15). Architectural mitigation: **LLM output never becomes a verdict directly** — every LLM-produced candidate passes a deterministic schema check (field allow-list) before entering the ledger, and ML-based detection only **warns, never blocks**. Prompt-injection can pollute *evidence processing* but not *verdict recomputation*, because verdicts are fully programmatic and checked by a kernel-independent reconciler. We cite a real CVE (CVE-2025-59145, CVSS 9.6) as evidence the threat is live.
@@ -156,4 +156,5 @@ Every headline number is recomputed from landed artifacts by a single command; t
 dependency (WSL + g++ + `setarch`) is declared and a missing dependency yields `UNVERIFIED` rather
 than a misleading low score. Statistical plans were pre-registered before the reveals, results were
 recomputed through two independent paths (differences < 0.1pp), and the repository is Apache-2.0
-with DCO sign-off. Croissant and Responsible-AI metadata are registered pre-submission TODOs.
+with DCO sign-off. Croissant and Responsible-AI metadata are generated and self-checked (13/13,
+`data/682_metadata_selfcheck.json`).

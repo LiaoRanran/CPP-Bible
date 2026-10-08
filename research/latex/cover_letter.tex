@@ -1,5 +1,14 @@
 % =====================================================================
 %  Cover letter — Queyi, NeurIPS 2027 Evaluations & Datasets (E&D) submission
+%  v1.6 (692): environment-aware protocol executed as a paired experiment (A5 evaluation
+%  n=566): E1 60.07% -> E2 24.74% (Delta E = +35.34pp, CI95 [31.40,39.27]); delta-unknown
+%  0.00pp un-aware vs 75.27% aware; conditional recall in E2 is UNDEFINED (empty
+%  denominator); 200/426 reported negatives (46.95%) are samples E1 catches; all 63
+%  capability-retreat configurations swept (62 with unsound negatives; widest silent
+%  window -0.71pp aggregate / 22 unsound). Fair external comparison executed under
+%  pre-declared calibers on the same frame (566; 538 runnable): clang-tidy main caliber
+%  94.12% recall / 97.40% false-report (no discrimination, 673e failure reproduced at
+%  4x frame) vs clang-analyzer 34.97/13.85 vs cppcheck 49.67-50.65/18.10-19.40.
 %  v1.5 (691 corrected-and-enhanced): title -> "Caliber Drift and Capability Boundaries:
 %  An Audit Protocol for Software-Verification Evaluation" (2026 collision check on
 %  "Auditing the Evaluator(s)" / "Evaluator Stress Test" / audit-then-score). Formula recorded
@@ -77,8 +86,16 @@ the evaluator that produced it?}
         $+7.4$--$11.3$pp (mechanism level). (F2)~The instrument is \emph{blind to 38.4\%} of
         its corpus in a family-structured way; severity does not predict detection; 41.5\% of
         real-defect catches ride on a single asset (\texttt{asan}). (F3)~\emph{Environment is
-        part of the measurement}: without the declared WSL profile, real-defect detection
-        falls $59.09\%\to23.64\%$ with \emph{no} unknown increase and no warning. (F4)~Synthetic
+        part of the measurement}, now executed as a \emph{paired, within-sample} experiment with an
+        environment-aware protocol: on the 566-sample evaluation split the declared profile gives
+        $60.07\%$ recall and the native-minimal profile $24.74\%$ ($\Delta{=}{+}35.34$pp,
+        CI$_{95}$ $[31.40,39.27]$), with $\Delta$unknown $=0.00$pp under an environment-\emph{unaware}
+        protocol versus $75.27$pp under an \emph{aware} one; $200$ of the $426$ samples the
+        minimal profile reports as negatives ($46.95\%$) are samples the same instrument catches
+        under the declared profile, and its conditional recall has an \emph{empty denominator}
+        (reported as \emph{undefined}, not $0\%$). All $63$ capability-retreat configurations were
+        swept: $62$ contain unsound negatives, and the widest \emph{silent} window loses only
+        $0.71$pp in aggregate while $22$ negatives lose credibility---no guard turns red. (F4)~Synthetic
         and source-derived corpora \emph{do not reach TOST equivalence} at $\pm10$pp (90\% CI
         $[-10.61,+5.52]$pp), and standardization shows the similar headline rates hide a
         $-17.9$pp composition offset. (F5)~Failure-driven evolution yields \emph{no measurable
@@ -90,8 +107,12 @@ the evaluator that produced it?}
 No priority (``first to audit an evaluator''---DeepFact~\cite{huang2026deepfact}, metric
 co-evolution~\cite{zhang2026whogrades}, certified self-evolution~\cite{sengupta2026anytimevalid}
 and SV-COMP's witness validation~\cite{beyer2026svcomp} are active neighbours); no superiority
-over mature verifiers (our cross-tool comparison is \emph{observational}, and the pre-registered
-caliber failed at chance level); no semantic verification (a \texttt{catch} is acquired evidence
+over mature verifiers --- we now \emph{execute} the cross-tool comparison under calibers declared
+before running (clang-tidy, cppcheck; same frame, labels and timeout) and report it as
+\emph{convergent validity}, and the pre-registered caliber still fails at chance level
+($94.12\%$ recall with a $97.40\%$ false-report rate, i.e.\ no discrimination), while the
+same measurement under a narrower caliber gives $34.97\%$; the divergence is by defect family
+(concurrency is a static blind spot), not a ranking. No semantic verification (a \texttt{catch} is acquired evidence
 within a boundary); and \textbf{no human label validation}---human IAA is 0; the $\kappa$ values
 in the paper are AI self-consistency; a de-identified 145-sample annotation package with
 pre-registered thresholds accompanies the submission and its execution is the top post-review

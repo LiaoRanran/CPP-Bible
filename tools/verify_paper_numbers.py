@@ -1511,6 +1511,181 @@ def write_report(path, payload):
         f.write("\n".join(L) + "\n")
 
 
+def check_batch_692_artifacts():
+    """692 批次自洽检查组（**不进 tex 审计**）。
+
+    692 **不改论文正文**（红线 2），因此新数字没有 tex 落点，不能走上面的 claim→tex 通道
+    （否则会产生一堆假的 missing）。本组只做两件事：
+
+    1. **产物内部自洽**：三组件求和 = 总样本数；aware/unaware 的 catch 一致；
+       Δ 与两帧的率一致；扫描窗口计数与逐行数据一致；锚点断言为真；
+    2. **报告 ↔ 产物一致**：`data/692_*.md` 里出现的关键数字必须在 JSON 里有对应值。
+
+    返回 ``{"ok": bool, "checks": [{id, name, ok, detail}]}``。
+    """
+    checks = []
+    ok_all = True
+
+    def add(cid, name, ok, detail=""):
+        nonlocal ok_all
+        checks.append({"id": cid, "name": name, "ok": bool(ok), "detail": str(detail)[:300]})
+        ok_all = ok_all and bool(ok)
+
+    # ---------------- 1. 692-A 环境配对 ----------------
+    env = None
+    try:
+        env = load_json("data/692_environment_paired_experiment.json")
+    except Exception as e:  # noqa: BLE001
+        add("B692-01", "692-A 环境产物存在", False, f"{type(e).__name__}: {e}")
+    if env:
+        fr = env["frames"]["A5_evaluation_566"]
+        e1, e2u, e2a = fr["E1_wsl_full"], fr["E2_native_unaware"], fr["E2_native_aware"]
+        add("B692-01", "692-A 三组件自洽（E1/E2 catch+miss+unknown = 566）",
+            e1["catch"] + e1["miss"] + e1["unknown"] == 566
+            and e2u["catch"] + e2u["miss"] + e2u["unknown"] == 566
+            and e2a["catch"] + e2a["miss"] + e2a["unknown"] == 566,
+            f"{e1['catch']}/{e2u['catch']}/{e2a['catch']}")
+        add("B692-02", "692-A aware 口径负例归零、catch 与 unaware 一致",
+            e2a["miss"] == 0 and e2a["catch"] == e2u["catch"] and e2a["unknown"] == 566 - e2a["catch"],
+            f"aware miss={e2a['miss']} unknown={e2a['unknown']}")
+        d = fr["delta"]
+        add("B692-03", "692-A Δcatch 与两帧率一致（unaware）",
+            abs(d["delta_catch_rate_pp_unaware"]
+                - (e1["catch_rate_pct"] - e2u["catch_rate_pct"])) < 0.01,
+            f"delta={d['delta_catch_rate_pp_unaware']}")
+        sil = fr["silent_false_miss"]
+        add("B692-04", "692-A 静默集合自洽（lost = E2 负例中的 E1 命中 ≤ E2 负例）",
+            sil["lost_e1_catches"] == sil["e2_reported_negatives_that_e1_catches"] <= sil["e2_reported_negatives"],
+            f"lost={sil['lost_e1_catches']} / neg={sil['e2_reported_negatives']}")
+        anc = env["anchor_check_vs_688"]
+        add("B692-05", "692-A 真实 110 锚点复现 688（65 / 26）",
+            anc["pass"] is True and anc["recomputed_full_or_catch"] == 65
+            and anc["recomputed_native_or_catch"] == 26,
+            f"{anc['recomputed_full_or_catch']}/{anc['recomputed_native_or_catch']}")
+        sw = env["silent_degradation"]["sweep"]
+        w = [r for r in sw["rows"]
+             if (r["retention_of_full_pct"] or 0) >= 95 and r["unsound_negatives"] > 0]
+        add("B692-06", "692-A 扫描窗口计数与逐行一致（63 配置外/窗口内重算）",
+            sw["n_configs"] == 63 and sw["n_window_configs"] == len(w),
+            f"n={sw['n_configs']} window={sw['n_window_configs']} recomputed={len(w)}")
+        fulls = [r for r in sw["rows"] if r["n_missing"] == 0]
+        add("B692-07", "692-A 满能力行无可信性损失（unsound=0 / sound=226）",
+            len(fulls) == 1 and fulls[0]["unsound_negatives"] == 0 and fulls[0]["sound_negatives"] == 226,
+            f"{fulls[0]['unsound_negatives']}/{fulls[0]['sound_negatives']}" if fulls else "missing")
+        inv = env["measurement_context_id"]["invariants"]
+        add("B692-08", "692-A measurement_context_id 不变式全真",
+            all(inv.values()), ", ".join(f"{k}={v}" for k, v in inv.items()))
+
+    # ---------------- 2. 692-B 公平对比 ----------------
+    fair = None
+    try:
+        fair = load_json("data/692_fair_comparison_results.json")
+    except Exception as e:  # noqa: BLE001
+        add("B692-10", "692-B 对比产物存在", False, f"{type(e).__name__}: {e}")
+    if fair:
+        f = fair["frame"]
+        add("B692-10", "692-B 帧计数（566 / 538 可跑 / 28 无源）",
+            f["n"] == 566 and f["n_with_source"] == 538 and f["n_no_source"] == 28,
+            f"{f['n']}/{f['n_with_source']}/{f['n_no_source']}")
+        for cal, res in fair["calibers"].items():
+            t = res["three_components_on_declared_positives"]
+            f_ = res["false_report"]
+            st = res["strata"]
+            add(f"B692-11:{cal}", f"{cal} 分层求和 = 各层大小",
+                t["catch"] + t["miss"] + t["unknown"] == st["declared_positives"]
+                and f_["reported_on_expected_miss"] + f_["silent_on_expected_miss"]
+                + f_["unknown_on_expected_miss"] == st["declared_negatives"],
+                f"pos {t['catch']}+{t['miss']}+{t['unknown']}={st['declared_positives']}; "
+                f"neg {f_['reported_on_expected_miss']}+{f_['silent_on_expected_miss']}"
+                f"+{f_['unknown_on_expected_miss']}={st['declared_negatives']}")
+            n_frame = fair["frame"]["n"]
+            cov = round((n_frame - res["frame_unknown"]) / n_frame * 100, 2)
+            add(f"B692-12:{cal}", f"{cal} 整帧 coverage 自洽",
+                abs(cov - round(res["frame_coverage_pct"], 2)) < 0.02,
+                f"{cov} vs {res['frame_coverage_pct']}")
+        comp = fair["frame"]["declared_negatives_composition"]
+        add("B692-15", "692-B declared negatives 构成已登记（232 planted + 12 干净对照 = 244）",
+            comp["planted_true_outside_declared_region"] + comp["planted_false_controls"] == f["expected_miss"],
+            f"{comp['planted_true_outside_declared_region']}+{comp['planted_false_controls']}")
+        for cal, res in fair["calibers"].items():
+            ps = res["pristine_negative_stratum"]
+            add(f"B692-16:{cal}", f"{cal} 干净对照层求和自洽（n=12；T1 应 100%）",
+                ps["reported"] + ps["silent"] + ps["unknown"] == 12
+                and (cal != "T1_clang_tidy_C_main"
+                     or (ps["reported"] == 12 and ps["report_rate_pct"] == 100.0)),
+                f"{ps['reported']}/{ps['silent']}/{ps['unknown']} rate={ps['report_rate_pct']}")
+        t1 = fair["calibers"]["T1_clang_tidy_C_main"]
+        add("B692-13", "692-B T1 零判别力已如实标记（FP ≥95%）",
+            t1["zero_discrimination_flag"] is True
+            and t1["false_report"]["false_report_rate_pct"] >= 95.0,
+            f"fp={t1['false_report']['false_report_rate_pct']}")
+        t2 = fair["calibers"]["T2_clang_tidy_C_A"]
+        pairs = fair["cross_disagreement"]["T2_clang_tidy_C_A"]["pairs"]
+        add("B692-14", "692-B T2 交叉分歧 2×2 求和 = 可判定样本数",
+            sum(pairs.values()) == (t2["three_components_on_declared_positives"]["catch"]
+                                    + t2["three_components_on_declared_positives"]["miss"]
+                                    + t2["false_report"]["reported_on_expected_miss"]
+                                    + t2["false_report"]["silent_on_expected_miss"]),
+            f"pairs={sum(pairs.values())}")
+
+    # ---------------- 3. 692-C LLM 审计（可缺席：缺席即 skip，不算失败） ----------------
+    try:
+        llm = load_json("data/692_llm_audit_results.json")
+    except Exception:  # noqa: BLE001
+        llm = None
+    if llm:
+        n_sel = llm["design"]["n_selected"]
+        for slot, pm in llm["per_model"].items():
+            t = pm["three_components_on_declared_positives"]
+            f_ = pm["false_report"]
+            st = pm["strata"]
+            add(f"B692-20:{slot}", f"{slot} 分层求和 = 各层大小（40/40）",
+                t["catch"] + t["miss"] + st["unknown_on_positives"] == st["declared_positives"]
+                and f_["on_expected_miss"] + f_["silent_on_expected_miss"]
+                + st["unknown_on_negatives"] == st["declared_negatives"]
+                and st["declared_positives"] + st["declared_negatives"] == n_sel,
+                f"pos {t['catch']}+{t['miss']}+{st['unknown_on_positives']}={st['declared_positives']}; "
+                f"neg {f_['on_expected_miss']}+{f_['silent_on_expected_miss']}"
+                f"+{st['unknown_on_negatives']}={st['declared_negatives']}")
+            pi = pm["prompt_invariance"]
+            add(f"B692-21:{slot}", f"{slot} prompt 不变性计数自洽",
+                pi["agree"] <= pi["total"]
+                and len(pi["disagreements"]) == pi["total"] - pi["agree"],
+                f"{pi['agree']}/{pi['total']}")
+            ps = pm["pristine_negative_stratum"]
+            add(f"B692-23:{slot}", f"{slot} 干净对照层已登记（本帧仅 {ps['n']} 条 ⇒ 不足以读 FP）",
+                ps["reported"] + ps["silent"] + ps["unknown"] == ps["n"],
+                f"n={ps['n']} reported={ps['reported']}")
+        for slot, ca in llm["cross_asset"].items():
+            add(f"B692-22:{slot}", f"{slot} 交叉资产 2×2 求和 = n_judged",
+                sum(ca["pairs"].values()) == ca["n_judged"], f"{sum(ca['pairs'].values())}/{ca['n_judged']}")
+        bs = llm.get("budget_sensitivity", {})
+        if bs:
+            a = bs.get("A_glm-4.5", {})
+            add("B692-24", "692-C 补全预算敏感性已并排登记（A@700 与 A@2000 两轮都在）",
+                set(a.keys()) >= {"default", "a2000"}
+                and a["default"]["unknown_n"] > a["a2000"]["unknown_n"],
+                f"unknown@700={a.get('default', {}).get('unknown_n')} "
+                f"unknown@2000={a.get('a2000', {}).get('unknown_n')}")
+
+    # ---------------- 4. 报告 ↔ 产物（建议文件里的关键数字必须可追） ----------------
+    report_numbers = {
+        "data/692_environment_report.md": ["35.34", "0.00pp", "46.95", "58.82", "98.82", "60.07", "24.74"],
+        "data/692_fair_comparison_report.md": ["94.12", "97.40", "34.97", "49.67", "50.65", "93.79"],
+    }
+    for rel, forms in report_numbers.items():
+        try:
+            text = open(_p(rel), encoding="utf-8").read()
+        except OSError as e:
+            add(f"B692-30:{rel}", f"{rel} 可读", False, str(e))
+            continue
+        missing = [x for x in forms if x not in text]
+        add(f"B692-30:{rel}", f"{rel} 关键数字在场（{len(forms)} 项）", not missing,
+            f"缺：{missing}" if missing else "全在场")
+
+    return {"ok": ok_all, "checks": checks}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="676h 论文数字可追溯性审计")
     ap.add_argument("--tex", default="research/latex/queyi_neurips2027_v1.1.tex")
@@ -1554,6 +1729,9 @@ def main(argv=None):
             total_pages = int(m.group(1))
     deps = check_dependencies()
 
+    # 692：本批不改正文 ⇒ 新数字没有 tex 落点，只做「产物 ↔ 建议文件」自洽检查（另立一组，不进 tex 审计）
+    batch_692 = check_batch_692_artifacts()
+
     payload = {
         "schema": "queyi-676h/number-audit",
         "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
@@ -1566,6 +1744,7 @@ def main(argv=None):
         "coverage_summary": {"total": len(tokens), "by_class": by_class},
         "unclassified_tokens": uncov,
         "class_samples": samples,
+        "batch_692_selfcheck": batch_692,
     }
     os.makedirs(os.path.dirname(_p(args.out_json)), exist_ok=True)
     write_json(_p(args.out_json), payload)
@@ -1575,9 +1754,11 @@ def main(argv=None):
           f"{sum(1 for r in results if r['verdict']=='missing')}；"
           f"consistent {sum(1 for r in results if r['verdict']=='consistent')}")
     print(f"数字 token {len(tokens)}；未归类 {len(uncov)}")
+    print(f"692 批次自洽：{sum(1 for c in batch_692['checks'] if c['ok'])}/{len(batch_692['checks'])} "
+          f"{'PASS' if batch_692['ok'] else 'FAIL'}")
     print(f"输出：{args.out_json} / {args.out_md}")
     hard = sum(1 for r in results if r["verdict"] == "missing" and r["status"] == "active")
-    return 1 if hard else 0
+    return 1 if (hard or not batch_692["ok"]) else 0
 
 
 if __name__ == "__main__":
