@@ -1067,3 +1067,44 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v5
+
+  # ---- 693-C3：研究线门禁（数据完整性 + 论文门禁 + 冻结产物 sha256）----
+  #
+  # 为什么单独成一个 job：
+  #   * 三个脚本**只用标准库**，不需要装任何依赖 ⇒ 可以在裸 runner 上跑，最快最稳；
+  #   * 与书籍线的 quality/pytest 互不依赖，可以并行，不拖慢原有流水线。
+  #
+  # 检查内容（fail-loud，不做静默降级）：
+  #   1. tools/data_integrity_676h.py      —— 1137/1147 样本清单完整性
+  #   2. tools/paper_quality_gate_670c2.py —— 论文页数 / 摘要词数 / TODO 占位门禁
+  #   3. tools/gen_693_manifest.py --check —— 14 项权威冻结产物 sha256 完整性
+  #
+  # 诚实登记：本 job 由 693 批次新增，**未曾在 GitHub Actions 上实际执行过**
+  #   （693 执行环境无法触发远程 CI）。三个脚本均在 Windows 宿主机上本地跑通：
+  #   reproduce_all.sh 的 S1/S3 段即为同口径证据，见 data/693_docker_reproduce_report.md。
+  research-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.11'
+
+    - name: 数据完整性（1137/1147 样本清单）
+      run: python3 tools/data_integrity_676h.py
+      continue-on-error: false
+
+    - name: 论文门禁（页数 / 摘要 / TODO 占位）
+      run: python3 tools/paper_quality_gate_670c2.py
+      continue-on-error: false
+
+    - name: 冻结产物 sha256 完整性（14 项）
+      run: python3 tools/gen_693_manifest.py --check
+      continue-on-error: false
+
+    - name: 环境体检（报告档：只报告不阻断，留证据）
+      run: bash scripts/verify_environment.sh --report
+      continue-on-error: true

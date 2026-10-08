@@ -1,237 +1,212 @@
-# 现代 C++ 终极圣经 (The Ultimate Modern C++ Bible)
+# Queyi (阙疑) · C++ 缺陷检测器组合演化 —— 研究仓库 + 现代 C++ 圣经
 
 [![CI](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/ci.yml)
+[![DCO](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/dco.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/dco.yml)
+[![Docker Reproduce](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/docker.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/docker.yml)
+[![Pages](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/pages.yml/badge.svg)](https://github.com/LiaoRanran/CPP-Bible/actions/workflows/pages.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+[![Citation](https://img.shields.io/badge/Citation-CITATION.cff-green)](CITATION.cff)
 
-> 研究线（阙疑 Queyi：失败驱动的 C++ 检测器组合演化 + 真实靶场基准）见
-> **[README_RESEARCH.md](README_RESEARCH.md)** 与研究报告官网 **[docs/](docs/index.html)**；
-> 本书正文（147 章）继续以本文件为入口。
+> 本仓库装**两样东西**：
+> ① **Queyi（阙疑）** —— "失败驱动演化检测器组合"的 C++ 缺陷检测研究线与可复现基准；
+> ② **《现代 C++ 终极圣经》** —— 147 章硬核教程与其知识验证基础设施。
+>
+> 研究线入口就是本文件 §1–§6；书籍线见 [§7](#7-书籍线现代-c-终极圣经)。
 
-> **147 章 · 16 part · 约 25.6 万行 · 7515 个 cpp 代码块**（数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
-> 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
+---
 
-一本面向**系统 / 嵌入式 / 高性能**方向的现代 C++ 硬核教程（C++11 → C++26），
-同时是一套**可执行知识的验证基础设施**：正文、知识卡、证据、攻击记录与判决共用同一个信任根，
-**每个数字都能被独立复算，每条结论都能被攻击**。
+## 1. 一句话
 
-```
-                     ┌──────────────────────── 可复核的信任根 ────────────────────────┐
-  Book/ 147 章  ──►  atoms/ 知识卡 ──► evidence/ 证据卡 ──► tools/ 门禁与判决 ──► web/ 静态站
-  (可编译的示例)      (37 张实卡 +           (47 卡，            (67 规则 / 9 保护器 /    (星图 / 现场验哈希 /
-                      10 张 draft)            L1-L5 获取级)       34 条哈希面)            复现清单)
-                     └──────────▲──────────────▲───────────────▲──────────────▲───────────┘
-                                │              │               │              │
-                        data/supply_chain/  data/authority/  透明日志     独立验证器 + VSA 凭证
-                        (Merkle 目录根)     (452 条判决账本)  (哈希链)     (零 import 本项目)
-```
+**Queyi 把"用哪些检测器"本身当作可以在失败中演化的对象**：四态判决
+（`pass / fail / unknown / contradict`）+ append-only 判决账本 + Merkle 完整性 +
+确定性组合算子 **E**（failure / novelty / cost / redundancy 四分量）。
+它不发明新的缺陷检测算法，它回答的是**"给定一堆检测器，怎么选、怎么证明选得对、
+怎么证明结论不依赖测量环境"**。
 
-## 它是什么 / 不是什么
+---
 
-| 是 | 不是 |
-|---|---|
-| 一本 147 章的现代 C++ 教程，**每个 ```cpp 块都要能独立编译** | 不是速查手册 / 面试八股合集 |
-| 一套**知识验证基础设施**：知识卡 + 证据卡 + 攻击 + 四态判决 + 保护器 | 不是"AI 自动写书"的项目（判决与签名永远留给人） |
-| 一份**可独立复算**的账本：工具/规则/配置全部进哈希面，现场可验 | 不承诺"绝对正确"：unknown / 未达成的目标一律显式登记 |
+## 2. 五个核心发现（都带数字与取证入口）
 
-## 现状指标（本机实测，非目标值）
+| # | 发现 | 数字 | 取证 |
+|---:|---|---|---|
+| 1 | **八资产并集远大于任一单检测器**：单检测器 recall 最高的 asan 也只有 **61.65%**，而八资产并集达 **99.22%**（分母 expected=catch 640，当前冻结标签） | asan 61.65% > ubsan 40.25% > tsan 38.03% > compiler-warn 20.16% > cross-compile 16.48% > linker **1.41%** | `data/693_defect_type_deep_analysis.json::stale_metric_crosscheck_vs_676l` |
+| 2 | **但 38.4% 的缺陷仍是全资产盲区**：1147 样本 × 8 资产冻结矩阵，OR 口径检出 **61.6%**、盲区 **38.4%** | 707/1147 catch，440/1147 blind | `data/681_type_stats_normalized.json` |
+| 3 | **盲区高度不均匀**：34 类缺陷里 **13 类盲区率 >50%**，最差的 `algorithm_misuse` 达 **77.1%**（27/35） | 13/34 类 >50% | `data/681_type_stats_normalized.json` |
+| 4 | **环境是测量的坐标，不是复现细节**：同一批样本在 WSL/g++13.3（6 资产）下 catch **60.07%**，Windows-native（3 资产）下 **24.74%**；unaware 协议会把"没测"和"测了没中"写成同一种记录 | 配对 McNemar (b,c)=(200,0)，p=1.24×10⁻⁶⁰；E1 的捕获有 **58.82%**（200/340）在 E2 **从未被测量** | `data/692_environment_report.md` |
+| 5 | **组合算子的选择效应显著，但必须并报并列分析**：主分析（8 候选、k=4）FD **54.59%** vs Random **30.57%**，Δ=**+24.03pp**，95% CI [+20.51, +27.55]，精确 McNemar **p=2.3×10⁻⁴¹**（n=566） | ⚠ **并列分析 Δ=+0.00pp**；本项目**不宣称**"FD 选择策略优于 Random" | `data/676f_A5重跑报告.md` |
 
-| 维度 | 现状 | 取证入口 |
-|---|---|---|
-| 教程正文 | **147 章**，16 part，255,897 行，7,515 个 cpp 块 | `python tools/gen_metrics.py` |
-| 知识卡 | **37** 张实卡（`verified 23 / red-team-verified 3 / draft 11`）+ 10 张 `draft650` 草稿 | `atoms/**/ATOM-*.md` |
-| 判决规则 | **67** 条（其中 `severity=block` 44 条），规范清单见 `data/_gate_rules.json`（= `gate_engine.RULES`；661 A2 裁定） | `len(gate_engine.RULES)` / `len(_gate_rules.json)` |
-| 保护器 | **9** 个（冲突检测 / anti-windup / 盲化 / 校准追踪 / MDL 准入 / 工具级门 / shadow / 熔断 / 预算） | `queyi-core/tools/*_64*.py` |
-| 逃逸率 | **1 / 1406 = 0.0711%**（v7 变异基线；统计上界 0.9062%，已用 e-process 复算） | `data/616_baseline.md` |
-| 盲化 holdout 检出 | **34 / 41 = 82.9%**（W3 扩样后可测口径；unknown 1 不进分母） | `data/holdout_reveal_5_672h.json` |
-| 外部 corpus 检出 | **40 / 64 = 62.5%**（W3 扩样后；unknown 9 不进分母） | `data/external_corpus_reveal_672h.json` |
-| 接地模型 | W2 加权论辩求解：**131 节点**（IN 89 / OUT 42 / UNDEC 0） | `data/grounded_labels_w2.json` |
-| 前端星图 | 178 节点 / 1,093 边（攻击 388、击败 194）/ 全部由真实台账生成 | `web/data/graph.json` |
+> **发现 5 的限定必须一起读**：主分析的 +24.03pp 与并列分析的 +0.00pp 是**同一个实验的两种口径**，
+> 只报前者是选择性报告。完整口径见 `data/676f_A5重跑报告.md` §并列分析。
 
-## 质量门禁
+> ⚠ **发现 1 的数值与 `data/676l_单检测器性能报告.md` 不一致，这是刻意的。**
+> 676l 的报告在 **676m 标签修复之前**生成（其 ground truth 为 catch 674 / miss 473），
+> 之后**从未重算**；当前冻结矩阵是 catch 640 / miss 507。TP/FP/TN 逐位不变，
+> 只有 FN 与分母变了 ⇒ 676l 的 recall 列系统性偏低 1–3pp。
+> 上表是**用当前冻结标签重算**的值。详见 `data/693_paper_revision_suggestions.md` §1。
 
-本项目用一套"本地 + CI 双跑"的自动化校验，保证**不注水、不破链、可编译**：
+**真实世界侧**：683 批次新增 **110 条真实缺陷重构靶场**，每条可追溯（CVE / issue / commit），
+**109/109** 经 NVD 在线验证 FOUND，应答原文已冻结。
 
-| 门禁 | 命令 | 当前结果 |
-|------|------|----------|
-| 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
-| 全量编译 | `python tools/compile_all.py --main-only` | 147 章，115 章自包含通过 |
-| 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（58 设计性豁免块） |
-| `//@` 输出断言 | `python tools/run_expected.py --all --check` | 65 块全 PASS（关键块运行期输出与注释逐字比对） |
-| 覆盖状态机 | `python tools/l2_state.py check` | 57 章 / 139 块纯注释全为审计保留 C 类，无漂移 |
-| 编译回归 triage | `python tools/compile_triage.py --check` | 预存坏块 vs 新增回归自动分账，NEW=0 |
-| 密度审计 v3 | `python tools/density_audit.py --json` | 均分 25.7/30，浅章 0 |
-| 交叉引用 | `python tools/crossref_audit.py` | 0 断链 |
-| D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一），结构 ERROR=0 / WARN=3（措辞建议，不阻断） |
-| 信任根哈希面 | `python tools/tool_integrity.py --check` | 34 条（工具 27 + 测试配置 2 + 供应链台账 5），缺失即 FAIL |
-| 许可证头 | `python tools/license_header_check_655.py` | 活跃源码全过（新增 `.py` 强制 SPDX 头） |
-| 本地 pre-push | `python tools/prepush_check.py` | push 前一键复跑上述快校验 + 仓库卫生（`--install-hook` 可装钩子） |
-| 结构审计 | `python tools/structure_audit.py --check` | 标题大纲缺陷（stray H1 / 跳级）+ 参差表格：0 命中 |
-| 星级格 / H2 | `python tools/star_h2_audit.py check --star` | 示例头星级格 100% 统一（span 5 格制）+ H2 基线防恶化 |
+---
 
-**批次回归用快速门禁（672h 起，默认）**：
-
-```bash
-python tools/fast_gate.py --tests tests/test_<本批>.py   # 658+669d+671a guard+本批测试，<5 分钟
-python tools/fast_gate.py --all                          # 门禁 + 全部非 slow 测试（xdist 并行）
-python tools/fast_gate.py --all --skip-frontend          # 只动后端时
-```
-
-慢档（`@pytest.mark.slow`：WSL 编译 / 全量变异 / 全量重跑，单测 >10s）本地默认跳过，
-**全量回归只在 CI 跑**（CI 为 `-m "not slow" -n 16` + `-m slow -n0` 两阶段）。
-
-> **豁免说明**：`tools/compile_exempt.json` 中的 58 个失败块均为**设计性不可单编**内容
-> （多文件示例、C++20 Modules、POSIX / Windows 专用 API、外部库、故意展示的错误 / UB、
-> 跨块依赖），**非**内容 bug。真实语法 / 类型错误一旦出现，CI 编译门禁立即变红。
-> 豁免并非"挂起即忘"：`python tools/exempt_audit.py` 会用与基线相同的命令逐块重编，
-> 任何一条豁免失效（STALE）或正文漂移（DRIFT）都会显形（673b 复核：58/58 仍有效）。
-
-**汇编证据口径（如实披露）**：全书 513 个 ```` ```asm ```` 展示块中，**203 个已锚定**
-真实机器产物（与 `Examples/*.asm` 逐一符号比对，DRIFT=0，由 `verify_asm_evidence.py`
-门禁守护）；其余 310 个为**教学示意 / 节选**（含 27 个空占位块），不承担"真实产物"
-承诺，演进目标见 metrics 看板的 `asm_anchor_rate`。各章"本章所有汇编均为真实产物"
-的全称声明均经机校——所在章的全部 asm 块均已锚定，**0 矛盾**。
-
-## 评测数据集与数据质量（676m）
-
-论文的评测集是 `data/holdout_expansion/`（**1042 条扩样标注** + 1094 个 C++ 源文件），
-加上历史层 holdout 41 / corpus 64。**字段规范见 [`data/holdout_expansion/SCHEMA.md`](data/holdout_expansion/SCHEMA.md)，
-数据卡见 [`data/holdout_expansion/DATASHEET.md`](data/holdout_expansion/DATASHEET.md)。**
-
-| 指标 | 值 | 出处 |
-|------|----|------|
-| 扩样样本 | **1042**（expA–expG 七批） | `data/holdout_expansion/*/INDEX.json` |
-| `defect_type` 词表 | **34 项规范词表**（在用 33 项；676m 前是 56 个取值） | `tools/fix_676m_schema.py` |
-| `planted=true` 占比 | **92.9%**（968/1042） | 同上 |
-| 跨批**字节级**重复 | **0** | `data/676k_dedup_results.json` |
-| 跨批**结构近克隆** | **103 对**（4 个批对） | 同上 |
-| 批内**模板克隆率** | **62.2%**（674/1083）⇒ 全库仅 **572** 种结构 | 同上 |
-| 盲化双标注 Cohen's κ | **0.77**（`defect_type`）/ **0.69**（`expected_verdict`）/ **0.71**（`planted`）——**AI 自洽性，非人类 IAA** | `data/676k_relabel_score.json` |
-| 编译抽检 | **217/217 = 100%** | `data/676k_compile_results.json` |
-| 真实来源可追溯 | **74/74**（全部 HTTP 200） | `data/676k_source_results.json` |
-| 检测器盲区 | **38.4%**（1147 样本 × 8 资产） | `data/blindspot_676g_stats.json` |
-
-**检测器深度 Benchmark（676l）摘要**：单检测器 recall **asan 58.5% > ubsan 38.2% > tsan 36.1%
-> compiler-warn 19.1% > cross-compile 15.1% > linker 1.3%**（`wunsequenced` / `compile-time`
-恒 `unknown`）；8 资产**并集 94.21%**；k=1…8 穷举最佳 k=4 = **92.58%**，拐点 **k=5**；
-FD 在 k=4 选到 **86.94%**（比穷举最佳低 5.64pp，对 2000 次随机抽样的百分位 96.6）；
-`linker` 的 10 个 catch **全部**落在 asan/ubsan/tsan 的 10 个 `unknown` 里（**低边际但不可替代**）。
-详见 `data/676l_检测器Benchmark总报告.md`。
-
-**复现命令**：
-
-```bash
-# 数据修复自检（幂等门禁：H1 残留 0、待迁移 0）
-.venv/Scripts/python.exe tools/fix_676m_schema.py --verify
-
-# A5 重算门禁（修正标签后主端点须与 676f 逐位一致）
-.venv/Scripts/python.exe tools/recompute_a5_676m.py --check
-
-# 一键全链路（含上述两步 + 676k 只读审计 + 论文编译）
-bash docker/paper/run_all.sh
-```
-
-> **两个必须同读的限定**：① 92.9% 的样本是人工植入，本数据集测的是**仪器**而非真实缺陷分布；
-> ② 62.2% 的批内模板克隆率意味着**有效独立样本量远小于 1042**，且**不可用于训练模型**。
-
-### 机器可读元数据（682：Croissant + RAI）
-
-| 文件 | 内容 | 校验 |
-|------|------|------|
-| [`data/croissant.json`](data/croissant.json) | **Croissant core 1.0 + RAI 1.0**（同文件）：4 个 recordSet（1137 样本索引 / 1147×8 判定矩阵 / 34 类词表 / 8 族聚合）；13 个 FileObject 带 SHA-256 与大小；7 个 FileSet 覆盖扩样目录 | 官方 `mlcroissant` 库加载**通过**（4 recordSet / 13 文件全解析） |
-| [`data/rai_metadata.json`](data/rai_metadata.json) | RAI 展开版（与 croissant.json 内 8 个最小 RAI 字段**同源同值** + RAI v1.0 其余维度） | 自检 C6「同源」逐字段比对 |
-| [`data/682_规范调研摘要.md`](data/682_规范调研摘要.md) | NeurIPS 2026 E&D 硬性要求 + Croissant core/RAI 规范摘要（全部带官方来源 URL） | — |
-| [`data/682_metadata_selfcheck.json`](data/682_metadata_selfcheck.json) | 8 项自检（必填字段 / 统计一致 / 哈希复算 / RAI 在场 / 官方校验） | `python tools/gen_682_metadata.py --stage check` |
-
-数据卡摘要（datasheet）：**1147 样本 × 8 资产 = 9176 个真实判定格**，34 类缺陷闭集，
-OR 口径检出率 **61.6%** / 盲区 **38.4%**；来源三分类 self-authored **968** /
-source-derived-reconstruction **74** / original-external-artifact **0**（扩样 1042 口径）。
-**标签一致性是 AI 自洽性（κ=0.77），不是人类 IAA**；数据集**不含个人数据**。
-完整 RAI 声明（局限 / 偏差 / 用例 / 社会影响 / 合成数据 / 溯源）见上述两文件。
-
-## 快速开始
+## 3. 三步跑通
 
 ```bash
 git clone https://github.com/LiaoRanran/CPP-Bible.git
 cd CPP-Bible
-python -m pip install -r requirements.lock.txt
 
-# 1) 一句话自检：指标、门禁、信任根
-python tools/gen_metrics.py --check          # 文档数字与事实源一致
-python tools/consistency_check.py            # 全文一致性
-python tools/tool_integrity.py --check       # 信任根哈希面（缺失即 FAIL）
-python tools/license_header_check_655.py     # 许可证头
+# ① 环境体检（明确告诉你哪些资产在本机不可用，不静默降级）
+bash scripts/verify_environment.sh --report
 
-# 2) 跑测试 —— 批次回归默认走快速门禁（门禁三件套 + 本批测试，<5 分钟）
-python tools/fast_gate.py --tests tests/test_<本批>.py    # 或 --all 跑全部非 slow 测试
-python tools/fast_gate.py --all --skip-frontend           # 只动后端时
-node web/run_tests.mjs                                    # 前端自测（~14s，23 个测试文件）
+# ② 纯 Python 数据链（不需要任何编译器）—— 论文数字对账 + 完整性
+python tools/verify_paper_numbers.py         # 数字 vs 权威源，fail-closed
+python tools/gen_693_manifest.py --check     # 14 项冻结产物 sha256 完整性
 
-# 全量两阶段（CI 同口径；本地全量很慢，一般不跑）
-python -m pytest -m "not slow" -n auto
-python -m pytest -m slow -n0
-
-# 3) 打开前端静态站（无后端、无构建；数据由真实台账生成）
-python -m http.server 8099 --directory web   # 然后访问 http://127.0.0.1:8099/
+# ③ 一键复现（环境体检 → 完整性 → 数字复算 → 门禁 → 报告）
+bash scripts/reproduce_all.sh --out out/693_reproduce
 ```
 
-贡献流程、测试分类约定与 PR 检查清单见 [`CONTRIBUTING.md`](CONTRIBUTING.md)；
-贡献者原创声明（DCO）见 [`DCO.md`](DCO.md)；行为准则见 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。
-
-## 目录结构
-
-| 路径 | 内容 |
-|------|------|
-| `Book/` | 147 章正文（16 part，编号连续；`.md` 里引用的外部根在 `docs/`、`Appendix/`） |
-| `Examples/` `Benchmarks/` `Appendix/` | 真实可编译示例、汇编产物（`.asm`）、UB 反例库 |
-| `atoms/` `evidence/` | 知识卡（原子命题）与证据卡（L1 实测 / L2 标准 / L3 文档 …） |
-| `tools/` | 门禁、判决、证据、保护器、发布脚本（556 个 `.py`，均带 `--check` 自检） |
-| `tests/` | pytest 套件（两阶段 fast / slow，~4000 例） |
-| `data/` | 所有**产物**与账本：判决账本、基线报告、变异库、供应链台账、验收报告 |
-| `docs/` | 规范文档（内核、判决 schema、双轴词表、接口规范）与站点素材 |
-| `web/` | 静态站（`index.html` 总览 / `starmap.html` 星图 / `verify.html` 现场验哈希） |
-| `status/` `_auto/` | 逐批验收报告与自动化协议（inbox 任务书 / outbox 收工报告） |
-
-## 本地构建（EPUB / PDF / 站点）
-
-> 构建依赖 `pandoc` + `texlive-xetex`（PDF），建议在本机 WSL 或 CI 中执行；本地 Windows
-> 缺依赖时脚本会明确报错并给出安装指引，**不产出半成品**。
+完整检测链（需要 WSL g++ 13.3 + MinGW g++ 13.1 + clang++）：
 
 ```bash
-bash tools/generate_epub.sh            # EPUB3
-bash tools/generate_pdf.sh             # PDF（单卷全书）
-bash tools/generate_pdf.sh --by-part   # PDF（分卷）
+python tools/collect_realworld_683.py --stage verify        # NVD 在线验证（需网络）
+python data/realworld_683_runner.py --stage detect          # 110 × 8 真实检测（增量 checkpoint）
+python data/realworld_683_runner.py --stage merge
 ```
 
-## 路线图
+容器复现（**需要本机装 Docker**；693 执行环境未装，镜像**未实测构建**）：
 
-1. **第一年四件地基**（`_arch_v34` 战略结论）
-   - ✅ 许可与协作包（本文件 + `LICENSE` + `DCO.md` + `CONTRIBUTING.md` + `CODE_OF_CONDUCT.md` + `.github/` 模板）
-   - ✅ 判决形式规格 v1（[`docs/verdict_formal_spec_v1.md`](docs/verdict_formal_spec_v1.md)）——为后续 Rust + Verus 形式化做准备
-   - ✅ 元验证论文（NeurIPS 2027 Evaluations & Datasets 投稿稿 v1.1）：`research/latex/queyi_neurips2027_v1.1.tex`（正文 9 页 / 全稿 35 页）；同批交付可复现化改造——一键复算 `bash docker/paper/run_all.sh`、手册 [`REPRODUCE.md`](REPRODUCE.md)、数字审计 `tools/verify_paper_numbers.py`（118 条检察 / 0 硬伤）、种子审计 `tools/seed_audit_676h.py`（实验类未固定种子 0）
-   - ⚠️ **复现硬依赖 WSL**：论文数字的复现必须在 [`REPRODUCE.md`](REPRODUCE.md) 声明的 WSL 环境（Ubuntu 24.04.4 + g++ 13.3 + `setarch`）内执行；Windows-native / macOS 无法复现，错误环境下脚本会 fail-loud 抛错（不再静默降分；原 35%→10% 静默降级问题已封堵）
-   - ✅ 数据修复 + 实验重算（676m）：34 条挂起样本判据修正、56→34 项统一词表、字段完整性（M1–M5）全过；A5 主端点**逐位不变**（标签修正对主分析零影响），数据质量与检测器 Benchmark 已写入论文附录
-   - ✅ 门禁三杠杆（增量选例 / 结果缓存 / 分片）：`tools/test_selector_655.py`、`tools/result_cache_655.py`
-2. **信任根继续独立化**：外部锚（OpenTimestamps 上链）、第三方盲评、独立性从 L2 走向 L3
-3. **知识面扩展**：`draft650` 草稿卡 → 补证据升 `verified`；C 语言与嵌入式域适配
-4. **内容侧**：汇编锚定率提升、D5 性能附录补到全覆盖、`Interview/` 与 `misconceptions/` 同步更新
+```bash
+docker compose -f docker/reproduce/docker-compose.yml build
+docker compose -f docker/reproduce/docker-compose.yml run --rm verify-env
+docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
+```
 
-## 约定与治理
+> ⚠ **WSL 用户必读**：开启 Windows 系统代理时，`wsl.exe` 会向 stderr 写一条 UTF-16LE 横幅，
+> 导致 Python 解码失败 ⇒ ASan/UBSan 报告**全部静默丢失**（系统性假 miss）。
+> 调用前必须 `export WSL_UTF8=1` 且 `export WSLENV=WSL_UTF8/u`。详见 `docs/ENVIRONMENT.md` §2。
 
-- 红线宪法见 [`AGENT.md`](AGENT.md)：准确性＞速度、完整性＞简洁、禁注水、禁增章、禁幻觉、源只读只写 `build/`。
-- 写作 / 工程约定见 [`CONVENTIONS.md`](CONVENTIONS.md)、[`GOVERNANCE.md`](GOVERNANCE.md)；
-  接手者请先读 [`NEXT_LLM.md`](NEXT_LLM.md)（30 秒速览当前阶段）。
-- 安全与漏洞报告见 [`SECURITY.md`](SECURITY.md)；发布与质量快照见 [`RELEASE.md`](RELEASE.md)。
+---
 
-## 许可
+## 4. 项目结构
+
+| 路径 | 内容 |
+|---|---|
+| `research/latex/` | 论文主稿 `queyi_neurips2027_v1.1.tex`（tectonic 编译） |
+| `data/` | 全部**产物**与账本：1147×8 冻结矩阵、真实靶场、判决账本、逐批验收报告 |
+| `data/holdout_expansion/` | 评测集（1042 条扩样 + 1094 个源文件），规范见 `SCHEMA.md`、数据卡见 `DATASHEET.md` |
+| `data/annotation_package/` | **人类标注材料包**（145 条去标识化样本 + 标注指南 + 校准题） |
+| `tools/` | 门禁、判决、分析、复现脚本（均带 `--check` 自检） |
+| `scripts/` | `reproduce_all.sh` / `verify_environment.sh`（693-B 一键复现） |
+| `docker/reproduce/` | 复现镜像（多阶段构建；**未实测**） |
+| `docs/` | `ENVIRONMENT.md`（环境锁定）与研究报告 |
+| `tests/` | pytest 套件（fast / slow 两阶段） |
+| `Book/` `Examples/` `atoms/` `evidence/` `web/` | **书籍线**（见 §7） |
+
+---
+
+## 5. 数据一览
+
+| 数据 | 规模 | 位置 |
+|---|---|---|
+| 合成语料判定矩阵 | **1147 × 8**（真实编译/运行，-O0/-O2 双档） | `data/blindspot_676g_detection_matrix.json` |
+| 真实靶场 PoC + 元数据 | **110 条**（可追溯，PoC 单文件 <200 行） | `data/real_world/RW-*.cpp` |
+| 真实靶场判定矩阵 | **110 × 8** | `data/683_real_world_detection_matrix.json` |
+| CVE 在线验证 | **109/109 FOUND**（NVD 应答原文冻结） | `data/683_real_world_candidates_verified.json` |
+| `defect_type` 词表 | **34 项闭集** | `data/676m_sample_manifest_corrected.json` |
+| 权威判决账本 | **452 条事件** | `data/authority/decision_event_v2_ledger.jsonl` |
+| 机器可读元数据 | Croissant core 1.0 + RAI 1.0（官方校验通过） | `data/croissant.json`、`data/rai_metadata.json` |
+
+---
+
+## 6. 引用
+
+```bibtex
+@misc{liao2027queyi,
+  title        = {Evolving Verifiers: Failure-Driven Portfolio Evolution for C++ Defect Detection},
+  author       = {Liao, Ran},
+  year         = {2027},
+  note         = {Manuscript in preparation (NeurIPS 2027 Datasets \& Benchmarks track)},
+  howpublished = {\url{https://github.com/LiaoRanran/CPP-Bible}},
+  license      = {Apache-2.0}
+}
+```
+
+机器可读引用：[`CITATION.cff`](CITATION.cff)。
+
+---
+
+## 7. 书籍线（现代 C++ 终极圣经）
+
+> **147 章 · 16 part · 约 25.6 万行 · 7,515 个 cpp 代码块**
+> （数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
+> 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
+
+面向**系统 / 嵌入式 / 高性能**方向的现代 C++ 硬核教程（C++11 → C++26），
+同时是一套**可执行知识的验证基础设施**：正文、知识卡、证据、攻击记录与判决共用同一个信任根，
+**每个数字都能被独立复算，每条结论都能被攻击**。
+
+```
+  Book/ 147 章 ──► atoms/ 知识卡 ──► evidence/ 证据卡 ──► tools/ 门禁与判决 ──► web/ 静态站
+  (可编译的示例)    (37 实卡 + 10 draft)  (47 卡，L1-L5)   (67 规则 / 9 保护器)  (星图 / 验哈希)
+                        ▲                    ▲                   ▲
+              data/supply_chain/     data/authority/       透明日志哈希链
+              (Merkle 目录根)        (452 条判决账本)
+```
+
+| 门禁 | 命令 | 当前结果 |
+|---|---|---|
+| 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
+| 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（58 设计性豁免块） |
+| `//@` 输出断言 | `python tools/run_expected.py --all --check` | 65 块全 PASS |
+| 信任根哈希面 | `python tools/tool_integrity.py --check` | 34 条，缺失即 FAIL |
+| 批次快速门禁 | `python tools/fast_gate.py --tests tests/test_<本批>.py` | <5 分钟 |
+
+打开静态站：`python -m http.server 8099 --directory web` → http://127.0.0.1:8099/
+
+> **逃逸率口径（勿误读）**：前端"逃逸率 0.0711%（1/1406）"是**对自造变异分布（v7）的漏检率**，
+> **不是本书的真实错误率**；Clopper-Pearson 95% 单侧上界 0.337%，且仅对该变异分布成立。
+> 详见 `docs/metric_layers_658.md`。
+
+书籍线的路线图与约定另见 [`ROADMAP_v3.md`](ROADMAP_v3.md)、[`CONVENTIONS.md`](CONVENTIONS.md)、
+[`AGENT.md`](AGENT.md)（红线宪法）、[`NEXT_LLM.md`](NEXT_LLM.md)（接手速览）。
+
+---
+
+## 8. 贡献与治理
+
+- 贡献流程与 PR 清单：[`CONTRIBUTING.md`](CONTRIBUTING.md)
+- 行为准则：[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- 原创声明 DCO（**提交必须用 `git commit -s`**）：[`DCO.md`](DCO.md)
+- 安全策略：[`SECURITY.md`](SECURITY.md)（不接收武器化利用链；靶场样本只收"缺陷最小重构"）
+- 环境问题排查：[`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md)
+
+**我们正在招募标注者**：31 条 C++ 裁决题，1–2 小时，可署名致谢。
+见 [`data/693_github_recruitment_issue.md`](data/693_github_recruitment_issue.md)。
+
+---
+
+## 9. 诚实边界（必读，不要跳过）
+
+1. **人类 IAA 仍为 0。** 所有标签都有交叉验证，但交叉验证的一方是 **AI**。
+   693 批次已备齐人类裁决材料包（AI 双标 raw agreement **78.6%** / κ=**0.495**，31 条分歧清单），
+   但**真人还没标**。κ=0.77 那类数字是 **AI 自洽性，不是人类一致性**。
+   另外自曝一个材料包缺陷：**145 条里有 13 条**源码注释残留 `expected_verdict` 原文
+   （689 净化脚本漏了），裁决表已标 `leak_suspected=yes`，κ 带/不带各报一次
+   （77.3% / κ=0.458）。
+2. **样本主体是合成/半合成**：92.9% 为人工植入；真实靶场以**重构**方式引入，
+   不等价于原始项目上下文。测的是**仪器**，不是真实缺陷分布。
+3. **批内模板克隆率 62.2%**（674/1083）⇒ 有效独立样本量远小于 1042，且**不可用于训练模型**。
+4. **A5 的 +24.03pp 必须与并列分析 +0.00pp 并报**；不宣称 FD 优于 Random。
+5. **Docker 复现镜像未实测构建**（693 执行环境未安装 Docker）。
+6. **复现硬依赖 WSL**：论文数字必须在 `REPRODUCE.md` 声明的环境
+   （Ubuntu 24.04.4 + g++ 13.3）内执行；错误环境下脚本 fail-loud 抛错，不再静默降分。
+7. **未被证据支持的项一律保留 `⬜ 未闭合`**，绝不写成"安全/已确认"。
+
+---
+
+## 10. 许可证
 
 [Apache-2.0](LICENSE) —— 内容与示例代码均以 Apache-2.0 许可发布。
 贡献即表示同意以同一许可证分发，并在 commit 上签署 [`DCO.md`](DCO.md)。
-
-## 逃逸率口径（重要，勿误读）
-
-前端"逃逸率 0.0711%（1/1406）"是**对自造变异分布（v7）的漏检率**，**不是本书的真实错误率**。
-
-- Clopper-Pearson 95% 单侧上界 = **0.337%**，且仅对该变异分布成立；
-- `mutation score`（core 96.5% = 110/114，95% CI 91.3–99.0；all 81.8% = 130/159，95% CI 74.9–87.4）衡量的是**测试充分度（Test adequacy）**，
-  **不等于外部效度**——详见 [`docs/metric_layers_658.md`](docs/metric_layers_658.md)；
-- 真实世界错误检测能力由盲化 holdout（[`data/holdout/`](data/holdout/)）与外部 corpus
-  （[`data/external_corpus_658.md`](data/external_corpus_658.md)）另行评估。
+平台侧版权（含 C++ 提案译文）归各版权方所有，本仓库仅作引用与评注。

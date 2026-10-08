@@ -147,3 +147,12 @@ data/.622_apply.lock.*
 # 注：Book.zip 已在上面单独 ignore；此处只钉这两个具体名字，不用 *.zip（避免误伤其它交付 zip）。
 /QueYi_paper_package.zip
 /QueYi_paper_package/
+
+# ── 693-D2 · 复现输出目录 ─────────────────────────────────────────────────
+# scripts/reproduce_all.sh / docker/paper/run_all.sh 的输出（默认 out/）。
+# 原则同 build/：复现产物是"从 data/ 读算出来的"，不是账本的一部分，
+# 入库只会让工作树变脏并制造"改了数据"的假象。
+out/
+
+# 693 批次的工作区临时文件
+/.workbuddy/
