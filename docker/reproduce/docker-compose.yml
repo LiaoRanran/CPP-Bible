@@ -1,0 +1,48 @@
+# docker/reproduce/docker-compose.yml — 693-B1
+#
+# 单服务：queyi-reproduce。只做一件事 = 跑通全链复现。
+#
+# 用法
+# ====
+#   docker compose -f docker/reproduce/docker-compose.yml build
+#   docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
+#   docker compose -f docker/reproduce/docker-compose.yml run --rm verify-env   # 只做环境体检
+#
+# 数据挂载
+# ========
+#   * `./data`  → `/workspace/data`（**读写**：复现会往里写新产物）
+#   * `./docs`  → `/workspace/docs`（读写：报告输出）
+#   * 源码其余部分走镜像内的 COPY（构建时快照），保证"镜像 = 代码版本"可追溯。
+#     ⚠ 因此**改了 tools/ 或 scripts/ 必须重新 build**，只挂 data/ 是不够的。
+#
+# 诚实登记（693 红线 7）
+# ======================
+# 693 执行环境**未安装 Docker**，本文件**未实测**。它经过 YAML 语法与路径核验，
+# 但没有 `docker compose build` 的实际证据。
+
+services:
+  reproduce:
+    build:
+      context: ../..
+      dockerfile: docker/reproduce/Dockerfile
+    image: queyi-reproduce:693
+    working_dir: /workspace
+    volumes:
+      - ../../data:/workspace/data
+      - ../../docs:/workspace/docs
+    environment:
+      QUEYI_REPRO_ROOT: /workspace
+      QUEYI_SKIP_WUNSEQUENCED: "1"
+      TZ: UTC
+    command: ["scripts/reproduce_all.sh"]
+
+  verify-env:
+    build:
+      context: ../..
+      dockerfile: docker/reproduce/Dockerfile
+    image: queyi-reproduce:693
+    working_dir: /workspace
+    entrypoint: ["/bin/bash", "-lc"]
+    command: ["scripts/verify_environment.sh"]
+    environment:
+      TZ: UTC

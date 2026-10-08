@@ -1,0 +1,63 @@
+# .dockerignore — 693-B1
+#
+# 目的：让 `docker build` 的构建上下文尽量小、且**不含**任何不该进镜像的东西
+# （密钥、大产物、本地临时文件、本机绝对路径产物）。
+
+# ── 版本控制与 CI ──
+.git
+.github
+.gitignore
+.gitattributes
+.hypothesis
+.mypy_cache
+.pytest_cache
+.pytest_tmp
+.ruff_cache
+.pre-commit-config.yaml
+
+# ── 虚拟环境与缓存 ──
+.venv
+__pycache__
+**/__pycache__
+node_modules
+*.pyc
+*.pyo
+
+# ── 大体积中间/交付产物（MB 级 jsonl、打包件）──
+data/*.jsonl
+data/evidence_store
+data/prompts
+*.tar.gz
+*.zip
+QueYi_paper_package
+QueYi_paper_package.zip
+QueYi_preview_package.zip
+preview_package
+preview_package_v2
+dist
+build
+outputs
+
+# ── 本机临时文件 ──
+*.tmp
+*.err
+*.err.log
+*.dat
+sample_056tmp.dat
+
+# ── 密钥与本地环境变量 ──
+.env
+*.pem
+*.key
+*.p12
+.ssh
+
+# ── 文档站产物（不影响任何论文数字）──
+docs/assets/data
+web/node_modules
+
+# ── IDE / 操作系统噪声 ──
+.vscode
+.idea
+.DS_Store
+Thumbs.db

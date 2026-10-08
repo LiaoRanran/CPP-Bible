@@ -1,0 +1,91 @@
+# 693-B3 · Python 依赖钉版本（全量 freeze；承接 676h 的部分钉版本）
+#
+# 采集：2026-10-08，`.venv/Scripts/python.exe -m pip freeze`（Python 3.13.13）
+# 用途：测试 / 类型检查 / 文档站 / 时间戳公证 / 门禁。
+#
+# ─────────────────────────────────────────────────────────────────────────
+# 重要边界（诚实声明，必须随本文件一起引用）
+# ─────────────────────────────────────────────────────────────────────────
+# 1. 论文头版数字的**重算**（reveal / stats / counts / 卡计数 / CI）**全部只用
+#    标准库**。本文件对"复现论文数字"的最小集合其实是**空的**；下面钉的是跑测试、
+#    类型检查、门禁与文档站需要的包。
+# 2. 产物实际生成环境为 Python **3.13.13**（见
+#    data/holdout_reveal_5_672h.json::env.python，与仓库 .venv 一致）。
+#    本机系统 Python 3.13.14 亦跑通全部重算命令（同一 minor），但正式复现请用 3.13.x。
+# 3. Docker 复现镜像（docker/reproduce/Dockerfile）用的是 **Python 3.10**（ubuntu:22.04
+#    默认），且**只装 pyyaml**——3.13-only 的包在 3.10 上可能装不上，
+#    故镜像内不套用本文件。这是刻意的分层，不是遗漏。
+# 4. 本文件**未在 Python 3.10 环境下验证可安装性**；693 执行环境未安装 Docker
+#    （693 红线 7），容器路径未实测。
+# 5. 不要指望 pip 装出新的随机性/浮点差异：所有实验脚本的种子见 REPRODUCE.md 第 3 节。
+
+# python==3.13.13  （说明性：产物生成环境的 Python 版本）
+
+# ── 门禁 / lint / 类型检查 ──
+ruff==0.16.5
+mypy==2.3.1
+mypy_extensions==1.1.0
+
+# ── 测试 ──
+pytest==9.1.1
+pytest-xdist==3.8.0
+hypothesis==6.168.0
+execnet==2.1.2
+iniconfig==2.3.0
+pluggy==1.6.0
+syrupy==6.1.1
+
+# ── 打包 / 通用 ──
+setuptools==84.0.0
+packaging==26.3
+platformdirs==4.11.5
+pathspec==1.1.1
+typing_extensions==4.16.0
+six==1.17.0
+certifi==2026.7.22
+click==8.5.0
+colorama==0.4.6
+sortedcontainers==2.4.0
+watchdog==6.0.0
+
+# ── 仓库工具链实际引用到的第三方包 ──
+GitPython==3.1.62
+gitdb==4.0.12
+smmap==5.0.3
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+Markdown==3.10.3
+Pygments==2.21.0
+pycryptodomex==3.23.0
+opentimestamps==0.4.5
+opentimestamps-client==0.7.2
+python-bitcoinlib==0.12.2
+jsbeautifier==2.0.3
+librt==0.15.0
+appdirs==1.4.4
+PyYAML==6.0.3
+requests==2.34.2
+urllib3==2.7.0
+PySocks==1.7.1
+charset-normalizer==3.5.1
+idna==3.19
+python-dateutil==2.9.0.post0
+pypdf==6.19.0
+
+# ── 文档站（不影响任何论文数字）──
+mkdocs==1.6.1
+mkdocs-get-deps==0.2.2
+mkdocs-material==9.7.7
+mkdocs-material-extensions==1.3.1
+mkdocs-mermaid2-plugin==1.2.3
+mergedeep==1.3.4
+ghp-import==2.1.0
+babel==2.18.0
+paginate==0.5.7
+pymdown-extensions==11.0.2
+backrefs==8.0
+pyyaml_env_tag==1.1
+beautifulsoup4==4.15.0
+soupsieve==2.9.2
+ast_serialize==0.8.0
+EditorConfig==0.17.1

@@ -1,0 +1,22 @@
+# 693-B2 · 权威冻结产物 sha256 清单
+# generated_at: 2026-10-08T20:26:53+08:00
+# generated_by: tools/gen_693_manifest.py
+# 格式：<sha256><两个空格><相对路径>（与 sha256sum -c 兼容）
+# 覆盖 14 项；登记缺失 0 项（见下）
+#
+# 校验：python tools/gen_693_manifest.py --check
+#      sha256sum -c data/693_data_manifest.sha256
+184febbe0c2bb5007925822691b6598942e885863c1c0ff243a068fdd761ef82  data/blindspot_676g_detection_matrix.json
+0309bc16cc5b56bf2ab95271a878b575355443c333c80c0ec04a7c84208d4329  data/676m_a5_matrix_corrected.json
+65c220877e32a9a1a011f69aa70bd3106c5b97b484ccc1930c1646998251f1ca  data/a5_676f_detection_matrix.json
+0ff88dadc5ba3354c550a9b947c23557571a3615a9802f7255c32126406d586f  data/676m_sample_manifest_corrected.json
+f1da9792a24184cbad6492bc6fa52b7a3aa1e2b100c7465de98cdc4a001c06b6  data/681_type_stats_normalized.json
+65f224c968ba71b029e0726f761cf9dc09eac6404f21635d3bc3c6b6936a0e01  data/683_real_world_detection_matrix.json
+f5cb7420fa9cb673e937ff13c0fb1d096c6d0bdd85c6e63511a1133c89434d0d  data/683_real_world_project_matrix.json
+0a4bf427dbc82fd21d07f8f203db57e8d014a4b61024219ec0443637548b96d9  data/683_real_world_type_matrix.json
+18d1c7e599e19d3806d7fb60021bca0031987540f9a7ef043cbc50cefaea5248  data/684_complementarity_matrix.json
+942c5433bdacbf11baea9545f7bd71c1e9f34860d069428250c842b874af86e7  data/685_literature_matrix.json
+233981cab121f00bfcad519e3ff5119f379b178578134bef30f77acfa6c23cea  data/689_annotation_key_mapping.json
+37fa51174e4abcf5b44437cdc22cf4fcb1faf1f3d0241a86abc08b1a63cd4a42  data/holdout_reveal_5_672h.json
+2c956175bacc0cb7aa539d7392644fb45c3fa4887f7ce12f14df92bbfd7faf58  data/external_corpus_reveal_672h.json
+ec8cbf5cca2def3ded8517264ae163ad64658dfc8d85d96fa7ac9804c194b385  data/authority/decision_event_v2_ledger.jsonl
