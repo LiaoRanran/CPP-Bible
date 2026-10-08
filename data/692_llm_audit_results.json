@@ -1,0 +1,681 @@
+{
+ "schema": "queyi-692/llm-audit/v1",
+ "generated_by": "tools/run_692_llm_audit.py",
+ "generated_at": "2026-10-08T19:36:18+08:00",
+ "protocol": "data/692_llm_audit_protocol.md",
+ "design": {
+  "seed": 6921,
+  "n_per_stratum": 40,
+  "n_selected": 80,
+  "selected_uids": [
+   "A012",
+   "A022",
+   "A060",
+   "A064",
+   "A067",
+   "A072",
+   "A081",
+   "B007",
+   "B058",
+   "B061",
+   "B062",
+   "B081",
+   "C026",
+   "C071",
+   "C072",
+   "C079",
+   "C087",
+   "C094",
+   "C101",
+   "C121",
+   "C126",
+   "C157",
+   "C160",
+   "C177",
+   "C183",
+   "C192",
+   "C195",
+   "D007",
+   "D015",
+   "D023",
+   "D032",
+   "D037",
+   "D072",
+   "D075",
+   "D110",
+   "D120",
+   "D130",
+   "D147",
+   "D152",
+   "D163",
+   "E007",
+   "E017",
+   "E022",
+   "E037",
+   "E047",
+   "E053",
+   "E057",
+   "E061",
+   "E077",
+   "E100",
+   "E101",
+   "E109",
+   "E137",
+   "E155",
+   "E164",
+   "E172",
+   "E182",
+   "E183",
+   "E192",
+   "F020",
+   "F036",
+   "F041",
+   "F065",
+   "F070",
+   "F077",
+   "F079",
+   "F081",
+   "F082",
+   "F086",
+   "F089",
+   "F128",
+   "G054",
+   "G055",
+   "G061",
+   "G068",
+   "G084",
+   "G093",
+   "h26",
+   "h30",
+   "h48"
+  ],
+  "models": [
+   {
+    "slot": "A_glm-4.5",
+    "model_id": "glm-4.5"
+   },
+   {
+    "slot": "B_glm-4-flash",
+    "model_id": "glm-4-flash"
+   }
+  ],
+  "prompts": [
+   "p1",
+   "p2"
+  ],
+  "temperature": 0,
+  "max_tokens": 700,
+  "max_lines": 400,
+  "calls_recorded": 480,
+  "raw_lines_including_retries": 592,
+  "dedup_rule": "同一 (uid, slot, prompt, tag) 只保留最后一条 API 成功的记录（重试产生多行）",
+  "api_base": "ZHIPU_BASE_URL（OpenAI 兼容；凭据不落盘）",
+  "run_tags": {
+   "A_glm-4.5": {
+    "primary": "a2000",
+    "max_tokens_by_tag": {
+     "default": 700,
+     "a2000": 2000
+    },
+    "calls_by_tag": {
+     "default": 160,
+     "a2000": 160
+    },
+    "expected_calls": 160,
+    "coverage_threshold": 152.0,
+    "primary_incomplete": false
+   },
+   "B_glm-4-flash": {
+    "primary": "default",
+    "max_tokens_by_tag": {
+     "default": 700
+    },
+    "calls_by_tag": {
+     "default": 160
+    },
+    "expected_calls": 160,
+    "coverage_threshold": 152.0,
+    "primary_incomplete": false
+   }
+  }
+ },
+ "positioning": "LLM 不是 oracle，是第 4 类 evidence asset；测 audit protocol 的模态可迁移性，不比较谁更准。",
+ "per_model": {
+  "A_glm-4.5": {
+   "model_id": "glm-4.5",
+   "n_calls": 160,
+   "state_counts_all_calls": {
+    "catch": 115,
+    "unknown": 27,
+    "miss": 17,
+    "contradiction": 1
+   },
+   "run_tag": "a2000",
+   "max_tokens": 2000,
+   "caliber": "逐样本多数票（p1/p2 一致 ⇒ 该判定；不一致 ⇒ 取 p1；见协议 §5.4）",
+   "three_components_on_declared_positives": {
+    "catch": 37,
+    "miss": 0,
+    "unknown": 18,
+    "conditional_recall_pct": 100.0
+   },
+   "false_report": {
+    "on_expected_miss": 18,
+    "silent_on_expected_miss": 7,
+    "unknown_on_expected_miss": 15,
+    "false_report_rate_pct": 72.0
+   },
+   "strata": {
+    "declared_positives": 40,
+    "declared_negatives": 40,
+    "unknown_on_positives": 3,
+    "unknown_on_negatives": 15
+   },
+   "control_stratum_planted_false": {
+    "n": 4,
+    "reported": 2,
+    "silent": 1,
+    "unknown": 1,
+    "report_rate_pct": 66.6667
+   },
+   "pristine_negative_stratum": {
+    "n": 1,
+    "reported": 0,
+    "silent": 1,
+    "unknown": 0,
+    "report_rate_pct": 0.0,
+    "note": "planted=false 且 expected=miss：本批唯一能读作 FP 的干净对照层"
+   },
+   "prompt_invariance": {
+    "agree": 70,
+    "total": 80,
+    "rate_pct": 87.5,
+    "disagreements": [
+     {
+      "uid": "C094",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "D130",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "E101",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "E137",
+      "p1": "unknown",
+      "p2": "miss"
+     },
+     {
+      "uid": "E164",
+      "p1": "unknown",
+      "p2": "contradiction"
+     },
+     {
+      "uid": "E192",
+      "p1": "miss",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F081",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F082",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F128",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "G093",
+      "p1": "unknown",
+      "p2": "catch"
+     }
+    ]
+   },
+   "contradiction_n": 1,
+   "contradiction_samples": [
+    {
+     "uid": "E164",
+     "p1": "unknown",
+     "p2": "contradiction",
+     "why": "no_json"
+    }
+   ],
+   "calibration": {
+    "ece": 0.2927,
+    "bins": [
+     {
+      "bin": "[0.0,0.6)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.6,0.7)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.7,0.8)",
+      "n": 1,
+      "mean_conf": 0.7,
+      "empirical_acc": 1.0
+     },
+     {
+      "bin": "[0.8,0.9)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.9,1.01)",
+      "n": 61,
+      "mean_conf": 0.9975,
+      "empirical_acc": 0.7049
+     }
+    ],
+    "n_with_confidence": 62
+   },
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 9,
+     "miss": 0,
+     "unknown": 8,
+     "contradiction": 1
+    },
+    "conditional_trigger": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "embedded": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 6,
+     "contradiction": 0
+    },
+    "language_semantics": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 1,
+     "contradiction": 0
+    },
+    "legacy": {
+     "catch": 3,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "memory_safety": {
+     "catch": 3,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "odr_link": {
+     "catch": 1,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "optimization_sensitive": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "real_world": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 1,
+     "contradiction": 0
+    },
+    "stl": {
+     "catch": 8,
+     "miss": 0,
+     "unknown": 2,
+     "contradiction": 0
+    },
+    "undefined_behavior": {
+     "catch": 5,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    }
+   },
+   "latency_s_mean": 26.067,
+   "tokens_total": 166681,
+   "api_failures": {
+    "ok": 160
+   }
+  },
+  "B_glm-4-flash": {
+   "model_id": "glm-4-flash",
+   "n_calls": 160,
+   "state_counts_all_calls": {
+    "catch": 141,
+    "miss": 19
+   },
+   "run_tag": "default",
+   "max_tokens": 700,
+   "caliber": "逐样本多数票（p1/p2 一致 ⇒ 该判定；不一致 ⇒ 取 p1；见协议 §5.4）",
+   "three_components_on_declared_positives": {
+    "catch": 38,
+    "miss": 2,
+    "unknown": 0,
+    "conditional_recall_pct": 95.0
+   },
+   "false_report": {
+    "on_expected_miss": 34,
+    "silent_on_expected_miss": 6,
+    "unknown_on_expected_miss": 0,
+    "false_report_rate_pct": 85.0
+   },
+   "strata": {
+    "declared_positives": 40,
+    "declared_negatives": 40,
+    "unknown_on_positives": 0,
+    "unknown_on_negatives": 0
+   },
+   "control_stratum_planted_false": {
+    "n": 4,
+    "reported": 4,
+    "silent": 0,
+    "unknown": 0,
+    "report_rate_pct": 100.0
+   },
+   "pristine_negative_stratum": {
+    "n": 1,
+    "reported": 1,
+    "silent": 0,
+    "unknown": 0,
+    "report_rate_pct": 100.0,
+    "note": "planted=false 且 expected=miss：本批唯一能读作 FP 的干净对照层"
+   },
+   "prompt_invariance": {
+    "agree": 77,
+    "total": 80,
+    "rate_pct": 96.25,
+    "disagreements": [
+     {
+      "uid": "A064",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "A067",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "D147",
+      "p1": "catch",
+      "p2": "miss"
+     }
+    ]
+   },
+   "contradiction_n": 0,
+   "contradiction_samples": [],
+   "calibration": {
+    "ece": 0.45,
+    "bins": [
+     {
+      "bin": "[0.0,0.6)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.6,0.7)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.7,0.8)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.8,0.9)",
+      "n": 0,
+      "mean_conf": null,
+      "empirical_acc": null
+     },
+     {
+      "bin": "[0.9,1.01)",
+      "n": 80,
+      "mean_conf": 1.0,
+      "empirical_acc": 0.55
+     }
+    ],
+    "n_with_confidence": 80
+   },
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 11,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "conditional_trigger": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "embedded": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "language_semantics": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "legacy": {
+     "catch": 3,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "memory_safety": {
+     "catch": 3,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "odr_link": {
+     "catch": 0,
+     "miss": 1,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "optimization_sensitive": {
+     "catch": 2,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "real_world": {
+     "catch": 3,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "stl": {
+     "catch": 8,
+     "miss": 0,
+     "unknown": 0,
+     "contradiction": 0
+    },
+    "undefined_behavior": {
+     "catch": 4,
+     "miss": 1,
+     "unknown": 0,
+     "contradiction": 0
+    }
+   },
+   "latency_s_mean": 3.405,
+   "tokens_total": 42722,
+   "api_failures": {
+    "ok": 160
+   }
+  }
+ },
+ "cross_asset": {
+  "A_glm-4.5": {
+   "sanitizer_ref": "冻结矩阵 asan/ubsan/tsan 的 OR（V_sanitizer）",
+   "pairs": {
+    "llm_catch_san_catch": 34,
+    "llm_catch_san_no": 21,
+    "llm_no_san_catch": 0,
+    "llm_no_san_no": 7
+   },
+   "n_judged": 62,
+   "agreement_pct": 66.129,
+   "jaccard_catch": 0.6182,
+   "llm_only_catch": {
+    "n": 21,
+    "by_group": {
+     "concurrency": 6,
+     "embedded": 4,
+     "memory_safety": 4,
+     "stl": 3,
+     "optimization_sensitive": 2,
+     "language_semantics": 1,
+     "odr_link": 1
+    },
+    "right_share_pct": 19.0476
+   },
+   "sanitizer_only_catch": {
+    "n": 0,
+    "by_group": {},
+    "right_share_pct": null
+   },
+   "who_is_right_note": "以 expected_verdict（声明可检出性）为参照；分母为各自独有的分歧样本数。"
+  },
+  "B_glm-4-flash": {
+   "sanitizer_ref": "冻结矩阵 asan/ubsan/tsan 的 OR（V_sanitizer）",
+   "pairs": {
+    "llm_catch_san_catch": 35,
+    "llm_catch_san_no": 37,
+    "llm_no_san_catch": 1,
+    "llm_no_san_no": 7
+   },
+   "n_judged": 80,
+   "agreement_pct": 52.5,
+   "jaccard_catch": 0.4795,
+   "llm_only_catch": {
+    "n": 37,
+    "by_group": {
+     "concurrency": 13,
+     "embedded": 10,
+     "language_semantics": 4,
+     "memory_safety": 3,
+     "stl": 3,
+     "optimization_sensitive": 2,
+     "odr_link": 1,
+     "real_world": 1
+    },
+    "right_share_pct": 13.5135
+   },
+   "sanitizer_only_catch": {
+    "n": 1,
+    "by_group": {
+     "undefined_behavior": 1
+    },
+    "right_share_pct": 100.0
+   },
+   "who_is_right_note": "以 expected_verdict（声明可检出性）为参照；分母为各自独有的分歧样本数。"
+  }
+ },
+ "honest_limits": [
+  "truth 参照 = 冻结矩阵 expected_verdict（声明可检出性标签）；人类 IAA 仍为 0。",
+  "任务书原定 41 holdout + 64 corpus 框架不可执行（corpus 源路径已不在盘上，实测）⇒ 改用 A5 evaluation 538 有源池；偏差登记于协议 §6。",
+  "两家族 = 推理型(glm-4.5) vs 非推理型(glm-4-flash)，不是两家公司（DeepSeek 密钥 401 已实测）。",
+  "contradiction / confidence 为模型自报告，属操作性启发式（探索性），不可当证据强度。"
+ ],
+ "budget_sensitivity": {
+  "A_glm-4.5": {
+   "a2000": {
+    "max_tokens": 2000,
+    "n_calls": 160,
+    "conditional_recall_pct": 100.0,
+    "false_report_rate_pct": 72.0,
+    "unknown_n": 18,
+    "finish_reason_length_n": 27,
+    "unknown_rate_pct": 32.7273
+   },
+   "default": {
+    "max_tokens": 700,
+    "n_calls": 160,
+    "conditional_recall_pct": 100.0,
+    "false_report_rate_pct": 71.4286,
+    "unknown_n": 46,
+    "finish_reason_length_n": 76,
+    "unknown_rate_pct": 69.697
+   }
+  },
+  "B_glm-4-flash": {
+   "default": {
+    "max_tokens": 700,
+    "n_calls": 160,
+    "conditional_recall_pct": 95.0,
+    "false_report_rate_pct": 85.0,
+    "unknown_n": 0,
+    "finish_reason_length_n": 0,
+    "unknown_rate_pct": 0.0
+   }
+  }
+ },
+ "aggregation_sensitivity": {
+  "A_glm-4.5": {
+   "prereg_p1_tiebreak": {
+    "conditional_recall_pct": 100.0,
+    "false_report_rate_pct": 72.0,
+    "unknown_n": 18,
+    "n_judged": 62
+   },
+   "asset_consistent_or": {
+    "conditional_recall_pct": 100.0,
+    "false_report_rate_pct": 70.9677,
+    "unknown_n": 10,
+    "n_judged": 70
+   }
+  },
+  "B_glm-4-flash": {
+   "prereg_p1_tiebreak": {
+    "conditional_recall_pct": 95.0,
+    "false_report_rate_pct": 85.0,
+    "unknown_n": 0,
+    "n_judged": 80
+   },
+   "asset_consistent_or": {
+    "conditional_recall_pct": 95.0,
+    "false_report_rate_pct": 85.0,
+    "unknown_n": 0,
+    "n_judged": 80
+   }
+  }
+ },
+ "aggregation_sensitivity_note": "预注册口径 = 两 prompt 不一致时取 p1（协议 §5.4）；资产一致 OR = 任一 prompt 报 catch 即 catch，与 8 资产 OR 同构。两者并排报告：同一份测量在不同聚合口径下读数不同。OR 口径为事后补充，标探索性。",
+ "budget_sensitivity_note": "协议 §7 修订 A1：Model A 在 700 预算下出现 finish_reason=length 截断（推理 token 吃掉补全预算），故增跑 2000 预算一轮；两轮并排报告，主表用预算最大者。判据/样本/prompt 未变。"
+}
