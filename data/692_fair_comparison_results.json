@@ -1,0 +1,618 @@
+{
+ "schema": "queyi-692/fair-comparison/v1",
+ "generated_by": "tools/run_692_fair_comparison.py",
+ "generated_at": "2026-10-08T13:05:10+08:00",
+ "protocol": "data/692_fair_comparison_protocol.md",
+ "frame": {
+  "source": "data/a5_676f_detection_matrix.json split=evaluation",
+  "n": 566,
+  "n_with_source": 538,
+  "n_no_source": 28,
+  "expected_catch": 322,
+  "expected_miss": 244,
+  "planted_false": 34,
+  "declared_negatives_composition": {
+   "planted_true_outside_declared_region": 232,
+   "planted_false_controls": 12,
+   "note": "declared_negatives 不是「干净样本」：多数是落在参考协议声称可检出区之外的植入缺陷 ⇒ 该层上的 false_report_rate 是能力分歧率，FP 只能读 planted=false 层。"
+  }
+ },
+ "tools": {
+  "clang-tidy": {
+   "binary": "C:\\msys64\\mingw64\\bin\\clang-tidy.exe",
+   "checks_T1": "-*,clang-analyzer-*,bugprone-*,cert-*,cppcoreguidelines-*"
+  },
+  "cppcheck": {
+   "binary": "C:\\msys64\\mingw64\\bin\\cppcheck.exe",
+   "enable_T4": "--enable=warning,performance,portability",
+   "enable_T3": "--enable=warning"
+  }
+ },
+ "calibers": {
+  "T1_clang_tidy_C_main": {
+   "tool": "clang-tidy",
+   "description": "clang-tidy 预注册主口径（analyzer+bugprone+cert+cppcoreguidelines）",
+   "strata": {
+    "declared_positives": 322,
+    "declared_negatives": 244
+   },
+   "three_components_on_declared_positives": {
+    "catch": 288,
+    "miss": 18,
+    "unknown": 16,
+    "total": 322,
+    "catch_rate_pct": 89.441,
+    "unknown_rate_pct": 4.9689,
+    "conditional_recall_pct": 94.1176
+   },
+   "false_report": {
+    "reported_on_expected_miss": 225,
+    "silent_on_expected_miss": 6,
+    "unknown_on_expected_miss": 13,
+    "false_report_rate_pct": 97.4026
+   },
+   "control_stratum_planted_false": {
+    "n": 34,
+    "reported": 34,
+    "silent": 0,
+    "unknown": 0,
+    "report_rate_pct": 100.0,
+    "note": "planted=false 的样本（真正「未植入缺陷」的对照）上仍出报告的比例；这是本帧唯一可读作 FP 的量。declared_negatives 层含 232 条 planted=true 但落在参考协议声称可检出区之外的样本 ⇒ 该层的 false_report_rate 只能读作「能力分歧率」，不能读作误报率。"
+   },
+   "pristine_negative_stratum": {
+    "n": 12,
+    "reported": 12,
+    "silent": 0,
+    "unknown": 0,
+    "report_rate_pct": 100.0,
+    "note": "planted=false 且 expected=miss：既未植入缺陷、参考也不期望检出 ⇒ 这是本帧唯一的「干净对照」层，其 report_rate 才可读作 FP 率。"
+   },
+   "frame_coverage_pct": 94.8763,
+   "frame_unknown": 29,
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 59,
+     "miss": 0,
+     "unknown": 0
+    },
+    "conditional_trigger": {
+     "catch": 12,
+     "miss": 0,
+     "unknown": 0
+    },
+    "embedded": {
+     "catch": 20,
+     "miss": 0,
+     "unknown": 0
+    },
+    "language_semantics": {
+     "catch": 13,
+     "miss": 5,
+     "unknown": 0
+    },
+    "legacy": {
+     "catch": 17,
+     "miss": 0,
+     "unknown": 16
+    },
+    "memory_safety": {
+     "catch": 33,
+     "miss": 1,
+     "unknown": 0
+    },
+    "odr_link": {
+     "catch": 0,
+     "miss": 4,
+     "unknown": 0
+    },
+    "optimization_sensitive": {
+     "catch": 5,
+     "miss": 8,
+     "unknown": 0
+    },
+    "real_world": {
+     "catch": 27,
+     "miss": 0,
+     "unknown": 0
+    },
+    "stl": {
+     "catch": 68,
+     "miss": 0,
+     "unknown": 0
+    },
+    "undefined_behavior": {
+     "catch": 34,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "unknown_samples": [
+    "D018"
+   ],
+   "zero_discrimination_flag": true
+  },
+  "T2_clang_tidy_C_A": {
+   "tool": "clang-tidy",
+   "description": "clang-tidy 探索口径（仅 clang-analyzer-*；673e 事后口径，本批先声明）",
+   "strata": {
+    "declared_positives": 322,
+    "declared_negatives": 244
+   },
+   "three_components_on_declared_positives": {
+    "catch": 107,
+    "miss": 199,
+    "unknown": 16,
+    "total": 322,
+    "catch_rate_pct": 33.2298,
+    "unknown_rate_pct": 4.9689,
+    "conditional_recall_pct": 34.9673
+   },
+   "false_report": {
+    "reported_on_expected_miss": 32,
+    "silent_on_expected_miss": 199,
+    "unknown_on_expected_miss": 13,
+    "false_report_rate_pct": 13.8528
+   },
+   "control_stratum_planted_false": {
+    "n": 34,
+    "reported": 10,
+    "silent": 24,
+    "unknown": 0,
+    "report_rate_pct": 29.4118,
+    "note": "planted=false 的样本（真正「未植入缺陷」的对照）上仍出报告的比例；这是本帧唯一可读作 FP 的量。declared_negatives 层含 232 条 planted=true 但落在参考协议声称可检出区之外的样本 ⇒ 该层的 false_report_rate 只能读作「能力分歧率」，不能读作误报率。"
+   },
+   "pristine_negative_stratum": {
+    "n": 12,
+    "reported": 0,
+    "silent": 12,
+    "unknown": 0,
+    "report_rate_pct": 0.0,
+    "note": "planted=false 且 expected=miss：既未植入缺陷、参考也不期望检出 ⇒ 这是本帧唯一的「干净对照」层，其 report_rate 才可读作 FP 率。"
+   },
+   "frame_coverage_pct": 94.8763,
+   "frame_unknown": 29,
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 2,
+     "miss": 57,
+     "unknown": 0
+    },
+    "conditional_trigger": {
+     "catch": 9,
+     "miss": 3,
+     "unknown": 0
+    },
+    "embedded": {
+     "catch": 5,
+     "miss": 15,
+     "unknown": 0
+    },
+    "language_semantics": {
+     "catch": 7,
+     "miss": 11,
+     "unknown": 0
+    },
+    "legacy": {
+     "catch": 10,
+     "miss": 7,
+     "unknown": 16
+    },
+    "memory_safety": {
+     "catch": 29,
+     "miss": 5,
+     "unknown": 0
+    },
+    "odr_link": {
+     "catch": 0,
+     "miss": 4,
+     "unknown": 0
+    },
+    "optimization_sensitive": {
+     "catch": 5,
+     "miss": 8,
+     "unknown": 0
+    },
+    "real_world": {
+     "catch": 15,
+     "miss": 12,
+     "unknown": 0
+    },
+    "stl": {
+     "catch": 12,
+     "miss": 56,
+     "unknown": 0
+    },
+    "undefined_behavior": {
+     "catch": 13,
+     "miss": 21,
+     "unknown": 0
+    }
+   },
+   "unknown_samples": [
+    "D018"
+   ],
+   "zero_discrimination_flag": false
+  },
+  "T3_cppcheck_warning": {
+   "tool": "cppcheck",
+   "description": "cppcheck severity ∈ {error, warning}",
+   "strata": {
+    "declared_positives": 322,
+    "declared_negatives": 244
+   },
+   "three_components_on_declared_positives": {
+    "catch": 152,
+    "miss": 154,
+    "unknown": 16,
+    "total": 322,
+    "catch_rate_pct": 47.205,
+    "unknown_rate_pct": 4.9689,
+    "conditional_recall_pct": 49.6732
+   },
+   "false_report": {
+    "reported_on_expected_miss": 42,
+    "silent_on_expected_miss": 190,
+    "unknown_on_expected_miss": 12,
+    "false_report_rate_pct": 18.1034
+   },
+   "control_stratum_planted_false": {
+    "n": 34,
+    "reported": 7,
+    "silent": 27,
+    "unknown": 0,
+    "report_rate_pct": 20.5882,
+    "note": "planted=false 的样本（真正「未植入缺陷」的对照）上仍出报告的比例；这是本帧唯一可读作 FP 的量。declared_negatives 层含 232 条 planted=true 但落在参考协议声称可检出区之外的样本 ⇒ 该层的 false_report_rate 只能读作「能力分歧率」，不能读作误报率。"
+   },
+   "pristine_negative_stratum": {
+    "n": 12,
+    "reported": 3,
+    "silent": 9,
+    "unknown": 0,
+    "report_rate_pct": 25.0,
+    "note": "planted=false 且 expected=miss：既未植入缺陷、参考也不期望检出 ⇒ 这是本帧唯一的「干净对照」层，其 report_rate 才可读作 FP 率。"
+   },
+   "frame_coverage_pct": 95.053,
+   "frame_unknown": 28,
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 0,
+     "miss": 59,
+     "unknown": 0
+    },
+    "conditional_trigger": {
+     "catch": 12,
+     "miss": 0,
+     "unknown": 0
+    },
+    "embedded": {
+     "catch": 5,
+     "miss": 15,
+     "unknown": 0
+    },
+    "language_semantics": {
+     "catch": 13,
+     "miss": 5,
+     "unknown": 0
+    },
+    "legacy": {
+     "catch": 11,
+     "miss": 6,
+     "unknown": 16
+    },
+    "memory_safety": {
+     "catch": 30,
+     "miss": 4,
+     "unknown": 0
+    },
+    "odr_link": {
+     "catch": 0,
+     "miss": 4,
+     "unknown": 0
+    },
+    "optimization_sensitive": {
+     "catch": 13,
+     "miss": 0,
+     "unknown": 0
+    },
+    "real_world": {
+     "catch": 3,
+     "miss": 24,
+     "unknown": 0
+    },
+    "stl": {
+     "catch": 43,
+     "miss": 25,
+     "unknown": 0
+    },
+    "undefined_behavior": {
+     "catch": 22,
+     "miss": 12,
+     "unknown": 0
+    }
+   },
+   "unknown_samples": [],
+   "zero_discrimination_flag": false
+  },
+  "T4_cppcheck_broad": {
+   "tool": "cppcheck",
+   "description": "cppcheck warning+performance+portability（全量诊断）",
+   "strata": {
+    "declared_positives": 322,
+    "declared_negatives": 244
+   },
+   "three_components_on_declared_positives": {
+    "catch": 155,
+    "miss": 151,
+    "unknown": 16,
+    "total": 322,
+    "catch_rate_pct": 48.1366,
+    "unknown_rate_pct": 4.9689,
+    "conditional_recall_pct": 50.6536
+   },
+   "false_report": {
+    "reported_on_expected_miss": 45,
+    "silent_on_expected_miss": 187,
+    "unknown_on_expected_miss": 12,
+    "false_report_rate_pct": 19.3966
+   },
+   "control_stratum_planted_false": {
+    "n": 34,
+    "reported": 7,
+    "silent": 27,
+    "unknown": 0,
+    "report_rate_pct": 20.5882,
+    "note": "planted=false 的样本（真正「未植入缺陷」的对照）上仍出报告的比例；这是本帧唯一可读作 FP 的量。declared_negatives 层含 232 条 planted=true 但落在参考协议声称可检出区之外的样本 ⇒ 该层的 false_report_rate 只能读作「能力分歧率」，不能读作误报率。"
+   },
+   "pristine_negative_stratum": {
+    "n": 12,
+    "reported": 3,
+    "silent": 9,
+    "unknown": 0,
+    "report_rate_pct": 25.0,
+    "note": "planted=false 且 expected=miss：既未植入缺陷、参考也不期望检出 ⇒ 这是本帧唯一的「干净对照」层，其 report_rate 才可读作 FP 率。"
+   },
+   "frame_coverage_pct": 95.053,
+   "frame_unknown": 28,
+   "per_defect_group": {
+    "concurrency": {
+     "catch": 0,
+     "miss": 59,
+     "unknown": 0
+    },
+    "conditional_trigger": {
+     "catch": 12,
+     "miss": 0,
+     "unknown": 0
+    },
+    "embedded": {
+     "catch": 6,
+     "miss": 14,
+     "unknown": 0
+    },
+    "language_semantics": {
+     "catch": 13,
+     "miss": 5,
+     "unknown": 0
+    },
+    "legacy": {
+     "catch": 11,
+     "miss": 6,
+     "unknown": 16
+    },
+    "memory_safety": {
+     "catch": 31,
+     "miss": 3,
+     "unknown": 0
+    },
+    "odr_link": {
+     "catch": 0,
+     "miss": 4,
+     "unknown": 0
+    },
+    "optimization_sensitive": {
+     "catch": 13,
+     "miss": 0,
+     "unknown": 0
+    },
+    "real_world": {
+     "catch": 3,
+     "miss": 24,
+     "unknown": 0
+    },
+    "stl": {
+     "catch": 43,
+     "miss": 25,
+     "unknown": 0
+    },
+    "undefined_behavior": {
+     "catch": 23,
+     "miss": 11,
+     "unknown": 0
+    }
+   },
+   "unknown_samples": [],
+   "zero_discrimination_flag": false
+  }
+ },
+ "queiy_reference": {
+  "verdict_source": "a5_676f_detection_matrix.or_verdict（8 资产 OR，WSL/g++13.3 + native 3 资产混合环境）",
+  "strata": {
+   "declared_positives": 322,
+   "declared_negatives": 244
+  },
+  "three_components_on_declared_positives": {
+   "catch": 302,
+   "miss": 20,
+   "unknown": 0,
+   "total": 322,
+   "catch_rate_pct": 93.7888,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 93.7888,
+   "frame_coverage_pct": 100.0
+  },
+  "false_report": {
+   "reported_on_expected_miss": 38,
+   "silent_on_expected_miss": 206,
+   "unknown_on_expected_miss": 0,
+   "false_report_rate_pct": 15.5738
+  },
+  "control_stratum_planted_false": {
+   "n": 34,
+   "reported": 25,
+   "silent": 9,
+   "report_rate_pct": 73.5294
+  },
+  "pristine_negative_stratum": {
+   "n": 12,
+   "reported": 3,
+   "silent": 9,
+   "report_rate_pct": 25.0
+  },
+  "note": "Queyi 侧 8 资产池跨两个 OS（3 sanitizer 在 WSL）；环境感知口径见 data/692_environment_paired_experiment.json。"
+ },
+ "cross_disagreement": {
+  "T1_clang_tidy_C_main": {
+   "pairs": {
+    "queyi_yes_tool_yes": 300,
+    "queyi_yes_tool_no": 18,
+    "queyi_no_tool_yes": 213,
+    "queyi_no_tool_no": 6
+   },
+   "queyi_catch_tool_silent": {
+    "n": 18,
+    "by_group": {
+     "optimization_sensitive": 7,
+     "language_semantics": 5,
+     "odr_link": 5,
+     "memory_safety": 1
+    }
+   },
+   "tool_report_queyi_no_catch": {
+    "n": 213,
+    "by_group": {
+     "embedded": 52,
+     "concurrency": 51,
+     "stl": 27,
+     "language_semantics": 25,
+     "memory_safety": 15,
+     "real_world": 14,
+     "conditional_trigger": 8,
+     "optimization_sensitive": 7,
+     "odr_link": 6,
+     "undefined_behavior": 6,
+     "legacy": 2
+    }
+   }
+  },
+  "T2_clang_tidy_C_A": {
+   "pairs": {
+    "queyi_yes_tool_yes": 109,
+    "queyi_yes_tool_no": 209,
+    "queyi_no_tool_yes": 30,
+    "queyi_no_tool_no": 189
+   },
+   "queyi_catch_tool_silent": {
+    "n": 209,
+    "by_group": {
+     "stl": 60,
+     "concurrency": 57,
+     "undefined_behavior": 22,
+     "embedded": 17,
+     "real_world": 15,
+     "language_semantics": 11,
+     "legacy": 7,
+     "optimization_sensitive": 7,
+     "memory_safety": 5,
+     "odr_link": 5,
+     "conditional_trigger": 3
+    }
+   },
+   "tool_report_queyi_no_catch": {
+    "n": 30,
+    "by_group": {
+     "memory_safety": 14,
+     "language_semantics": 11,
+     "embedded": 3,
+     "concurrency": 1,
+     "conditional_trigger": 1
+    }
+   }
+  },
+  "T3_cppcheck_warning": {
+   "pairs": {
+    "queyi_yes_tool_yes": 158,
+    "queyi_yes_tool_no": 160,
+    "queyi_no_tool_yes": 36,
+    "queyi_no_tool_no": 184
+   },
+   "queyi_catch_tool_silent": {
+    "n": 160,
+    "by_group": {
+     "concurrency": 58,
+     "stl": 27,
+     "real_world": 25,
+     "embedded": 17,
+     "undefined_behavior": 12,
+     "legacy": 6,
+     "language_semantics": 5,
+     "memory_safety": 5,
+     "odr_link": 5
+    }
+   },
+   "tool_report_queyi_no_catch": {
+    "n": 36,
+    "by_group": {
+     "stl": 12,
+     "memory_safety": 10,
+     "optimization_sensitive": 8,
+     "undefined_behavior": 3,
+     "conditional_trigger": 1,
+     "language_semantics": 1,
+     "real_world": 1
+    }
+   }
+  },
+  "T4_cppcheck_broad": {
+   "pairs": {
+    "queyi_yes_tool_yes": 161,
+    "queyi_yes_tool_no": 157,
+    "queyi_no_tool_yes": 39,
+    "queyi_no_tool_no": 181
+   },
+   "queyi_catch_tool_silent": {
+    "n": 157,
+    "by_group": {
+     "concurrency": 58,
+     "stl": 27,
+     "real_world": 25,
+     "embedded": 16,
+     "undefined_behavior": 11,
+     "legacy": 6,
+     "language_semantics": 5,
+     "odr_link": 5,
+     "memory_safety": 4
+    }
+   },
+   "tool_report_queyi_no_catch": {
+    "n": 39,
+    "by_group": {
+     "stl": 12,
+     "memory_safety": 10,
+     "optimization_sensitive": 8,
+     "undefined_behavior": 3,
+     "legacy": 2,
+     "conditional_trigger": 1,
+     "embedded": 1,
+     "language_semantics": 1,
+     "real_world": 1
+    }
+   }
+  }
+ },
+ "honest_limits": [
+  "clang-tidy 与 cppcheck 虽同在本机 Windows native 运行，但不是同一编译环境（cppcheck 无编译期）；与 Queyi 的 WSL+sanitizer 检测环境本质不同（静态 vs 动态）⇒ 非容器化同环境。",
+  "truth labels = 冻结矩阵 expected_verdict（声明可检出性），非人审真值；人类 IAA 仍为 0。",
+  "外部工具无 unknown 概念：其「无报告」在真错样本上记 miss（已知不对称）。",
+  "T2 为 673e 的事后口径，本批在跑之前声明，不洗成预注册。"
+ ]
+}
