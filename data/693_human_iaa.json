@@ -1,0 +1,14 @@
+{
+ "schema": "queyi-693-human-iaa/v1",
+ "generated_by": "tools/compute_693_iaa.py",
+ "generated_at": "2026-10-08T20:02:40+08:00",
+ "input_csv": "C:\\CodeLearnling\\note\\note\\C++\\CPP-Bible\\data\\693_human_adjudication_package.csv",
+ "n_rows": 31,
+ "n_filled": 0,
+ "threshold": {
+  "verdict_kappa": 0.8,
+  "source": "689 协议 §6 预注册"
+ },
+ "status": "pending",
+ "note": "human_verdict 列为空：人类裁决尚未执行，脚本已就绪但未产生任何统计。填完后重跑本脚本即出 κ / agreement% / 混淆矩阵。"
+}

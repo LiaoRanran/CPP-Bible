@@ -1,0 +1,229 @@
+﻿sample_id,code_sha256,defect_type_A,annotator_A,annotator_B,b_confidence,b_reason,leak_suspected,human_verdict,human_note,source_code
+S001,7b2a12133036986055e906a006292d4206713f5f46a2436bfad4b90d6cb900f1,other_ub,miss,catch,high,relaxed 标志不构成 happens-before，TSan 报 d 的竞态,no,,,"#include <atomic>
+#include <thread>
+#include <cstdio>
+std::atomic<int> f{0};int d=0;
+int main(){std::thread w([]{d=42;f.store(1,std::memory_order_relaxed);});while(f.load(std::memory_order_relaxed)==0){}std::printf(""%d\n"",d);w.join();}
+"
+S002,314d39a812a93fa49eb784cdbe276d509bf36ede0e14f3d925815cdae91c8cf6,strict_aliasing,miss,catch,medium,"C 风格强转后解引用 ⇒ GCC -Wstrict-aliasing（-Wall,level 3）告警",no,,,"int f(float*p){*(int*)p=1;return (int)*p;}
+int main(){float x=0;return f(&x);}
+"
+S003,4d36d0f1047d8b64bc8e1a03b6d21cdb0ddfb972f671571a609f296fc44ca94f,other_ub,miss,catch,medium,两个 i++ 之间无序列点 ⇒ GCC -Wsequence-point（-Wall）告警,no,,,"#include <cstdio>
+int main(){ int i = 0; int a[2] = { i++, i++ }; std::printf(""%d %d\n"", a[0], a[1]); return 0; }
+"
+S007,2554af439eae34e0c9c64ddea61e2aeda55740fab136981e73563fa8cf6b9edc,other_ub,miss,catch,medium,读未初始化 x；-O2 下 -Wuninitialized 命中（-O0 可能不报）,no,,,"int f(){int x;return x*2;}
+int main(){return f();}
+"
+S008,ed7c7a7d3e3ebfd073952a71214769bb98d2b59241f6b34a372e2e37b57f653b,other_ub,miss,catch,medium,i = i++ + 1 无序列点修改并读取，GCC -Wsequence-point 命中,no,,,"#include <cstdio>
+int main(){int i=0;i=i+++1;std::printf(""%d\n"",i);}
+"
+S016,1e02efa87b308fa025da95363e401c33a5a8bf042a5f44a8aca578747a79ec58,linker_odr,catch,unknown,high,ODR 夹具需要第二个 TU 与链接顺序才能判定，材料包只给 TU A,no,,,"// [redacted]
+#define ODR_VALUE 1
+#include ""S016_dep_c24a0d9d.h""
+
+int tu_a_value() { return odr_fn(); }
+int tu_a_stable() { return stable_fn(); }
+"
+S020,ccac41d4ccc3adbac85ae99a0323a1a647ec709dd65d792c19267da4fedf0605,other_ub,miss,catch,medium,i = i++ 无序列点，GCC -Wsequence-point 命中,no,,,"int main(){int i=0;i=i++;return i;}
+"
+S023,114ac315dbc70018ffc3058bb2d402985ec9be5df62891f5e33b2a701fc3d6db,other_ub,catch,miss,high,两个函数实参求值顺序 unspecified，非 UB，无告警,no,,,"#include <cstdio>
+int g(){std::printf(""g"");return 1;}int h(){std::printf(""h"");return 2;}
+void f(int,int){}
+int main(){f(g(),h());}
+"
+S030,5be29b1020d397d7f4aec4a33a3d69aa2dbd260b9df7fa4eb5bd37c346331088,other_ub,miss,catch,high,二次 delete，ASan double-free 命中,no,,,"int main(){int* p=new int(1);delete p;delete p;return 0;}
+"
+S044,4d17ceb30d4857beff12785f46ece3d5b1d0202e832a94b7b2e9f7e717268de4,uninitialized_read,miss,catch,medium,读未初始化 m；-Wuninitialized/-Wmaybe-uninitialized 可能命中,no,,,"// [redacted]
+// SPDX-License-Identifier: Apache-2.0
+#include <cstdio>
+int main() {
+  int m;
+  int r = m + 7; // [redacted]
+  (void)r;
+  return 0;
+}
+"
+S046,1bb066d136bf37fc992c242c1c73d61ba9e408bb27a64896641f3fb0b5a785f9,other_ub,miss,catch,high,控制流到达非 void 函数结尾，-Wreturn-type 命中,no,,,"int f(int x){if(x>0)return 1;}
+int main(){return f(-1);}
+"
+S048,58f80dd7e5b637d63daeb2adaeecb16efeb60beddeadd979997d6b2170f3de4b,logic_error,miss,catch,high,同上，-Wreturn-type 命中,no,,,"#include <cstdio>
+int f(int x){ if (x > 0) return x; }
+int main(){ std::printf(""%d\n"", f(1)); return 0; }
+"
+S052,330c2638ada6d43a48d9dbe2aaccaedab39795ca1e388290c1b24b55cbb316af,alignment,miss,unknown,low,alignas(2) 缓冲实际地址可能偶然 8 字节对齐 ⇒ 对齐 UB 是否触发不确定；-Wcast-align 不在 -Wall 内,no,,,"#include <cstdio>
+struct alignas(8) L{long long v;};
+int main(){alignas(2) char buf[sizeof(L)+8];L* p=reinterpret_cast<L*>(buf);p->v=1;std::printf(""%lld\n"",p->v);}
+"
+S053,e26b68e83baa987e329d781703cf217722f5e134d727a1e817efef44f6c6816b,register_ub,catch,unknown,high,register 关键字是否触发 -Wdeprecated-register 取决于 -std,no,,,"#include <cstdio>
+int main(){
+  register int r6 = 6;  // [redacted]
+  std::printf(""%d\n"", r6);
+  return 0;
+}
+"
+S054,0c9bdf889f0a1ad48cfbc839455c6fec1e7566e67a9b65adc8944bfaa9502c0c,linker_odr,miss,unknown,high,inline 变量是 C++17 特性；C++11/14 下非良定义 ⇒ 判定依赖 -std,no,,,"#include ""S054_dep_8d3367f6.h""
+int ga(){ return g; } // [redacted]
+
+"
+S066,62db9498c2874543cb5b988189eb5cee7647d9ea313d5f611c2ce95599446427,bit_operation,catch,miss,high,无符号位域截断是良定义，无告警,no,,,"#include <cstdio>
+struct Bf { unsigned f:6; };
+int main(){
+  Bf b; b.f = 128;  // [redacted]
+  std::printf(""%u\n"", b.f);
+  return 0;
+}
+"
+S069,ccc0741446a2e6d6006fa49674bf71a7f59c513df87ac9788feaf88cb2689db5,other_ub,catch,miss,high,new[]/delete[] 配对正确，nothrow 失败返回 nullptr 为良定义,no,,,"// [redacted]
+// 服务 ATOM-MEM-NEW-001（第二卡）：new[]/delete[] 必须配对；nothrow 失败返回 nullptr 而非抛异常。
+// new[] 调 operator new[]（一次）、delete[] 调 operator delete[]（一次）；内置类型数组不初始化。
+#include <new>
+#include <iostream>
+#include <cstdlib>
+
+volatile long g_a = 0, g_d = 0;                 // volatile：防折叠（M2 §5）
+void* operator new[](std::size_t n) { g_a = g_a + 1; return std::malloc(n); }
+void  operator delete[](void* p) noexcept { g_d = g_d + 1; std::free(p); }
+
+int main() {
+    int* a = new int[10];                        // [redacted]
+    std::cout << ""array new[] calls="" << g_a << ""\n"";     // 1
+    delete[] a;                                  // 必须 delete[]，不是 delete
+    std::cout << ""array delete[] calls="" << g_d << ""\n"";   // 1（配对）
+    int* c = new (std::nothrow) int[100000000000LL];        // 约 400GB，必然失败
+    std::cout << ""nothrow huge returned null="" << (c == nullptr) << ""\n"";  // 1（不抛异常）
+    if (c) delete[] c;
+    return 0;
+}
+"
+S071,85d848a689d4f5a8e6b3dc009c564e4d5f086bfcefaad956b2af0422dc1bb969,other_ub,miss,catch,medium,a[i] = i++ 同一表达式读写 i 无序列点，-Wsequence-point 命中,no,,,"#include <cstdio>
+int main(){int a[4]={0};int i=0;a[i]=i++;std::printf(""%d\n"",a[0]);}
+"
+S072,3210d8916455f01446a334a95892c2de37fdc3e5fdcfb4a1f02bf6d85f83c36d,other_ub,miss,catch,high,格式串 1 个转换符给 2 个实参，-Wformat-extra-args 命中,no,,,"#include <cstdio>
+int main(){char c=-1;std::printf(""%d\n"",(int)c,(int)(unsigned char)c);}
+"
+S076,f3de231452089ac8e3acb771982369c466e7e124621d41c140a4eccc657885cf,raii_violation,catch,miss,high,析构为观测型（只计数），无真实二次释放、无泄漏,no,,,"// [redacted]
+// [redacted]
+// [redacted]
+// [redacted]
+// 观测纪律：析构为观测型（只计数，不真正释放），使 double-destruct 成为可重复、不崩溃的确定观制；
+// [redacted]
+// [redacted]
+#include <iostream>
+#include <cstdlib>
+
+volatile long g_allocs = 0;
+volatile long g_dtors = 0;
+void* operator new(size_t n) { g_allocs = g_allocs + 1; return std::malloc(n); }
+void operator delete(void* p) noexcept { std::free(p); }
+void operator delete(void* p, size_t) noexcept { std::free(p); }
+
+struct Holder {                    // [redacted]
+    int* data;
+    Holder() : data(new int(42)) {}
+    ~Holder() { g_dtors = g_dtors + 1; }    // 观测型析构：真实版本此处会 delete data
+};
+
+struct Correct {                  // [redacted]
+    int* data;
+    Correct() : data(new int(42)) {}
+    ~Correct() { g_dtors = g_dtors + 1; }  // 同为观测型析构（口径一致，唯一变量是拷贝语义）
+    Correct(const Correct& o) : data(new int(*o.data)) {}
+    Correct& operator=(const Correct& o) { *data = *o.data; return *this; }
+};
+
+int main() {
+    long a0 = g_allocs, d0 = g_dtors;
+    bool holder_2 = false;
+    long holder_3 = 0, holder_4 = 0;
+    {
+        Holder a;
+        Holder b = a;                       // [redacted]
+        holder_2 = (b.data == a.data);
+        holder_3 = g_allocs - a0;
+    }                                      // [redacted]
+    holder_4 = g_dtors - d0;
+
+    bool same_correct = false;
+    long allocs_correct = 0, dtors_correct = 0;
+    {
+        Correct c;
+        Correct d = c;                     // [redacted]
+        same_correct = (d.data == c.data);
+        allocs_correct = g_allocs - a0 - holder_3;
+        long dd0 = g_dtors;
+        (void)dd0;
+        // 作用域结束时 c、d 各析构一次（各自独享资源）
+    }
+    dtors_correct = g_dtors - d0 - holder_4;
+
+    std::cout << ""variantA  : allocs="" << holder_3 << "" same_ptr="" << (holder_2 ? 1 : 0)
+              << "" dtor_runs="" << holder_4 << "" (one buffer, two dtors)\n"";
+    std::cout << ""correct: allocs="" << allocs_correct << "" same_ptr="" << (same_correct ? 1 : 0)
+              << "" dtor_runs="" << dtors_correct << "" (two buffers, two dtors)\n"";
+    return 0;
+}
+"
+S080,2554af439eae34e0c9c64ddea61e2aeda55740fab136981e73563fa8cf6b9edc,other_ub,miss,catch,medium,同 S007，读未初始化 x,no,,,"int f(){int x;return x*2;}
+int main(){return f();}
+"
+S083,057ffacbc1e896fd3f0abda2a6e14a90eefca237412fee35294a0a929c416ed9,other_ub,miss,catch,high,INT_MAX + 1，UBSan 命中,no,,,"#include <cstdio>
+int main(){int x=2147483647;x+=1;std::printf(""%d\n"",x);}
+"
+S096,314d39a812a93fa49eb784cdbe276d509bf36ede0e14f3d925815cdae91c8cf6,strict_aliasing,miss,catch,medium,同 S002，C 风格强转解引用，-Wstrict-aliasing 告警,no,,,"int f(float*p){*(int*)p=1;return (int)*p;}
+int main(){float x=0;return f(&x);}
+"
+S101,98f492b04fb8abe43ef4d240d7c2673317e3f8908844cb549390dbccf93812d0,other_ub,miss,catch,medium,auto_ptr 在 C++11 起弃用（-Wdeprecated-declarations）、C++17 起移除（编译失败）⇒ 至少一档命中,no,,,"#include <memory>
+int main(){std::auto_ptr<int> a(new int(1));std::auto_ptr<int> b(a);return *b;}
+"
+S109,2b6a00a98a54c1cefcbce6d764e76ef0a5ec5b7cc3d86fb772c964756966a977,other_ub,miss,catch,high,对 vector<bool> 代理取地址非良定义，编译期命中,no,,,"#include <vector>
+int main(){std::vector<bool> v(4);auto p=&v[0];(void)p;}
+"
+S110,314d39a812a93fa49eb784cdbe276d509bf36ede0e14f3d925815cdae91c8cf6,other_ub,miss,catch,medium,同 S002，-Wstrict-aliasing 告警,no,,,"int f(float*p){*(int*)p=1;return (int)*p;}
+int main(){float x=0;return f(&x);}
+"
+S111,3dff2b39e149418936d7c396e0afe754147f7ba201c71f66921aa81556222885,other_ub,miss,catch,medium,a[i++] = i++ + i++ 多次无序列点修改，-Wsequence-point 命中（与 A 分歧，泄漏暴露）,yes,,,"// sample_B094
+// [redacted]
+// severity: low
+// [redacted]
+// expected_verdict: miss
+// [redacted]
+// (authoritative annotation in sample_B094.json)
+
+#include <cstdio>
+int main(){
+  int i = 0;
+  int a[3];
+  a[i++] = i++ + i++; /* [redacted]*/
+  std::printf(""%d\n"", a[0]);
+  return 0;
+}
+"
+S112,30a959af8d022742bf1ddc9c915c96042798385333dc3ccb12c81e05f7e94c27,other_ub,catch,miss,high,bump(i) 两次调用顺序 unspecified，非 UB，无告警,no,,,"#include <cstdio>
+int bump(int& x){ return ++x; }
+int show(int a, int b){ return a * 10 + b; }
+int main(){ int i = 0; std::printf(""%d\n"", show(bump(i), bump(i))); return 0; }
+"
+S115,c8b163225d364517b290bd804a4f7fc33c70916999d29fedf7eaf95f0b4640c2,other_ub,miss,catch,high,a[4] 越界写（new int[4]），ASan heap-buffer-overflow 命中,no,,,"#include <cstdio>
+int main(){int* a=new int[4]{0};a[4]=1;std::printf(""%d\n"",a[4]);delete[] a;}
+"
+S118,6c546c5f96f535846df7aff48ad4d49d85450e7e2b22b9ba7ed98e488affc1d1,other_ub,miss,catch,high,vptr 置空后虚调用，解引用空指针，ASan 报 SEGV,no,,,"// [redacted]
+// [redacted]
+// [redacted]
+#include <cstdio>
+
+struct Base {
+    virtual int f() { return 1; }
+    virtual ~Base() = default;
+};
+
+int main() {
+    Base b;
+    // [redacted]
+    *reinterpret_cast<void**>(&b) = nullptr;   // [redacted]
+    std::printf(""calling virtual...\n"");
+    return b.f();                               // [redacted]
+}
+"
+S144,496840bffc0ea1c3c67b315af5b97087fe33f92152138dec8d80a748377319ad,other_ub,miss,catch,high,delete 后写 *p，ASan heap-use-after-free 命中,no,,,"#include <cstdio>
+int main(){int* p=new int(1);delete p;*p=2;std::printf(""%d\n"",*p);}
+"
