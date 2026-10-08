@@ -1,0 +1,207 @@
+{
+ "schema": "queyi-693-detectability-model/v1",
+ "generated_by": "tools/fit_693_detectability_model.py",
+ "generated_at": "2026-10-08T21:13:23+08:00",
+ "detect_calls": 0,
+ "target": "样本级 or_verdict_available6 == catch（二分类）",
+ "target_note": "样本级**不出现** unknown（两个恒 unknown 资产已由 676g 折进 miss 口径）⇒ 因此不做三分类；这不是遗漏，是冻结矩阵的口径。",
+ "n_samples_used": 1042,
+ "n_samples_skipped": {
+  "holdout": 41,
+  "corpus": 64
+ },
+ "base_rate_catch": 0.5931,
+ "features": [
+  "n_lines",
+  "n_branch",
+  "n_loop",
+  "n_call",
+  "n_ptr",
+  "n_mem",
+  "n_thread",
+  "max_depth",
+  "branch_density",
+  "chars_per_line",
+  "planted",
+  "is_memory_safe",
+  "is_concurrency",
+  "fam_memory",
+  "fam_bounds",
+  "fam_integer",
+  "fam_alias_type",
+  "fam_concurrency",
+  "fam_stl",
+  "fam_language_oop",
+  "fam_embedded"
+ ],
+ "n_feature_groups": 559,
+ "cv": {
+  "folds": 5,
+  "seed": 693,
+  "random_5fold": {
+   "n_groups": 559,
+   "models": {
+    "tree": {
+     "n": 1042,
+     "TP": 425,
+     "FN": 193,
+     "FP": 121,
+     "TN": 303,
+     "accuracy": 0.6987,
+     "recall": 0.6877,
+     "precision": 0.7784,
+     "auc": 0.7687,
+     "majority_baseline": 0.5931
+    },
+    "logreg": {
+     "n": 1042,
+     "TP": 434,
+     "FN": 184,
+     "FP": 80,
+     "TN": 344,
+     "accuracy": 0.7466,
+     "recall": 0.7023,
+     "precision": 0.8444,
+     "auc": 0.808,
+     "majority_baseline": 0.5931
+    }
+   }
+  },
+  "group_5fold": {
+   "n_groups": 559,
+   "models": {
+    "tree": {
+     "n": 1042,
+     "TP": 388,
+     "FN": 230,
+     "FP": 106,
+     "TN": 318,
+     "accuracy": 0.6775,
+     "recall": 0.6278,
+     "precision": 0.7854,
+     "auc": 0.7243,
+     "majority_baseline": 0.5931
+    },
+    "logreg": {
+     "n": 1042,
+     "TP": 413,
+     "FN": 205,
+     "FP": 89,
+     "TN": 335,
+     "accuracy": 0.7179,
+     "recall": 0.6683,
+     "precision": 0.8227,
+     "auc": 0.7807,
+     "majority_baseline": 0.5931
+    }
+   }
+  },
+  "leakage_inflation": {
+   "tree": {
+    "accuracy_gap": 0.0212,
+    "auc_gap": 0.0444
+   },
+   "logreg": {
+    "accuracy_gap": 0.0287,
+    "auc_gap": 0.0273
+   }
+  }
+ },
+ "full_fit": {
+  "tree_rules": [
+   "IF n_mem <= 0.5 AND fam_integer <= 0.5 AND fam_bounds <= 0.5 AND fam_stl <= 0.5 THEN p(catch)=0.36 (n=522)",
+   "IF n_mem <= 0.5 AND fam_integer <= 0.5 AND fam_bounds <= 0.5 AND fam_stl > 0.5 THEN p(catch)=0.64 (n=123)",
+   "IF n_mem <= 0.5 AND fam_integer <= 0.5 AND fam_bounds > 0.5 AND n_lines <= 7.5 THEN p(catch)=0.62 (n=16)",
+   "IF n_mem <= 0.5 AND fam_integer <= 0.5 AND fam_bounds > 0.5 AND n_lines > 7.5 THEN p(catch)=0.98 (n=43)",
+   "IF n_mem <= 0.5 AND fam_integer > 0.5 AND chars_per_line <= 23.55 THEN p(catch)=1.00 (n=50)",
+   "IF n_mem <= 0.5 AND fam_integer > 0.5 AND chars_per_line > 23.55 AND n_call <= 2.5 THEN p(catch)=0.48 (n=21)",
+   "IF n_mem <= 0.5 AND fam_integer > 0.5 AND chars_per_line > 23.55 AND n_call > 2.5 THEN p(catch)=0.95 (n=37)",
+   "IF n_mem > 0.5 AND is_memory_safe <= 0.5 AND n_ptr <= 0.5 THEN p(catch)=1.00 (n=12)",
+   "IF n_mem > 0.5 AND is_memory_safe <= 0.5 AND n_ptr > 0.5 AND n_ptr <= 13.5 THEN p(catch)=0.61 (n=46)",
+   "IF n_mem > 0.5 AND is_memory_safe <= 0.5 AND n_ptr > 0.5 AND n_ptr > 13.5 THEN p(catch)=1.00 (n=16)",
+   "IF n_mem > 0.5 AND is_memory_safe > 0.5 AND n_mem <= 1.5 THEN p(catch)=0.84 (n=19)",
+   "IF n_mem > 0.5 AND is_memory_safe > 0.5 AND n_mem > 1.5 AND n_mem <= 3.5 THEN p(catch)=0.98 (n=110)",
+   "IF n_mem > 0.5 AND is_memory_safe > 0.5 AND n_mem > 1.5 AND n_mem > 3.5 THEN p(catch)=0.89 (n=27)"
+  ],
+  "tree_used_features": {
+   "n_mem": 3,
+   "n_ptr": 2,
+   "fam_integer": 1,
+   "fam_bounds": 1,
+   "fam_stl": 1,
+   "n_lines": 1,
+   "chars_per_line": 1,
+   "n_call": 1,
+   "is_memory_safe": 1
+  },
+  "logreg_top_coefficients": [
+   {
+    "feature": "n_mem",
+    "coef": 0.7802
+   },
+   {
+    "feature": "n_thread",
+    "coef": -0.7499
+   },
+   {
+    "feature": "n_branch",
+    "coef": 0.6131
+   },
+   {
+    "feature": "max_depth",
+    "coef": -0.5331
+   },
+   {
+    "feature": "n_loop",
+    "coef": 0.489
+   },
+   {
+    "feature": "chars_per_line",
+    "coef": -0.4571
+   },
+   {
+    "feature": "n_call",
+    "coef": -0.3718
+   },
+   {
+    "feature": "fam_embedded",
+    "coef": -0.3332
+   },
+   {
+    "feature": "fam_integer",
+    "coef": 0.3149
+   },
+   {
+    "feature": "fam_bounds",
+    "coef": 0.3081
+   },
+   {
+    "feature": "fam_alias_type",
+    "coef": -0.2751
+   },
+   {
+    "feature": "n_lines",
+    "coef": 0.268
+   },
+   {
+    "feature": "fam_stl",
+    "coef": 0.2487
+   },
+   {
+    "feature": "fam_memory",
+    "coef": -0.1939
+   },
+   {
+    "feature": "branch_density",
+    "coef": -0.1716
+   }
+  ]
+ },
+ "honest_limits": [
+  "样本主体为合成/半合成（92.9% 人工植入）⇒ 模型学的是**仪器**不是真实缺陷分布。",
+  "批内模板克隆率 62.2% ⇒ 随机折会泄漏；group_5fold 是更可信的读数。",
+  "特征只覆盖 expA–expG（能定位到源文件的样本）；holdout/corpus 未纳入。",
+  "决策树深度与最小叶大小未做调参搜索（避免在 1147 条上过拟合）。",
+  "目标用 or_verdict_available6；换成 expected_verdict 会得到不同（且更乐观）的结果。"
+ ]
+}

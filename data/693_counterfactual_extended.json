@@ -1,0 +1,365 @@
+{
+ "schema": "queyi-693-counterfactual-extended/v1",
+ "generated_by": "tools/analyze_693_counterfactual.py",
+ "generated_at": "2026-10-08T21:16:35+08:00",
+ "detect_calls": 0,
+ "reused_module": "data/684_analysis.py（只读；K=4 / ASSETS / AIDX / SEED 同口径）",
+ "frame": "data/a5_676f_detection_matrix.json split=evaluation",
+ "n_samples": 566,
+ "reps": 60,
+ "draws_per_rep": 1000,
+ "arm_a_sample_size": {
+  "50": {
+   "n": 50,
+   "reps": 60,
+   "draws_per_rep": 1000,
+   "greedy_rate_pct_mean": 56.2667,
+   "random_mean_rate_pct_mean": 39.0494,
+   "delta_pp_mean": 17.2173,
+   "delta_pp_sd": 2.8415,
+   "delta_pp_ci95": [
+    11.304,
+    21.902
+   ],
+   "ci_width_pp": 10.598,
+   "percentile_mean": 100.0,
+   "frac_reps_fd_top5pct": 1.0
+  },
+  "100": {
+   "n": 100,
+   "reps": 60,
+   "draws_per_rep": 1000,
+   "greedy_rate_pct_mean": 56.7167,
+   "random_mean_rate_pct_mean": 39.6772,
+   "delta_pp_mean": 17.0395,
+   "delta_pp_sd": 1.9161,
+   "delta_pp_ci95": [
+    13.408,
+    19.979
+   ],
+   "ci_width_pp": 6.571,
+   "percentile_mean": 100.0,
+   "frac_reps_fd_top5pct": 1.0
+  },
+  "200": {
+   "n": 200,
+   "reps": 60,
+   "draws_per_rep": 1000,
+   "greedy_rate_pct_mean": 55.8417,
+   "random_mean_rate_pct_mean": 39.8106,
+   "delta_pp_mean": 16.0311,
+   "delta_pp_sd": 1.4683,
+   "delta_pp_ci95": [
+    13.381,
+    18.352
+   ],
+   "ci_width_pp": 4.971,
+   "percentile_mean": 100.0,
+   "frac_reps_fd_top5pct": 1.0
+  },
+  "566": {
+   "n": 566,
+   "reps": 60,
+   "draws_per_rep": 1000,
+   "greedy_rate_pct_mean": 56.0071,
+   "random_mean_rate_pct_mean": 40.2164,
+   "delta_pp_mean": 15.7906,
+   "delta_pp_sd": 0.273,
+   "delta_pp_ci95": [
+    15.2977,
+    16.2336
+   ],
+   "ci_width_pp": 0.9359,
+   "percentile_mean": 100.0,
+   "frac_reps_fd_top5pct": 1.0
+  }
+ },
+ "arm_b_asset_removal": {
+  "full_pool": {
+   "assets": [
+    "asan",
+    "compile-time",
+    "compiler-warn",
+    "cross-compile",
+    "linker",
+    "tsan",
+    "ubsan",
+    "wunsequenced"
+   ],
+   "greedy_rate_pct": 56.0071,
+   "random_mean_rate_pct": 40.7419,
+   "delta_pp": 15.2652,
+   "percentile": 100.0
+  },
+  "removal": {
+   "asan": {
+    "remaining_assets": [
+     "compile-time",
+     "compiler-warn",
+     "cross-compile",
+     "linker",
+     "tsan",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 48.7633,
+    "random_mean_rate_pct": 33.4973,
+    "delta_pp": 15.2659,
+    "percentile": 100.0,
+    "delta_change_pp": 0.0007,
+    "greedy_rate_change_pp": -7.2438
+   },
+   "compile-time": {
+    "remaining_assets": [
+     "asan",
+     "compiler-warn",
+     "cross-compile",
+     "linker",
+     "tsan",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 56.0071,
+    "random_mean_rate_pct": 43.4825,
+    "delta_pp": 12.5246,
+    "percentile": 100.0,
+    "delta_change_pp": -2.7406,
+    "greedy_rate_change_pp": 0.0
+   },
+   "compiler-warn": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "cross-compile",
+     "linker",
+     "tsan",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 54.5936,
+    "random_mean_rate_pct": 40.1988,
+    "delta_pp": 14.3949,
+    "percentile": 100.0,
+    "delta_change_pp": -0.8703,
+    "greedy_rate_change_pp": -1.4135
+   },
+   "cross-compile": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "compiler-warn",
+     "linker",
+     "tsan",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 56.0071,
+    "random_mean_rate_pct": 40.5511,
+    "delta_pp": 15.456,
+    "percentile": 100.0,
+    "delta_change_pp": 0.1908,
+    "greedy_rate_change_pp": 0.0
+   },
+   "linker": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "compiler-warn",
+     "cross-compile",
+     "tsan",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 56.0071,
+    "random_mean_rate_pct": 43.4818,
+    "delta_pp": 12.5253,
+    "percentile": 100.0,
+    "delta_change_pp": -2.7399,
+    "greedy_rate_change_pp": 0.0
+   },
+   "tsan": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "compiler-warn",
+     "cross-compile",
+     "linker",
+     "ubsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 54.2403,
+    "random_mean_rate_pct": 38.1399,
+    "delta_pp": 16.1004,
+    "percentile": 100.0,
+    "delta_change_pp": 0.8352,
+    "greedy_rate_change_pp": -1.7668
+   },
+   "ubsan": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "compiler-warn",
+     "cross-compile",
+     "linker",
+     "tsan",
+     "wunsequenced"
+    ],
+    "greedy_rate_pct": 51.5901,
+    "random_mean_rate_pct": 37.4684,
+    "delta_pp": 14.1217,
+    "percentile": 100.0,
+    "delta_change_pp": -1.1435,
+    "greedy_rate_change_pp": -4.417
+   },
+   "wunsequenced": {
+    "remaining_assets": [
+     "asan",
+     "compile-time",
+     "compiler-warn",
+     "cross-compile",
+     "linker",
+     "tsan",
+     "ubsan"
+    ],
+    "greedy_rate_pct": 56.0071,
+    "random_mean_rate_pct": 44.0376,
+    "delta_pp": 11.9694,
+    "percentile": 100.0,
+    "delta_change_pp": -3.2958,
+    "greedy_rate_change_pp": 0.0
+   }
+  },
+  "confound_note": "移除资产后**池变小**（8→7），随机基线的期望随之改变 ⇒ `delta_change_pp` 同时包含「资产本身的作用」与「池大小效应」，**不能**单独读作该资产的边际贡献。要看纯边际贡献请用 E2 的 asset_necessity（去掉该资产损失的 catch 数）。"
+ },
+ "arm_c_label_quality": {
+  "baseline": {
+   "greedy_rate_pct": 56.0071,
+   "random_mean_rate_pct": 40.7419,
+   "delta_pp": 15.2652,
+   "percentile": 100.0,
+   "blind_rate_pct": 43.9929,
+   "expected_catch": 322
+  },
+  "flip_ground_truth": {
+   "5%": {
+    "n_flipped": 28,
+    "expected_catch_after": 320,
+    "delta_pp": 15.2652,
+    "delta_pp_change": 0.0,
+    "note": "Δ 逐位不变：A5 主端点只依赖 per_asset 判定，不依赖 ground truth"
+   },
+   "10%": {
+    "n_flipped": 57,
+    "expected_catch_after": 311,
+    "delta_pp": 15.2652,
+    "delta_pp_change": 0.0,
+    "note": "Δ 逐位不变：A5 主端点只依赖 per_asset 判定，不依赖 ground truth"
+   },
+   "15%": {
+    "n_flipped": 85,
+    "expected_catch_after": 313,
+    "delta_pp": 15.2652,
+    "delta_pp_change": 0.0,
+    "note": "Δ 逐位不变：A5 主端点只依赖 per_asset 判定，不依赖 ground truth"
+   }
+  },
+  "flip_per_asset_verdict": {
+   "5%": {
+    "n_cells_flipped": 168,
+    "n_cells_total": 3363,
+    "greedy_rate_pct": 62.5442,
+    "random_mean_rate_pct": 46.5761,
+    "delta_pp": 15.968,
+    "percentile": 100.0,
+    "delta_change_pp": 0.7028,
+    "blind_rate_pct": 37.4558
+   },
+   "10%": {
+    "n_cells_flipped": 336,
+    "n_cells_total": 3363,
+    "greedy_rate_pct": 68.1979,
+    "random_mean_rate_pct": 53.1896,
+    "delta_pp": 15.0083,
+    "percentile": 100.0,
+    "delta_change_pp": -0.2569,
+    "blind_rate_pct": 31.8021
+   },
+   "15%": {
+    "n_cells_flipped": 504,
+    "n_cells_total": 3363,
+    "greedy_rate_pct": 75.0883,
+    "random_mean_rate_pct": 60.3276,
+    "delta_pp": 14.7608,
+    "percentile": 100.0,
+    "delta_change_pp": -0.5044,
+    "blind_rate_pct": 24.9117
+   }
+  }
+ },
+ "arm_d_environment": {
+  "E1_supported": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "E2_supported": [
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "arms": {
+   "E1_wsl_6assets": {
+    "unaware": {
+     "catch": 340,
+     "miss": 226,
+     "unknown": 0,
+     "catch_rate_pct": 60.0707,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 60.0707
+    },
+    "aware": {
+     "catch": 340,
+     "miss": 218,
+     "unknown": 8,
+     "catch_rate_pct": 60.0707,
+     "unknown_rate_pct": 1.4134,
+     "conditional_recall_pct": 60.9319
+    }
+   },
+   "E2_native_3assets": {
+    "unaware": {
+     "catch": 140,
+     "miss": 426,
+     "unknown": 0,
+     "catch_rate_pct": 24.735,
+     "unknown_rate_pct": 0.0,
+     "conditional_recall_pct": 24.735
+    },
+    "aware": {
+     "catch": 140,
+     "miss": 416,
+     "unknown": 10,
+     "catch_rate_pct": 24.735,
+     "unknown_rate_pct": 1.7668,
+     "conditional_recall_pct": 25.1799
+    }
+   }
+  },
+  "delta_pp_unaware": 35.3357,
+  "delta_pp_aware_unknown": 1.7668,
+  "container_arm": {
+   "executed": false,
+   "reason": "693 执行环境未安装 Docker ⇒ 容器臂**未执行**（与 B 阶段同一登记）"
+  }
+ },
+ "honest_limits": [
+  "所有臂都在**同一份冻结矩阵**上重采样/重加权，不产生新的检测事实。",
+  "REPS/DRAWS 低于 686（60×1000 vs 100×2000）⇒ CI 更宽；方向性结论可比，绝对宽度不可比。",
+  "C 臂的 per_asset 翻转是**独立同分布**的合成噪声，真实标注错误是系统性的。",
+  "D 臂的容器分支**未执行**（本机无 Docker）；E2 的 aware 口径下 conditional recall 分母为 0。",
+  "A 臂的 n=566 子采样与 A5 主分析的 566 帧**不是同一批样本**（此处是随机 566/1147）。"
+ ]
+}

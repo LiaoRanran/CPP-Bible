@@ -1,0 +1,338 @@
+{
+ "schema": "queyi-693-meta-evaluation-v2/v1",
+ "generated_by": "tools/eval_693_meta_evaluation.py",
+ "generated_at": "2026-10-08T21:17:17+08:00",
+ "detect_calls": 0,
+ "frame": {
+  "file": "a5_676f_detection_matrix.json",
+  "split": "evaluation",
+  "n": 566
+ },
+ "predecessor": "686_meta_metrics.json",
+ "discrimination": {
+  "asan": {
+   "n_scored": 562,
+   "auc": 0.7759
+  },
+  "ubsan": {
+   "n_scored": 562,
+   "auc": 0.6739
+  },
+  "tsan": {
+   "n_scored": 562,
+   "auc": 0.6717
+  },
+  "compiler-warn": {
+   "n_scored": 566,
+   "auc": 0.5788
+  },
+  "cross-compile": {
+   "n_scored": 545,
+   "auc": 0.5558
+  },
+  "linker": {
+   "n_scored": 566,
+   "auc": 0.5062
+  },
+  "compile-time": {
+   "n_scored": 0,
+   "auc": null
+  },
+  "wunsequenced": {
+   "n_scored": 0,
+   "auc": null
+  },
+  "OR_all8": {
+   "n_scored": 566,
+   "auc": 0.8911
+  }
+ },
+ "stability": {
+  "seed_5000_runs": {
+   "n_runs": 5000,
+   "fd_rate_pct": 54.5936,
+   "random_mean_rate_pct": 40.1913,
+   "random_sd_pp": 9.2521,
+   "fd_percentile_in_random_dist": null,
+   "note": "682 的 5000 次重跑；FD 的率在随机分布中的位置即稳定性证据"
+  },
+  "environment": {
+   "shared_assets": [
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "catch_rate_pct_e1": {
+    "compiler-warn": 11.8375,
+    "cross-compile": 14.311,
+    "linker": 0.7067
+   },
+   "spearman_rho": 1.0,
+   "note": "E2 支持的 3 个资产是 E1 的子集 ⇒ 其逐资产读数在冻结矩阵上**完全相同**；环境差异体现在**缺失资产**（asan/ubsan/tsan 不在 E2），而不是同一资产的读数变化 ⇒ ρ=1 是构造性结果，不是独立证据。"
+  },
+  "run_to_run_tsan": {
+   "n": 180,
+   "distinct_shapes": 5,
+   "note": "676g 记录的 tsan 跑间稳定性字段；形状种类少说明逐样本结构一致"
+  }
+ },
+ "fairness": {
+  "per_asset": {
+   "asan": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 100.0,
+    "recall_range_pp": 100.0,
+    "recall_sd_pp": 37.43,
+    "types_with_zero_recall": 12,
+    "disparity_index": 0.3743
+   },
+   "ubsan": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 100.0,
+    "recall_range_pp": 100.0,
+    "recall_sd_pp": 31.84,
+    "types_with_zero_recall": 14,
+    "disparity_index": 0.3184
+   },
+   "tsan": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 100.0,
+    "recall_range_pp": 100.0,
+    "recall_sd_pp": 26.15,
+    "types_with_zero_recall": 16,
+    "disparity_index": 0.2615
+   },
+   "compiler-warn": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 70.0,
+    "recall_range_pp": 70.0,
+    "recall_sd_pp": 19.19,
+    "types_with_zero_recall": 22,
+    "disparity_index": 0.1919
+   },
+   "cross-compile": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 81.82,
+    "recall_range_pp": 81.82,
+    "recall_sd_pp": 23.04,
+    "types_with_zero_recall": 19,
+    "disparity_index": 0.2304
+   },
+   "linker": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 26.67,
+    "recall_range_pp": 26.67,
+    "recall_sd_pp": 4.21,
+    "types_with_zero_recall": 38,
+    "disparity_index": 0.0421
+   },
+   "compile-time": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 0.0,
+    "recall_range_pp": 0.0,
+    "recall_sd_pp": 0.0,
+    "types_with_zero_recall": 39,
+    "disparity_index": 0.0
+   },
+   "wunsequenced": {
+    "n_types_ge5": 39,
+    "recall_min_pct": 0.0,
+    "recall_max_pct": 0.0,
+    "recall_range_pp": 0.0,
+    "recall_sd_pp": 0.0,
+    "types_with_zero_recall": 39,
+    "disparity_index": 0.0
+   }
+  },
+  "overall": {
+   "n_types_ge5": 39,
+   "worst_asset_by_range": "asan",
+   "note": "公平性 = 同一资产在不同缺陷类型上的 recall 离散度；离散度大 = 系统性偏科。"
+  }
+ },
+ "efficiency": {
+  "asan": {
+   "n": 1147,
+   "mean_s": 8.5957,
+   "total_s": 9859.32,
+   "max_s": 242.307,
+   "p95_s": 3.258
+  },
+  "ubsan": {
+   "n": 1147,
+   "mean_s": 8.5945,
+   "total_s": 9857.93,
+   "max_s": 242.588,
+   "p95_s": 3.276
+  },
+  "tsan": {
+   "n": 1147,
+   "mean_s": 8.9226,
+   "total_s": 10234.25,
+   "max_s": 242.462,
+   "p95_s": 3.498
+  },
+  "compiler-warn": {
+   "n": 1147,
+   "mean_s": 0.214,
+   "total_s": 245.43,
+   "max_s": 1.417,
+   "p95_s": 0.426
+  },
+  "cross-compile": {
+   "n": 1147,
+   "mean_s": 11.4695,
+   "total_s": 13155.47,
+   "max_s": 362.444,
+   "p95_s": 1.909
+  },
+  "linker": {
+   "n": 1147,
+   "mean_s": 0.3992,
+   "total_s": 457.92,
+   "max_s": 1.065,
+   "p95_s": 0.659
+  },
+  "compile-time": {
+   "n": 1147,
+   "mean_s": 0.0036,
+   "total_s": 4.09,
+   "max_s": 0.011,
+   "p95_s": 0.005
+  },
+  "wunsequenced": {
+   "n": 1147,
+   "mean_s": 0.0412,
+   "total_s": 47.29,
+   "max_s": 0.384,
+   "p95_s": 0.057
+  },
+  "frame_n": 1147
+ },
+ "calibration": {
+  "llm_arm": {
+   "ece": 0.3812,
+   "n": 292,
+   "bins": [
+    {
+     "bin": "[0.7,0.8)",
+     "n": 1,
+     "mean_confidence": 0.7,
+     "accuracy": 1.0,
+     "gap": 0.3
+    },
+    {
+     "bin": "[0.8,0.9)",
+     "n": 2,
+     "mean_confidence": 0.825,
+     "accuracy": 1.0,
+     "gap": 0.175
+    },
+    {
+     "bin": "[0.9,1.0)",
+     "n": 289,
+     "mean_confidence": 0.9953,
+     "accuracy": 0.6125,
+     "gap": -0.3829
+    }
+   ]
+  },
+  "detectors_deterministic": {
+   "ece": 0.419,
+   "n": 3363,
+   "bins": [
+    {
+     "bin": "[0.9,1.0)",
+     "n": 3363,
+     "mean_confidence": 1.0,
+     "accuracy": 0.581,
+     "gap": -0.419
+    }
+   ]
+  },
+  "note": "检测器是确定性的（自报 confidence 恒为 1）⇒ 其 ECE 恰好等于 1 − accuracy，读作「过自信程度」；LLM 臂有真实 confidence ⇒ ECE 有实质含义。"
+ },
+ "framework_comparison": [
+  {
+   "framework": "HELM",
+   "domain": "通用 LLM 评测",
+   "dimensions": [
+    "accuracy",
+    "calibration",
+    "robustness",
+    "fairness",
+    "bias",
+    "toxicity",
+    "efficiency"
+   ],
+   "queiy_has": [
+    "accuracy",
+    "calibration",
+    "robustness(环境)",
+    "fairness(按类型)",
+    "efficiency"
+   ],
+   "queiy_missing": [
+    "toxicity/bias（不适用）",
+    "多任务覆盖矩阵"
+   ],
+   "source": "公开方法论（作者整理，非实测）"
+  },
+  {
+   "framework": "SV-COMP",
+   "domain": "软件验证竞赛",
+   "dimensions": [
+    "soundness",
+    "correctness",
+    "score-based ranking",
+    "witness 校验",
+    "CPU-time/memory limits"
+   ],
+   "queiy_has": [
+    "soundness（negative 可信性）",
+    "资源限制（60s 超时）",
+    "score-based 组合排序"
+   ],
+   "queiy_missing": [
+    "形式化 witness 校验",
+    "统一任务定义格式",
+    "第三方裁判（独立复算）"
+   ],
+   "source": "公开方法论（作者整理，非实测）"
+  },
+  {
+   "framework": "DeepFact",
+   "domain": "深度学习模型缺陷检测基准",
+   "dimensions": [
+    "label validity",
+    "data leakage",
+    "distribution shift",
+    "baseline fairness"
+   ],
+   "queiy_has": [
+    "label validity（693-A 人类裁决材料）",
+    "data leakage（模板克隆 62.2%）",
+    "distribution shift（合成→真实靶场）"
+   ],
+   "queiy_missing": [
+    "跨数据集迁移实验",
+    "训练侧模型"
+   ],
+   "source": "公开方法论（作者整理，非实测）"
+  }
+ ],
+ "honest_limits": [
+  "框架对照是**作者按公开方法论整理的定性对照**，不是实测运行结果。",
+  "环境稳定性的 ρ=1 是构造性的（E2 资产是 E1 子集，同一矩阵读数不变），不构成独立证据。",
+  "效率数据来自 676g 的 wall_seconds，含 WSL 冷启动与文件系统开销，**不是算法复杂度**。",
+  "检测器的 ECE 是确定性系统的退化读数（confidence≡1），不可与 LLM 的 ECE 直接比较。",
+  "本批**未执行**容器环境（无 Docker），故「跨容器稳定性」维度缺失。"
+ ]
+}

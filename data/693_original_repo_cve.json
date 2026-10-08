@@ -1,0 +1,719 @@
+{
+ "schema": "queyi-693-original-repo-cve/v1",
+ "generated_by": "tools/verify_693_original_repo.py",
+ "generated_at": "2026-10-08T21:19:42+08:00",
+ "honest_registration": {
+  "red_line_8": "本批红线 8 禁止跑新 detect() ⇒ 未执行 Queyi 8 资产检测臂",
+  "task_conflict": "任务 E1.2 要求跑 8 资产检测，与红线 8 直接冲突；本脚本服从红线 8",
+  "fetch_channel": "git ls-remote 被连接重置 ⇒ 改用 codeload tarball + 标准库 urllib",
+  "detect_calls": 0
+ },
+ "reconstruction_flags": "-std=c++17 -g -fsanitize=<asset> -fno-omit-frame-pointer（-O0/-O2 双档）",
+ "n_candidates_total": 22,
+ "n_candidates_used": 20,
+ "workdir": "C:\\Users\\ASUS\\AppData\\Local\\Temp\\queyi_e1_1rsxtk1r",
+ "build_budget_s": 300,
+ "per_build_timeout_s": 90,
+ "results": [
+  {
+   "rw_id": "RW-024",
+   "cve_id": "CVE-2019-20372",
+   "project": "nginx",
+   "defect_type": "logic_error",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/nginx/nginx/commit/c1be55f97211d38b69ac0c2027e6812ab8b1b94e",
+   "owner_repo": "nginx/nginx",
+   "sha": "c1be55f97211d38b69ac0c2027e6812ab8b1b94e",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（1081504 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 1081504,
+   "n_files": 452,
+   "build_system": "unknown",
+   "project_flags": {
+    "files_scanned": 0,
+    "top_flags": {}
+   },
+   "status": "fetched_no_build",
+   "reason": "未识别到构建系统"
+  },
+  {
+   "rw_id": "RW-027",
+   "cve_id": "CVE-2024-6387",
+   "project": "OpenSSH",
+   "defect_type": "data_race",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "tsan"
+   ],
+   "commit_url": "https://github.com/openela-main/openssh/commit/e1f438970e5a337a17070a637c1b9e19697cad09",
+   "owner_repo": "openela-main/openssh",
+   "sha": "e1f438970e5a337a17070a637c1b9e19697cad09",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（235044 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 235044,
+   "n_files": 97,
+   "build_system": "unknown",
+   "project_flags": {
+    "files_scanned": 0,
+    "top_flags": {}
+   },
+   "status": "fetched_no_build",
+   "reason": "未识别到构建系统"
+  },
+  {
+   "rw_id": "RW-028",
+   "cve_id": "CVE-2018-15473",
+   "project": "OpenSSH",
+   "defect_type": "logic_error",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/openbsd/src/commit/779974d35b4859c07bc3cb8a12c74b43b0a7d1e0",
+   "owner_repo": "openbsd/src",
+   "sha": "779974d35b4859c07bc3cb8a12c74b43b0a7d1e0",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 13.22
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-029",
+   "cve_id": "CVE-2022-23308",
+   "project": "libxml2",
+   "defect_type": "use_after_free",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "cross-compile"
+   ],
+   "commit_url": "https://github.com/GNOME/libxml2/commit/652dd12a858989b14eed4e84e453059cd3ba340e",
+   "owner_repo": "GNOME/libxml2",
+   "sha": "652dd12a858989b14eed4e84e453059cd3ba340e",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（5007732 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 5007732,
+   "n_files": 4706,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 14,
+    "top_flags": {
+     "-fsanitize": 6,
+     "-Wall": 4,
+     "-Werror": 4,
+     "-Wformat": 3,
+     "-fexceptions": 2,
+     "-Wshadow": 2,
+     "-Wpointer-arith": 2,
+     "-Wcast-align": 2,
+     "-Wwrite-strings": 2,
+     "-Waggregate-return": 2,
+     "-Wstrict-prototypes": 2,
+     "-Wmissing-prototypes": 2
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "cmake 不存在"
+     }
+    ],
+    "ok": false,
+    "error": "cmake 不存在",
+    "seconds": 0.01
+   },
+   "status": "build_failed",
+   "reason": "cmake 不存在"
+  },
+  {
+   "rw_id": "RW-033",
+   "cve_id": "CVE-2022-37434",
+   "project": "zlib",
+   "defect_type": "out_of_bounds",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan"
+   ],
+   "commit_url": "https://github.com/madler/zlib/commit/1eb7682f845ac9e9bf9ae35bbfb3bad5dacbd91d",
+   "owner_repo": "madler/zlib",
+   "sha": "1eb7682f845ac9e9bf9ae35bbfb3bad5dacbd91d",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（1547299 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 1547299,
+   "n_files": 243,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 11,
+    "top_flags": {
+     "-Wall": 3,
+     "-Wwrite-strings": 2,
+     "-Wpointer-arith": 2,
+     "-Wconversion": 2,
+     "-Wstrict-prototypes": 2,
+     "-Wmissing-prototypes": 2,
+     "-O2": 1,
+     "-fomit-frame-pointer": 1,
+     "-ffast-math": 1,
+     "-fno-rtti": 1,
+     "-fno-exceptions": 1,
+     "-Wl": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "cmake 不存在"
+     }
+    ],
+    "ok": false,
+    "error": "cmake 不存在",
+    "seconds": 0.01
+   },
+   "status": "build_failed",
+   "reason": "cmake 不存在"
+  },
+  {
+   "rw_id": "RW-034",
+   "cve_id": "CVE-2018-25032",
+   "project": "zlib",
+   "defect_type": "out_of_bounds",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan"
+   ],
+   "commit_url": "https://github.com/madler/zlib/commit/5c44459c3b28a9bd3283aaceab7c615f8020c531",
+   "owner_repo": "madler/zlib",
+   "sha": "5c44459c3b28a9bd3283aaceab7c615f8020c531",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（603591 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 603591,
+   "n_files": 240,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 11,
+    "top_flags": {
+     "-Wall": 3,
+     "-Wwrite-strings": 2,
+     "-Wpointer-arith": 2,
+     "-Wconversion": 2,
+     "-Wstrict-prototypes": 2,
+     "-Wmissing-prototypes": 2,
+     "-O2": 1,
+     "-fomit-frame-pointer": 1,
+     "-ffast-math": 1,
+     "-fno-rtti": 1,
+     "-fno-exceptions": 1,
+     "-Wl": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "cmake 不存在"
+     }
+    ],
+    "ok": false,
+    "error": "cmake 不存在",
+    "seconds": 0.01
+   },
+   "status": "build_failed",
+   "reason": "cmake 不存在"
+  },
+  {
+   "rw_id": "RW-035",
+   "cve_id": "CVE-2018-13785",
+   "project": "libpng",
+   "defect_type": "integer_overflow",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/glennrp/libpng/commit/8a05766cb74af05c04c53e6c9d60c13fc4d59bf2",
+   "owner_repo": "glennrp/libpng",
+   "sha": "8a05766cb74af05c04c53e6c9d60c13fc4d59bf2",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（1169914 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 1169914,
+   "n_files": 475,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 6,
+    "top_flags": {
+     "-Wl": 5,
+     "-Wall": 3,
+     "-Werror": 2
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "cmake 不存在"
+     }
+    ],
+    "ok": false,
+    "error": "cmake 不存在",
+    "seconds": 0.01
+   },
+   "status": "build_failed",
+   "reason": "cmake 不存在"
+  },
+  {
+   "rw_id": "RW-038",
+   "cve_id": "CVE-2023-4863",
+   "project": "libwebp",
+   "defect_type": "out_of_bounds",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan",
+    "cross-compile"
+   ],
+   "commit_url": "https://github.com/webmproject/libwebp/commit/902bc9190331343b2017211debcec8d2ab87e17a",
+   "owner_repo": "webmproject/libwebp",
+   "sha": "902bc9190331343b2017211debcec8d2ab87e17a",
+   "download": {
+    "ok": true,
+    "note": "复用已下载（3690666 B）",
+    "seconds": 0.0
+   },
+   "tarball_bytes": 3690666,
+   "n_files": 327,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 15,
+    "top_flags": {
+     "-flax-vector-conversions": 2,
+     "-framework": 2,
+     "-Wformat-nonliteral": 1,
+     "-Wformat-security": 1,
+     "-fno-lax-vector-conversions": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "OSError: [WinError 2] 系统找不到指定的文件。"
+     }
+    ],
+    "ok": false,
+    "error": "无法执行 cmake：[WinError 2] 系统找不到指定的文件。",
+    "seconds": 0.01
+   },
+   "status": "build_failed",
+   "reason": "无法执行 cmake：[WinError 2] 系统找不到指定的文件。"
+  },
+  {
+   "rw_id": "RW-049",
+   "cve_id": "CVE-2020-12284",
+   "project": "FFmpeg",
+   "defect_type": "out_of_bounds",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan"
+   ],
+   "commit_url": "https://github.com/FFmpeg/FFmpeg/commit/1812352d767ccf5431aa440123e2e260a4db2726",
+   "owner_repo": "FFmpeg/FFmpeg",
+   "sha": "1812352d767ccf5431aa440123e2e260a4db2726",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，13386344 B",
+    "seconds": 4.93
+   },
+   "tarball_bytes": 13386344,
+   "n_files": 7257,
+   "build_system": "autotools",
+   "project_flags": {
+    "files_scanned": 43,
+    "top_flags": {
+     "-flags": 1,
+     "-fflags": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Programs\\WorkBuddyAI\\resources\\vendor\\PortableGit\\usr\\bin\\bash.EXE ./configure",
+      "ok": false,
+      "rc": 1,
+      "stderr_tail": "ln: failed to create symbolic link '/tmp/name_yCL106w8': Operation not permitted\nrm: /tmp/name_yCL106w8: No such file or directory\n"
+     }
+    ],
+    "ok": false,
+    "error": "步骤失败：C:\\Users\\ASUS\\AppData\\Local\\Programs\\WorkBuddyAI\\resources\\vendor\\PortableGit\\usr\\bin\\bash.EXE ./configure (rc=1)",
+    "seconds": 17.87
+   },
+   "status": "build_failed",
+   "reason": "步骤失败：C:\\Users\\ASUS\\AppData\\Local\\Programs\\WorkBuddyAI\\resources\\vendor\\PortableGit\\usr\\bin\\bash.EXE ./configure (rc=1)"
+  },
+  {
+   "rw_id": "RW-065",
+   "cve_id": "CVE-2021-41099",
+   "project": "Redis",
+   "defect_type": "integer_overflow",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan",
+    "tsan"
+   ],
+   "commit_url": "https://github.com/redis/redis/commit/c6ad876774f3cc11e32681ea02a2eead00f2c521",
+   "owner_repo": "redis/redis",
+   "sha": "c6ad876774f3cc11e32681ea02a2eead00f2c521",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，2307490 B",
+    "seconds": 5.6
+   },
+   "tarball_bytes": 2307490,
+   "n_files": 824,
+   "build_system": "make",
+   "project_flags": {
+    "files_scanned": 15,
+    "top_flags": {
+     "-Wl": 11,
+     "-Wall": 9,
+     "-O2": 7,
+     "-fno-common": 4,
+     "-ftest-coverage": 3,
+     "-Wno-missing-field-initializers": 2,
+     "-O3": 1,
+     "-funroll-loops": 1,
+     "-Wstrict-prototypes": 1,
+     "-Wwrite-strings": 1,
+     "-framework": 1,
+     "-Os": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "make -j2",
+      "ok": false,
+      "note": "OSError: [WinError 2] 系统找不到指定的文件。"
+     }
+    ],
+    "ok": false,
+    "error": "无法执行 make：[WinError 2] 系统找不到指定的文件。",
+    "seconds": 0.0
+   },
+   "status": "build_failed",
+   "reason": "无法执行 make：[WinError 2] 系统找不到指定的文件。"
+  },
+  {
+   "rw_id": "RW-071",
+   "cve_id": "CVE-2021-38593",
+   "project": "Qt",
+   "defect_type": "integer_overflow",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan",
+    "ubsan"
+   ],
+   "commit_url": "https://github.com/qt/qtbase/commit/1ca02cf2879a5e1511a2f2109f0925cf4c892862",
+   "owner_repo": "qt/qtbase",
+   "sha": "1ca02cf2879a5e1511a2f2109f0925cf4c892862",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，59679253 B",
+    "seconds": 8.01
+   },
+   "tarball_bytes": 59679253,
+   "n_files": 21086,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 60,
+    "top_flags": {
+     "-Wmissing-prototypes": 1,
+     "-Wunused": 1,
+     "-Wimplicit": 1,
+     "-Wreturn-type": 1,
+     "-Wparentheses": 1,
+     "-Wformat": 1,
+     "-Wchar-subscripts": 1,
+     "-Wsequence-point": 1
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "ok": false,
+      "note": "OSError: [WinError 2] 系统找不到指定的文件。"
+     }
+    ],
+    "ok": false,
+    "error": "无法执行 cmake：[WinError 2] 系统找不到指定的文件。",
+    "seconds": 0.02
+   },
+   "status": "build_failed",
+   "reason": "无法执行 cmake：[WinError 2] 系统找不到指定的文件。"
+  },
+  {
+   "rw_id": "RW-072",
+   "cve_id": "CVE-2023-32762",
+   "project": "Qt",
+   "defect_type": "logic_error",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/qt/qtbase/commit/1b736a815be0222f4b24289cf17575fc15707305",
+   "owner_repo": "qt/qtbase",
+   "sha": "1b736a815be0222f4b24289cf17575fc15707305",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 15.86
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-075",
+   "cve_id": "CVE-2016-5195",
+   "project": "Linux kernel",
+   "defect_type": "data_race",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "tsan"
+   ],
+   "commit_url": "https://github.com/torvalds/linux/commit/19be0eaffa3ac7d8eb6784ad9bdbc7d67ed8e619",
+   "owner_repo": "torvalds/linux",
+   "sha": "19be0eaffa3ac7d8eb6784ad9bdbc7d67ed8e619",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 18.71
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-078",
+   "cve_id": "CVE-2021-33909",
+   "project": "Linux kernel",
+   "defect_type": "integer_overflow",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/torvalds/linux/commit/8cae8cd89f05f6de223d63e6d15e31c8ba9cf53b",
+   "owner_repo": "torvalds/linux",
+   "sha": "8cae8cd89f05f6de223d63e6d15e31c8ba9cf53b",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 11.04
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-086",
+   "cve_id": "CVE-2017-16995",
+   "project": "Linux kernel",
+   "defect_type": "integer_overflow",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "compiler-warn",
+    "ubsan"
+   ],
+   "commit_url": "https://github.com/torvalds/linux/commit/95a762e2c8c942780948091f8f2a4f32fce1ac6f",
+   "owner_repo": "torvalds/linux",
+   "sha": "95a762e2c8c942780948091f8f2a4f32fce1ac6f",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 17.26
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-087",
+   "cve_id": "CVE-2019-13272",
+   "project": "Linux kernel",
+   "defect_type": "logic_error",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/torvalds/linux/commit/6994eefb0053799d2e07cd140df6c2ea106c41ee",
+   "owner_repo": "torvalds/linux",
+   "sha": "6994eefb0053799d2e07cd140df6c2ea106c41ee",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 22.74
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-090",
+   "cve_id": "CVE-2016-8655",
+   "project": "Linux kernel",
+   "defect_type": "data_race",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/torvalds/linux/commit/84ac7260236a49c79eede91617700174c2c19b0c",
+   "owner_repo": "torvalds/linux",
+   "sha": "84ac7260236a49c79eede91617700174c2c19b0c",
+   "download": {
+    "ok": false,
+    "note": "超过单包上限（>62914560 B）",
+    "seconds": 19.5
+   },
+   "status": "fetch_failed",
+   "reason": "超过单包上限（>62914560 B）"
+  },
+  {
+   "rw_id": "RW-092",
+   "cve_id": "CVE-2022-26691",
+   "project": "CUPS",
+   "defect_type": "logic_error",
+   "frozen_or_verdict": "miss",
+   "frozen_caught_by": [],
+   "commit_url": "https://github.com/OpenPrinting/cups/commit/de4f8c196106033e4c372dce3e91b9d42b0b9444",
+   "owner_repo": "OpenPrinting/cups",
+   "sha": "de4f8c196106033e4c372dce3e91b9d42b0b9444",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，8179854 B",
+    "seconds": 3.85
+   },
+   "tarball_bytes": 8179854,
+   "n_files": 1299,
+   "build_system": "autotools",
+   "project_flags": {
+    "files_scanned": 22,
+    "top_flags": {
+     "-for": 2
+    }
+   },
+   "build": {
+    "attempted": true,
+    "steps": [
+     {
+      "cmd": "C:\\Users\\ASUS\\AppData\\Local\\Programs\\WorkBuddyAI\\resources\\vendor\\PortableGit\\usr\\bin\\bash.EXE ./configure",
+      "ok": false,
+      "note": "超时"
+     }
+    ],
+    "ok": false,
+    "error": "超时（>90s）",
+    "seconds": 390.04
+   },
+   "status": "build_failed",
+   "reason": "超时（>90s）"
+  },
+  {
+   "rw_id": "RW-095",
+   "cve_id": "CVE-2021-45943",
+   "project": "expat",
+   "defect_type": "null_pointer_deref",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan",
+    "tsan",
+    "ubsan"
+   ],
+   "commit_url": "https://github.com/OSGeo/gdal/commit/1ca6a3e5168c200763fa46d8aa7e698d0b757e7e",
+   "owner_repo": "OSGeo/gdal",
+   "sha": "1ca6a3e5168c200763fa46d8aa7e698d0b757e7e",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，30535161 B",
+    "seconds": 10.29
+   },
+   "tarball_bytes": 30535161,
+   "status": "extract_failed",
+   "reason": "FileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\ASUS\\\\AppData\\\\Local\\\\Temp\\\\queyi_e1_1rsxtk1r\\\\RW-095_src\\\\gdal-1ca6a3e5168c200763fa46d8aa7e698d0b757e7e\\\\autotest\\\\gdrivers\\\\data\\\\sentinel2\\\\fake_l2a\\\\S2A_USER_PRD_MSIL2A.SAFE\\\\GRANULE\\\\S2A_USER_MSI_L2A_T32TQR_N01.03\\\\IMG_DATA\\\\R60m\\\\S2A_USER_MSI_L2A_T32TQR_B01_60m.jp2'"
+  },
+  {
+   "rw_id": "RW-103",
+   "cve_id": "CVE-2018-0500",
+   "project": "curl",
+   "defect_type": "out_of_bounds",
+   "frozen_or_verdict": "catch",
+   "frozen_caught_by": [
+    "asan",
+    "ubsan"
+   ],
+   "commit_url": "https://github.com/curl/curl/commit/ba1dbd78e5f1ed67c1b8d37ac89d90e5e330b628",
+   "owner_repo": "curl/curl",
+   "sha": "ba1dbd78e5f1ed67c1b8d37ac89d90e5e330b628",
+   "download": {
+    "ok": true,
+    "note": "HTTP 200，2822606 B",
+    "seconds": 4.49
+   },
+   "tarball_bytes": 2822606,
+   "n_files": 2984,
+   "build_system": "cmake",
+   "project_flags": {
+    "files_scanned": 41,
+    "top_flags": {
+     "-Werror": 4,
+     "-framework": 2,
+     "-Wall": 1,
+     "-Wpointer-arith": 1,
+     "-Wwrite-strings": 1,
+     "-Wunused": 1,
+     "-Wshadow": 1,
+     "-Winline": 1,
+     "-Wnested-externs": 1,
+     "-Wmissing-declarations": 1,
+     "-Wmissing-prototypes": 1,
+     "-Wno-long-long": 1
+    }
+   },
+   "status": "fetched_build_skipped",
+   "reason": "构建总预算 300s 已耗尽（已花 408s）"
+  }
+ ],
+ "build_failure_root_causes": {
+  "cmake 不存在": 4,
+  "无法执行 cmake": 2,
+  "步骤失败": 1,
+  "无法执行 make": 1,
+  "超时": 1
+ },
+ "summary": {
+  "n": 20,
+  "fetched": 13,
+  "fetch_failed": 7,
+  "built": 0,
+  "build_failed": 9,
+  "fetched_no_build": 3,
+  "build_seconds_total": 408.0,
+  "detection_arm_executed": false
+ }
+}
