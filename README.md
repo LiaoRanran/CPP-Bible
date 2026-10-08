@@ -138,7 +138,7 @@ docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
 
 ## 7. 书籍线（现代 C++ 终极圣经）
 
-> **147 章 · 16 part · 约 25.6 万行 · 7,515 个 cpp 代码块**
+> **147 章 · 16 part · 约 25.6 万行 · 7515 个 cpp 代码块**
 > （数字派生自 `build/metrics.json`，由 `tools/gen_metrics.py --check` 门禁守护）
 > 密度审计 v3 均分 **25.7/30**，浅章（<15 分）**0** 个
 
@@ -158,6 +158,8 @@ docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
 |---|---|---|
 | 一致性检查 | `python tools/consistency_check.py` | ERROR=0 / WARN=0 |
 | 编译门禁 | `python tools/compile_gate.py` | 0 真实语法/类型回归（58 设计性豁免块） |
+| 全量编译 | `python tools/compile_all.py --main-only` | 147 章，115 章自包含通过 |
+| D5 性能附录 | `python tools/d5_gap_scanner.py` | 127/147 章（86%，口径已统一） |
 | `//@` 输出断言 | `python tools/run_expected.py --all --check` | 65 块全 PASS |
 | 信任根哈希面 | `python tools/tool_integrity.py --check` | 34 条，缺失即 FAIL |
 | 批次快速门禁 | `python tools/fast_gate.py --tests tests/test_<本批>.py` | <5 分钟 |
