@@ -1,0 +1,949 @@
+{
+ "schema": "queyi-698/drift-propagation/v1",
+ "generated_by": "tools/compute_698_drift_propagation.py",
+ "generated_at": "2026-10-09T09:22:12+08:00",
+ "detect_calls": 0,
+ "drift_chain": {
+  "frame": "A5_evaluation_566",
+  "n": 566,
+  "chains": {
+   "E3_nested_minus_cross-compile": {
+    "E3_supported": [
+     "compiler-warn",
+     "linker"
+    ],
+    "nested_E3_subset_of_E2": true,
+    "dropped_from_E2": "cross-compile",
+    "generator_composition": {
+     "removed_E1_to_E2": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "removed_E2_to_E3": [
+      "cross-compile"
+     ],
+     "removed_E1_to_E3_union": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "composition_holds": true,
+     "note_nested": "嵌套撤除链（E3⊂E2）：单调退化 ⇒ 一旦 miss 永为 miss ⇒ screening 成立 ⇒ CK 成立。",
+     "note": "生成元层：τ_{G12} ∘ τ_{G23} = τ_{G12 ∪ G23}（697 公理 A4），恒成立。"
+    },
+    "T12": {
+     "catch": {
+      "catch": 140,
+      "miss": 200,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T23": {
+     "catch": {
+      "catch": 71,
+      "miss": 69,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 426,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_true": {
+     "catch": {
+      "catch": 71,
+      "miss": 269,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_chapman_kolmogorov": {
+     "catch": {
+      "catch": 71.0,
+      "miss": 269.0,
+      "unknown": 0.0
+     },
+     "miss": {
+      "catch": 0.0,
+      "miss": 226.0,
+      "unknown": 0.0
+     },
+     "unknown": {
+      "catch": 0.0,
+      "miss": 0.0,
+      "unknown": 0.0
+     }
+    },
+    "ck_max_abs_error": 0.0,
+    "ck_total_abs_error": 0.0,
+    "ck_holds": true,
+    "cell_diffs": [
+     {
+      "from": "catch",
+      "to": "catch",
+      "T13_true": 71,
+      "T13_ck_estimate": 71.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "miss",
+      "T13_true": 269,
+      "T13_ck_estimate": 269.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "catch",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "miss",
+      "T13_true": 226,
+      "T13_ck_estimate": 226.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     }
+    ]
+   },
+   "E3_nested_minus_compiler-warn": {
+    "E3_supported": [
+     "cross-compile",
+     "linker"
+    ],
+    "nested_E3_subset_of_E2": true,
+    "dropped_from_E2": "compiler-warn",
+    "generator_composition": {
+     "removed_E1_to_E2": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "removed_E2_to_E3": [
+      "compiler-warn"
+     ],
+     "removed_E1_to_E3_union": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn"
+     ],
+     "composition_holds": true,
+     "note_nested": "嵌套撤除链（E3⊂E2）：单调退化 ⇒ 一旦 miss 永为 miss ⇒ screening 成立 ⇒ CK 成立。",
+     "note": "生成元层：τ_{G12} ∘ τ_{G23} = τ_{G12 ∪ G23}（697 公理 A4），恒成立。"
+    },
+    "T12": {
+     "catch": {
+      "catch": 140,
+      "miss": 200,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T23": {
+     "catch": {
+      "catch": 85,
+      "miss": 55,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 426,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_true": {
+     "catch": {
+      "catch": 85,
+      "miss": 255,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_chapman_kolmogorov": {
+     "catch": {
+      "catch": 85.0,
+      "miss": 255.0,
+      "unknown": 0.0
+     },
+     "miss": {
+      "catch": 0.0,
+      "miss": 226.0,
+      "unknown": 0.0
+     },
+     "unknown": {
+      "catch": 0.0,
+      "miss": 0.0,
+      "unknown": 0.0
+     }
+    },
+    "ck_max_abs_error": 0.0,
+    "ck_total_abs_error": 0.0,
+    "ck_holds": true,
+    "cell_diffs": [
+     {
+      "from": "catch",
+      "to": "catch",
+      "T13_true": 85,
+      "T13_ck_estimate": 85.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "miss",
+      "T13_true": 255,
+      "T13_ck_estimate": 255.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "catch",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "miss",
+      "T13_true": 226,
+      "T13_ck_estimate": 226.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     }
+    ]
+   },
+   "E3_nested_minus_linker": {
+    "E3_supported": [
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "nested_E3_subset_of_E2": true,
+    "dropped_from_E2": "linker",
+    "generator_composition": {
+     "removed_E1_to_E2": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "removed_E2_to_E3": [
+      "linker"
+     ],
+     "removed_E1_to_E3_union": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "linker"
+     ],
+     "composition_holds": true,
+     "note_nested": "嵌套撤除链（E3⊂E2）：单调退化 ⇒ 一旦 miss 永为 miss ⇒ screening 成立 ⇒ CK 成立。",
+     "note": "生成元层：τ_{G12} ∘ τ_{G23} = τ_{G12 ∪ G23}（697 公理 A4），恒成立。"
+    },
+    "T12": {
+     "catch": {
+      "catch": 140,
+      "miss": 200,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T23": {
+     "catch": {
+      "catch": 136,
+      "miss": 4,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 426,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_true": {
+     "catch": {
+      "catch": 136,
+      "miss": 204,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_chapman_kolmogorov": {
+     "catch": {
+      "catch": 136.0,
+      "miss": 204.0,
+      "unknown": 0.0
+     },
+     "miss": {
+      "catch": 0.0,
+      "miss": 226.0,
+      "unknown": 0.0
+     },
+     "unknown": {
+      "catch": 0.0,
+      "miss": 0.0,
+      "unknown": 0.0
+     }
+    },
+    "ck_max_abs_error": 0.0,
+    "ck_total_abs_error": 0.0,
+    "ck_holds": true,
+    "cell_diffs": [
+     {
+      "from": "catch",
+      "to": "catch",
+      "T13_true": 136,
+      "T13_ck_estimate": 136.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "miss",
+      "T13_true": 204,
+      "T13_ck_estimate": 204.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "catch",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "catch",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "miss",
+      "T13_true": 226,
+      "T13_ck_estimate": 226.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     }
+    ]
+   },
+   "E3_nonnested_restore_asan": {
+    "E3_supported": [
+     "asan",
+     "compiler-warn",
+     "linker"
+    ],
+    "nested_E3_subset_of_E2": false,
+    "dropped_from_E2": "cross-compile",
+    "generator_composition": {
+     "removed_E1_to_E2": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "removed_E2_to_E3": [
+      "cross-compile"
+     ],
+     "removed_E1_to_E3_union": [
+      "ubsan",
+      "tsan",
+      "cross-compile"
+     ],
+     "composition_holds": true,
+     "note_nested": "非嵌套链（E2 与 E3 互不包含）：E2 的裁决不能屏蔽 E1 ⇒ screening 失效 ⇒ CK 预期不成立。",
+     "note": "生成元层：τ_{G12} ∘ τ_{G23} = τ_{G12 ∪ G23}（697 公理 A4），恒成立。"
+    },
+    "T12": {
+     "catch": {
+      "catch": 140,
+      "miss": 200,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T23": {
+     "catch": {
+      "catch": 114,
+      "miss": 26,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 124,
+      "miss": 302,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_true": {
+     "catch": {
+      "catch": 238,
+      "miss": 102,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_chapman_kolmogorov": {
+     "catch": {
+      "catch": 172.216,
+      "miss": 167.784,
+      "unknown": 0.0
+     },
+     "miss": {
+      "catch": 65.784,
+      "miss": 160.216,
+      "unknown": 0.0
+     },
+     "unknown": {
+      "catch": 0.0,
+      "miss": 0.0,
+      "unknown": 0.0
+     }
+    },
+    "ck_max_abs_error": 65.784,
+    "ck_total_abs_error": 263.136,
+    "ck_holds": false,
+    "cell_diffs": [
+     {
+      "from": "catch",
+      "to": "catch",
+      "T13_true": 238,
+      "T13_ck_estimate": 172.216,
+      "abs_error": 65.784
+     },
+     {
+      "from": "catch",
+      "to": "miss",
+      "T13_true": 102,
+      "T13_ck_estimate": 167.784,
+      "abs_error": 65.784
+     },
+     {
+      "from": "miss",
+      "to": "catch",
+      "T13_true": 0,
+      "T13_ck_estimate": 65.784,
+      "abs_error": 65.784
+     },
+     {
+      "from": "miss",
+      "to": "miss",
+      "T13_true": 226,
+      "T13_ck_estimate": 160.216,
+      "abs_error": 65.784
+     },
+     {
+      "from": "catch",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     }
+    ]
+   },
+   "E3_nonnested_restore_ubsan_tsan": {
+    "E3_supported": [
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "nested_E3_subset_of_E2": false,
+    "dropped_from_E2": "cross-compile,linker",
+    "generator_composition": {
+     "removed_E1_to_E2": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "removed_E2_to_E3": [
+      "cross-compile,linker"
+     ],
+     "removed_E1_to_E3_union": [
+      "asan",
+      "cross-compile",
+      "linker"
+     ],
+     "composition_holds": true,
+     "note_nested": "非嵌套链（E2 与 E3 互不包含）：E2 的裁决不能屏蔽 E1 ⇒ screening 失效 ⇒ CK 预期不成立。",
+     "note": "生成元层：τ_{G12} ∘ τ_{G23} = τ_{G12 ∪ G23}（697 公理 A4），恒成立。"
+    },
+    "T12": {
+     "catch": {
+      "catch": 140,
+      "miss": 200,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T23": {
+     "catch": {
+      "catch": 104,
+      "miss": 36,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 140,
+      "miss": 286,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_true": {
+     "catch": {
+      "catch": 244,
+      "miss": 96,
+      "unknown": 0
+     },
+     "miss": {
+      "catch": 0,
+      "miss": 226,
+      "unknown": 0
+     },
+     "unknown": {
+      "catch": 0,
+      "miss": 0,
+      "unknown": 0
+     }
+    },
+    "T13_chapman_kolmogorov": {
+     "catch": {
+      "catch": 169.728,
+      "miss": 170.272,
+      "unknown": 0.0
+     },
+     "miss": {
+      "catch": 74.272,
+      "miss": 151.728,
+      "unknown": 0.0
+     },
+     "unknown": {
+      "catch": 0.0,
+      "miss": 0.0,
+      "unknown": 0.0
+     }
+    },
+    "ck_max_abs_error": 74.272,
+    "ck_total_abs_error": 297.089,
+    "ck_holds": false,
+    "cell_diffs": [
+     {
+      "from": "catch",
+      "to": "catch",
+      "T13_true": 244,
+      "T13_ck_estimate": 169.728,
+      "abs_error": 74.272
+     },
+     {
+      "from": "catch",
+      "to": "miss",
+      "T13_true": 96,
+      "T13_ck_estimate": 170.272,
+      "abs_error": 74.272
+     },
+     {
+      "from": "miss",
+      "to": "catch",
+      "T13_true": 0,
+      "T13_ck_estimate": 74.272,
+      "abs_error": 74.272
+     },
+     {
+      "from": "miss",
+      "to": "miss",
+      "T13_true": 226,
+      "T13_ck_estimate": 151.728,
+      "abs_error": 74.272
+     },
+     {
+      "from": "catch",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     },
+     {
+      "from": "miss",
+      "to": "unknown",
+      "T13_true": 0,
+      "T13_ck_estimate": 0.0,
+      "abs_error": 0.0
+     }
+    ]
+   }
+  },
+  "theorem_T5_verdict": "生成元复合成立，但**观测转移矩阵不满足 Chapman–Kolmogorov**：所有 E3 变体的 CK 最大绝对误差 > 0 ⇒ 漂移链非马尔可夫。"
+ },
+ "detection_budget": {
+  "n": 566,
+  "trials": 200,
+  "strata": [
+   "concurrency",
+   "conditional_trigger",
+   "embedded",
+   "language_semantics",
+   "legacy",
+   "memory_safety",
+   "odr_link",
+   "optimization_sensitive",
+   "real_world",
+   "stl",
+   "undefined_behavior"
+  ],
+  "budgets": {
+   "10": {
+    "uniform": {
+     "detection_probability": 0.085
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 0.05
+    },
+    "delta_adaptive_minus_uniform": -0.035
+   },
+   "15": {
+    "uniform": {
+     "detection_probability": 0.505
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 0.28
+    },
+    "delta_adaptive_minus_uniform": -0.225
+   },
+   "20": {
+    "uniform": {
+     "detection_probability": 0.74
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 0.735
+    },
+    "delta_adaptive_minus_uniform": -0.005
+   },
+   "30": {
+    "uniform": {
+     "detection_probability": 0.965
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 0.975
+    },
+    "delta_adaptive_minus_uniform": 0.01
+   },
+   "40": {
+    "uniform": {
+     "detection_probability": 0.995
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 0.995
+    },
+    "delta_adaptive_minus_uniform": 0.0
+   },
+   "60": {
+    "uniform": {
+     "detection_probability": 1.0
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 1.0
+    },
+    "delta_adaptive_minus_uniform": 0.0
+   },
+   "100": {
+    "uniform": {
+     "detection_probability": 1.0
+    },
+    "two_stage_adaptive": {
+     "detection_probability": 1.0
+    },
+    "delta_adaptive_minus_uniform": 0.0
+   }
+  }
+ },
+ "correctability": {
+  "frame": "A5_evaluation_566",
+  "theorem_T6": {
+   "statement": "设原始记录 R = (V(x,a))_{x∈X,a∈A} ∈ {c,m,u}^{|X|×|A|}，报告 ρ = agg(R)。漂移 τ **可后处理纠正**，当且仅当下列之一成立：(i) τ 不改动 R（只改 ρ：记账 / 聚合 / 标签）——此时保留 R 即可重算任意 ρ；(ii) τ 删去 R 的若干列，但被删列**逐格**由保留列 + 先验决定。否则（被删列含 R 中不可由保留列恢复的信息）τ **不可纠正**，必须重测。",
+   "proof_sketch": "(i) τ|_ρ 是已知函数，R 保留 ⇒ 可计算任意 ρ'，故可恢复。(ii) 被删列是保留列的函数 ⇒ 可逐格重建，误差 0。反之，若被删列含不可由保留列决定的信息，则由 697 定理 T2 的构造（两个不同的 R 映射到同一个 R'）⇒ 多对一 ⇒ 无逆 ⇒ 不可纠正。"
+  },
+  "quantified": [
+   {
+    "removed_asset": "asan",
+    "n": 566,
+    "best_posthoc_accuracy": 0.699647,
+    "residual_error": 0.300353,
+    "majority_baseline_accuracy": 0.007067,
+    "lift_over_baseline": 0.69258,
+    "n_feature_cells": 7
+   },
+   {
+    "removed_asset": "ubsan",
+    "n": 566,
+    "best_posthoc_accuracy": 0.786219,
+    "residual_error": 0.213781,
+    "majority_baseline_accuracy": 0.007067,
+    "lift_over_baseline": 0.779152,
+    "n_feature_cells": 7
+   },
+   {
+    "removed_asset": "tsan",
+    "n": 566,
+    "best_posthoc_accuracy": 0.782686,
+    "residual_error": 0.217314,
+    "majority_baseline_accuracy": 0.007067,
+    "lift_over_baseline": 0.775618,
+    "n_feature_cells": 7
+   },
+   {
+    "removed_asset": "wunsequenced",
+    "n": 566,
+    "best_posthoc_accuracy": 1.0,
+    "residual_error": 0.0,
+    "majority_baseline_accuracy": 1.0,
+    "lift_over_baseline": 0.0,
+    "note": "结构性恒 unknown（673u 判据 / 无本地检测器）⇒ 由**先验**逐格决定 ⇒ **完全可纠正**。"
+   },
+   {
+    "removed_asset": "compile-time",
+    "n": 566,
+    "best_posthoc_accuracy": 1.0,
+    "residual_error": 0.0,
+    "majority_baseline_accuracy": 1.0,
+    "lift_over_baseline": 0.0,
+    "note": "结构性恒 unknown（673u 判据 / 无本地检测器）⇒ 由**先验**逐格决定 ⇒ **完全可纠正**。"
+   }
+  ],
+  "post_measurement_layer_drifts": {
+   "denominator_accounting": {
+    "correctable": true,
+    "residual_error": 0.0,
+    "why": "三组件计数 (catch, unknown, miss) 可重算"
+   },
+   "aggregation_or_vs_mean": {
+    "correctable": true,
+    "residual_error": 0.0,
+    "why": "R 未变，换聚合函数即可重算"
+   },
+   "label_vocabulary": {
+    "correctable": true,
+    "residual_error": 0.0,
+    "why": "λ 是 R 之上的分组函数，逐样本裁决未变"
+   }
+  },
+  "acquisition_layer_drifts": {
+   "environment_gated_removal": {
+    "correctable": false,
+    "residual_error": null,
+    "why": "asan/ubsan/tsan 列被删除且不可由保留列恢复 ⇒ 必须重测"
+   }
+  },
+  "interpretation": "被撤的 sanitizer 列的**最佳后处理准确率**见 quantified 表：残留误差越接近 0 ⇒ 越接近可纠正；远高于 0 ⇒ 只能重测。"
+ },
+ "health": {
+  "total_score": 58.76,
+  "components": {
+   "composition_stability": {
+    "raw": 0.278352,
+    "score": 6.96,
+    "definition": "1 − (g_app(d=3) − g_app(d=0)) / g_app(d=3)"
+   },
+   "environment_stability": {
+    "raw": 0.530516,
+    "score": 13.26,
+    "definition": "1 − E2 负例中被污染的比例（692：46.95%）"
+   },
+   "label_stability": {
+    "raw": 0.87479,
+    "score": 21.87,
+    "definition": "1 − 细粒度词表间「高盲类占比」的极差 / 100"
+   },
+   "aggregation_stability": {
+    "raw": 0.666667,
+    "score": 16.67,
+    "definition": "1 − 掺入 3 个零产资产后最敏感**可用**聚合口径的相对变化",
+    "worst_rule": "mean_per_asset",
+    "excluded": "min_asset（病态：掺零产资产即归零，相对变化 100%）"
+   }
+  },
+  "history": [
+   {
+    "version": "676m",
+    "event": "H2 标签迁移：defect_type 56→33，308/1042 条改写，笼统标签 145→8",
+    "component_moved": "label",
+    "direction": "先降后升（迁移期标签不稳，迁移后归一）",
+    "source": "data/676m_H2标签迁移报告.md"
+   },
+   {
+    "version": "681",
+    "event": "类型统计重算：34 类、13/34 >50% 盲",
+    "component_moved": "label",
+    "direction": "升（口径固定）",
+    "source": "data/681_type_stats_normalized.json"
+   },
+   {
+    "version": "692",
+    "event": "环境形式化 + 配对实验：E1→E2 静默退化，46.95% 负例被污染",
+    "component_moved": "environment",
+    "direction": "降（首次暴露环境不稳定性）",
+    "source": "data/692_environment_paired_experiment.json"
+   },
+   {
+    "version": "693",
+    "event": "元评估 v2 + 可检测性模型（族外 AUC 0.766 天花板）",
+    "component_moved": "caliber",
+    "direction": "持平（新增能力边界声明）",
+    "source": "data/693_meta_evaluation_v2.json"
+   },
+   {
+    "version": "697/698",
+    "event": "漂移代数 + 四型量化；本批给出四项分量与总分",
+    "component_moved": "all",
+    "direction": "首次可评分",
+    "source": "data/698_drift_propagation.json"
+   }
+  ],
+  "honest_note": "历史序列是**从各批次的文档化锚点重建的代理序列**，**不是**用同一台仪器在不同时间点测出的时间序列 —— 各批次报告的分量定义并不一致，因此曲线只应读作**定性轨迹**，不应读作精确的健康度数值变化。"
+ }
+}
