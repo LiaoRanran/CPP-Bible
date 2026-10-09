@@ -386,7 +386,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.substantive_only:  # 707-A 简化路径（科研依据：700-A 元理论发现）
         sub = substantive_axiom_check(structures)
-        doc: dict[str, Any] = {
+        sub_doc: dict[str, Any] = {
             "schema": "queyi-707/axiom-substantive-check/v1",
             "generated_by": "tools/compute_700_axiom_independence.py --substantive-only",
             "generated_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -396,7 +396,7 @@ def main(argv: list[str] | None = None) -> int:
             "substantive_check": sub,
         }
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+        args.out.write_text(json.dumps(sub_doc, ensure_ascii=False, indent=1), encoding="utf-8")
         _log.info("已写出（substantive-only）%s", args.out)
         print("== 700-A 公理检查（substantive-only：仅 A2/A5）==")
         for a, per in sub["truth"].items():
