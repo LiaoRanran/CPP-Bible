@@ -1,0 +1,685 @@
+{
+ "schema": "queyi-697/capability-boundary-model/v1",
+ "generated_by": "tools/train_697_predictor.py",
+ "generated_at": "2026-10-09T08:57:43+08:00",
+ "detect_calls": 0,
+ "target": "样本级 OR(8 资产) == catch（wunsequenced/compile-time 恒 unknown ⇒ 等价于 6 资产口径）",
+ "dataset_meta": {
+  "n_total": 1147,
+  "n_with_source": 1042,
+  "n_missing_source_by_batch": {
+   "holdout": 41,
+   "corpus": 64
+  },
+  "base_rate_catch": 0.616391,
+  "n_clone_families": 467,
+  "n_families_from_677b": 457,
+  "n_structural_signatures": 559
+ },
+ "results_by_tier": {
+  "A_manifest_only_1147": {
+   "n": 1147,
+   "n_features": 20,
+   "base_rate_catch": 0.616391,
+   "cv": {
+    "clone_family_677b": {
+     "group_key": "clone_family_677b",
+     "folds": 5,
+     "n_groups": 467,
+     "models": {
+      "logreg": {
+       "auc": 0.685409,
+       "threshold": 0.5,
+       "tp": 641,
+       "fp": 383,
+       "fn": 66,
+       "tn": 57,
+       "accuracy": 0.608544,
+       "precision": 0.625977,
+       "recall": 0.906648,
+       "f1": 0.740612,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "cart": {
+       "auc": 0.632302,
+       "threshold": 0.5,
+       "tp": 556,
+       "fp": 237,
+       "fn": 151,
+       "tn": 203,
+       "accuracy": 0.661726,
+       "precision": 0.701135,
+       "recall": 0.786421,
+       "f1": 0.741333,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "bagged_cart": {
+       "auc": 0.712502,
+       "threshold": 0.5,
+       "tp": 573,
+       "fp": 226,
+       "fn": 134,
+       "tn": 214,
+       "accuracy": 0.686138,
+       "precision": 0.717146,
+       "recall": 0.810467,
+       "f1": 0.760956,
+       "majority_baseline_accuracy": 0.616391
+      }
+     }
+    },
+    "structural_signature": {
+     "group_key": "structural_signature",
+     "folds": 5,
+     "n_groups": 664,
+     "models": {
+      "logreg": {
+       "auc": 0.708385,
+       "threshold": 0.5,
+       "tp": 697,
+       "fp": 440,
+       "fn": 10,
+       "tn": 0,
+       "accuracy": 0.607672,
+       "precision": 0.613017,
+       "recall": 0.985856,
+       "f1": 0.755965,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "cart": {
+       "auc": 0.655925,
+       "threshold": 0.5,
+       "tp": 560,
+       "fp": 230,
+       "fn": 147,
+       "tn": 210,
+       "accuracy": 0.671316,
+       "precision": 0.708861,
+       "recall": 0.792079,
+       "f1": 0.748163,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "bagged_cart": {
+       "auc": 0.71485,
+       "threshold": 0.5,
+       "tp": 576,
+       "fp": 225,
+       "fn": 131,
+       "tn": 215,
+       "accuracy": 0.689625,
+       "precision": 0.719101,
+       "recall": 0.81471,
+       "f1": 0.763926,
+       "majority_baseline_accuracy": 0.616391
+      }
+     }
+    },
+    "random": {
+     "group_key": "random",
+     "folds": 5,
+     "n_groups": 1147,
+     "models": {
+      "logreg": {
+       "auc": 0.72612,
+       "threshold": 0.5,
+       "tp": 679,
+       "fp": 412,
+       "fn": 28,
+       "tn": 28,
+       "accuracy": 0.616391,
+       "precision": 0.622365,
+       "recall": 0.960396,
+       "f1": 0.755284,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "cart": {
+       "auc": 0.684226,
+       "threshold": 0.5,
+       "tp": 576,
+       "fp": 228,
+       "fn": 131,
+       "tn": 212,
+       "accuracy": 0.68701,
+       "precision": 0.716418,
+       "recall": 0.81471,
+       "f1": 0.762409,
+       "majority_baseline_accuracy": 0.616391
+      },
+      "bagged_cart": {
+       "auc": 0.756068,
+       "threshold": 0.5,
+       "tp": 582,
+       "fp": 200,
+       "fn": 125,
+       "tn": 240,
+       "accuracy": 0.716652,
+       "precision": 0.744246,
+       "recall": 0.823197,
+       "f1": 0.781733,
+       "majority_baseline_accuracy": 0.616391
+      }
+     }
+    }
+   }
+  },
+  "B_plus_source_1042": {
+   "n": 1042,
+   "n_features": 30,
+   "base_rate_catch": 0.59309,
+   "cv": {
+    "clone_family_677b": {
+     "group_key": "clone_family_677b",
+     "folds": 5,
+     "n_groups": 382,
+     "models": {
+      "logreg": {
+       "auc": 0.690988,
+       "threshold": 0.5,
+       "tp": 539,
+       "fp": 279,
+       "fn": 79,
+       "tn": 145,
+       "accuracy": 0.65643,
+       "precision": 0.658924,
+       "recall": 0.872168,
+       "f1": 0.750696,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "cart": {
+       "auc": 0.644914,
+       "threshold": 0.5,
+       "tp": 434,
+       "fp": 244,
+       "fn": 184,
+       "tn": 180,
+       "accuracy": 0.589251,
+       "precision": 0.640118,
+       "recall": 0.702265,
+       "f1": 0.669753,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "bagged_cart": {
+       "auc": 0.755104,
+       "threshold": 0.5,
+       "tp": 465,
+       "fp": 151,
+       "fn": 153,
+       "tn": 273,
+       "accuracy": 0.708253,
+       "precision": 0.75487,
+       "recall": 0.752427,
+       "f1": 0.753647,
+       "majority_baseline_accuracy": 0.59309
+      }
+     }
+    },
+    "structural_signature": {
+     "group_key": "structural_signature",
+     "folds": 5,
+     "n_groups": 559,
+     "models": {
+      "logreg": {
+       "auc": 0.745325,
+       "threshold": 0.5,
+       "tp": 549,
+       "fp": 293,
+       "fn": 69,
+       "tn": 131,
+       "accuracy": 0.652591,
+       "precision": 0.652019,
+       "recall": 0.88835,
+       "f1": 0.752055,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "cart": {
+       "auc": 0.705982,
+       "threshold": 0.5,
+       "tp": 496,
+       "fp": 222,
+       "fn": 122,
+       "tn": 202,
+       "accuracy": 0.669866,
+       "precision": 0.690808,
+       "recall": 0.802589,
+       "f1": 0.742515,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "bagged_cart": {
+       "auc": 0.800376,
+       "threshold": 0.5,
+       "tp": 488,
+       "fp": 148,
+       "fn": 130,
+       "tn": 276,
+       "accuracy": 0.733205,
+       "precision": 0.767296,
+       "recall": 0.789644,
+       "f1": 0.778309,
+       "majority_baseline_accuracy": 0.59309
+      }
+     }
+    },
+    "random": {
+     "group_key": "random",
+     "folds": 5,
+     "n_groups": 1042,
+     "models": {
+      "logreg": {
+       "auc": 0.77137,
+       "threshold": 0.5,
+       "tp": 552,
+       "fp": 272,
+       "fn": 66,
+       "tn": 152,
+       "accuracy": 0.675624,
+       "precision": 0.669903,
+       "recall": 0.893204,
+       "f1": 0.765603,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "cart": {
+       "auc": 0.743373,
+       "threshold": 0.5,
+       "tp": 513,
+       "fp": 239,
+       "fn": 105,
+       "tn": 185,
+       "accuracy": 0.669866,
+       "precision": 0.682181,
+       "recall": 0.830097,
+       "f1": 0.748905,
+       "majority_baseline_accuracy": 0.59309
+      },
+      "bagged_cart": {
+       "auc": 0.862986,
+       "threshold": 0.5,
+       "tp": 522,
+       "fp": 128,
+       "fn": 96,
+       "tn": 296,
+       "accuracy": 0.785029,
+       "precision": 0.803077,
+       "recall": 0.84466,
+       "f1": 0.823344,
+       "majority_baseline_accuracy": 0.59309
+      }
+     }
+    }
+   }
+  }
+ },
+ "feature_importance": {
+  "logistic_standardized_top10_tierB": [
+   {
+    "feature": "branch_density",
+    "standardized_coef": 0.714378,
+    "abs": 0.714378
+   },
+   {
+    "feature": "fam_integer",
+    "standardized_coef": 0.247971,
+    "abs": 0.247971
+   },
+   {
+    "feature": "fam_bounds",
+    "standardized_coef": 0.228092,
+    "abs": 0.228092
+   },
+   {
+    "feature": "fam_embedded",
+    "standardized_coef": -0.221252,
+    "abs": 0.221252
+   },
+   {
+    "feature": "fam_alias_type",
+    "standardized_coef": -0.172206,
+    "abs": 0.172206
+   },
+   {
+    "feature": "batch_expF",
+    "standardized_coef": -0.137739,
+    "abs": 0.137739
+   },
+   {
+    "feature": "batch_expE",
+    "standardized_coef": -0.132683,
+    "abs": 0.132683
+   },
+   {
+    "feature": "batch_expB",
+    "standardized_coef": 0.131561,
+    "abs": 0.131561
+   },
+   {
+    "feature": "batch_expD",
+    "standardized_coef": 0.128813,
+    "abs": 0.128813
+   },
+   {
+    "feature": "is_memory_safe",
+    "standardized_coef": 0.122907,
+    "abs": 0.122907
+   }
+  ],
+  "bagged_cart_split_count_top10_tierB": [
+   {
+    "feature": "n_lines",
+    "n_splits": 53
+   },
+   {
+    "feature": "chars_per_line",
+    "n_splits": 50
+   },
+   {
+    "feature": "n_ptr",
+    "n_splits": 50
+   },
+   {
+    "feature": "n_call",
+    "n_splits": 49
+   },
+   {
+    "feature": "n_mem",
+    "n_splits": 28
+   },
+   {
+    "feature": "n_branch",
+    "n_splits": 23
+   },
+   {
+    "feature": "branch_density",
+    "n_splits": 23
+   },
+   {
+    "feature": "fam_bounds",
+    "n_splits": 17
+   },
+   {
+    "feature": "n_thread",
+    "n_splits": 16
+   },
+   {
+    "feature": "fam_integer",
+    "n_splits": 14
+   }
+  ]
+ },
+ "theoretical_upper_bound": {
+  "within_family_bayes_bound": {
+   "n_families": 467,
+   "n_multi_member_families": 180,
+   "n_mixed_verdict_families": 47,
+   "share_mixed_of_multi": 0.261111,
+   "n_samples_in_multi_member_families": 860,
+   "irreducible_error_samples": 86.0,
+   "bayes_error_lower_bound_pct": 7.4978,
+   "implied_accuracy_upper_bound": 0.925022,
+   "interpretation": "同族（近乎同特征）样本被判成不同裁决 ⇒ 特征无法解释的部分。这是对**任何**特征模型（含深度学习）都成立的错误率下界，与模型容量无关，只与数据的标签一致性有关。"
+  },
+  "family_transfer_ceiling": {
+   "prediction_rule": "leave-one-family-out：同 defect_type 的其它家族的 catch 率（无该类型则取全局率）",
+   "auc": 0.766226,
+   "threshold": 0.5,
+   "tp": 556,
+   "fp": 177,
+   "fn": 151,
+   "tn": 263,
+   "accuracy": 0.714037,
+   "precision": 0.758527,
+   "recall": 0.786421,
+   "f1": 0.772222,
+   "majority_baseline_accuracy": 0.616391,
+   "interpretation": "只靠**跨族可迁移**的粗粒度信息可达的 AUC。任何家族感知 CV 下的模型，其 AUC 若显著高于此值，说明它还吃到了族内记忆（泄漏）；若低于此值，说明模型连粗粒度信号都没用好。"
+  },
+  "undecidability": {
+   "claim": "「程序 P 的缺陷 x 会被资产 a 捕获」是关于程序语义的非平凡性质。由 Rice 定理，不存在对所有 (P, x, a) 都正确的判定程序 ⇒ 不存在一个**完备**的可检测性预测器；任何预测器必有系统性盲区。",
+   "quantitative_footnote": {
+    "n_defect_types": 34,
+    "n_types_with_deterministic_verdict_min3_samples": 6,
+    "deterministic_types": [
+     "cross_tu_ub",
+     "memory_safety",
+     "null_pointer_deref",
+     "strict_aliasing",
+     "uninitialized_read",
+     "use_after_free"
+    ],
+    "note": "确定性类型（同类型全部 catch 或全部 miss）是 Rice 定理下的「可判定岛」；其余类型的裁决依赖具体语义 ⇒ 只能学，**不能证**。"
+   },
+   "honest_boundary": "本节是**论证**不是定理证明：Rice 定理给的是「不存在完备判定程序」，而预测器允许有错误率，两者不矛盾。本节的用途是说明「AUC < 1 是原理性的，不是数据不够」。"
+  }
+ },
+ "active_learning_top20": {
+  "strategy": "uncertainty sampling (|p−0.5| 升序) + 每克隆家族最多 1 条",
+  "model": "bagged_cart（家族感知 5 折的折外预测）",
+  "n_candidates": 1042,
+  "top": [
+   {
+    "rank": 1,
+    "uid": "expE:sample_E125",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0223",
+    "predicted_p_catch": 0.5001,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0001,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 2,
+    "uid": "expE:sample_E021",
+    "defect_type": "memory_order",
+    "family": "concurrency",
+    "clone_family": "F0162",
+    "predicted_p_catch": 0.5014,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0014,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 3,
+    "uid": "expG:sample_G040",
+    "defect_type": "logic_error",
+    "family": "language_oop",
+    "clone_family": "F0342",
+    "predicted_p_catch": 0.5023,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0023,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 4,
+    "uid": "expF:F016",
+    "defect_type": "alignment",
+    "family": "alias_type",
+    "clone_family": "F0268",
+    "predicted_p_catch": 0.4971,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0029,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 5,
+    "uid": "expG:sample_G047",
+    "defect_type": "logic_error",
+    "family": "language_oop",
+    "clone_family": "F0349",
+    "predicted_p_catch": 0.4966,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0034,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 6,
+    "uid": "expE:sample_E054",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0176",
+    "predicted_p_catch": 0.5037,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0037,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 7,
+    "uid": "expF:F052",
+    "defect_type": "endianness",
+    "family": "alias_type",
+    "clone_family": "F0277",
+    "predicted_p_catch": 0.496,
+    "observed_verdict": "miss",
+    "uncertainty": 0.004,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 8,
+    "uid": "expG:sample_G020",
+    "defect_type": "logic_error",
+    "family": "language_oop",
+    "clone_family": "F0322",
+    "predicted_p_catch": 0.5041,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0041,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 9,
+    "uid": "expG:sample_G086",
+    "defect_type": "logic_error",
+    "family": "language_oop",
+    "clone_family": "F0387",
+    "predicted_p_catch": 0.5041,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0041,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 10,
+    "uid": "expG:sample_G019",
+    "defect_type": "logic_error",
+    "family": "language_oop",
+    "clone_family": "F0321",
+    "predicted_p_catch": 0.505,
+    "observed_verdict": "miss",
+    "uncertainty": 0.005,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 11,
+    "uid": "expE:sample_E020",
+    "defect_type": "memory_order",
+    "family": "concurrency",
+    "clone_family": "F0161",
+    "predicted_p_catch": 0.4933,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0067,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 12,
+    "uid": "expF:F064",
+    "defect_type": "endianness",
+    "family": "alias_type",
+    "clone_family": "F0280",
+    "predicted_p_catch": 0.5067,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0067,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 13,
+    "uid": "expE:sample_E074",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0199",
+    "predicted_p_catch": 0.5073,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0073,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 14,
+    "uid": "expE:sample_E119",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0220",
+    "predicted_p_catch": 0.4922,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0078,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 15,
+    "uid": "expF:F077",
+    "defect_type": "volatile_misuse",
+    "family": "embedded",
+    "clone_family": "F0283",
+    "predicted_p_catch": 0.5081,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0081,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 16,
+    "uid": "expE:sample_E123",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0222",
+    "predicted_p_catch": 0.4915,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0085,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 17,
+    "uid": "expE:sample_E129",
+    "defect_type": "atomic_ub",
+    "family": "concurrency",
+    "clone_family": "F0226",
+    "predicted_p_catch": 0.4908,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0092,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 18,
+    "uid": "expD:D081",
+    "defect_type": "string_ub",
+    "family": "stl",
+    "clone_family": "F0128",
+    "predicted_p_catch": 0.4906,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0094,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 19,
+    "uid": "expD:D171",
+    "defect_type": "lambda_capture",
+    "family": "language_oop",
+    "clone_family": "F0144",
+    "predicted_p_catch": 0.5106,
+    "observed_verdict": "catch",
+    "uncertainty": 0.0106,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   },
+   {
+    "rank": 20,
+    "uid": "expF:F037",
+    "defect_type": "endianness",
+    "family": "alias_type",
+    "clone_family": "F0274",
+    "predicted_p_catch": 0.4891,
+    "observed_verdict": "miss",
+    "uncertainty": 0.0109,
+    "why": "模型在该样本上最接近 0.5，且该家族尚未被选中（多样性约束）"
+   }
+  ]
+ },
+ "honest_limits": [
+  "本机无 numpy/scikit-learn/xgboost ⇒ 逻辑回归与装袋 CART 均为**纯标准库**实现，不是 sklearn/XGBoost 的同名算法，超参数未做搜索。",
+  "样本 92.9% 为人工植入 ⇒ 模型学的是**仪器**而非真实缺陷分布。",
+  "677b 家族只定义在 A5 的 1137 条上；676g 多出的 10 条退化为单成员家族。",
+  "Tier A（无源码特征）与 Tier B 的 AUC 差即为「源码特征买来的增益」，但两层的样本集不同（1147 vs 1042），比较需谨慎。"
+ ]
+}
