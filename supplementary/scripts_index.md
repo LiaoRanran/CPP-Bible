@@ -21,6 +21,12 @@
 | `tools/analyze_692_environment.py` | 692 环境画像数据 | 环境感知分析 | `python tools/analyze_692_environment.py` |
 | `tools/compute_700_sample_complexity.py` 等 `compute_70x_*.py` | 700/703 理论数据 | 相变/样本复杂度/零成本验证 | `python tools/compute_703_zero_cost_validation.py` |
 | `tools/collect_realworld_683.py` | NVD/GitHub API（需网络） | 110 真实缺陷重构 | `python tools/collect_realworld_683.py --stage verify` |
+| `tools/test_axiom_independence.py`（707-A） | 700-A 公理检查器 | `data/707_axiom_independence_test.json`（A2/A5 独立、A3/A4/A6/A7 恒真、A8 缺失） | `python tools/test_axiom_independence.py` |
+| `tools/compute_700_axiom_independence.py --substantive-only`（707-A） | 同上 | `data/707_axiom_substantive_check.json`（只查 A2/A5，跳过恒真项 + A8 占位） | `python tools/compute_700_axiom_independence.py --substantive-only --out data/707_axiom_substantive_check.json` |
+| `tools/asset_capabilities.py`（707-B） | `data/blindspot_676g_detection_matrix.json` / `data/a5_676f_detection_matrix.json` | `data/707_zero_cost_landing_validation.json`（P1/P2/P3 落地验证） | `python tools/asset_capabilities.py --validate` |
+| `tools/check_drift_correctability.py`（707-C） | 692 E1/E2 剖面 或 两环境逐样本矩阵 | `data/707_correctability.json`（可纠正 vs 必须重测，698-B T6） | `python tools/check_drift_correctability.py --case 692-e1e2` |
+| `tools/audit_protocol.py`（707-D） | 漂移 ψ/ε | 五步协议 + **Step 3 双设计**路由（I/II 配对，III/IV 设计级对照） | `python tools/audit_protocol.py --plan` |
+| `tools/sample_size_calculator.py`（707-D） | 漂移 ψ/ε | 配对样本量（Type I=849 / II=17 / III-IV=∞） | `python tools/sample_size_calculator.py --type II` |
 
 > 说明：上表为"论文数字可复算"的最小入口集合。其余脚本（检测器运行、标注、治理、CI 等）见下文 B 节完整索引。所有复算脚本只读冻结产物，**不重新运行检测器（detect）**，符合 704 红线 4。
 
