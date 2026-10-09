@@ -434,8 +434,11 @@ assets; same algorithm, same budget) collapses the $k{=}4$ contrast to $0.0$pp
 (Pool~A, $d{=}0$) the $k{=}4$ gain vanishes}; we report the headline gain as
 \textbf{composition-dominated within the pools measured} ($+24.03$pp at $k{=}4$,
 $\approx+12.8$pp at the mean caliber), and do \emph{not} claim a no-confounding separation of
-composition from mechanism---that needs an equal-margin substitution design we did not run
-(Future work). What
+composition from mechanism---that needs an equal-margin substitution design whose read-only half
+(out-of-fold selection, external pool, column permutation, sample-margin reweighting) has since
+been executed: it bounds the two observable confounds at $\le1.06$pp combined and leaves a
+$+12.30$pp mechanism residual, decomposed below; only the sample-pool replacement still requires
+new measurement (Future work). What
 \emph{survives} is a smaller but significant mechanism-level effect that the collapsed headline
 had hidden: on the degenerate-free pool (Pool A, five informative assets, same split, same seed)
 the executable selection beats a budget-matched random draw at
@@ -450,6 +453,25 @@ improvement was substantially an artifact of measurement-pool composition, and t
 real but an order of magnitude smaller than advertised. \emph{Cross-check:} the same
 collapse reproduces on the source-derived corpus: at $k{=}1..7$ the executable operator's
 literal selections coincide with greedy in every tier ($\Delta{=}0.0$pp).
+\emph{Causal decomposition (read-only, added in 711).} The headline decomposes exactly, one knob at
+a time: $+24.03$pp (single-point caliber, full pool, $k{=}4$) $\to+14.48$ (expectation caliber,
+$-9.55$) $\to+6.21$ (drop the two zero-yield assets, $-8.27$) $\to+1.55$ (drop \texttt{linker},
+$-4.65$) $\to+12.30$pp (budget $k{=}4{\to}1$, $+10.74$)---the mechanism residual is $+12.30$pp, and
+the two largest blocks are report choices (a caliber, a budget), not capability. At $k{=}1$ the gain
+is an exact pool statistic, $\Delta(1)=\mu_{\max}-\bar\mu$ (verified to the digit on four pools),
+which is why the residual lives entirely on that tier. The two observable confounds are bounded
+rather than assumed away: out-of-fold, clone-family-aware selection moves it by $\le1.06$pp (12 of
+15 pool$\,\times\,k$ combinations below $0.02$pp), and reweighting the sample-side defect margin to
+the corpus or to uniformity moves it by $\le1.03$pp---the classic composition suspect is \emph{not}
+the active axis here; the composition lives on the asset-pool side. Consistent with that, the single
+large step (dropping \texttt{linker}, $-4.65$pp) is itself $110\%$ pool geometry: with a zero-yield
+sixth asset as separator, the slot effect at $k{=}4$ is $5.12$pp and \texttt{linker}'s own coverage
+contributes $-0.47$pp (it holds $4/566$ catches, none covered by another pool asset); an independent
+cross-frame recomputation gives $5.35$pp and the $g_{\text{app}}$ slope of the Type~I scan gives
+$5.32$pp. The residual tier is also predictable rather than mysterious: under clone-family-aware
+folds, semantic$+$context features reach AUC $0.7999$ (a single shrunk type/group rate: $0.785$)
+against $0.7662$ for the type-mean baseline and $0.7551$ for models carrying source-structure
+features (Appendix~\ref{app:blindspot}).
 \emph{Anchors and mechanism.} Apparatus-driven headline gains are not
 isolated~\cite{bhat2026benchmarkingbenchmarks,shao2026protocolvalidity}; unlike those artifacts
 (adversarial exploitation or a scoring defect), ours is non-adversarial apparatus degradation
@@ -562,12 +584,20 @@ family before calling a delta an improvement (Finding~1, F5).
 \end{enumerate}
 
 \paragraph{Do the rules travel?}
-A degradation-grade replication in LLM-as-a-judge evaluation scores $55.84/100$ on a
-four-component transfer scale: caliber, environment and label drift transfer, while the
-\emph{aggregation} axis does not (a rule change moves the LLM report by $1.03$pp against
-$33.33$pp here), and the silence signature \emph{inverts} (a lost measurement becomes
-\texttt{unknown} rather than \texttt{miss}). The protocol travels; its diagnostic signatures do
-not travel unchanged (Appendix~\ref{app:related}).
+A degradation-grade replication in LLM-as-a-judge evaluation scores $55.84/100$ on the
+published four-component transfer scale (caliber $15.62$, environment $16.25$, label $21.39$,
+aggregation $2.58$). That total is \emph{corrected here}: the aggregation axis was read as
+non-transferable because a rule change moved the LLM report by only $1.03$pp against $33.33$pp
+here---but the original probe compared two rules \emph{inside} one family and never performed the
+operation that defines the axis, injecting a zero-capability component. Such a component is
+constructible (an always-abstaining judge adds no capability), and on the frozen verdicts a
+mean-type rule is pulled down by $25.00$pp while OR and majority move by $0.00$pp---the same
+structural signature as here ($\sigma(\mathrm{OR}){=}0$, $\sigma(\mathrm{mean}){=}33.3\%$). The
+corrected transfer score is $78.26/100$ (conservative $73.26$): the protocol's migration was
+\emph{understated} by a test-design false negative, not limited by a domain property. One
+diagnostic signature still does not travel: silence \emph{inverts} (a lost measurement becomes
+\texttt{unknown} rather than \texttt{miss}). The correction rests on a constructed judge, not a
+measured one, and the two totals carry different calibers (Appendix~\ref{app:related}).
 
 The AGEA abstraction (assets--governance--evolution--accountability) and the submodular
 selection formalization are kept as \emph{tools} supporting R5, not as contributions
@@ -1289,21 +1319,36 @@ but does not formalise orthogonality, nor attribute failures to budget-gating ve
 bounds}; that attribution---whether a miss reflects an exhausted measurement budget or a genuine
 capability limit---is the object of Finding~7, and is what distinguishes our treatment.
 
-\paragraph{(10) Cross-domain transfer to LLM-as-a-judge evaluation (added in 703).}
+\paragraph{(10) Cross-domain transfer to LLM-as-a-judge evaluation (added in 703; aggregation axis
+corrected in 711).}
 Structural Goodhart is not specific to C++ verification. On a companion collection of public
 LLM-judge benchmarks (240 samples downloaded live), a ``longer is better'' lazy judge agrees with
 the human-preferred side only $44.17\%$ of the time on JudgeBench---so on $55.83\%$ of samples
 length is a confident but wrong proxy---while RewardBench agrees $100\%$ because its curation makes
 length a confounder rather than a signal. A degradation-grade cross-domain replication on our own
-LLM arm scores $55.84/100$ on a four-component transfer scale (caliber $15.62$, environment
+LLM arm scores $55.84/100$ on the published four-component transfer scale (caliber $15.62$, environment
 $16.25$, label $21.39$, aggregation $2.58$). Three of the four axes are isomorphic to the C++ case;
-the \emph{aggregation} axis is not: changing the aggregation rule moves the LLM report by only
-$1.03$pp against $33.33$pp in C++, because an LLM aggregation rule acts on a single judge's
-verdicts and offers no ``zero-capability component'' to pad with---reusing the protocol there
-would need a domain-specific definition of that component. The silence signature also inverts: in
+the \emph{aggregation} axis was read as not isomorphic: changing the aggregation rule moves the LLM
+report by only $1.03$pp against $33.33$pp in C++, and the original reading held that an LLM
+aggregation rule acts on a single judge's verdicts and offers no ``zero-capability component'' to
+pad with.
+\textbf{That reading is corrected here, and with it the transfer score.} ``No zero-capability
+component exists'' was an empirical assertion, and it is false: a judge that always abstains (or
+answers at chance) adds no capability and is trivially constructible, and the Type~IV
+operation---\emph{injecting} such a component---simply was never performed in the original probe,
+which compared two rules from the same family (majority vs.\ OR). Re-conducting the operation on
+the same frozen verdicts: a mean-type rule is pulled down by $25.00$pp (relative $26.32\%$) by an
+always-abstaining judge while OR and majority move by $0.00$pp---the same structural signature as
+C++ ($\sigma(\mathrm{OR}){=}0$, $\sigma(\mathrm{mean}){=}33.33\%$). Restoring the aggregation
+component under its own caliber gives a corrected transfer score of \textbf{$78.26/100$}
+(conservative \textbf{$73.26$}): the protocol's migration was understated by a test-design false
+negative, not limited by a domain property. The silence signature also inverts: in
 C++ a lost measurement is written as \texttt{miss} (silent), whereas the LLM judge writes
-\texttt{unknown} (loud). \emph{Honest boundary:} this is a degradation-grade replication, not a
-pre-registered cross-domain study; the 240 samples were downloaded live and their
+\texttt{unknown} (loud). \emph{Honest boundary:} the repairing probe uses a \emph{constructed}
+zero-capability judge, not a measured one, so it establishes the axis's testability but not a
+real-LLM effect size; the published and corrected totals carry \emph{different calibers} and must
+be quoted with their calibration; and this remains a degradation-grade replication, not a
+pre-registered cross-domain study---the 240 samples were downloaded live and their
 prompt/model invariance was \emph{not} measured (no judge endpoint was available), the
 transfer-scale weights and its $50/100$ threshold are ours with no external calibration, and the
 human side is a curated preference label, so ``judge wrong'' and ``label wrong'' remain
@@ -1590,6 +1635,18 @@ wide. \textbf{Stability:} over 180 samples re-run three times under TSan, $3$ sa
 \paragraph{What it buys the reader.} Every headline rate in this paper is now accompanied by the
 classes that \emph{cannot} contribute to it: a 82.9\% holdout number says nothing about deadlock,
 endianness or interrupt safety, because the pool has no asset that can see them.
+
+\paragraph{Predicting the boundary across families (added in 711).}
+The map is not only measurable but \emph{predictable}, and the predictable part is semantic. Under
+clone-family-aware 5-fold splitting ($n{=}1147$, the same folds as the boundary analysis), a single
+label-level statistic---a type rate shrunk towards its group mean---reaches AUC $0.785$ ($+1.9$pp
+over the type-mean baseline), and semantic$+$context features with a bagged CART reach $0.7999$
+($+3.4$pp over the $0.7662$ baseline, $+4.5$pp over the best structure-feature model, $0.7551$).
+Source-structure features (template shape, pointer counts, branch density) do \emph{not} transfer
+across families: they carry family memory, not detectability. The practical reading: a blind-spot
+map can be extrapolated to new samples from defect types alone, without reading the source---with
+the honest limit that the encoding is estimated on same-corpus folds (cross-corpus transfer is
+untested) and $92.9\%$ of the corpus is human-planted.
 
 
 % --- 706: app:bench676l moved to Supplementary Material ---
