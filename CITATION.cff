@@ -16,7 +16,7 @@ authors:
   - family-names: "Liao"
     given-names: "Ran"
     alias: "LiaoRanran"
-    affiliation: "Hefei University"
+    affiliation: "Hefei University, School of Artificial Intelligence and Big Data"
     email: "1026708211@qq.com"
 license: Apache-2.0
 repository-code: "https://github.com/LiaoRanran/CPP-Bible"
@@ -35,5 +35,6 @@ preferred-citation:
   authors:
     - family-names: "Liao"
       given-names: "Ran"
+      affiliation: "Hefei University, School of Artificial Intelligence and Big Data"
   year: 2027
   notes: "Manuscript in preparation (NeurIPS 2027 Evaluations & Datasets track). Preprint pending."
