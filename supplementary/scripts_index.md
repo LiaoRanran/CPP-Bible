@@ -1,0 +1,776 @@
+# 脚本索引（supplementary/scripts_index.md）
+
+本文件列出 `tools/` 下所有计算脚本。A 节是论文数字复现的关键入口（含输入/输出/运行方式），B 节是全部脚本的自动生成索引。
+
+## A. 复现关键脚本（论文数字的可复算入口）
+
+| 脚本 | 输入 | 输出 | 怎么跑 |
+|---|---|---|---|
+| `tools/verify_paper_numbers.py` | 论文 tex + 冻结 JSON 源（`data/a5_676f_results.json`、`data/blindspot_676g_stats.json`、`data/holdout_reveal_5_672h.json` 等） | `data/704_verify_paper_numbers.json` / `.md`（逐条数字溯源，fail-closed） | `python tools/verify_paper_numbers.py --out-json data/704_verify_paper_numbers.json --out-md data/704_verify_paper_numbers_report.md` |
+| `tools/recompute_a5_676f.py` | `data/a5_676f_detection_matrix.json`（1137×8 冻结矩阵）、`data/a5_676f_results.json` | `data/676h_a5_recompute.json` + stdout（R1–R7 复算） | `python tools/recompute_a5_676f.py` |
+| `tools/recompute_a5_676m.py` | 676m 修正标签后的冻结矩阵 | 与 676f 逐位一致校验 | `python tools/recompute_a5_676m.py --check` |
+| `tools/data_integrity_676h.py` | 样本 manifest / 清单 | 样本完整性报告 | `python tools/data_integrity_676h.py` |
+| `tools/seed_audit_676h.py` | 实验类脚本 | 未固定种子审计（应为 0） | `python tools/seed_audit_676h.py --out-json out/33_seed_audit.json --out-md out/33_seed_audit.md` |
+| `tools/fix_676m_schema.py` | `data/` 下 676m 修复产物 | 幂等校验（H1 残留=0） | `python tools/fix_676m_schema.py --verify` |
+| `tools/audit_676k_integrity.py` / `audit_676k_dedup.py` | 676k 数据集 | 完整性 / 去重审计 | `python tools/audit_676k_integrity.py --json out/x.json` |
+| `tools/stats_672k.py` | 统计口径定义 | 自检 | `python tools/stats_672k.py --selftest` |
+| `tools/counts_659.py` | 仓库状态/atom | 实卡数等系统计数 | `python tools/counts_659.py --json` |
+| `tools/paper_quality_gate_670c2.py` | `research/latex/queyi_neurips2027_v1.1.tex` | 页数/摘要门禁 | `python tools/paper_quality_gate_670c2.py` |
+| `tools/analyze_682_sensitivity.py` | 682 标注/敏感性数据 | A5 敏感性分析 | `python tools/analyze_682_sensitivity.py` |
+| `tools/analyze_683_oc.py` | 683 真实靶场数据 | operator 16 配置消融 + 7 基线 | `python tools/analyze_683_oc.py --stage all` |
+| `tools/analyze_692_environment.py` | 692 环境画像数据 | 环境感知分析 | `python tools/analyze_692_environment.py` |
+| `tools/compute_700_sample_complexity.py` 等 `compute_70x_*.py` | 700/703 理论数据 | 相变/样本复杂度/零成本验证 | `python tools/compute_703_zero_cost_validation.py` |
+| `tools/collect_realworld_683.py` | NVD/GitHub API（需网络） | 110 真实缺陷重构 | `python tools/collect_realworld_683.py --stage verify` |
+
+> 说明：上表为"论文数字可复算"的最小入口集合。其余脚本（检测器运行、标注、治理、CI 等）见下文 B 节完整索引。所有复算脚本只读冻结产物，**不重新运行检测器（detect）**，符合 704 红线 4。
+
+## B. 完整脚本索引（`tools/*.py`，自动生成，含模块 docstring 首行）
+
+> 共 745 个 `.py` 文件。一行描述来自脚本自身模块 docstring 首行；无 docstring 者标 `(无文档字符串)`。
+> 复现相关子集见 A 节。
+
+- `612_baseline.py` — 612 任务0 · 先量基线（**只读统计，不写任何卡/边/数据文件**）。
+- `613_baseline.py` — 613 任务0 · 先量基线（只读，不写受控目录）。
+- `_clean_junk.py` — SPDX-License-Identifier: Apache-2.0
+- `a11y_audit_670c4.py` — a11y_audit_670c4.py — WCAG 2.1 AA 静态审计（670c4 A1）。
+- `a11y_audit_jsdom_672d.py` — a11y_audit_jsdom_672d.py — **渲染后**的 WCAG 2.1 AA 审计（672d C，第一阶段：只报告不修）。
+- `ablation_671b.py` — ablation_671b.py — 671b A 段：六组 ablation（A0–A5）**设计 + 可执行框架**。
+- `ablation_stats_671b.py` — ablation_stats_671b.py — 671b B2：ablation 专用统计原语（**纯标准库**）。
+- `abstain_classifier_621.py` — 621 C1 · ABSTAIN 六态分类器（雷6：未知检测 / 弃权三态）
+- `add_check_batch_634.py` — 634 A2 · 给 79 个无 --check 的老工具批量补只读 `--check`
+- `adversarial_attacker_619.py` — 619 A2 · 攻击者原型（只读 replay over v7 baseline）
+- `adversarial_loop_620.py` — 620 A1 · 攻击-验证迭代闭环沙箱框架（attack → verify → record）
+- `adversarial_objective_619.py` — 619 A1 · 攻击目标函数 v1（可计算代理，纯标准库、只读、确定性）
+- `adversarial_regression.py` — adversarial_regression.py — 对抗回归看板（494 任务 6）。
+- `adversarial_weight_calibration_620.py` — 620 A3 · 攻击目标函数权重校准实验（6 种权重对比，供人拍板）
+- `analyze_677b_clone_aware.py` — analyze_677b_clone_aware.py — 677b：clone-family-aware A5 重跑 + cluster bootstrap。
+- `analyze_677c_nondegenerate.py` — analyze_677c_nondegenerate.py — 677c：非退化池 + 多 Baseline + Evolution Operator + A5 重算。
+- `analyze_682_sensitivity.py` — analyze_682_sensitivity.py — 682 批次 · A5 敏感性分析（任务 B1–B4）。
+- `analyze_683_oc.py` — analyze_683_oc.py — 683-C：operator 四分量全枚举消融（16+16 配置）+ 7 基线统一口径。
+- `analyze_683_realworld.py` — analyze_683_realworld.py — 683-A3/A4：真实靶场深度分析。
+- `analyze_692_environment.py` — analyze_692_environment.py — 692-A：环境感知协议实验（只读冻结矩阵，不跑 detect）。
+- `analyze_693_counterfactual.py` — analyze_693_counterfactual.py — 693-E4：反事实分析扩展（**只读，0 次 detect**）。
+- `analyze_693_defect_types.py` — analyze_693_defect_types.py — 693-E2：缺陷类型深度分析（**只读，0 次 detect**）。
+- `annotate_693_b.py` — annotate_693_b.py — 693-A1：AI 双标（Annotator B 独立第二标注）+ 一致性统计。
+- `anonymity_check_670c2.py` — anonymity_check_670c2.py — 投稿匿名化持续检查（670c2 B4）。
+- `anti_windup_636.py` — 636 2.2 · anti-windup + 告警预算设计（**影子，不拦截**）
+- `anti_windup_642.py` — 642 A2 · anti-windup **上岗**（人审队列保护：半饱和标记 / 预算冻结 / 老化升级）。
+- `anti_windup_647.py` — 647 B2 · anti-windup **真上岗**（636 影子 → 642 灰度标记 → **647 冻结超预算队列**）。
+- `apply_696_bib.py` — apply_696_bib.py — 落地 695 §4 的新增 bib 条目，并升级 beyer2026svcomp 的 note/DOI。
+- `apply_696_related_work.py` — apply_696_related_work.py — 把 695 建议的「相关工作更新」落地到 v1.1 tex。
+- `argument_audit.py` — 610 C1 · 论证漏洞检测（智能原型 2：**结构级**自检，纯标准库 · 只读 · 零 Oracle 风险）。
+- `argument_fragmentation_613.py` — 613 任务D2 · 论证图碎片化报告（**区分"真实现状"与"加桥投影"**）。
+- `argument_graph_analysis.py` — 611 C1 · 论证图连通分量分析（**纯读** · 复用 610 `argument_audit` 的算法与同一真源口径）。
+- `artifact_version_stamp.py` — artifact_version_stamp.py — 工件-卡版本号迁移（498 任务 2，**台账方案**）。
+- `asm_prepush_guard.py` — asm_prepush_guard.py — Examples/*.asm 证据库完整性预推送守卫。
+- `asm_regen.py` — asm_regen.py — Examples/*.asm 版本统一再生驱动器（13.1.0 -> 15.3.0）。
+- `asm_repro_spotcheck.py` — Examples/*.asm 复现性 spot-check（对抗式审计，非零确认）。
+- `atom_coverage_map.py` — 原子知识地图：域归属统计 + 覆盖率门禁（G1.1 的可复算产物）。
+- `atom_evidence_replay.py` — 证据卡机器复算（G3 首项）：把「工件过期 / 卡写错 / 命令跑不通」从人工发现变成机器 refute。
+- `atom_verdict_extractor_622.py` — 622 C2 · 原子卡 verdict 提取（37 张，**不修改原始卡**）
+- `attack_edge_generator.py` — attack_edge_generator.py — 候选攻击边自动生成（596 任务1；594 W2 模型的**数据地基**）。
+- `attack_edge_review.py` — attack_edge_review.py — 候选攻击边的**人审确认接口**（596 任务4；最小版本）。
+- `attack_gap_scanner_643.py` — 643 B2 · **攻击面未覆盖扫描器**（智能层：自动发现问题 #2）。
+- `attack_mapping_629.py` — 629 B2 · 历史攻击映射（纯标准库，只读）
+- `attack_objective_629.py` — 629 D1 · 攻击目标函数精化（纯标准库，只读）
+- `attack_quality_evaluator_643.py` — 643 C4 · **攻击生成器质量评估**（智能层：自动生成攻击 #4）。
+- `attack_round8_629.py` — 629 D2 · 第八轮攻击（沙箱实跑，复用 622 的 apply API 与 6 重护栏）
+- `attack_simulator_643.py` — 643 C3 · **攻击效果模拟器**（智能层：自动生成攻击 #3）。
+- `attack_surface_axes_630.py` — 630 C2 · 攻击面横切面：**时间轴 × 调度轴**（纯标准库，只读）
+- `attack_surface_taxonomy.py` — 629 B1 · 验证器攻击面分类学（v21 Top1，纯标准库，只读）
+- `audit_676k_compile.py` — audit_676k_compile.py — 676k 任务C：全量编译抽检（独立复核）。
+- `audit_676k_dedup.py` — audit_676k_dedup.py — 676k 任务A：跨批次语义去重（三层）。
+- `audit_676k_integrity.py` — audit_676k_integrity.py — 676k 任务E：INDEX.json 一致性 + 标注字段完整性。
+- `audit_676k_sample.py` — audit_676k_sample.py — 676k 任务B：标签双标注复核（T17）。
+- `audit_676k_source.py` — audit_676k_source.py — 676k 任务D：planted=false 样本来源核查。
+- `audit_680_dataset.py` — 680 批次 · 数据集标注质量深度审计（只读）。
+- `authority_log_620.py` — 620 C2 · Authority 日志（append-only + 哈希链防篡改）
+- `authority_log_integration_629.py` — 629 C2 · V2 Authority 账本接入透明日志（纯标准库，只读账本 + 追加日志）
+- `authority_pending_621.py` — 621 D1 · 30 条逐条复核清单 → Authority「待审条目」
+- `authority_projection_compiler_626.py` — 626 D1/D2 · Authority → Projection Compiler（**唯一方向，禁止反向写回**）
+- `authority_rule_annotator_646.py` — 646 · 阶段 A5 · 账本规则字段补全（清债 3）。
+- `authority_schema_v2_626.py` — 626 A3 · Authority Schema v2（review_method 五级 + decision_origin 四级）
+- `authority_to_annotations_sync_623.py` — 623 D1 · Authority 日志 → annotations 同步工具（打通 622 D1 断掉的通道）
+- `authority_v2_e2e_627.py` — 627 B1 · feature flag `QUEYI_AUTHORITY_V2=1` 端到端验证（5 种投影 V1 vs V2）
+- `authority_v2_switch_627.py` — 627 B3 · `QUEYI_AUTHORITY_V2` 一键启用 / 回滚脚本 + 指南
+- `auto_executor_640.py` — 640 B1 · 闭环自动执行层（auto_executor）——白名单 + 六重护栏
+- `auto_executor_whitelist_eval_642.py` — 642 C1 · auto_executor **白名单扩展评估**（只评估，**不实际扩展**）。
+- `autoimmune_auto_fill_631.py` — 631 B1 · auto 42 条 `liveness` 字段填充执行（纯标准库）
+- `autoimmune_dashboard_629.py` — 629 A3 · 自身免疫率仪表盘（纯标准库，自包含 HTML，无外部依赖）
+- `autoimmune_diagnose_630.py` — 630 A1 · 自身免疫率口径差异诊断（纯标准库，**只读，不改任何卡**）
+- `autoimmune_fix_proposal_630.py` — 630 A2 · 自身免疫率口径修复**方案生成**（纯标准库，只读，**不执行修复**）
+- `autoimmune_hotspot_scanner_643.py` — 643 B3 · **自身免疫热点扫描器**（智能层：自动发现问题 #3）。
+- `autoimmune_human_fill_apply_632.py` — 632 C2 · human 90 填充执行工具（纯标准库，默认 --dry-run）。
+- `autoimmune_human_fill_helper_632.py` — 632 C1 · human 90 交互式填充助手（纯标准库，只读，绝不代决策）。
+- `autoimmune_human_queue_631.py` — 631 B2 · human 90 条字段清单（纯标准库，只读）
+- `autoimmune_probe_629.py` — 629 A2 · 误报注入探针（Negative Control，纯标准库，只读）
+- `autoimmune_rate_framework.py` — 629 A1 · 自身免疫率框架（纯标准库，只读）
+- `autoimmune_recalc_630.py` — 630 A3 · 修复后自身免疫率**干跑复算**（纯标准库，只读，**纯模拟**）
+- `autoimmune_threshold_630.py` — 630 C3 · 自身免疫率**阈值对照**（纯标准库，只读）
+- `backfill_verified_at_652.py` — backfill_verified_at_652.py — A1 批量补 `verified_at`（652 A，来自 git log 首次提交时间）。
+- `backup.py` — backup.py — 关键数据自动备份 + 一键恢复（508 任务7）。
+- `baseline_629.py` — 629 任务0 · 基线台账（纯标准库，只读）
+- `baseline_630.py` — 630 任务0 · 开工基线台账（纯标准库，只读）
+- `baseline_631.py` — 631 任务0 · 开工基线台账（纯标准库，只读）
+- `baseline_632.py` — 632 任务0 · 基线台账（纯标准库，只读）
+- `baseline_634.py` — 634 任务0 · 开工快照 + pytest 数据副作用根因定位
+- `baseline_635.py` — 635 任务0 · 开工快照 + 全量基线测量（只加数据，不改判决）
+- `baseline_636.py` — 636 任务0 · 开工快照 + 全量基线复测（只加数据，不改判决）
+- `baseline_670a.py` — baseline_670a.py — 670a B 段：baseline 实验（**现算** · 只读 · 诚实登记）
+- `baseline_672g.py` — baseline_672g.py — 672g B/C：**真 B3** 三臂 baseline（现算 · 只读 · 诚实登记）。
+- `bench_693_data_access.py` — bench_693_data_access.py — 693-D4：数据访问性能实测（数字现算，不写死）。
+- `benchmark_676l_analysis.py` — benchmark_676l_analysis.py — 676l 检测器能力深度 Benchmark（只读分析面）。
+- `bib_audit_670c2.py` — bib_audit_670c2.py — BibTeX 完整性审计（670c2 B2）。
+- `bkt_solver.py` — 612 线 D · D2：BKT（贝叶斯知识追踪）最小实现（**纯标准库**，零依赖）。
+- `blind_protocol_636.py` — 636 2.3 · blind_protocol 影子设计 + 注入式盲化原型（**影子，不执行**）
+- `blind_protocol_642.py` — 642 A3 · blind_protocol **上岗**（新入队判决强制盲化；历史只标记不修改）。
+- `blind_protocol_647.py` — 647 B3 · blind_protocol **真上岗**（636 影子 → 642 标记违规 + 盲化新开单 → **647 新判决强制盲化**）。
+- `blind_review_backfill_627.py` — 627 C2 · Blind Review 结果回填工具（**只实现，不自动执行**）
+- `blind_review_execution_pack_627.py` — 627 C1 · Blind Review 执行包（Top 10）+ 人审操作指南
+- `blind_review_v1_626.py` — 626 C1 · Blind Review v1（Pass A 盲审 + Pass B 解盲）
+- `book_asm_freshness.py` — 书内 asm 围栏 vs _asm_demo 工件 符号一致性审计（CI 可移植版 v6）
+- `book_atom_sync.py` — Book 与原子双向同步检查工具（309 方案落地）。
+- `boundary_backfill_639.py` — 639 D1 · 23 张 verified 卡边界三元组回填（**不污染受控目录**）
+- `boundary_backfill_657.py` — boundary_backfill_657.py — 657 B 段：把边界三元组**真正写进卡**（让四态判决跑起来）。
+- `boundary_fields_635.py` — 635 1.1 · 边界三元组回填 + v26 补充字段（**只加字段，不改判决**）
+- `boundary_scope_658.py` — boundary_scope_658.py — C 段：boundary 概念拆分（provenance vs semantic scope）。
+- `bridge_edge_candidates.py` — 611 C2 · 桥接攻击边候选生成（**只读** · 不执行人审）。
+- `bridge_edge_impact.py` — 612 A3 · 加桥后 W2 重算 + 判决变化分析（**只读** · 复用 weighted_af_solver，不重实现求解）。
+- `bridge_edge_pre_annotate.py` — 612 A1 · 桥接候选人审预标注工具（**只读** · 不执行人审、不实际加边）。
+- `bridge_edge_proposal_613.py` — 613 任务D1 · 桥接边画像 + 提案 + apply（默认 dry-run，人审前不落权威边）。
+- `bridge_edge_review.py` — 612 A2 · 桥接边人审执行工具（**只追加不修改** · 不直接改攻击边数据）。
+- `build_reproducibility_deep.py` — 609 E2 · 编译可复现性深化：**跨时间窗口 12 宏 + 符号表 4 参数 + 段一致性 4 参数 + diff 替代品**。
+- `c_standard_fetch_648.py` — 648 A · **C 标准原文抓取与条款抽取**（只做"引用可核对"，不解释标准）。
+- `c_target_648.py` — 648 A · **C 语言打靶**：真编译器实测 → 证据卡 → 原子卡（一条链，数字全部来自实跑）。
+- `caliber_check_669.py` — caliber_check_669.py — 669 P1：**口径清场**（率断言的口径 / 区间 / 声称值↔现算值一致性）。
+- `calibration_tracker_636.py` — 636 2.4 · 校准追踪器报告模式 + known_error_rate 回填（**报告模式，不判 block**）
+- `calibration_tracker_642.py` — 642 A4 · 校准追踪器**上岗**（新判决自动累积规则错误率；初值为全库代理，非精确）。
+- `calibration_tracker_647.py` — 647 B4 · 校准追踪器**真上岗**（636 无数据 → 642 记账 → **647 超阈降级/暂停**）。
+- `calibration_upgrade_651.py` — calibration_upgrade_651.py — M3 校准升级（651 W3，**SCOPE-BPE + swap 双跑 + 分层 α 预算**）。
+- `candidate_generator_637.py` — 637 C · 候选生成器（CandidateGenerator）——为 top 5 问题各想 2-3 个方案
+- `caption_truncation_audit.py` — 示例标题截断审计与修复：检测并重建 `> **示例 N** ... · TAG` 行的生成期截断污染。
+- `card_split_668.py` — card_split_668.py — 668 P1-2：把 664/665 的**真机实测**机器卡拆成正式原子卡（实卡 37 → 42）。
+- `challenger_652.py` — challenger_652.py — M4 挑战者角色（652 C，**从已通过卡反向生成更难攻击**）。
+- `chapter_compile_check.py` — 单章 cpp 示例编译校验工具（永久保留）。
+- `chapter_lint.py` — chapter_lint.py — 单章级质量门禁（行号级缺陷反馈）
+- `check_citations.py` — 校验手册正文中的引用键是否在 SOURCING 登记的白名单内。
+- `check_split_670c.py` — check_split_670c.py — 670c C4：拆分完整性检查（CPP-Bible ↔ queyi-verifier）。
+- `ci_check.py` — ci_check.py — 检出率断言必须带**区间**（Clopper–Pearson 95%，口径见 `research/ci_policy.md`）。
+- `ci_concurrency_check_621.py` — 621 B3 · CI 并发安全检查（静态解析 ci.yml）
+- `ci_debt_clear_633.py` — 633 A2 · CI 技术债清理（分类 + 处置建议 + 报告）
+- `ci_local_precheck.py` — ci_local_precheck.py — 本地复跑 CI `quality` job 的步骤，push 前预检，避免"修一步推一次"。
+- `ci_pytest_final_clear_632.py` — 632 A2 · CI pytest 剩余项清零（纯标准库，只读）。
+- `ci_pytest_triage_631.py` — 631 A1 · CI pytest 失败用例逐条对齐（纯标准库，只读）
+- `ci_race_reproducer_621.py` — 621 B2 · CI 并发竞态本地复现工具
+- `clean_root_artifacts.py` — clean_root_artifacts.py — 把根目录编译产物移入 build/（可逆）
+- `codeblock_style.py` — codeblock_style.py — 代码块版式统一工具（围栏标签 + 行尾注释对齐）。
+- `collect_realworld_683.py` — collect_realworld_683.py — 683-A1：真实靶场候选清单 + 在线验证（NVD API v2）。
+- `collect_reports.py` — collect_reports.py — 门禁/审计报告归集器（T4）。
+- `comment_blocks.py` — 纯注释 cpp 块盘点工具（L2 真机深耕管线）。
+- `compile_all.py` — compile_all.py — Batch Compile All Chapters (enhanced v3)
+- `compile_classify.py` — compile_classify.py — Classify compile failures from compile_report.json
+- `compile_gate.py` — 编译防回归门禁 (compile gate)。
+- `compile_run_sanitize_pipeline.py` — 编译 + 链接 + 运行 + Sanitizer 流水线 (T1-1)
+- `compile_triage.py` — Compile-failure regression triage.
+- `compiler_probe_644.py` — 644 阶段 D · D2 编译器实测获取器。
+- `compiler_probe_645.py` — 645 · 阶段 B2/B3 · 编译器实测 + 双编译器支持（真跑，非降级）。
+- `compress_696_maintext.py` — compress_696_maintext.py — 把 696-A2/A1 的主文插入压缩到 9 页限额内。
+- `compute_693_iaa.py` — compute_693_iaa.py — 693-A4：人类裁决回来后的一致性统计（现在不跑）。
+- `compute_696_transition_matrix.py` — compute_696_transition_matrix.py — 三态转移矩阵（Measurement Drift Algebra, 696-A3）。
+- `compute_697_drift_algebra.py` — compute_697_drift_algebra.py — 697-B：测量漂移代数的可计算部分（**只读，0 次 detect**）。
+- `compute_698_composition_drift.py` — compute_698_composition_drift.py — 698-A：结构性 Goodhart 的口径扫描（**只读，0 次 detect**）。
+- `compute_698_detectability_bound.py` — compute_698_detectability_bound.py — 698-C：可检测性的理论上限（**只读，0 次 detect**）。
+- `compute_698_drift_propagation.py` — compute_698_drift_propagation.py — 698-B：多环境漂移传播 / 检测预算 / 可纠错边界 / 健康度。
+- `compute_699_llm_drift.py` — 699-C · LLM 评估漂移最小可行性预测试 (transferability pre-test)
+- `compute_700_axiom_independence.py` — compute_700_axiom_independence.py — 700-A：漂移代数公理系统的**穷举模型检查器**。
+- `compute_700_design_simulation.py` — compute_700_design_simulation.py — 700-F：反事实评估器设计（**只读**）。
+- `compute_700_dynamics.py` — compute_700_dynamics.py — 700-E：评估器演化的动力学模型（**只读**）。
+- `compute_700_llm_drift.py` — compute_700_llm_drift.py — 700-D：跨领域迁移的完整实证（LLM 评估，**只读**）。
+- `compute_700_phase_transition.py` — compute_700_phase_transition.py — 700-B：结构性 Goodhart 的相变理论（**只读**）。
+- `compute_700_sample_complexity.py` — compute_700_sample_complexity.py — 700-C：评估器审计的信息论下界（**只读**）。
+- `compute_703_zero_cost_validation.py` — compute_703_zero_cost_validation.py — 703-E：零成本改进 P1–P3 的**计算验证**（只读）。
+- `confidence_sequence.py` — 616 A1 · 置信序列 / e-process（**修复统计偷看**）。纯标准库，无 scipy/numpy。
+- `conflict_detector_636.py` — 636 2.1 · 冲突检测器（**影子模式**，零依赖独立模块）
+- `conflict_detector_642.py` — 642 A1 · 冲突检测器**灰度上岗**（`--mode shadow|flag`；`block` 明确未实现，留 643）。
+- `conflict_detector_647.py` — 647 B1 · 冲突检测器**真上岗**（636 影子 → 642 灰度 flag → **647 拦截**）。
+- `consistency_check.py` — 《现代 C++ 终极圣经》一致性检查器
+- `contamination_drill_635.py` — 635 V26-3 · 证据通道字段 + 污染传播演练（只加数据，不改判决）
+- `contamination_tracker_636.py` — 636 V26-补1 · 污染传播自动追踪器（**影子**）
+- `control_char_cleaner.py` — 626 A2 · 控制字符检测器与清洗器（纯标准库）
+- `core_profile_656.py` — core_profile_656.py — 656 B4：核心判决路径的**真实** profile 与延迟测量。
+- `cost_benefit_637.py` — 637 D · 代价评估器（CostBenefit）——给每个候选方案打分排序
+- `cost_tracker.py` — 412 成本追踪（421）：记录每颗原子的 token 消耗估算，建立 CPVA 基线。
+- `counterexample_searcher_644.py` — 644 阶段 D · D3 反例搜索器（原型级，§十二.3 只搜不判）。
+- `counterexample_searcher_645.py` — 645 · 阶段 B4 · 反例搜索语义级升级（替代 644 D3 关键词级）。
+- `counterexample_searcher_646.py` — 646 · 阶段 B2 · 反例语义级补全（覆盖全部真实卡）。
+- `counterfactual_calibration_662.py` — counterfactual_calibration_662.py — 662 B3：反事实引文算子校准。
+- `counterfactual_citation_658.py` — counterfactual_citation_658.py — H2 反事实引文算子（最小原型）。
+- `counterfactual_extend_665.py` — counterfactual_extend_665.py — 665 E2：反事实引文 10 → 20（**带真值标签**）。
+- `counts_659.py` — counts_659.py — 语料基数唯一权威源（659 A/B3「去写死」）。
+- `coverage_gap_631.py` — 631 D1 · coverage 未跑向量清单 + 探针优先级（纯标准库，只读）
+- `coverage_gap_scanner_643.py` — 643 B1 · **规则覆盖盲区扫描器**（智能层：自动发现问题 #1）。
+- `coverage_metric_630.py` — 630 C1 · coverage（送审覆盖率）**第四元指标**（纯标准库，只读）
+- `coverage_probe_L1_1_634.py` — 634 B1 · 探针 L1.1 命题等价改写（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L1_3_634.py` — 634 B1 · 探针 L1.3 命题范围偷换（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L1_4_634.py` — 634 B1 · 探针 L1.4 命题-证据错配（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L2_4_634.py` — 634 B1 · 探针 L2.4 证据凭空伪造（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L3_1_634.py` — 634 B1 · 探针 L3.1 解析歧义（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L3_3_634.py` — 634 B1 · 探针 L3.3 字段注入（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L3_4_634.py` — 634 B1 · 探针 L3.4 解析器特性绕过（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L4_3_634.py` — 634 B1 · 探针 L4.3 regex heuristic 绕过（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L5_3_634.py` — 634 B1 · 探针 L5.3 验证者自身被投毒（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L7_2_634.py` — 634 B1 · 探针 L7.2 模板化人审（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L7_4_634.py` — 634 B1 · 探针 L7.4 rubber-stamp（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L7_5_634.py` — 634 B1 · 探针 L7.5 人审覆盖不足（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L8_2_634.py` — 634 B1 · 探针 L8.2 签名投毒（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_L8_3_634.py` — 634 B1 · 探针 L8.3 append-only 链断裂（结构性覆盖探针；委托 coverage_probe_batch_634）。
+- `coverage_probe_batch_634.py` — 634 B1 · coverage 补全：14 个未跑向量建探针（结构性覆盖探针）+ 35 向量矩阵
+- `coverage_probe_l1_2_631.py` — 631 D2 · 探针 #1：向量 **L1.2 命题多义指代**（P0，此前无探针）
+- `coverage_probe_l2_3_632.py` — 632 E1 · 探针 #1：向量 **L2.3 陈旧证据留痕**（P1，此前无探针）
+- `coverage_probe_l4_2_632.py` — 632 E1 · 探针 #2：向量 **L4.2 阈值边界歧义**（P1，此前无探针）
+- `coverage_probe_l4_4_632.py` — 632 E1 · 探针 #3：向量 **L4.4 规则优先级冲突**（P1，此前无探针）
+- `coverage_probe_l8_4_631.py` — 631 D2 · 探针 #2：向量 **L8.4 透明日志伪造**（P0，此前无探针）
+- `cppbible.py` — cppbible.py — 《现代 C++ 终极圣经》统一工具链 CLI
+- `crlf_convergence_657.py` — crlf_convergence_657.py — 657 D1：行尾（CRLF/LF）漂移的**度量**与**按策略收敛**。
+- `cross_card_attack_624.py` — 624 A1 · 跨卡一致性攻击（H4 策略升级：多卡修改）
+- `cross_toolchain_683.py` — cross_toolchain_683.py — 683-B：跨工具链 / 跨平台检出对比。
+- `cross_validator_644.py` — 644 阶段 D · D4 多源交叉验证器。
+- `crossref_audit.py` — 交叉引用审计工具
+- `d5_appendix_audit.py` — d5_appendix_audit.py — D5 性能附录四段结构审计（报告型，不入 CI 门禁）
+- `d5_compile_gate.py` — d5_compile_gate.py — D5 性能附录「基准源码真能编译」门禁
+- `d5_gap_scanner.py` — d5_gap_scanner.py — D5 覆盖差距扫描器
+- `d5_runtime_gate.py` — d5_runtime_gate.py — D5 基准「真能运行」门禁（深化 E11 编译门禁）
+- `d5_source_integrity.py` — d5_source_integrity.py — D5 性能附录「基准源码见库根」引用完整性收口工具
+- `dangling_ref_linter.py` — 悬空章节引用 linter (T1-2)
+- `data_integrity_676h.py` — 676h · 数据完整性检查（A5 全量样本清单）。
+- `data_loader_699.py` — 699-D · 数据加载接口 (reusable by batches 700+)
+- `data_sanity_audit.py` — tools/data_sanity_audit.py — 数据健全性审计（报告型，离线跑）。
+- `dco_check_657.py` — dco_check_657.py — 657 D2：DCO（Developer Certificate of Origin）签名检查。
+- `dead_code_cleanup_647.py` — 647 D3 · **死代码清理 + 复检**（合并后的 10 个核心工具）。
+- `debt_inventory_633.py` — 633 任务0 · 全量债务盘点（静态扫描，不跑 pytest）
+- `debt_ledger.py` — S5 豁免 = 带息债务：豁免必须开票（原因/风险/补偿/负责人/到期），到期未清即停线。
+- `decision_event_v2_626.py` — 626 B1 · DecisionEvent v2 + AuthorityLedger（Authority 单一真源的核心数据结构）
+- `deduplication_audit.py` — v5 去水词 + 密度雷达 — deduplication_audit.py
+- `defeater_ledger_635.py` — 635 1.5 · 种子击败器台账 + taint 标记（只加数据，不改判决）
+- `defect_fixture_658.py` — defect_fixture_658.py — A1 真实缺陷夹具：重注入真实错，看会红几个门禁。
+- `defect_injection_661.py` — defect_injection_661.py — 661 B2：真实缺陷注入测试（15 条）。
+- `defense_chain.py` — 610 B1 · 辩护链核心引擎（智能原型 1：**确定性推理**，零 Oracle 风险）。
+- `defense_chain_deep_613.py` — 613 任务D3 · 辩护链**深化**：多跳防御深度 + 单点依赖 + 共同依赖（相关失效）风险。
+- `defense_chain_deepen.py` — 611 E3 · 辩护链推理深化（**只读** · 不裁决、不改仓）。
+- `density_audit.py` — density_audit.py v3 — Deep Information Density Audit
+- `detect_698_structural_goodhart.py` — detect_698_structural_goodhart.py — 698-A：四型结构性 Goodhart 的统一风险评分器。
+- `detect_for_assets.py` — detect_for_assets.py — 673r：把 `holdout_reveal_661.detect` 从「样本 → 单个 detector」
+- `dist_verify_670c2.py` — dist_verify_670c2.py — 构建产物验证（670c2 C2）。
+- `doc_frontmatter.py` — doc_frontmatter.py — 批量给架构文档补 YAML frontmatter（498 任务 1 / P0-7）。
+- `doc_lint.py` — doc_lint.py — 文档质量门禁（478 §三 / 479 任务 2）。
+- `docstring_quality_646.py` — 646 · 阶段 B5 · 注释质量提升（不只是覆盖率）。
+- `drift_watch_670c.py` — drift_watch_670c.py — 670c D3：关键数字漂移监控（无实验记录就标红）。
+- `drift_watch_671a.py` — drift_watch_671a.py — 671a B：漂移检测增强（论文 / 前端 / baseline 三臂 / 门禁规则）。
+- `e2e_attestation_629.py` — 629 C4 · 端到端他验编排（**全程临时目录，不动仓库**）
+- `embedded_adapter_652.py` — embedded_adapter_652.py — M5 嵌入式 C 适配包（652 C，**裸金属约束层**）。
+- `env_check.py` — env_check.py — 一键环境体检（秒级，不跑慢门禁）
+- `env_probe_671g.py` — env_probe_671g.py — 671g A4：实验环境依赖自动探测（编译器 / OS / WSL / ASLR / 优化档）。
+- `environment_metrics_689.py` — environment_metrics_689.py — 689-B3：三组件环境指标（catch / unknown / conditional recall）。
+- `eprocess_671g.py` — eprocess_671g.py — 671g D2：e-process 序贯检验（天然支持 peeking/任意期中分析）。
+- `equivalence_689.py` — equivalence_689.py — 689-B：合成 vs 真实的等价性检验（TOST）与标准化（composition adjustment）。
+- `error_cost_ratio_635.py` — 635 V26-1 · 错误代价比声明（带日期，只加数据不改判决）
+- `error_detector_637.py` — 637 B · 误差检测器（ErrorDetector）——从体检报告里挑 top 5 异常
+- `error_rate_collector_638.py` — 638 B1 · known_error_rate 收集器（从历史判决估算每条规则的错误率）
+- `esbmc_falsify_652.py` — esbmc_falsify_652.py — H6 ESBMC falsification 试点（652 B，**可界算小探针 → witness**）。
+- `escape_hotspot_scanner_643.py` — 643 B4 · **逃逸热点扫描器**（智能层：自动发现问题 #4）。
+- `escape_rate_estimand.py` — 617 A1 · 逃逸率 estimand 三层拆分枚举器（纯标准库，只读 frozen baseline）
+- `escape_rate_honest_613.py` — 613 任务F1 · 逃逸率**诚实化**：同一份基线，把分母摊开算。
+- `escape_rate_l2b_618.py` — 618 A3 · escaped/equivalent 的 L2b 精确工具（e-process mixture + L3 shrinkage）
+- `escape_rate_trend.py` — 610 E1 · 逃逸率收敛曲线（v1→v7 + C-P95 误差带 + **尺子变更史**标注）。
+- `escape_root_cause_622.py` — 622 A3 · 新逃逸根因分析（有逃逸则根因+修复建议；0 逃逸则深度分析+策略改进）
+- `escape_root_cause_643.py` — 643 D1 · **逃逸案例归因器**（智能层：自动提案规则 #1）。
+- `escape_root_cause_v3_624.py` — 624 A3 · 新逃逸根因分析 v3（跨卡攻击维度）
+- `ev_matrix_dual_impl_lock.py` — 616 B3 · EV-MATRIX 双实现一致性**回归锁**。
+- `ev_matrix_unbacked_v2.py` — 616 B2 · EV-MATRIX-UNBACKED 独立第二实现（**补全语义**：含 v2 规则定义的隐性预处理 P2）。
+- `ev_ub_atoms_669.py` — ev_ub_atoms_669.py — 669 P0-2：给 668 的 5 张机器卡补**独立证据卡**（EV-*-669）。
+- `eval_693_meta_evaluation.py` — eval_693_meta_evaluation.py — 693-E5：元评估框架 v2（**只读，0 次 detect**）。
+- `evidence_acquisition_orchestrator_644.py` — 644 阶段 D · D5 证据获取编排器。
+- `evidence_aging_651.py` — evidence_aging_651.py — H7 证据时效（651 W1，**只读/旁路**）。
+- `evidence_base_644.py` — 644 头部层 · 共享数据模型与基础设施（纯标准库 + PyYAML）。
+- `evidence_card_link_644.py` — 644 阶段 C · C2 证据-卡片关联层（多对多）。
+- `evidence_chain_671g.py` — evidence_chain_671g.py — 671g E4：证据保管链 / 毒树之果（数据污染溯源）。
+- `evidence_cmd_redirect_668.py` — evidence_cmd_redirect_668.py — 668 P2-5：修掉证据卡里"用 shell 重定向"的命令写法。
+- `evidence_conflict_644.py` — 644 阶段 B · B3 证据冲突检测器。
+- `evidence_gap_scanner_644.py` — 644 阶段 E · E1 全库证据不足扫描。
+- `evidence_grade_report_644.py` — 644 阶段 B · B4 证据等级体系联调报告。
+- `evidence_grading_644.py` — 644 阶段 B · B1 证据等级与可信度体系。
+- `evidence_grading_645.py` — 645 · 阶段 B5+B6 · **证据判定套件**（等级 + 充分性）—— 647 D1 合并版。
+- `evidence_index_646.py` — 646 · 阶段 A4 · 证据检索提速（倒排索引，清债 2 续）。
+- `evidence_integrity_644.py` — 644 阶段 C · C3 证据完整性与漂移检测。
+- `evidence_inventory_644.py` — 644 阶段 0 · 任务 0.2 现有证据盘点。
+- `evidence_migration_644.py` — 644 阶段 C · C4 证据库迁移工具（只读迁移，不修改原文件）。
+- `evidence_seeker_trigger_644.py` — 644 阶段 E · E2 自动求索触发器。
+- `evidence_store_644.py` — 644 阶段 C · C1 证据内容寻址存储。
+- `evidence_sufficiency_644.py` — 644 阶段 B · B2 证据充分性判定器。
+- `evidence_sufficiency_646.py` — 646 · 阶段 B3 · 证据充分性补强（卡片域收口到真实 27 卡）。
+- `evolution_memo_637.py` — 637 E · 进化建议书（EvolutionMemo）——"我觉得下一步该做什么"
+- `evolution_operator_677c.py` — evolution_operator_677c.py — 677c C：failure-driven evolution operator 的**算法化**定义。
+- `example_caption_cleanup.py` — example_caption_cleanup.py — 修正 M2 注入产生的"主题"缺陷（一次性收口工具）。
+- `example_exercise_audit.py` — example_exercise_audit.py — 实例与题库系统化基线审计（M2）。
+- `example_tag_inject.py` — example_tag_inject.py — 逐示例标注注入器（M2 机械铺标签工具）。
+- `exception_review_635.py` — 635 V26-4 · 例外与豁免条款复审表（只加数据，不改判决）
+- `exempt_audit.py` — 编译豁免有效性审计门禁 (exempt audit).
+- `exemption_expiry.py` — 615 C2 · 27 条 legacy 豁免**到期制**（新建独立工具，**不改 poison_drill.py / 不删任何豁免**）。
+- `exercise_dup_guard.py` — exercise_dup_guard.py — 习题"题库串章"防回归门禁（确定性，零依赖）
+- `expand_assist.py` — expand_assist.py — 智能扩写助手（究极提效）
+- `expansion_audit.py` — expansion_audit.py — 扩写空间审计
+- `experiments_669.py` — experiments_669.py — 669 P3：实验启动（协议元数据 + 基线表 + 口径消融）。
+- `external_anchor_647.py` — 647 A4 · **外部锚接口**（只建接口 + 本地 mock；**不真连任何外部服务**）。
+- `external_anchor_672j.py` — external_anchor_672j.py — 672j W5：外部锚定的**检测与统计**。
+- `external_anchor_fetch_672j.py` — external_anchor_fetch_672j.py — 672j W5：外部锚定的**数据获取与机械抽取**。
+- `external_corpus_662.py` — external_corpus_662.py — 662 B1：外部 corpus D3 检出率。
+- `external_corpus_extend_665.py` — external_corpus_extend_665.py — 665 D1：外部 corpus 20 → 40。
+- `external_corpus_reveal_665.py` — external_corpus_reveal_665.py — 665 D2：外部 corpus 扩到 40 后的检出率。
+- `external_corpus_reveal_671a.py` — external_corpus_reveal_671a.py — 671a C2：d3e-* 扩样（20 条）的 reveal。
+- `external_corpus_reveal_672h.py` — external_corpus_reveal_672h.py — 672h W3：external corpus 第 4 轮 reveal（d3f-01..d3f-16）。
+- `fail_closed_audit_642.py` — 642 B3 · fail-closed 全量审计（**只审计，不修复**）。
+- `false_positive_thymus_671g.py` — false_positive_thymus_671g.py — 671g D3：新规则发布前的误报率"胸腺"阴性选择门禁。
+- `fast_gate.py` — fast_gate.py — 批次回归的**快速门禁**（目标 < 5 分钟）。
+- `figure_data_check_670c2.py` — figure_data_check_670c2.py — 图表数据溯源检查（670c2 B3）。
+- `figures_682.py` — figures_682.py — 682 · 任务C：图表更新（基于 681 修复后的 34 类归一化数据）。
+- `figures_683.py` — figures_683.py — 683-D3：研究报告图表（≥8 张，PNG + ECharts option 双产物）。
+- `finalize_696_tex.py` — finalize_696_tex.py — 把 696 的相关工作更新收敛到 9 页主文限额内。
+- `fit_693_detectability_model.py` — fit_693_detectability_model.py — 693-E3：可检测性预测模型（**只读，0 次 detect**）。
+- `fix_676m_schema.py` — fix_676m_schema.py — 676m 任务 A/B/C：数据修复（H1 + H2 + M1–M5）。
+- `fix_book_links.py` — fix_book_links.py — 正文跨章 markdown 链接前缀修复器（Book/ → 源相对）
+- `flashcard_export.py` — 405 闪卡导出（423）：原子 claim + 误解反例 → Anki CSV / Markdown。
+- `four_questions_635.py` — 635 1.3 · 四问现状审计（**每问必须有数据支撑，不凭印象**）
+- `four_state_636.py` — 636 V26-补2 · 四态判决模拟（**影子**）
+- `four_state_verdict_638.py` — 638 3.1 · 四态结论 schema（**真上线**，向后兼容）
+- `fragmentation_repair_analysis.py` — 611 C3 · 论证图碎片化修复影响分析（**只读 what-if** · 不真实落库）。
+- `gate_engine.py` — 门禁引擎（M4）：统一 Rule 接口 + 单一注册中心 + 四象限分流 + 可执行工单。
+- `gate_independence_report_618.py` — 618 B2 · independence_level 接入 gate 报告（独立报告工具，不改 gate_engine.py）
+- `gate_rules_669d.py` — gate_rules_669d.py — 669d B 段：六条 P0 门禁规则（新工具，不改既有文件）。
+- `gate_rules_670g.py` — gate_rules_670g.py — 670g B2：六条 P0 门禁（**论文/ baseline 维度强化版**）。
+- `gate_rules_671g.py` — gate_rules_671g.py — 671g 纪律门禁注册表（数字真实性 / 口径 / 方法学 / 跨学科）。
+- `gate_tier_check_658.py` — gate_tier_check_658.py — 校验门禁两层模型声明与 CI 实际一致。
+- `gen_682_metadata.py` — gen_682_metadata.py — 682 · 任务A：Croissant（core+RAI）与 RAI metadata 生成。
+- `gen_683_metadata.py` — gen_683_metadata.py — 683-A4.3：Croissant 元数据扩展（加入真实靶场 recordSet）。
+- `gen_683_realworld_benchmark.py` — gen_683_realworld_benchmark.py — 683-A1/A4：真实靶场基准元数据（单一事实源合成）。
+- `gen_693_manifest.py` — gen_693_manifest.py — 693-B2：生成权威冻结产物的 sha256 清单。
+- `gen_indexes.py` — CPP-Bible 索引生成器 (gen_indexes.py)
+- `gen_metrics.py` — gen_metrics.py — 指标单一事实源的「落地校验器」
+- `gen_mkdocs_nav.py` — gen_mkdocs_nav.py — 生成 MkDocs 站点配置与导航
+- `gen_tool_manifest_696.py` — gen_tool_manifest_696.py — 696 批次：扫描 ``tools/*.py`` 生成分类清单。
+- `golden_lock.py` — S4 黄金非回归锁：达标状态固化为快照，任何指标**恶化** → exit 1。
+- `golden_lock_proposal_613.py` — 613 任务A3 · golden_lock 处理**提案**（不执行 accept，只读快照 + 静态归因）。
+- `goodhart_monitor.py` — 615 C3 · Goodhart 漂移监控（P2 · 新建独立工具）。
+- `governance_doc_guard.py` — 591 任务 2 · 治理文档完整性防护（A1 / D13）。
+- `gray_zone_scan.py` — 灰色地带（gray zone）初筛：把全书泛用的「未定义」细分。
+- `grounded_audit.py` — grounded_audit.py — grounded 标注实测与对照报告（596 任务3；**只读生成器**）。
+- `grounded_cli.py` — 609 C3 · 论证 CLI：`status` / `proposition` / `mis` / `card` / `defense` / `--check`。
+- `grounded_visualizer.py` — 609 C1 · 论证落地可视化：单文件自包含 HTML（**零外部依赖、离线可双击打开**）。
+- `grounded_web.py` — 609 C2 · 论证 Web 界面（纯标准库 `http.server`，**只读 + 只绑 127.0.0.1**）。
+- `grounding_inventory_635.py` — 635 1.4 · 术语接地盘点 + 担保类型映射（只加数据，不改判决）
+- `guard_audit_640.py` — 640 A4 · 模块级 --check 守卫劫持审计（只读）
+- `guard_rerun_670c.py` — guard_rerun_670c.py — 670c D2：核心工具「改了代码没重跑产物」守卫。
+- `guard_rerun_671a.py` — guard_rerun_671a.py — 671a A：B3 防复发（改检测器必重跑）+ 产物新鲜度 + 三方数字一致性。
+- `handoff_auto_652.py` — handoff_auto_652.py — A2/A3 交人项自动化（652 A，真回填但**原文件 sha256 不变**）。
+- `handover_check.py` — handover_check.py — 接手自检：一条命令建立「可信的现状认知」
+- `hash_datasets_670c.py` — hash_datasets_670c.py — 670c B3：数据集完整性基线（复现 kit 的"秤"）。
+- `head_tail_bridge_644.py` — 644 阶段 E · E3 头部层-尾端验证器联动。
+- `high_complexity_attack_surface_623.py` — 623 E1 · 高复杂度带攻击面分析
+- `high_complexity_mutator_623.py` — 623 A1 · 高复杂度带 mutation 生成器（4 策略 H1–H4）
+- `holdout_658.py` — holdout_658.py — A2 盲化 holdout。
+- `holdout_extend_665.py` — holdout_extend_665.py — 665 C1：给盲化 holdout 补 10 个**真错**样本（20 → 30）。
+- `holdout_merge_672h.py` — holdout_merge_672h.py — 672h W3：把扩样定义幂等并入 holdout canonical。
+- `holdout_reveal_3_665.py` — holdout_reveal_3_665.py — 665 C2：扩样后的第三次 reveal（reveal_3）。
+- `holdout_reveal_4_671a.py` — holdout_reveal_4_671a.py — 671a C1：h31–h40 扩样的第 4 轮 reveal。
+- `holdout_reveal_5_672h.py` — holdout_reveal_5_672h.py — 672h W3：holdout 第 5 轮 reveal（扩样 21 → 41 可测）。
+- `holdout_reveal_661.py` — holdout_reveal_661.py — 661 B1：盲化 holdout 第一次 reveal（不可逆）。
+- `holdout_reveal_662.py` — holdout_reveal_662.py — 662 A2：标签修正后的第二次 reveal（reveal_2）。
+- `horizon_634.py` — 634 B2 · Horizon 推高（复杂度-检出率曲线，**测量 + 诚实登记**）
+- `human_review_anonymize_621.py` — 621 D3 · 人审数据脱敏 + 导出（为未来开源做准备）
+- `human_review_cli.py` — 609 A1 · 人审 CLI（append-only + fail-closed），操作 596 人审通道。
+- `human_review_confirm.py` — 交互式人审确认工具：基于 AI 预标注报告，让人逐条确认后保存决策。
+- `human_review_dashboard.py` — 610 E2 · 人审进度仪表盘（自包含 HTML：SVG 柱状/饼图 + 卡片 + OUT 清单 + 时间线）。
+- `human_review_dashboard_625.py` — 625 D2 · 人审可视化（深色科技风，纯静态 HTML/CSS/JS，无外部依赖）
+- `human_review_dashboard_v2_628.py` — 628 C1 · 人审深色科技风仪表盘 v2（自包含 HTML，离线可开，无外部 CDN）
+- `human_review_executor_625.py` — 625 D3 · 人审执行工具（**只准备框架，不代签**）
+- `human_review_export.py` — 610 A3 · 人审数据导出（JSON / CSV / Markdown / 单 MIS，**只读**、纯标准库）。
+- `human_review_feedback.py` — 609 A4 · 人审反馈闭环：拒绝原因分类 ⇒ 反馈规则 ⇒（**人确认后**）提升下一轮候选边质量。
+- `human_review_honesty_615.py` — 615 A1 · 人审诚实化标签（**只读** annotations，新建独立标签文件，绝不修改原记录）。
+- `human_review_item_by_item_615.py` — 615 A2 · 30 条真逐条复核决策清单（**只生成清单，不执行复核，不改 annotations**）。
+- `human_review_item_by_item_generator_624.py` — 624 E2 · 人审逐条复核清单生成器（30 → >100，**只生成不执行**）
+- `human_review_pre_annotate.py` — 人审预标注：读取 388 条候选边，按 MIS 组聚合，给出 approve/reject/modify 建议
+- `human_review_quality.py` — 609 A2 · 人审质量控制（automation bias 检测 + 陷阱题）。
+- `human_review_quality_compare_621.py` — 621 D2 · 人审质量评估（30 条逐条建议 vs 388 条批量授权）
+- `human_review_quality_deepen.py` — 611 E2 · 人审质量报告深化（**只读** · 不裁决、不自动改判）。
+- `human_review_queue.py` — human_review_queue.py — 候选攻击边的 **MIS 群组级人审队列**（608 线A 任务1）。
+- `human_review_queue_651.py` — human_review_queue_651.py — M7 人审接口修复（651 W3）。
+- `human_review_report.py` — 610 A2 · 人审质量报告（基于 388 条授权人审，**只读**、纯标准库）。
+- `human_review_todo_generator_618.py` — 618 E2 · 人审待办清单生成工具（从 evidence 卡生成 30 条逐条复核清单）
+- `hy3_check.py` — hy3_check.py — 一键项目健康检查（秒级）
+- `ig_cards_665.py` — ig_cards_665.py — 665 B1：把 664 独立生成的 15 条断言拆成**可复现的卡**。
+- `impact_analysis.py` — 425 上游依赖遍历（415 L2 最小闭环）：改一颗原子前，先看谁依赖它。
+- `in_toto_link.py` — 613 任务E2 · in-toto link 元数据（供应链步骤证据）。
+- `independence_static_check.py` — 629 C3 · 独立验证者静态证明（纯标准库 ast，只读）
+- `independent_generation_664.py` — independent_generation_664.py — 664 B2：独立生成 A/B/C 跑一轮。
+- `independent_verifier_628.py` — 628 B1 · 独立验证者（IndependentVerifier）—— **零 import 本项目工具**
+- `independent_verifier_prototype.py` — 616 D2 · 独立复核原型（**最小可行版本**：EV-MATRIX 独立复核 + HMAC VSA 凭证）。
+- `interface_audit_645.py` — 645 · 阶段 D1 · 接口一致性审计（真实扫描 645 工具，非抽查）。
+- `interface_verify_647.py` — 647 D2 · **合并后接口统一验证**（10 个核心工具是否符合 645 D2 接口规范）。
+- `intoto_provenance.py` — 609 D2 · in-toto 溯源：**link/layout 生成（待签名） + 字段级 schema + 4 关键步骤验证流**。
+- `issue_dispatcher_643.py` — 643 B5 · **问题分发器**（智能层联调：把 B1–B4 合成统一问题清单 + Top 10）。
+- `itt_discipline_671g.py` — itt_discipline_671g.py — 671g E2：ITT（意向治疗）口径纪律。
+- `json_project_gate.py` — json_project_gate.py — 贯穿项目线（台阶二）· 手写 JSON 库编译+运行门禁
+- `kc_inventory.py` — 612 线 D · D1：KC（知识组件）台账工具（**只读**）。
+- `kernel_minimality_audit_642.py` — 642 B2 · 内核**最小性审计**（AST；只出报告，**不实际移代码**）。
+- `knowledge_graph.py` — knowledge_graph.py — 知识图谱 L1（508 任务5）。
+- `l2_state.py` — l2_state.py — L2 深耕覆盖状态机（摆脱 MEMORY 文本记账）。
+- `learner_argument_link.py` — 614 线B B4：学习者-论证层联动。
+- `learner_behavior_collector_628.py` — 628 D1 · 真实学习行为采集器（只读，不修改任何源文件）
+- `learner_behavior_ingest.py` — 613 任务C1 · 真实学习行为接入层（append-only，fail-closed）。
+- `learner_behavior_logger.py` — 614 线B B1：真实学习行为采集 + BKT 递推集成（append-only 行为日志）。
+- `learner_mastery_update_613.py` — 613 任务C2 · BKT **真实**递推（替换/覆盖 612 的 simulate 模拟值）。
+- `learner_ood_evaluator.py` — 614 线B B3：学习效果验证（OOD 题测试 + 跃迁触发条件）。
+- `learner_path_graph_613.py` — 613 任务C3 · 推荐路径图（拓扑排序 + 掌握度过滤）。
+- `learner_recommender.py` — 612 线 D · D4：基于掌握度的内容推荐原型（**只读**）。
+- `learner_state.py` — 612 线 D · D3：用户掌握度数据结构 + 存储（**append-only** + BKT 递推 + 模拟数据）。
+- `learner_transition_detector.py` — 615 D3 · 跃迁触发条件**机器判定**（新建工具；**只判定，不自动触发任何跃迁**）。
+- `learner_twin_dashboard.py` — 612 线 D · D5：学习者镜像可视化仪表盘（**自包含 HTML**，无外部依赖）。
+- `learner_twin_dashboard_613.py` — 613 任务C4 · 学习者镜像仪表盘**升级版**（自包含 HTML，零外部依赖）。
+- `learner_twin_dashboard_614.py` — 614 线B B2：学习者镜像仪表盘 · 真实数据版（自包含 HTML，无外部依赖）。
+- `learner_twin_gate_monitor_628.py` — 628 D1 · 学习者镜像（Learner Twin）门状态监控
+- `learning_path.py` — learning_path.py - 学习路径生成器
+- `ledger_checkpoint_651.py` — ledger_checkpoint_651.py — T4 账本 checkpoint / 双证明（651 W2，**信任资产**）。
+- `ledger_invariants_671g.py` — ledger_invariants_671g.py — 671g D6：账本 10 条不变式（哈希链/追加性/单调性…）+ PBT 入口。
+- `ledger_rule_backfill_639.py` — 639 D2 · ledger 规则归属回填（schema 上线 + 历史诚实标注）
+- `license_header_check_655.py` — license_header_check_655.py — Apache-2.0 许可证头检查 / 批量补齐（655 A）。
+- `lifecycle_fsm_638.py` — 638 3.2 · Lifecycle FSM（五态状态机 · 真落地）
+- `liveness_candidate_generator.py` — 612 B1 · 活性锚自动候选生成工具（**只读** · 不填卡、不改任何命题文件）。
+- `liveness_completion_613.py` — 613 任务A2 · 活性锚批量补全（低成本部分）—— **只产出补丁集，不落卡**。
+- `liveness_completion_plan.py` — 611 D2 · 命题活性锚补全计划（**只读** · 不补字段）。
+- `liveness_impact.py` — 612 B3 · 活性锚补全 what-if 分析（**只读** · 不跑 gate、不改任何文件）。
+- `liveness_priority_613.py` — 613 任务A1 · 活性锚候选生成与优先级排序（只读，不改受控目录）。
+- `liveness_review.py` — 612 B2 · 活性锚人审确认工具（**只追加不修改** · 不直接改卡面）。
+- `llm_arm_672i.py` — llm_arm_672i.py — 672i W4：LLM 裁判臂（第三方裁判 vs FD vs 真值）。
+- `llm_channel_defense_671g.py` — llm_channel_defense_671g.py — 671g D8：LLM 数据通道四类攻击面防御（框架，不调 API）。
+- `llm_fuzz_671g.py` — llm_fuzz_671g.py — 671g D5：LLM 自动生成验证夹具的三姿势框架（不实际调用 LLM API）。
+- `log_query.py` — log_query.py — 日志查询 CLI（508 任务4 / 可观测性 L1）。
+- `loop_calibration_642.py` — 642 C2 · 闭环**校准度追踪**（每次闭环运行记「候选数 / 采纳数 / 事后验证结果」）。
+- `loop_metrics_629.py` — 629 D3 · 闭环三维联测（逃逸率 × 自身免疫率 × 触达率，纯标准库，只读）
+- `loop_r5_runner_645.py` — 645 · 阶段 A4/A5/A6 · **规则生命周期套件**（闭环 R5 + error 追踪 + 老化检测）—— 647 D1 合并版。
+- `loop_r5_runner_646.py` — 646 · 阶段 A6 · R5 扩样本验证（清债 6）。
+- `loop_rerun_638.py` — 638 C1 · 闭环第二次运行（用**调过的规则**再跑一遍 637 闭环）
+- `loop_runner_643.py` — 643 E3 · **闭环第 4 次运行（R4）**（抗 Goodhart #3）。
+- `loop_stability_metrics_625.py` — 625 B2 · 雷2 闭环稳定指标 + 触发标准①验证
+- `loop_tuning_638.py` — 638 C2 · 闭环规则调优（据 637 质量审计调阈值与规则）
+- `m1_tce_analysis.py` — 609 E3 · M1 TCE 定性分析（**6 步，只分析不攻坚**）。
+- `markdown_style_guard.py` — markdown_style_guard.py — Markdown 版式标准化守门员（M1）。
+- `mdl_gate_642.py` — 642 A5 · MDL 规则准入**上岗**（新规则准入门槛；**只对新规则**，不动现有 67 条）。
+- `mdl_gate_647.py` — 647 B5 · MDL 规则准入**真上岗**（636 试运行 → 642 出结论 → **647 不过不给上线**）。
+- `mdl_trial_636.py` — 636 2.5 · MDL 边际判据试运行（**影子，不拦截新规则**）
+- `merge_670a.py` — merge_670a.py — 670a C 段：669d 扩样**并入** canonical 数据集（幂等 · 现算 · 诚实登记）
+- `merkle_integrity.py` — merkle_integrity.py — 目录级 Merkle 完整性层（601 任务1；600 调研阶段1，性价比最高的一层）。
+- `merkle_proof_613.py` — 613 任务E3 · Merkle **包含证明**（per-file）生成与验证。
+- `mermaid_audit.py` — C2: Mermaid 图表审计。
+- `metrics_610.py` — 610 · metrics_collector 的新增采集器（**独立模块** ⇒ 逐任务可独立提交，主采集器只挂一行）。
+- `metrics_611.py` — 611 · metrics_collector 的新增采集器（**独立模块** ⇒ 逐任务可独立提交，主采集器只挂一行）。
+- `metrics_612.py` — 612 线 E · metrics_612（E1-E3 度量，拆分自 metrics_610/611 口径，**只读**）。
+- `metrics_613.py` — 613 任务F2 · metrics_613：本批六线**关键数字**单页汇总（只读）。
+- `metrics_collector.py` — metrics_collector.py — 质量度量 L1（508 任务6）。
+- `metrics_honesty.py` — 609 E1 · 度量诚实性：**Clopper-Pearson 精确上界 + 收敛曲线 + 方差声明 + 口径修正标注**。
+- `metrics_snapshot.py` — metrics_snapshot.py — 项目度量「单一真相源」
+- `migrate_queyi_to_verifier_660.py` — migrate_queyi_to_verifier_660.py — 660 B6：把 queyi_core_* 模块迁到 queyi-verifier。
+- `migrate_to_decision_event_v2_626.py` — 626 B2 · 数据迁移：annotations(388) + authority_log(418) → DecisionEvent v2
+- `mirror_edge_audit_626.py` — 626 C2 · 镜像边审计（`symmetry_proof_id`）
+- `mirror_edge_symmetry_checker_627.py` — 627 A4 · 194 条镜像边对称性验证（**只生成报告，不写入 ledger**）
+- `mirror_edge_symmetry_write_628.py` — 628 A3 · 镜像边对称性自动证明 + 写入 ReviewItemLedger
+- `modify_mode_analysis.py` — 611 B2 · modify 口径影响分析报告生成器（**纯读** · 可独立复算）。
+- `mutation_attribution_657.py` — mutation_attribution_657.py — 657 C 段：把**剩余存活体逐条归因**（不藏、不编）。
+- `mutation_fuzz.py` — 539 Part B · mutation_fuzz：对**真实卡**自动批量变异，找毒样例还没覆盖的新逃逸（L3 第一块）。
+- `mutation_generator_621.py` — 621 A1 · 对抗性 mutation 生成器（雷2 第三阶段）
+- `mutation_m6_optimizer.py` — 609 E4 · M6 算子优化 **方案**（**只给方案 + 测算，绝不落地**）。
+- `mutation_quality_621.py` — 621 A3 · 新 mutation 质量评估 + 去重
+- `mutation_shape_audit.py` — 588 任务 0 · 变异「发现器」完备性审计（只读、幂等、纯标准库 + 现有工具导入）。
+- `mutation_test_656.py` — mutation_test_656.py — 656 B2 变异测试：故意把核心代码改坏，看测试能不能抓到。
+- `na_rate_634.py` — 634 B3 · N/A 率根因分类（**能算的算，算不了的诚实登记**）
+- `new_rule_error_tracker_643.py` — 643 E1 · **新规则 known_error_rate 初始化与追踪**（抗 Goodhart #1）。
+- `normalize_comments.py` — normalize_comments.py — C++ 代码块注释写法规范化（机械、零语义）。
+- `number_consistency_scan_671g.py` — number_consistency_scan_671g.py — 671g B1：率三元组（pct%（k/n））的全仓一致性扫描。
+- `numbers_671g.py` — numbers_671g.py — 671g A2：全量实验数字的**单一复算源**（禁止手抄）。
+- `observability.py` — observability.py — 统一日志 L1（508 任务4 / 497 可观测性与失败恢复）。
+- `opentimestamps_anchor.py` — 609 D1 · OpenTimestamps 锚定：**生成 .ots 待上链文件 + 离线校验**（**不上日历、不上链**）。
+- `oracle_priority.py` — 612 C2 · oracle 验证优先级排序工具（**只读** · 不修改任何文件）。
+- `oracle_priority_614.py` — 614 线E E1 · oracle 验证优先级（离线排序 · 只读 · 建议）。
+- `oracle_rotation.py` — oracle_rotation.py — 验证者换代**影响面**只读报告（583 任务 3 / 调研包 `_arch_v9/03` 的 N3）。
+- `oracle_verification_614.py` — 614 线E E2 · oracle 验证流程（机制设计 · **不跑监工门禁**）。
+- `oracle_verification_plan.py` — 611 D3 · oracle 验证计划（**只读** · 不跑任何 --check）。
+- `oracle_verifier.py` — 612 C1 · oracle 验证执行工具（**只读** · 不填 `verified_by_oracle`）。
+- `ots_anchor_613.py` — 613 任务E1 · 信任根 OTS 上链**凭据**生成与校验（不实际 submit）。
+- `ots_anchor_656.py` — ots_anchor_656.py — G9 总闸门：把目录级 Merkle 根台账锚到比特币时间链（OpenTimestamps）。
+- `ots_placeholder_666.py` — ots_placeholder_666.py — 666 A1/E：**待上链**占位 `.ots` 的生成与校验。
+- `out_mis_review_support.py` — 611 D1 · OUT 的 7 个 MIS 复核工具支持（**只读** · 不执行人审）。
+- `overfitting_defense_671g.py` — overfitting_defense_671g.py — 671g E3：评估过拟合防御（训练/验证/测试三分离 + 调参登记 + 多重检验校正）。
+- `override_semantics_verify_626.py` — 626 C2 · OVERRIDE 语义验证（operation + result 拆开）
+- `overturned_events.py` — overturned_events.py — 推翻事件通道（573 任务 A-2 设计的**独立落地**；592 任务2）。
+- `pack_review_zip.py` — 626 A2 · 人审决策包打包器（**跨平台正斜杠**，纯标准库）
+- `pap_register_671g.py` — pap_register_671g.py — 671g D4：PAP（Pre-Analysis Plan）预注册门禁。
+- `paper_quality_gate_670c2.py` — paper_quality_gate_670c2.py — 论文质量门禁（670c2 B5）。
+- `paper_sync_check_670c2.py` — paper_sync_check_670c2.py — markdown ↔ LaTeX 数字一致性检查器（670c2 B1）。
+- `patch_blocks.py` — 安全批量替换某章 cpp 块正文（L2 真机深耕管线的通用引擎）。
+- `path_config_625.py` — 625 C1 · QueYi Core 路径配置（路径解耦第一步）
+- `pck_abstain_sync_621.py` — 621 C3 · ABSTAIN 状态与 PCK certificate 集成
+- `pck_authority_sync_620.py` — 620 C3 · Authority 日志 ↔ PCK certificate 集成
+- `pck_authorized_upgrade_624.py` — 624 E1 · PCK authorized 提升（基于 W2 重算的**机器可判定**授权）
+- `pck_batch_migrator_620.py` — 620 B1 · PCK 批量迁移工具（markdown 卡 → PCK certificate）
+- `pck_certificate_verifier_619.py` — 619 B2 · PCK 证书验证器 v1（结构诚实性校验）
+- `pck_export_652.py` — pck_export_652.py — T7 知识 manifest 导出（652 D，PCK → C2PA/in-toto 兼容）。
+- `pck_hash_drift_analyzer_627.py` — 627 A3 · 56 张 PCK evidence.hash 漂移根因分析（**只分析，不执行**）
+- `pck_hash_renewal_628.py` — 628 A2 · PCK hash 漂移处置执行（83 张全量重算，**不判失效**）
+- `pck_pilot_generator_619.py` — 619 B3 · PCK 试点证书生成器（只读派生，不写受控目录）
+- `pck_renderer_619.py` — 619 B4 · PCK 证书渲染器 v1（machine → human 可读）
+- `pck_semantic_verifier_626.py` — 626 E1 · PCK semantic verifier（4 层验证）
+- `pck_status_stats_620.py` — 620 B3 · PCK 证书状态统计 + 批量渲染
+- `pck_upgrade_strategy_625.py` — 625 D4 · PCK authorized 提升策略设计（**只设计，不代签**）
+- `perf_646.py` — 646 · 阶段 A3/A4 · 进程内记忆化（性能优化，只读）。
+- `perf_audit_670c5.py` — perf_audit_670c5.py — 前端性能静态审计（670c5 B1）。
+- `perf_benchmark_670c2.py` — perf_benchmark_670c2.py — 性能基准固化（670c2 C4）。
+- `perf_cache.py` — 609 B3 · 多瓶颈缓存（**编译缓存 / 还原缓存 / 规则缓存 / 数据缓存**）。
+- `performance_optimizer_646.py` — 646 · 阶段 A3 · 性能优化（工具速度，清债 2）。
+- `poison_detection_671g.py` — poison_detection_671g.py — 671g D9：小样本投毒检测（canary + 配对反事实探针）。
+- `poison_drill.py` — S6 变异测试：向制衡层**注入毒样例**，门禁必须全部拦截且理由正确；阴性对照必须放行。
+- `poison_independence_report_618.py` — 618 B3 · independence_level 接入 poison 报告（独立报告工具，不改 poison_drill.py）
+- `pollution_bisect_631.py` — 631 C1 · ATOM-CONC-FENCE-001 污染根因二分定位（纯标准库）
+- `pollution_guard_session_632.py` — 632 D1 · L1 会话快照守卫（纯标准库，context manager，以 git 为真相源）。
+- `pre_push_630.py` — 630 B1 · push 前检查（纯标准库为主，只读）
+- `pre_push_checklist_627.py` — 627 D1 · push 前最终检查清单（**只检查，绝不 push**）
+- `preflight_check.py` — preflight_check.py — 推送前本地/CI 预检门禁（错误左移，秒级反馈）
+- `prepare_annotation_package_689.py` — prepare_annotation_package_689.py — 689-C2：人类标注材料包生成（去标签 + 注释净化）。
+- `prepush_check.py` — prepush_check.py — 本地 / pre-push 快速卫生门禁（复用 CI 的「快」校验）。
+- `prereq_topo_check.py` — 前置依赖拓扑校验 (T1-3)
+- `probe_assembler_652.py` — probe_assembler_652.py — H5 探针积木化（652 B，**离线造块 + 在线零 LLM 组装 + 差分矩阵**）。
+- `prop_asof.py` — prop_asof.py — 只读「四轴快照」视图（583 任务 2 / 调研包 `_arch_v9/01` 的 N1）。
+- `prop_closure.py` — prop_closure.py — 命题闭包（582 N2 落地的**只读**基础设施；592 任务3）。
+- `prop_graph.py` — 565 Part 3 · 命题状态图（**只读派生视图**）：把卡里的 `claim_structured` 落成可查询库。
+- `prop_network_inventory.py` — prop_network_inventory.py — 命题网络台账（592 任务4；**只读生成器**）。
+- `proposition_liveness_audit.py` — 607 任务 2 · 命题活性锚审计（**只读**）。
+- `prose_density.py` — prose_density —— 叙述密度测量：每章「纯段落行」占比。
+- `protector_mode_647.py` — 647 B5（公共件）· **保护器全局模式开关**（一键回滚到 642 灰度）。
+- `protector_rollout_642.py` — 642 A6 · 五个保护器**联调 + 灰度报告**（证「零生产判决被改变」）。
+- `protector_rollout_647.py` — 647 B5(联调) · 五个保护器**真上岗联调**（证：真上岗了、不互相打架、可一键回滚）。
+- `pytest_shard_655.py` — pytest_shard_655.py — 按**测试时长**均衡分片（655 C 杠杆 3）。
+- `pytest_two_phase_643.py` — 643 阶段0 · **两阶段 pytest 跑法**固化（fast 并行 ~90s + slow 串行 ~11min）。
+- `quality_audit_645.py` — 645 · 阶段 F1/F2 · 优雅代码审计（docstring 覆盖 + 冗余清理，只读）。
+- `quality_gate_613.py` — 613 任务B3 · CI quality job 全步骤验收（本地复跑 + 记录，不改任何文件）。
+- `queyi_common.py` — queyi_common.py — 696 批次：工程线公共库（异常 / 日志 / 文件纯函数）。
+- `queyi_core_cpp_641.py` — queyi_core_cpp_641 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_interface_design_625.py` — queyi_core_interface_design_625 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_interface_v02_631.py` — queyi_core_interface_v02_631 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_interface_v03_632.py` — queyi_core_interface_v03_632 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_toy_641.py` — queyi_core_toy_641 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_trigger_check_625.py` — queyi_core_trigger_check_625 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_core_v10_641.py` — queyi_core_v10_641 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `queyi_data_models_645.py` — queyi_data_models_645 — 666 薄 wrapper：canonical 在 `queyi-verifier/tools/`。
+- `rats_closure_652.py` — rats_closure_652.py — T3 闭包 RATS 化（652 D，**三类信任根**）。
+- `recompute_a5_676f.py` — 676h · A5 全量结果从原始矩阵独立重算（不信任 results 文件里的率）。
+- `recompute_a5_676m.py` — recompute_a5_676m.py — 676m 任务 D：用修正后的标签重算 A5 全部指标。
+- `relabel_682.py` — relabel_682.py — 682 · 任务D：标注一致性量化（AI 第二标注）。
+- `repair_681_labels.py` — repair_681_labels.py — 681 A：跨源标签修复 + legacy 归一化（派生件修复，权威 JSON 只读）。
+- `replay_independence_report_618.py` — 618 B4 · independence_level 接入 replay 报告（独立报告工具，不改 atom_evidence_replay.py）
+- `replay_invariants.py` — replay_invariants.py — replay 状态机不变量独立检查工具（605 任务1）。
+- `replay_manifest_fix_628.py` — 628 A4 · replay manifest_consistency 只读核验 + 机械修复器
+- `replay_probe_651.py` — replay_probe_651.py — T5 reproduce manifest（651 W2，**信任资产**）。
+- `repo_split_sandbox_647.py` — 647 C1 · **仓库拆分沙箱验证**（在原仓库之外做，**原仓库零改动**）。
+- `reproduce_all_670c.py` — reproduce_all_670c.py — 670c B2：一键复现编排器（论文投稿用的独立复现入口）。
+- `responsive_audit_670c5.py` — responsive_audit_670c5.py — 响应式静态审计（670c5 A1）。
+- `result_cache_655.py` — result_cache_655.py — pytest 结果缓存（**哈希校验**，655 C 杠杆 2）。
+- `retest_reliability_671g.py` — retest_reliability_671g.py — 671g D7：单人隔周重标法（零合作者的 IRR 替代）。
+- `reveal_update_671a.py` — reveal_update_671a.py — 671a C3：扩样 reveal 之后的**检出率更新**（只算、不改论文）。
+- `review_item_ledger_626.py` — 626 B3 · 唯一审查账本（93 unique，**禁止重复计数**）
+- `review_pack_v2_626.py` — 626 E2 · Review Pack v2（**两层包** + 自动生成 + 跨平台）
+- `review_triage.py` — 557 Part A · 人审经济学分桶器（**纯读**；不 accept、不改 severity、不改卡、不跑编译）。
+- `rewrite_links.py` — rewrite_links.py — 发布管线跨章链接重写器（站点 / PDF 共用）
+- `roadmap_align_640.py` — 640 A2 · 闭环路线图对齐（D9：闭环建议与路线图长期错配的修复）
+- `round3_mutator_623.py` — 623 A4 · 闭环第三轮生成器（针对 A3 逃逸根因 + 策略改进）
+- `round5_mutator_624.py` — 624 A4 · 闭环第五轮（针对性跨卡 mutation，策略 X5–X8）
+- `round7_mutator_625.py` — 625 B1 · 闭环第 7 轮（稳定验证轮，~100 条）
+- `rr_conflict_classifier_638.py` — 638 B2 · RR 冲突分类器（规则间冲突逐条分类）
+- `rr_top3_fix_639.py` — 639 D3 · RR 冲突 top 3 修复（代码级 co-fire 复核）
+- `rule_aging_detector_643.py` — 643 E2 · **规则老化检测器**（抗 Goodhart #2）。
+- `rule_card_mapper_646.py` — 646 · 阶段 A1 · 规则→卡显式映射（清债 1，最核心）。
+- `rule_draft_anti_ripple_643.py` — 643 D4 · **规则草案反涟漪测试**（智能层：自动提案规则 #4）。
+- `rule_draft_mdl_check_643.py` — 643 D3 · **规则草案 MDL 准入检查**（智能层：自动提案规则 #3）。
+- `rule_drafter_643.py` — 643 D2 · **规则草案生成器**（智能层：自动提案规则 #2）。
+- `rule_drafter_645.py` — 645 · 阶段 A3 · 规则提案器真注入（替代 643 D4 代理实现）。
+- `rule_precondition_analyzer_643.py` — 643 C1 · **规则 precondition 分析器**（智能层：自动生成攻击 #1）。
+- `ruler_coverage_audit_623.py` — 623 C2 · 尺子入根扩展审计（验证 _arch_v19 探针的 8/11 裸露是否已修复）
+- `rules_manifest_671g.py` — rules_manifest_671g.py — 671g D1：判决规则版本钉扎（rules_version + rules_sha256）。
+- `run_611_gate.py` — 611 收工门禁（Z1）。
+- `run_612_gate.py` — 612 线 Z · 收工门禁：14+ 工具 --check 全绿 + metrics + integrity + pytest + ruff + 零污染 + 报告。
+- `run_613_gate.py` — 613 任务F3 · 收工门禁（跑全部 613 工具 --check + 卫生 + 回归 + 零污染 + 报告）。
+- `run_614_gate.py` — 614 任务F1 · 收工门禁（跑全部 614 工具 --check + 卫生 + 回归 + 零污染 + 报告）。
+- `run_615_gate.py` — 615 任务F1 · 收工门禁（跑全部 615 工具 --check + 卫生 + 回归 + 零污染 + 报告）。
+- `run_618_gate.py` — 618 F2 · 轻量验收门（不跑监工门禁）
+- `run_619_gate.py` — 619 D1 · 收工门禁（受控目录零污染 + 逐工具 --check + pytest）
+- `run_620_gate.py` — 620 E1 · 收工门禁（5 项串行检查）
+- `run_621_gate.py` — 621 E2 · 收工门禁（6 项串行检查）
+- `run_622_gate.py` — 622 F2 · 收工门禁（6 项串行检查）
+- `run_623_gate.py` — 623 C1 · 收工门禁（整目录 ruff 口径统一）
+- `run_624_gate.py` — 624 F1 · 收工门禁（继承 623 的整目录 ruff 口径）
+- `run_625_gate.py` — 625 F1 · 收工门禁（625 专用）
+- `run_627_gate.py` — 627 E1 · 收工门禁（627 专用）
+- `run_628_gate.py` — 628 E1 · 收工门禁（纯标准库）
+- `run_629_gate.py` — 629 F1 · 收工门禁（纯标准库）
+- `run_630_gate.py` — 630 E1 · 收工门禁（纯标准库）
+- `run_631_gate.py` — 631 G1 · 收工门禁（只读聚合；不修改受控目录、不改被测工具）。
+- `run_632_gate.py` — 632 H1 · 收工门禁（finish gate）
+- `run_633_gate.py` — 633 F1 · 收工门禁 + 三份报告 + 化债前后对比
+- `run_634_gate.py` — 634 E1 · 收工门禁 + 三份报告 + 7 维度前后对比
+- `run_635_gate.py` — 635 E1 · 收工门禁 + 三份报告 + 前后对比
+- `run_636_gate.py` — 636 E1 · 收工门禁 + 三份报告
+- `run_637_gate.py` — 637 H · 收工门禁 + 闭环试运行 + 验收报告
+- `run_638_gate.py` — 638 E1 · 收工门禁 + 验收报告
+- `run_639_gate.py` — 639 E1 · 收工门禁（§六 八项检查）
+- `run_641_gate.py` — 641 E1 · 收工门禁
+- `run_642_gate.py` — 642 D1 · 收工门禁
+- `run_643_gate.py` — 643 F1 · 收工门禁。
+- `run_644_gate.py` — run_644_gate.py — 644 头部层点火 + 调研 + 原型 验收闸门。
+- `run_645_gate.py` — 645 · 阶段 G1 · 收工门禁（真实全量，不编造、不「改到绿」）。
+- `run_646_gate.py` — 646 · 阶段 C1 · 收工门禁（真实全量，不编造、不「改到绿」）。
+- `run_647_gate.py` — 647 F1 · **收工门禁**（真实全量，不编造、不「改到绿」）。
+- `run_651_gate.py` — run_651_gate.py — 651 收工门禁（两阶段 pytest + ruff/mypy + 保护器联调 + 信任根 + 零污染）。
+- `run_652_gate.py` — run_652_gate.py — 652 收工门禁（两阶段 pytest + ruff/mypy + 保护器联调 + 信任根 + 零污染）。
+- `run_653_gate.py` — run_653_gate.py — 653 收工门禁（两阶段 pytest + ruff/mypy + 保护器联调 + 前端产物 + 信任根 + 零污染）。
+- `run_655_gate.py` — run_655_gate.py — 655 收工门禁（两阶段 pytest + ruff/mypy + 许可证头 + 前端产物 +
+- `run_656_gate.py` — run_656_gate.py — 656 收工门禁（核心 PBT/变异/性能 + 前端工程化 + 学习 MVP + 收尾）。
+- `run_658_gate.py` — run_658_gate.py — 658 批次验收门禁（编排器）。
+- `run_669d_gate.py` — run_669d_gate.py — 669d B7：六条 P0 门禁的一键入口。
+- `run_692_fair_comparison.py` — run_692_fair_comparison.py — 692-B：公平外部对比（clang-tidy / cppcheck × A5 evaluation 566）。
+- `run_692_llm_audit.py` — run_692_llm_audit.py — 692-C：LLM-as-evidence-asset 审计迁移研究（N=80 × 2 模型 × 2 prompt）。
+- `run_a5_experiment_673p.py` — run_a5_experiment_673p.py — 673p D：A5（random-budget）实验运行器（拆仓第三 + 四层）。
+- `run_b3_671b.py` — run_b3_671b.py — 671b B 段：B3（budget-matched random 验证资产）**跑批框架**。
+- `run_cpp_assertions.py` — run_cpp_assertions.py — 编译期断言单测 harness（永久保留，并行版）
+- `run_expected.py` — run_expected.py — 运行含 //@ 期望标记的 main 块并逐条断言 stdout。
+- `run_gate_671g.py` — run_gate_671g.py — 671g 纪律门禁独立入口（14 条规则统一执行 + 退出码）。
+- `run_master_gate_670c.py` — run_master_gate_670c.py — 主门禁（658 五阶段 + 669d 六条 + 670c D2/D3 + 670g 纪律 + 671a 守卫/漂移）。
+- `s10_verify_mark.py` — s10_verify_mark.py — §10 验证标记「半自动分诊」注入器（方向 B 落地，E12）
+- `sample_size_671b.py` — sample_size_671b.py — 671b D2：样本量现算器（ablation 版）。
+- `sandbox_apply_622.py` — 622 A1 · 沙箱 apply API（apply / run_gate / restore / apply_and_run）
+- `scan_prose_backslash.py` — SPDX-License-Identifier: Apache-2.0
+- `seed_audit_676h.py` — 676h 任务 B2 · 随机种子审计（全仓口径，比 671i 的种子门禁更宽）。
+- `seed_check_671i.py` — 671i-C4 · 随机种子固定检查工具（门禁 G-SEED-FIXED）。
+- `seeker_replay_651.py` — seeker_replay_651.py — H1 evidence_seeker_v2 回放（651 W1，**只读/旁路**）。
+- `select_assets_671b.py` — select_assets_671b.py — 671b B 段：**主仓侧**验证资产选择接口（真 B3 的接口形状）。
+- `selection_strategies_673p.py` — selection_strategies_673p.py — 673p B：**选择策略层**（拆仓的第二层）。
+- `self_observer_637.py` — 637 A · 自我观测器（SelfObserver）——系统自己看自己
+- `semantic_scope_backfill_663.py` — semantic_scope_backfill_663.py — 663 C1：给 26 张 verified 卡补 semantic scope。
+- `semantic_scope_backfill_668.py` — semantic_scope_backfill_668.py — 668 P1-1：逐卡「provenance / semantic scope / evidence / 四态」总账。
+- `shadow_rotator_651.py` — shadow_rotator_651.py — M2 变异器/规则/模型 shadow 轮转（651 W3，**只记账，不上岗**）。
+- `site_683_data.py` — site_683_data.py — 683-D：官网数据与图表生成（docs/assets/data/*.json）。
+- `site_audit.py` — site_audit.py — 站点前端产物健康自检（front-end gate, 零依赖）。
+- `slow_perf_profile.py` — 609 B2 · 全量 slow 性能剖析（cProfile，**不改任何被测代码**）。
+- `smart_issue_finder_645.py` — 645 · 阶段 A1 · 问题发现器重建（基于真实数据，非启发式凑数）。
+- `snapshot.py` — snapshot.py — 质量快照管理
+- `snapshot_integrity_ci_626.py` — 626 D3 · Snapshot Integrity CI（一次 CI 扫 10 项）
+- `snapshot_manifest.py` — 617 D2 · SNAPSHOT_MANIFEST 自动生成（治理数字漂移，纯标准库 + git 只读）
+- `soft_baseline_634.py` — 634 A3 · 跨批脆弱断言 → 动态基线读取（软化断言）
+- `stale_test_triage_630.py` — 630 D1 · 既有测试失败**分类**（纯标准库；`--collect` 会跑一次 pytest，`--check` 只读）
+- `standard_fetcher_644.py` — 644 阶段 D · D1 标准文档获取器。
+- `standard_fetcher_645.py` — 645 · 阶段 B1 · 标准获取器（真获取，非 403 降级就算完）。
+- `standard_fetcher_646.py` — 646 · 阶段 B1 · 标准获取补全（16/18 → 18/18）。
+- `star_h2_audit.py` — 星级格审计（star）+ H2 数量基线（h2）。
+- `stat_bounds.py` — 565 Part 1 · 把形容词算成数字的**统计原语库**（纯标准库；无 scipy/numpy）。
+- `stats_672k.py` — stats_672k.py — 672k W6：基于扩样后数据的**统计检验重做**。
+- `stats_recalc_verifier_626.py` — 626 A1 · 关键统计数字重算与校验器（只读）
+- `status_reconciler_658.py` — status_reconciler_658.py — 元状态对账器（658 D 段）。
+- `structure_audit.py` — structure_audit.py — 围栏感知的 Markdown 结构缺陷扫描器（只读，默认不修）
+- `suggest.py` — suggest.py — Content Suggestion Engine
+- `supersedes_remapper_627.py` — 627 A2 · 51 条 supersedes 旧式 ID 重映射（**不修改原 ledger**）
+- `supply_chain.py` — supply_chain.py — in-toto 风格溯源链最小子集（601 任务2；600 调研阶段2）。
+- `supply_chain_verify.py` — 609 D3 · 供应链验证：**Merkle 包含证明 + 一致性证明 + append-only 验证**。
+- `sweep_fences.py` — sweep_fences.py — 机械缺陷大扫荡（结构/渲染完整性）扫描器。
+- `systematic_error_635.py` — 635 V26-2 · 系统误差清单（可收敛/不可收敛二分，永不合并）
+- `table_style_audit.py` — !/usr/bin/env python3
+- `targeted_attacker_645.py` — 645 · 阶段 A2 · 攻击生成器真复现（真变异 + 真实检查，非 dry-run）。
+- `targeted_mutator_643.py` — 643 C2 · **针对性 mutation 生成器**（智能层：自动生成攻击 #2）。
+- `targeting_prep_647.py` — 647 E1–E3 · **打靶准备交付物校验**（调研文档完整性 + 可执行性，只读）。
+- `task_queue.py` — SPDX-License-Identifier: Apache-2.0
+- `task_state.py` — task_state.py — 任务状态文件工具（494 任务 7，规格 492 §四）：断点续跑的最小闭环。
+- `tau_d_635.py` — 635 1.2 · τ_d 测量 + 逃逸发现渠道分布（只加测量，不改判决）
+- `teach_card_656.py` — teach_card_656.py — 656 D：把系统变成"学生能用的东西"的**数据侧**。
+- `teaching_audit.py` — tools/teaching_audit.py — 写作红线审计（报告型，离线跑）。
+- `template_audit.py` — template_audit.py — 章节作者性审计：模板化/套话节扫描（终极打磨的自查工具）
+- `terminology_normalize.py` — terminology_normalize.py — 全书术语/格式归一化收口工具
+- `terminology_scan_671g.py` — terminology_scan_671g.py — 671g B2：工程文档术语一致性扫描。
+- `test_a11y_jsdom_672d.py` — tools/test_a11y_jsdom_672d.py — jsdom 渲染后审计工具（672d C）的验收测试（≥10 断言）。
+- `test_category_map.py` — 618 C4 · 测试分类映射表（机器可读，供 C2 计数脚本与 CI 读取）
+- `test_classifier_618.py` — 618 C2 · 测试分类计数脚本（replay/poison/gate category + 真实验证 vs 脚本自测）
+- `test_debt_taxonomy_633.py` — 633 E1 · 测试债深化分类与长期方案（**只分类，不改测试**）
+- `test_dependency_graph.py` — 589 任务 4a · 测试依赖图（只读、幂等、纯标准库）。
+- `test_fast_gate.py` — test_fast_gate.py — fast_gate 的单元测试（≥10 条断言，全部桩化、不跑真门禁）。
+- `test_selector_655.py` — test_selector_655.py — 基于 git diff 的**增量测试选择**（655 C 杠杆 1）。
+- `third_party_audit_demo_628.py` — 628 B4 · 他验端到端演示（独立验证 → VSA 凭证 → 透明日志）
+- `three_layer_orchestrator_645.py` — 645 · 阶段 C2/C3/C4 · **三层耦合套件**（编排 + 效果评估 + 反馈）—— 647 D1 合并版。
+- `three_layer_orchestrator_646.py` — 646 · 阶段 A2 · 三层耦合真正打通（清债 1 续，替代 645 C2 的 token 猜测匹配）。
+- `tool_consolidation_646.py` — 646 · 阶段 B4 · 工具合并分析（智能层+头部层+耦合层 15 → ≤12）。
+- `tool_debt_audit_633.py` — 633 B2 · 工具债清理审计
+- `tool_integrity.py` — tool_integrity.py — 核心工具完整性校验（498 任务 3 / P1-10 / 488 安全性与信任模型）。
+- `toolchain.py` — toolchain.py — 工具链路径解析（唯一事实源 = 仓库根 ``toolchain.toml``）
+- `trace_logger.py` — trace_logger.py — 结构化操作日志（498 任务 4 / P1-12 / 497 可观测性与失败恢复）。
+- `train_697_predictor.py` — train_697_predictor.py — 697-C：能力边界预测模型（**只读，0 次 detect**）。
+- `trajectory_floor_check_671g.py` — trajectory_floor_check_671g.py — 671g D10：标注质量地板检查（floor-check）。
+- `transparency_anchor_632.py` — 632 B1 · 透明日志外部锚定（纯标准库，默认只读安全的 --check）。
+- `transparency_log_628.py` — 628 B3 · 透明日志（append-only Transparency Log）—— 他验三件套 #3
+- `transparency_verify_632.py` — 632 B2 · 透明日志完整性校验（纯标准库，默认只读 --check）。
+- `trust_root_audit_647.py` — 647 A5 · **信任根独立审计**（A1–A4 修复后：信任根到底独立了多少？**不夸大**）。
+- `trust_root_status_check.py` — 614 线C C3：信任根状态统一检查（诚实标注）。
+- `trust_root_upgrade_631.py` — 631 E1 · 他验信任根升级方案评估（纯标准库，只读）
+- `uncertainty_budget_671g.py` — uncertainty_budget_671g.py — 671g E5：检出率的 GUM 不确定度预算（统计/系统/标注三分量）。
+- `uncovered_attack_surfaces.py` — 629 B3 · 未覆盖攻击面清单与优先级（纯标准库，只读）
+- `utf8_console.py` — utf8_console.py — Windows 中文控制台（GBK）下的 UTF-8 输出兜底。
+- `v2_flag_integration_verify_628.py` — 628 A1 · V2 flag 接入验证（V1/V2 双路径数字一致 + 向后兼容）
+- `v2_regression_627.py` — 627 B2 · V2 回归验证（**静态分析**，不运行监工门禁）
+- `verdict_extension_651.py` — verdict_extension_651.py — T1 判决扩展 schema（651 W2，**只加字段不改语义**）。
+- `verification_audit.py` — verification_audit.py — 验证状态标记覆盖度审计（对应 CONVENTIONS.md §10 / 宪章 §6）
+- `verification_horizon_622.py` — 622 E1 · Verification Horizon 测量工具（雷7）
+- `verifier_admissibility_635.py` — 635 V26-5 · 验证器准入表（Daubert 五问，只加数据，不改判决）
+- `verifier_closure_641.py` — 641 D1–D3 · **Verifier Closure**（信任根闭包）+ 缺失即 FAIL + run 绑定 digest
+- `verifier_closure_647.py` — 647 A3 · **信任根闭包扩展**（641 的 23 文件闭包 → 覆盖全部"能改判决"的面）。
+- `verifier_pool_673p.py` — verifier_pool_673p.py — 673p B：**验证资产池**的显式定义（拆仓的第一层）。
+- `verify_693_original_repo.py` — verify_693_original_repo.py — 693-E1：原始项目 CVE 验证（**可行性 + 溯源**）。
+- `verify_asm_evidence.py` — verify_asm_evidence.py — 汇编证据「符号真实性」守卫
+- `verify_baseline_672f.py` — verify_baseline_672f.py — 672f E 段：baseline 三臂的**独立复算**（双 Agent 交叉复现·路径 B）。
+- `verify_baseline_672g.py` — verify_baseline_672g.py — 672g 双路径交叉复现（路径 B：独立重实现）。
+- `verify_compiler_features.py` — verify_compiler_features.py — P0-2.4 编译器特性支持度探针
+- `verify_data_integrity.py` — verify_data_integrity.py — 693-D5：数据完整性全面校验。
+- `verify_exercises.py` — verify_exercises.py — Phase 2 练习闭环验证器
+- `verify_expand_672h.py` — verify_expand_672h.py — 672h W3：扩样结果的**独立复算**（双路径交叉复现）。
+- `verify_independence_level.py` — 617 B1 · 验证独立性 4 级判定（纯标准库，只读事实）
+- `verify_paper_numbers.py` — 676h 任务 A · 论文数字可追溯性审计工具（verify_paper_numbers.py）。
+- `vfdr_619.py` — 619 A3 · VFDR（Vulnerability-Feedback-Driven Repair）状态机 v1
+- `vfdr_calculator_622.py` — 622 A5 · VFDR 真正计算 + 趋势
+- `vfdr_convergence_625.py` — 625 B3 · VFDR 收敛曲线 + 规则触达热力图 v3（67 规则 × 7 轮）+ 盲区缩减报告
+- `vfdr_realtime_620.py` — 620 A4 · VFDR 实时计算 + 第一轮闭环总结
+- `vfdr_updater_v2_624.py` — 624 A5 · VFDR 更新 v2 + 规则触达热力图 v2 + 盲区缩减报告
+- `viso_diff.py` — 535 批次2 · V-iso 阴面最小 diff 机器判据（533 §2.2 正式化，原型：`_arch_v2_round2/iso_judge.py`）。
+- `vsa_asymmetric_signer_629.py` — 629 C1 · VSA 非对称签名升级（**纯标准库** RSA-2048 / PKCS#1 v1.5）
+- `vsa_attestation_628.py` — 628 B2 · VSA 验证凭证（Verification Statement Attestation）—— 他验三件套 #2
+- `vsa_key_audit_633.py` — 633 C1 · vsa_secret.key 备份 + 影响评估（**默认不轮换**）
+- `vsa_verify_628.py` — 628 B2 · VSA 凭证**独立验证端**——他验三件套 #2 的验证侧
+- `w2_authority_640b.py` — 640b A1 · W2 数字的**单一权威源**（根治涟漪）
+- `w2_derived_640c.py` — w2_derived_640c.py — **派生量的单一权威源**（640b 的 `w2_authority_640b` 的并列扩展）。
+- `w2_projection_diff_627.py` — 627 A1 · W2 投影逐节点差异对比（V2 归一化投影 vs grounded_labels）
+- `w2_projection_normalizer_627.py` — 627 A1 · W2 投影节点归一化（519 → 121，与 grounded_labels 对齐）
+- `w2_recompute_623.py` — 623 D2 · W2 重算（通道打通后，重算 W2 solver 看变化）
+- `w2_three_state_626.py` — 626 C2 · W2 三态解耦（`argument_status` / `truth_support` / `publication_status`）
+- `warn_governance.py` — 615 C1 · warn 不增锁机制（**新建独立工具，不改 golden_lock.py / 不改现有基线**）。
+- `web_data_653.py` — web_data_653.py — 653 B · 前端数据生成（**真实台账 → web/data/*.json，不造数据**）。
+- `web_data_pipeline_656.py` — web_data_pipeline_656.py — 656 C3/C4：前端数据管线 + 构建（一条命令，可接 CI）。
+- `web_err_deck_670c.py` — web_err_deck_670c.py — 670c A1：把 665 B1 的 16 张机器卡导出成学习页的「错例牌组」。
+- `web_experiments_sync_670c.py` — web_experiments_sync_670c.py — 670c A2/A4：把「仓库根数据」同步进 web/data/。
+- `web_ig_cards_665.py` — web_ig_cards_665.py — 665 G1/G2：把 665 B1 的机器卡**如实**送进前端。
+- `web_metrics_666.py` — web_metrics_666.py — 666 B2：给首页"核心指标 + 状态时间线"提供**现算**数据。
+- `web_status_655.py` — web_status_655.py — 生成前端"系统现状"面板的真实数据（655 D）。
+- `web_verdicts_667.py` — web_verdicts_667.py — 667 阶段2：给前端「状态仪表盘 + 判决历史表格 + 数据对比表」提供**现算**数据。
+- `weighted_af_solver.py` — weighted_af_solver.py — W2 可信度加权 AF 求解器（596 任务2；594 唯一解除退化的模型）。
+- `whitelist_expand_decision_643.py` — 643 E4 · **闭环扩大（条件触发）**（抗 Goodhart #4）。
+- `whitespace_fix.py` — whitespace_fix.py — 围栏感知的空白符卫生修复（确定性，单文件幂等）
+- `writer_selfcheck.py` — 413 Writer 自检层：7 项确定性检查（零 token），提交红队前拦 E1/E2 机械错误。
+- `xref_check.py` — CPP-Bible 交叉引用门禁 (xref_check.py)
