@@ -1,0 +1,341 @@
+{
+ "schema": "queyi-711/linker-decomposition/v1",
+ "generated_by": "tools/compute_711_linker_decomposition.py",
+ "detect_calls": 0,
+ "inputs": {
+  "matrix": "data/a5_676f_detection_matrix.json",
+  "split": "evaluation",
+  "pools": {
+   "pool6": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "poolA": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile"
+   ]
+  }
+ },
+ "anchors": {
+  "n_evaluation": 566,
+  "or_full_pool_catch_pct": 60.0707,
+  "per_asset_catch": {
+   "asan": 187,
+   "ubsan": 129,
+   "tsan": 123,
+   "compiler-warn": 67,
+   "cross-compile": 81,
+   "linker": 4
+  }
+ },
+ "arms": {
+  "full8": {
+   "1": {
+    "random_mean_pct": 13.0521,
+    "fd_selected": [
+     "asan"
+    ],
+    "fd_pct": 33.0389,
+    "delta_mean_pp": 19.9867
+   },
+   "2": {
+    "random_mean_pct": 23.8327,
+    "fd_selected": [
+     "asan",
+     "ubsan"
+    ],
+    "fd_pct": 45.053,
+    "delta_mean_pp": 21.2203
+   },
+   "3": {
+    "random_mean_pct": 32.736,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "fd_pct": 51.0601,
+    "delta_mean_pp": 18.3241
+   },
+   "4": {
+    "random_mean_pct": 40.1136,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "fd_pct": 54.5936,
+    "delta_mean_pp": 14.4801
+   },
+   "5": {
+    "random_mean_pct": 46.2771,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn"
+    ],
+    "fd_pct": 59.364,
+    "delta_mean_pp": 13.0868
+   },
+   "6": {
+    "random_mean_pct": 51.5018,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "linker"
+    ],
+    "fd_pct": 60.0707,
+    "delta_mean_pp": 8.5689
+   },
+   "7": {
+    "random_mean_pct": 56.0292,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "linker",
+     "wunsequenced"
+    ],
+    "fd_pct": 60.0707,
+    "delta_mean_pp": 4.0415
+   },
+   "8": {
+    "random_mean_pct": 60.0707,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "compiler-warn",
+     "linker",
+     "wunsequenced",
+     "compile-time"
+    ],
+    "fd_pct": 60.0707,
+    "delta_mean_pp": 0.0
+   }
+  },
+  "pool6": {
+   "1": {
+    "random_mean_pct": 17.4028,
+    "fd_selected": [
+     "asan"
+    ],
+    "fd_pct": 33.0389,
+    "delta_mean_pp": 15.636
+   },
+   "2": {
+    "random_mean_pct": 30.5654,
+    "fd_selected": [
+     "asan",
+     "ubsan"
+    ],
+    "fd_pct": 45.053,
+    "delta_mean_pp": 14.4876
+   },
+   "3": {
+    "random_mean_pct": 40.5919,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "fd_pct": 51.0601,
+    "delta_mean_pp": 10.4682
+   },
+   "4": {
+    "random_mean_pct": 48.3863,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "fd_pct": 54.5936,
+    "delta_mean_pp": 6.2073
+   }
+  },
+  "poolA": {
+   "1": {
+    "random_mean_pct": 20.742,
+    "fd_selected": [
+     "asan"
+    ],
+    "fd_pct": 33.0389,
+    "delta_mean_pp": 12.2968
+   },
+   "2": {
+    "random_mean_pct": 35.1237,
+    "fd_selected": [
+     "asan",
+     "ubsan"
+    ],
+    "fd_pct": 45.053,
+    "delta_mean_pp": 9.9293
+   },
+   "3": {
+    "random_mean_pct": 45.3534,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "fd_pct": 51.0601,
+    "delta_mean_pp": 5.7067
+   },
+   "4": {
+    "random_mean_pct": 53.0389,
+    "fd_selected": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "fd_pct": 54.5936,
+    "delta_mean_pp": 1.5548
+   }
+  }
+ },
+ "decomposition_k4": {
+  "m4_poolA_mean_pct": 53.0389,
+  "m3_poolA_mean_pct": 45.3534,
+  "m_linker_plus_3sub_pct": 46.0601,
+  "mean_pool6_k4_pct": 48.3863,
+  "slot_effect_pp": 5.1237,
+  "link_effect_pp": 0.4711,
+  "baseline_shift_pp": 4.6525,
+  "component_gain_pp": -4.6525,
+  "zero_yield_counterfactual_mean_pct": {
+   "wunsequenced": 47.9152,
+   "compile-time": 47.9152
+  },
+  "identity_check": "slot - link == mean(poolA) - mean(pool6)"
+ },
+ "strata_detail_by_d": {
+  "definition": "d = # of Pool-A assets catching the sample (0..5)",
+  "psi_minus_phi_note": "slot contribution per sample = (2/3)*(psi(d)-phi(d)); positive only at d=4, negative at d=3",
+  "strata": {
+   "0": {
+    "n": 230,
+    "slot_contrib_pp": 0.0,
+    "link_contrib_pp": 0.4711
+   },
+   "1": {
+    "n": 179,
+    "slot_contrib_pp": 4.2167,
+    "link_contrib_pp": 0.0
+   },
+   "2": {
+    "n": 77,
+    "slot_contrib_pp": 0.9069,
+    "link_contrib_pp": 0.0
+   },
+   "3": {
+    "n": 67,
+    "slot_contrib_pp": 0.0,
+    "link_contrib_pp": 0.0
+   },
+   "4": {
+    "n": 12,
+    "slot_contrib_pp": 0.0,
+    "link_contrib_pp": 0.0
+   },
+   "5": {
+    "n": 1,
+    "slot_contrib_pp": 0.0,
+    "link_contrib_pp": 0.0
+   }
+  },
+  "linker_catches_by_d": {
+   "0": 4,
+   "1": 0,
+   "2": 0,
+   "3": 0,
+   "4": 0,
+   "5": 0
+  }
+ },
+ "difficulty_reweighting": {
+  "eval": {
+   "weight_sum": 100.0,
+   "slot_effect_pp": 5.1237,
+   "link_effect_pp": 0.4711,
+   "component_pp": 4.6525
+  },
+  "corpus": {
+   "weight_sum": 100.0,
+   "slot_effect_pp": 5.1271,
+   "link_effect_pp": 0.4691,
+   "component_pp": 4.658
+  },
+  "uniform_d": {
+   "weight_sum": 100.0,
+   "slot_effect_pp": 3.3333,
+   "link_effect_pp": 0.1932,
+   "component_pp": 3.1401
+  }
+ },
+ "environment": {
+  "pure_subpool_analogues": {
+   "wsl_triad_remove_tsan_k1_pp": 2.0612,
+   "wsl_triad_remove_asan_k1_pp": -3.5925,
+   "native_triad_remove_linker_k1_pp": 4.1225,
+   "native_triad_remove_cw_k1_pp": -1.4429,
+   "mixed_pool6_remove_linker_k4_pp": 4.6526
+  },
+  "alignment_null_native_block": {
+   "reps": 400,
+   "mean_pp": 5.7669,
+   "p2_5": 5.4535,
+   "p97_5": 6.1013
+  },
+  "alignment_null_wsl_block": {
+   "reps": 400,
+   "mean_pp": 5.7764,
+   "p2_5": 5.4653,
+   "p97_5": 6.1131
+  }
+ },
+ "component_by_k": {
+  "1": {
+   "mean_poolA": 20.742,
+   "mean_pool6": 17.4028,
+   "component_pp": 3.3392
+  },
+  "2": {
+   "mean_poolA": 35.1237,
+   "mean_pool6": 30.5654,
+   "component_pp": 4.5583
+  },
+  "3": {
+   "mean_poolA": 45.3534,
+   "mean_pool6": 40.5919,
+   "component_pp": 4.7615
+  },
+  "4": {
+   "mean_poolA": 53.0389,
+   "mean_pool6": 48.3863,
+   "component_pp": 4.6525
+  }
+ },
+ "notes": [
+  "All expectations are exact enumerations over subsets (no sampling).",
+  "The slot/link split uses a zero-yield sixth asset as the separator; it is an identity, not an approximation.",
+  "The alignment null permutes the native pair (cw,cc) jointly across samples, preserving the native-side joint row; ditto for the WSL triple."
+ ]
+}
