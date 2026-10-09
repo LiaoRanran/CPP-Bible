@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "batch": "699-C",
+    "generated": "2026-10-09",
+    "n_records_analyzed": 240,
+    "llm_judge_enabled": false,
+    "honest_note": "结构性 Goodhart 在真实数据上实测；prompt/model invariance 需 LLM 裁判（本环境未配置 key，函数就绪、返回 None）。"
+  },
+  "structural_goodhart": {
+    "JudgeBench": {
+      "n": 120,
+      "len_agree": 53,
+      "len_disagree": 67,
+      "info_agree": 56,
+      "info_disagree": 64,
+      "human_longer_share": 0.45,
+      "length_inference_rate": 0.4417,
+      "length_goodhart_rate": 0.5583,
+      "info_inference_rate": 0.4667
+    },
+    "RewardBench": {
+      "n": 120,
+      "len_agree": 120,
+      "len_disagree": 0,
+      "info_agree": 120,
+      "info_disagree": 0,
+      "human_longer_share": 1.0,
+      "length_inference_rate": 1.0,
+      "length_goodhart_rate": 0.0,
+      "info_inference_rate": 1.0
+    }
+  },
+  "prompt_invariance": null,
+  "model_invariance": null,
+  "queyi_cpp_baseline": {
+    "note": "来自 692 批 LLM 臂（本 checkout 无 data/692_* 产物，须回填）",
+    "prompt_invariance_692": "见 692 artifacts（内存记录 87.5%，未过 >=0.9）",
+    "model_invariance_692": "见 692 artifacts",
+    "structural_goodhart_692": "LLM 失败拓扑与 sanitizer 正交（692 结论）"
+  },
+  "top_structural_goodhart_cases": [
+    {
+      "id": "JB-6eea64c3-0413-5fdf-b089-80dd2336a931",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "B>A",
+      "len_human": 1083,
+      "len_other": 1574,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-9457845e-e3bb-5d9f-9351-c49eb1222324",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "B>A",
+      "len_human": 1104,
+      "len_other": 1585,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-4f912a80-4b06-5c52-8c09-46ab9dac3f50",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "A>B",
+      "len_human": 961,
+      "len_other": 1337,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-eb39387a-e83c-5cc7-92f7-189a5e71bf26",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "A>B",
+      "len_human": 721,
+      "len_other": 1031,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-97c53ddb-0acc-56a1-9216-bb6727e8f586",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "A>B",
+      "len_human": 1436,
+      "len_other": 1736,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-653f77c3-e98a-5711-b4bd-3629853a5d54",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "B>A",
+      "len_human": 733,
+      "len_other": 1019,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-862781f4-edd0-53c0-a4a2-eafa093b2cf0",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "A>B",
+      "len_human": 843,
+      "len_other": 1127,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-b37bde81-c51d-5677-895a-90e7ea82769c",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "A>B",
+      "len_human": 1055,
+      "len_other": 1334,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-96d3b510-63de-5bc7-bdb5-5d53fce4e864",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "B>A",
+      "len_human": 1042,
+      "len_other": 1316,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    },
+    {
+      "id": "JB-8bf4c1a8-346e-5754-a972-235504d77830",
+      "source_dataset": "JudgeBench",
+      "human_preferred": "B>A",
+      "len_human": 980,
+      "len_other": 1251,
+      "note": "人类偏好侧更短，长度裁判会判错（结构性 Goodhart 实例）"
+    }
+  ]
+}
