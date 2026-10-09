@@ -1,0 +1,151 @@
+{
+ "schema": "queyi-703/zero-cost-validation/v1",
+ "generated_by": "tools/compute_703_zero_cost_validation.py",
+ "generated_at": "2026-10-09T10:33:34+08:00",
+ "detect_calls": 0,
+ "sources": {
+  "matrix": "data/blindspot_676g_detection_matrix.json",
+  "transition": "data/696_transition_matrix.json",
+  "upstream_700F": "data/700_design_simulation.json"
+ },
+ "n_samples": 1147,
+ "P1_remove_zero_yield_declarations": {
+  "declared_pool": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "wunsequenced",
+   "cross-compile",
+   "linker",
+   "compile-time"
+  ],
+  "zero_yield_assets": [
+   "wunsequenced",
+   "compile-time"
+  ],
+  "per_asset_catch": {
+   "asan": 408,
+   "ubsan": 270,
+   "tsan": 263,
+   "compiler-warn": 143,
+   "wunsequenced": 0,
+   "cross-compile": 122,
+   "linker": 10,
+   "compile-time": 0
+  },
+  "removed_catch_total": 0,
+  "detection_rate_8asset_pct": 61.6391,
+  "detection_rate_6asset_pct": 61.6391,
+  "delta_detection_pp": 0.0,
+  "greedy_k4_selection_8": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn"
+  ],
+  "greedy_k4_selection_6": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn"
+  ],
+  "detection_rate_greedy_k4_8asset_pct": 59.5466,
+  "detection_rate_greedy_k4_6asset_pct": 59.5466,
+  "delta_detection_greedy_k4_pp": 0.0,
+  "apparent_gain_8asset_pp": 18.6075,
+  "apparent_gain_6asset_pp": 10.0436,
+  "composition_inflation_8asset": 0.460241,
+  "composition_inflation_6asset": 0.0,
+  "claim_p1_holds": true
+ },
+ "P2_aware_accounting": {
+  "frame": "A5 holdout evaluation split (566)",
+  "n": 566,
+  "E1": {
+   "catch": 340,
+   "miss": 226,
+   "unknown": 0,
+   "n": 566,
+   "catch_rate_pct": 60.0707,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 60.0707
+  },
+  "E2_unaware": {
+   "catch": 140,
+   "miss": 426,
+   "unknown": 0,
+   "n": 566,
+   "catch_rate_pct": 24.735,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 24.735
+  },
+  "E2_aware": {
+   "catch": 140,
+   "miss": 0,
+   "unknown": 426,
+   "n": 566,
+   "catch_rate_pct": 24.735,
+   "unknown_rate_pct": 75.265,
+   "conditional_recall_pct": 100.0
+  },
+  "delta_catch_rate_unaware_pp": -35.3357,
+  "delta_unknown_unaware_pp": 0.0,
+  "delta_catch_rate_aware_pp": -35.3357,
+  "delta_unknown_aware_pp": 75.265,
+  "reclassified_miss_to_unknown": 426,
+  "claim_p2_holds": true
+ },
+ "P3_aggregation_rules": {
+  "pool_8asset": {
+   "n_assets": 8,
+   "or_pct": 61.6391,
+   "max_single_pct": 35.5711,
+   "at_least_2_pct": 28.1604,
+   "mean_single_pct": 13.252
+  },
+  "pool_6asset": {
+   "n_assets": 6,
+   "or_pct": 61.6391,
+   "max_single_pct": 35.5711,
+   "at_least_2_pct": 28.1604,
+   "mean_single_pct": 17.6693
+  },
+  "greedy_k4_8asset": {
+   "n_assets": 4,
+   "or_pct": 59.5466,
+   "max_single_pct": 35.5711,
+   "at_least_2_pct": 25.109,
+   "mean_single_pct": 23.6269
+  },
+  "greedy_k4_6asset": {
+   "n_assets": 4,
+   "or_pct": 59.5466,
+   "max_single_pct": 35.5711,
+   "at_least_2_pct": 25.109,
+   "mean_single_pct": 23.6269
+  },
+  "delta_or_pp": 0.0,
+  "delta_max_single_pp": 0.0,
+  "delta_at_least_2_pp": 0.0,
+  "delta_mean_single_pp": 4.4173,
+  "mean_dilution_factor": 1.333331,
+  "or_is_zero_yield_immune": true
+ },
+ "cross_check_with_700F": {
+  "700F_detection_rate_A_pct": 59.55,
+  "700F_detection_rate_B_pct": 59.55,
+  "700F_composition_inflation_A": 0.4602,
+  "700F_composition_inflation_B": 0.0,
+  "this_batch_detection_rate_8asset_pct": 61.6391,
+  "this_batch_detection_rate_6asset_pct": 61.6391,
+  "this_batch_composition_inflation_8asset": 0.460241
+ },
+ "honest_limits": [
+  "全部为**只读复算**：冻结矩阵 + 692 转移矩阵，detect_calls = 0。",
+  "P2 的 aware 读数基于**单一环境对**（n_env=1，E1 vs E2）⇒ 不声称普适。",
+  "P3 的四种聚合都在**同一批逐样本裁决**上算 ⇒ 只反映聚合规则差异，不含真实能力变化。",
+  "检出率是 1147 条（92.9% 人工植入）冻结矩阵上的 OR 覆盖率 ⇒ 不代表真实缺陷分布。",
+  "P1 的『零产』是**在本冻结矩阵上**零 catch；换语料可能不再零产。"
+ ]
+}
