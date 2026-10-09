@@ -176,53 +176,56 @@ a frozen matrix. Where a proof is incomplete we say so rather than fill the gap.
 through reward hacking \citep{skalse2022rewardhacking,amodei2016concrete}, over-optimisation scaling laws
 \citep{gao2023scaling}, the four-variant taxonomy \citep{manheim2018categorizing}, the paradigm-agnostic
 formalisation \citep{majka2025goodhart}, and the geometric treatment with an optimal early-stopping rule
-\citep{karwowski2023goodhart}. All presuppose a system that optimises the measure. Our subclass is defined
-by the absence of that system (SG-3), which is why the classical remedies do not apply: there is no
-trajectory to stop, no bias term to bound, no proxy--target gap to shrink.
+\citep{karwowski2023goodhart}. All presuppose a system that optimises the measure, which is exactly what our
+subclass removes (SG-3); consequently the classical remedies are undefined rather than merely ineffective.
 
-\paragraph{Construct validity and measurement invariance.} Psychometrics has the vocabulary we need.
-Multitrait--multimethod matrices separate method from trait variance \citep{campbell1959convergent}---the
-job our transition matrix does for caliber versus mechanism; \citet{messick1995validity} argues validity is a
-property of inferences, not of scores; \citet{meredith1993measurement} formalises invariance across groups,
-with \citet{borsboom2006attack} warning against defining the construct by the measurement model. The
-vocabulary has entered machine learning: \citet{bean2025constructvalidity} review $445$ benchmark papers
-from a construct-validity standpoint, and \citet{freiesleben2025benchmarkingepistemology} give a validity
-theory for predictive benchmarking. The closest work is \citet{chen2026judge}, who formalise a judge's
-construct validity as a two-dimensional profile---invariance $S$ under construct-preserving edits and
-sensitivity $R$ under construct-changing edits---prove $S$ and $R$ independent, and show no scalar summary
-preserves all comparisons. We cite that approvingly and draw the boundary explicitly: an $S/R$ profile is a
-\emph{probability profile} answering ``how stable is the judge?''; our object is an algebra answering
-``which caliber operations can be repaired post hoc, and which require re-measurement?'' The latter
-question---our Theorem~\ref{thm:T6}---we did not find there. Related work on statistical concept drift
-\citep{cerqueira2026conceptdrift} concerns a changing data distribution, not a changing caliber.
+\paragraph{Construct validity and measurement invariance.} Multitrait--multimethod matrices separate method
+from trait variance \citep{campbell1959convergent}---the job our transition matrix does for caliber versus
+mechanism; \citet{messick1995validity} argues validity is a property of inferences, not of scores; and
+\citet{meredith1993measurement} formalises invariance across groups, with \citet{borsboom2006attack}
+warning against defining the construct by the measurement model. The vocabulary has entered machine
+learning \citep{bean2025constructvalidity,freiesleben2025benchmarkingepistemology}. The closest work is
+\citet{chen2026judge}, who formalise a judge's construct validity as a two-dimensional profile---invariance
+$S$ under construct-preserving edits and sensitivity $R$ under construct-changing edits---prove $S$ and $R$
+independent, and show no scalar summary preserves all comparisons. We cite that approvingly and draw the
+boundary explicitly: an $S/R$ profile is a \emph{probability profile} answering ``how stable is the judge?'';
+our object is an algebra answering ``which caliber operations can be repaired post hoc, and which require
+re-measurement?'' The latter question---our Theorem~\ref{thm:T6}---we did not find there. Statistical
+concept drift \citep{cerqueira2026conceptdrift} concerns a changing data distribution, not a changing caliber.
 
-\paragraph{Undecidability and detection limits.} That perfect static analysis is impossible is classical:
-\citet{turing1936computable}, \citet{rice1953classes}, \citet{landi1992undecidability},
-\citet{ramalingam1994undecidability}, with the soundness/completeness trade-off \citep{cousot1977abstract}
-and the testing-versus-proof distinction \citep{demillo1979social}. The methodological precedent we follow is
-\citet{weyuker1988evaluation}, who uses an axiom set to \emph{exclude} the existence of a perfect
-test-adequacy criterion. We do the same for a perfect drift detector: A2 excludes minimum-type aggregations,
-A5 excludes mean-type aggregations, and Theorem~\ref{thm:T6} excludes post-hoc correction of
-acquisition-layer drift. What differs is the object---test criteria rather than evaluators---and, we believe,
-the addition of a \emph{correctability} boundary.
+\paragraph{Undecidability and detection limits.} That perfect static analysis is impossible is classical
+\citep{turing1936computable,rice1953classes,landi1992undecidability,ramalingam1994undecidability}, with the
+soundness/completeness trade-off \citep{cousot1977abstract} and the testing-versus-proof distinction
+\citep{demillo1979social}. The precedent we follow is \citet{weyuker1988evaluation}, who uses axioms to
+\emph{exclude} a perfect test-adequacy criterion; we do the same for a perfect drift detector (A2 excludes
+minimum-type aggregations, A5 excludes mean-type aggregations, Theorem~\ref{thm:T6} excludes post-hoc
+correction of acquisition-layer drift).
 
 \paragraph{Evaluator auditing and meta-evaluation.} Existing work falls into five groups: comparisons of
 evaluation \emph{methods} \citep{li2025meta,lv2026whoevaluates}; judge reliability audits
 \citep{gu2024survey,tan2024judgebench,lambert2024rewardbench,zheng2023judging,norman2026reliabilityvalidity};
 reporting templates \citep{mitchell2019modelcards,gebru2021datasheets}; adversarial-use audits; and
-institutional audits \citep{costanzachock2022whoaudits,wang2026whoaudits}. Adjacent negative results include
-audit failure modes \citep{li2026auditingaudit}, protocol-validity critiques \citep{shao2026protocolvalidity},
-sample-level auditing \citep{siedler2026samplelevel}, item-level data release \citep{jiang2026itemlevel},
-leaderboard dynamics \citep{shankar2025leaderboard}, and reproducibility surveys
-\citep{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey,pineau2021improving}. All five groups
-hold the caliber fixed: they audit results, not the act of measuring. We occupy a sixth
+institutional audits \citep{costanzachock2022whoaudits,wang2026whoaudits,zhang2026whogrades}. Adjacent
+negative results include audit failure modes \citep{li2026auditingaudit}, protocol-validity critiques
+\citep{shao2026protocolvalidity}, sample-level auditing \citep{siedler2026samplelevel}, item-level data
+release \citep{jiang2026itemlevel}, leaderboard dynamics \citep{shankar2025leaderboard}, audit-then-score
+pipelines \citep{huang2026deepfact}, and reproducibility surveys
+\citep{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey,pineau2021improving,eve2026validationcrisis}.
+All five hold the caliber fixed: they audit results, not the act of measuring. We occupy a sixth
 position---algebraising caliber drift---and claim no superiority over any of them
 (\citealp{liang2023helm} audits models across a far broader scenario space than our single apparatus).
 
+\paragraph{Software-verification and benchmark evaluation.} The apparatus sits in a mature tradition of
+judging verifiers and test criteria \citep{klein2009sel4,leroy2009compcert,jia2011mutation,just2014mutants,
+cadar2008klee,cui2024falsenegatives,li2024ubfuzz,beyer2026svcomp}, alongside a parallel tradition of
+deliberate benchmark renewal \citep{kiela2021dynabench,white2024livebench,wang2024benchmarkevolving}. Both
+treat the measurement configuration as fixed within a comparison; our point is orthogonal---it is the
+configuration itself that is the variable.
+
 \paragraph{Relation to our first paper.} A companion case study \citep{queyi2027caliber} audits one C/C++
 verification apparatus and reports five findings, each an instance of one of the four drift types below. We
-cite it for those findings only and do not restate its reasoning: that paper asks \emph{what was found};
-this one asks what an audit can find \emph{in principle}.
+cite it for those findings only: that paper asks \emph{what was found}; this one asks what an audit can find
+\emph{in principle}.
 
 % =====================================================================
 \section{Measurement Drift Algebra}
@@ -240,7 +243,9 @@ the protocol (accounting rule, aggregation rule, label vocabulary). We call $Q(M
 \label{eq:rhat}
 \end{equation}
 where $V(x;M)\in\{\catch,\miss,\unk\}$ is the per-sample verdict and $\unk$ is kept out of the denominator
-under the unaware accounting rule. The \emph{mechanism-level capability} $\Rstar(M)$ is the rate the
+under the unaware accounting rule; separating ``tested and missed'' from ``not tested'' is the
+three-valued reading of the four-valued discipline used by the companion paper
+\citep{belnap1977useful}. The \emph{mechanism-level capability} $\Rstar(M)$ is the rate the
 apparatus would report under the reference caliber. $\Rstar$ is latent: it is what is being measured, not
 what is reported. Every difficulty in Section~\ref{sec:ident} traces to that one fact.
 
@@ -454,12 +459,13 @@ Once the caliber is enumerated, deciding whether a caliber change occurred is po
 because silence is a two-cell equality test on the transition matrix (Theorem~\ref{thm:A3}). Deciding
 whether the drift is structural or real is undecidable from paired data alone (Theorem~\ref{thm:A1}).
 Choosing a caliber $S$ to push the reported value above a target, subject to a removal budget
-$|A\setminus S|\le k$, is NP-hard by reduction from max-coverage---and the greedy selection whose
-$(1-1/e)$ guarantee the companion study established is, read at the metatheoretic level, precisely the
-approximation algorithm for caliber arbitrage. The honest limit of that statement: it is a reduction
-argument citing the classical hardness of max-coverage \citep{feige1998threshold}, not a formal reduction
-proved here, and at the scale of the instantiation ($|A|=8$, $2^{8}=256$ calibers) the problem is trivially
-enumerable. Its meaning is for evaluators with many components.
+$|A\setminus S|\le k$, is NP-hard by reduction from max-coverage \citep{feige1998threshold}---and the greedy
+selection whose $(1-1/e)$ guarantee the companion study established is, read at the metatheoretic level,
+precisely the standard greedy approximation for monotone submodular maximisation
+\citep{nemhauser1978submodular,krause2014submodular}. The honest limit of that statement: it is a
+reduction argument citing the classical hardness of max-coverage, not a formal reduction proved here, and at
+the scale of the instantiation ($|A|=8$, $2^{8}=256$ calibers) the problem is trivially enumerable. Its
+meaning is for evaluators with many components.
 
 % =====================================================================
 \section{Metatheory: which axioms are actually doing work}
@@ -495,13 +501,13 @@ A7 & theorem & none ($3840$ witnesses); provable once accounting is written into
 \end{tabular}
 \end{table}
 
-This matters for a practical reason. Writing theorems as axioms makes an axiom system look stronger than it
-is and hides where the real constraint lies. The real constraints are that A2 requires the report to be
-monotone in components---excluding minimum-type calibers---and that A5 requires the coverage structure to be
-submodular---excluding at-least-two and mean-type calibers. Those two exclusions are the axiom-level
-counterparts of the aggregation-drift manipulability results: a mean caliber violates A5 (adding a
-zero-yield component moves the report), and a minimum caliber violates A2 (removing the worst component
-\emph{raises} the report).
+This matters for a practical reason. Labelling a theorem as an axiom inflates the apparent strength of a
+system and obscures where its genuine constraint lies. The real constraints here are that A2 requires the
+report to be monotone in components---excluding minimum-type calibers---and that A5 requires the coverage
+structure to be submodular---excluding at-least-two and mean-type calibers. Those two exclusions are the
+axiom-level counterparts of the aggregation-drift manipulability results: a mean caliber violates A5
+(adding a zero-yield component moves the report), and a minimum caliber violates A2 (removing the worst
+component \emph{raises} the report).
 
 We record an honest gap. A2 and A5 are mutually independent in the sense that A5's witness
 (\texttt{at\_least\_2}) satisfies A2 while violating A5, so A5 does not imply A2; but within the seven-family
@@ -707,20 +713,22 @@ it is the only record from which post-processing drifts are repairable.
 
 Test $H_0$: no drift (equal marginal rates) against $H_1$: drift with marginal difference at least
 $\varepsilon$, using a paired design and a sign test on the discordant pairs (equivalently, an exact
-McNemar test). Let $\psi=\Pr[\text{the two calibers disagree}]$ be the discordance rate and
-$\pi=\Pr[\text{direction}\mid\text{disagreement}]$. The identity
+McNemar test \citep{mcnemar1947note}). Let $\psi=\Pr[\text{the two calibers disagree}]$ be the discordance
+rate and $\pi=\Pr[\text{direction}\mid\text{disagreement}]$. The identity
 \begin{equation}
 \varepsilon=\psi\,(2\pi-1),
 \label{eq:epspsi}
 \end{equation}
-is the hinge of the analysis. With $\alpha=0.05$ and power $0.8$ ($z_{1-\alpha/2}=1.9600$,
-$z_{1-\beta}=0.8416$), the required number of discordant pairs and samples are
+is the hinge of the analysis. With $\alpha=0.05$ and power $0.8$
+\citep{cohen1988statistical} ($z_{1-\alpha/2}=1.9600$, $z_{1-\beta}=0.8416$), the required number of
+discordant pairs and samples are
 \begin{equation}
 m\ \ge\ \frac{\bigl(z_{1-\alpha/2}\sqrt{1/4}+z_{1-\beta}\sqrt{\pi(1-\pi)}\bigr)^{2}}{(\pi-1/2)^{2}},
 \qquad n=\frac{m}{\psi},
 \label{eq:sample}
 \end{equation}
-with an information-theoretic floor $m\ge\log(1/\beta)/\mathrm{KL}(\pi\|1/2)$. For the fully
+the paired-design form of the standard sample-size calculation \citep{connor1987sample}, with an
+information-theoretic floor $m\ge\log(1/\beta)/\mathrm{KL}(\pi\|1/2)$. For the fully
 one-directional case $\pi=1$---not a degenerate corner but the actual situation on this data, where
 $c=0$---an exact binomial criterion replaces the normal approximation:
 $m\ge\lceil\log(\alpha/2)/\log(1/2)\rceil=6$.
@@ -1197,7 +1205,7 @@ Aggregation rule & producing pool & with 3 zero-yield comps & relative change \\
 \caption{Correctability by layer. ``Post-processing'' drifts leave the record $R$ intact and are repaired at
 zero residual cost; ``acquisition'' drifts delete information and are not.}
 \label{tab:correct}
-\begin{tabular}{@{}p{7.3cm} l r r@{}}
+\begin{tabular}{@{}p{6.5cm} l r r@{}}
 \toprule
 Drift & Layer & Correctable? & Residual \\
 \midrule
@@ -1255,15 +1263,15 @@ python tools/compute_697_drift_algebra.py
 # T5 (Chapman-Kolmogorov) + T6 (correctability residual) + health score
 python tools/compute_698_drift_propagation.py
 
-# Four-type quantification: g_app(d), per-asset sensitivity, granularity ladder,
-# manipulability table
+# Four-type quantification: g_app(d), per-asset sensitivity,
+# granularity ladder, manipulability table
 python tools/compute_698_composition_drift.py
 python tools/detect_698_structural_goodhart.py --demo-queyi
 
 # Metatheory: 4096 structures x 7 aggregations
 python tools/compute_700_axiom_independence.py
 
-# Phase-transition scan, critical point and structural early-warning indicators
+# Phase-transition scan, critical point and structural early-warning signals
 python tools/compute_700_phase_transition.py
 
 # Sample complexity, KL floors, sampling-strategy simulation
