@@ -1,0 +1,781 @@
+{
+ "schema": "queyi-698/detectability-bound/v1",
+ "generated_by": "tools/compute_698_detectability_bound.py",
+ "generated_at": "2026-10-09T09:22:14+08:00",
+ "detect_calls": 0,
+ "n": 1147,
+ "decidability": {
+  "criterion": {
+   "D": "只依赖语法 / 静态类型 / 有界状态 ⇒ 存在全输入正确终止的判定程序",
+   "S": "「∃ 执行使其违反」⇒ RE（半可判定）：阳性可靠，阴性不完备 ⇒ 漏报原理上不可避免",
+   "U": "需「输出是否符合意图」的规约（oracle）⇒ 即便给规约，等价性仍不可判定（Rice）"
+  },
+  "n_types": 34,
+  "class_counts": {
+   "U": 6,
+   "S": 28
+  },
+  "table": [
+   {
+    "defect_type": "algorithm_misuse",
+    "n": 35,
+    "catch_rate": 0.228571,
+    "blindspot_rate": 0.771429,
+    "decidability": "U",
+    "reason": "「误用」相对 API 契约 ⇒ 需契约规约",
+    "entropy_bits": 0.775513,
+    "bayes_error_lower_bound": 0.228571
+   },
+   {
+    "defect_type": "alignment",
+    "n": 27,
+    "catch_rate": 0.703704,
+    "blindspot_rate": 0.296296,
+    "decidability": "S",
+    "reason": "∃ 执行访问未对齐地址 ⇒ RE（UBSan alignment check）",
+    "entropy_bits": 0.876716,
+    "bayes_error_lower_bound": 0.296296
+   },
+   {
+    "defect_type": "atomic_ub",
+    "n": 65,
+    "catch_rate": 0.461538,
+    "blindspot_rate": 0.538462,
+    "decidability": "S",
+    "reason": "∃ 执行的原子操作序列违反内存序 ⇒ RE",
+    "entropy_bits": 0.995727,
+    "bayes_error_lower_bound": 0.461538
+   },
+   {
+    "defect_type": "bit_operation",
+    "n": 54,
+    "catch_rate": 0.833333,
+    "blindspot_rate": 0.166667,
+    "decidability": "S",
+    "reason": "∃ 输入使位运算 UB（移位数越界等）⇒ RE",
+    "entropy_bits": 0.650022,
+    "bayes_error_lower_bound": 0.166667
+   },
+   {
+    "defect_type": "condition_variable",
+    "n": 30,
+    "catch_rate": 0.433333,
+    "blindspot_rate": 0.566667,
+    "decidability": "U",
+    "reason": "条件变量的正确等待/通知需活性规约 ⇒ 需 oracle",
+    "entropy_bits": 0.987138,
+    "bayes_error_lower_bound": 0.433333
+   },
+   {
+    "defect_type": "cross_tu_ub",
+    "n": 7,
+    "catch_rate": 0.0,
+    "blindspot_rate": 1.0,
+    "decidability": "S",
+    "reason": "∃ 链接单元组合使 ODR 违反 ⇒ RE（linker 可观察）",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "data_race",
+    "n": 23,
+    "catch_rate": 0.956522,
+    "blindspot_rate": 0.043478,
+    "decidability": "S",
+    "reason": "∃ 执行使两个无同步访问冲突 ⇒ RE（TSan，happens-before 可观察）",
+    "entropy_bits": 0.258019,
+    "bayes_error_lower_bound": 0.043478
+   },
+   {
+    "defect_type": "deadlock",
+    "n": 65,
+    "catch_rate": 0.153846,
+    "blindspot_rate": 0.846154,
+    "decidability": "S",
+    "reason": "∃ 执行使锁循环等待 ⇒ RE（TSan 的 lock-order-inversion 可观察）",
+    "entropy_bits": 0.619382,
+    "bayes_error_lower_bound": 0.153846
+   },
+   {
+    "defect_type": "double_free",
+    "n": 15,
+    "catch_rate": 0.866667,
+    "blindspot_rate": 0.133333,
+    "decidability": "S",
+    "reason": "∃ 执行重复释放 ⇒ RE",
+    "entropy_bits": 0.56651,
+    "bayes_error_lower_bound": 0.133333
+   },
+   {
+    "defect_type": "endianness",
+    "n": 28,
+    "catch_rate": 0.107143,
+    "blindspot_rate": 0.892857,
+    "decidability": "S",
+    "reason": "∃ 执行在不同字节序下行为不同 ⇒ RE（cross-compile 可观察）",
+    "entropy_bits": 0.491237,
+    "bayes_error_lower_bound": 0.107143
+   },
+   {
+    "defect_type": "integer_overflow",
+    "n": 61,
+    "catch_rate": 0.934426,
+    "blindspot_rate": 0.065574,
+    "decidability": "S",
+    "reason": "∃ 输入使有符号整数溢出 ⇒ RE（UBSan）",
+    "entropy_bits": 0.349184,
+    "bayes_error_lower_bound": 0.065574
+   },
+   {
+    "defect_type": "interrupt_safety",
+    "n": 20,
+    "catch_rate": 0.35,
+    "blindspot_rate": 0.65,
+    "decidability": "U",
+    "reason": "中断安全性需并发/时序规约 ⇒ 需 oracle",
+    "entropy_bits": 0.934068,
+    "bayes_error_lower_bound": 0.35
+   },
+   {
+    "defect_type": "iterator_invalidation",
+    "n": 35,
+    "catch_rate": 0.628571,
+    "blindspot_rate": 0.371429,
+    "decidability": "S",
+    "reason": "∃ 执行使迭代器失效后仍使用 ⇒ RE",
+    "entropy_bits": 0.951763,
+    "bayes_error_lower_bound": 0.371429
+   },
+   {
+    "defect_type": "lambda_capture",
+    "n": 30,
+    "catch_rate": 0.833333,
+    "blindspot_rate": 0.166667,
+    "decidability": "S",
+    "reason": "∃ 执行使悬垂捕获被使用 ⇒ RE",
+    "entropy_bits": 0.650022,
+    "bayes_error_lower_bound": 0.166667
+   },
+   {
+    "defect_type": "linker_odr",
+    "n": 24,
+    "catch_rate": 0.416667,
+    "blindspot_rate": 0.583333,
+    "decidability": "S",
+    "reason": "同上，ODR 违反是链接期可检查的 ∃-性质",
+    "entropy_bits": 0.979869,
+    "bayes_error_lower_bound": 0.416667
+   },
+   {
+    "defect_type": "logic_error",
+    "n": 35,
+    "catch_rate": 0.257143,
+    "blindspot_rate": 0.742857,
+    "decidability": "U",
+    "reason": "判定输出是否符合**意图**，需外部规约；无规约时不可判定",
+    "entropy_bits": 0.822404,
+    "bayes_error_lower_bound": 0.257143
+   },
+   {
+    "defect_type": "memory_leak",
+    "n": 28,
+    "catch_rate": 0.892857,
+    "blindspot_rate": 0.107143,
+    "decidability": "S",
+    "reason": "∃ 执行使分配未释放 ⇒ RE（asan/LSan 可观察）",
+    "entropy_bits": 0.491237,
+    "bayes_error_lower_bound": 0.107143
+   },
+   {
+    "defect_type": "memory_order",
+    "n": 42,
+    "catch_rate": 0.5,
+    "blindspot_rate": 0.5,
+    "decidability": "S",
+    "reason": "∃ 执行的内存序使用不当 ⇒ RE",
+    "entropy_bits": 1.0,
+    "bayes_error_lower_bound": 0.5
+   },
+   {
+    "defect_type": "memory_safety",
+    "n": 11,
+    "catch_rate": 1.0,
+    "blindspot_rate": 0.0,
+    "decidability": "S",
+    "reason": "内存安全族（∃ 执行违反空间/时间安全）⇒ RE",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "move_semantics",
+    "n": 30,
+    "catch_rate": 0.5,
+    "blindspot_rate": 0.5,
+    "decidability": "S",
+    "reason": "∃ 执行使用已移动对象 ⇒ RE",
+    "entropy_bits": 1.0,
+    "bayes_error_lower_bound": 0.5
+   },
+   {
+    "defect_type": "null_pointer_deref",
+    "n": 26,
+    "catch_rate": 1.0,
+    "blindspot_rate": 0.0,
+    "decidability": "S",
+    "reason": "∃ 执行空指针解引用 ⇒ RE",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "other_ub",
+    "n": 72,
+    "catch_rate": 0.861111,
+    "blindspot_rate": 0.138889,
+    "decidability": "U",
+    "reason": "笼统标签，无确定语义 ⇒ 无法归类（诚实标注）",
+    "entropy_bits": 0.581321,
+    "bayes_error_lower_bound": 0.138889
+   },
+   {
+    "defect_type": "out_of_bounds",
+    "n": 92,
+    "catch_rate": 0.902174,
+    "blindspot_rate": 0.097826,
+    "decidability": "S",
+    "reason": "∃ 执行越界访问 ⇒ RE",
+    "entropy_bits": 0.462066,
+    "bayes_error_lower_bound": 0.097826
+   },
+   {
+    "defect_type": "raii_violation",
+    "n": 31,
+    "catch_rate": 0.612903,
+    "blindspot_rate": 0.387097,
+    "decidability": "S",
+    "reason": "∃ 执行使资源未按时释放 ⇒ RE（与 memory_leak 同类）",
+    "entropy_bits": 0.9629,
+    "bayes_error_lower_bound": 0.387097
+   },
+   {
+    "defect_type": "register_ub",
+    "n": 20,
+    "catch_rate": 0.55,
+    "blindspot_rate": 0.45,
+    "decidability": "S",
+    "reason": "∃ 执行使寄存器/存储类使用不当 ⇒ RE",
+    "entropy_bits": 0.992774,
+    "bayes_error_lower_bound": 0.45
+   },
+   {
+    "defect_type": "smart_pointer",
+    "n": 30,
+    "catch_rate": 0.9,
+    "blindspot_rate": 0.1,
+    "decidability": "S",
+    "reason": "∃ 执行的智能指针生命周期错误 ⇒ RE",
+    "entropy_bits": 0.468996,
+    "bayes_error_lower_bound": 0.1
+   },
+   {
+    "defect_type": "stl_container_ub",
+    "n": 35,
+    "catch_rate": 0.914286,
+    "blindspot_rate": 0.085714,
+    "decidability": "S",
+    "reason": "∃ 执行触发 STL 前置条件违反 ⇒ RE",
+    "entropy_bits": 0.422001,
+    "bayes_error_lower_bound": 0.085714
+   },
+   {
+    "defect_type": "strict_aliasing",
+    "n": 15,
+    "catch_rate": 0.0,
+    "blindspot_rate": 1.0,
+    "decidability": "S",
+    "reason": "∃ 执行通过不兼容类型访问 ⇒ RE（-fstrict-aliasing 下可观察）",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "string_ub",
+    "n": 35,
+    "catch_rate": 0.885714,
+    "blindspot_rate": 0.114286,
+    "decidability": "S",
+    "reason": "∃ 执行触发字符串 UB ⇒ RE",
+    "entropy_bits": 0.512709,
+    "bayes_error_lower_bound": 0.114286
+   },
+   {
+    "defect_type": "type_punning",
+    "n": 23,
+    "catch_rate": 0.521739,
+    "blindspot_rate": 0.478261,
+    "decidability": "S",
+    "reason": "同上，∃-性质",
+    "entropy_bits": 0.998636,
+    "bayes_error_lower_bound": 0.478261
+   },
+   {
+    "defect_type": "uninitialized_read",
+    "n": 20,
+    "catch_rate": 0.0,
+    "blindspot_rate": 1.0,
+    "decidability": "S",
+    "reason": "∃ 执行读未初始化值 ⇒ RE（UBSan/MSan 可观察）",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "use_after_free",
+    "n": 25,
+    "catch_rate": 1.0,
+    "blindspot_rate": 0.0,
+    "decidability": "S",
+    "reason": "存在执行使已释放内存被访问 ⇒ ∃-性质，RE；asan 可观察",
+    "entropy_bits": 0.0,
+    "bayes_error_lower_bound": 0.0
+   },
+   {
+    "defect_type": "virtual_function",
+    "n": 30,
+    "catch_rate": 0.4,
+    "blindspot_rate": 0.6,
+    "decidability": "U",
+    "reason": "虚函数行为是否符合设计意图 ⇒ 需规约",
+    "entropy_bits": 0.970951,
+    "bayes_error_lower_bound": 0.4
+   },
+   {
+    "defect_type": "volatile_misuse",
+    "n": 28,
+    "catch_rate": 0.071429,
+    "blindspot_rate": 0.928571,
+    "decidability": "S",
+    "reason": "∃ 执行使 volatile 语义被违反 ⇒ RE",
+    "entropy_bits": 0.371232,
+    "bayes_error_lower_bound": 0.071429
+   }
+  ],
+  "predictive_validity": {
+   "mean_catch_rate_S": 0.612388,
+   "mean_catch_rate_U": 0.421693,
+   "observed_difference": 0.190695,
+   "permutation_p_one_sided": 0.110689,
+   "n_S": 28,
+   "n_U": 6,
+   "verdict": "分类**未**显示预测效度（差异可能由样本量/构成造成）"
+  },
+  "honest_note": "这是**论证性分类**，不是逐类的可判定性证明。判据是缺陷属性本身的逻辑形式（∃-执行性质 vs 需规约性质）。Rice 定理给的是「不存在对所有程序正确的判定程序」，而检测任务允许有错误率 —— 两者不矛盾；S 类**可以学**，U 类**没有规约就无从学起**。"
+ },
+ "information_bounds": {
+  "n": 1147,
+  "overall_catch_rate": 0.616391,
+  "unconditional_entropy_bits": 0.960551,
+  "by_defect_type_inter_family": {
+   "n_groups": 34,
+   "irreducible_error_pct": 21.4473,
+   "implied_accuracy_upper_bound": 0.785527
+  },
+  "by_clone_family_intra_family": {
+   "n_groups": 467,
+   "irreducible_error_pct": 7.4978,
+   "implied_accuracy_upper_bound": 0.925022
+  },
+  "by_source_batch": {
+   "n_groups": 9,
+   "irreducible_error_pct": 31.4734,
+   "implied_accuracy_upper_bound": 0.685266
+  },
+  "cross_check_697C": {
+   "intra_family_bound_from_697C_pct": 7.4978,
+   "note": "697-C 的族内下界为 7.4978%；本批独立重算见 by_clone_family_intra_family（应逐位一致）"
+  },
+  "interpretation": "**族间（类型层）下界低于族内下界**是预期的：类型粒度更粗 ⇒ 组内更混杂 ⇒ 不可约错误更高。反过来，族内下界低说明『同一模板的不同变体裁决不一致』只贡献了一部分，大头是**同类型内不同模板之间的差异**。"
+ },
+ "capability_curve": {
+  "n": 1147,
+  "greedy_curve": [
+   {
+    "k": 1,
+    "asset_added": "asan",
+    "marginal_gain_samples": 408,
+    "or_catch_rate_pct": 35.5711
+   },
+   {
+    "k": 2,
+    "asset_added": "ubsan",
+    "marginal_gain_samples": 131,
+    "or_catch_rate_pct": 46.9922
+   },
+   {
+    "k": 3,
+    "asset_added": "tsan",
+    "marginal_gain_samples": 90,
+    "or_catch_rate_pct": 54.8387
+   },
+   {
+    "k": 4,
+    "asset_added": "compiler-warn",
+    "marginal_gain_samples": 54,
+    "or_catch_rate_pct": 59.5466
+   },
+   {
+    "k": 5,
+    "asset_added": "cross-compile",
+    "marginal_gain_samples": 14,
+    "or_catch_rate_pct": 60.7672
+   },
+   {
+    "k": 6,
+    "asset_added": "linker",
+    "marginal_gain_samples": 10,
+    "or_catch_rate_pct": 61.6391
+   },
+   {
+    "k": 7,
+    "asset_added": "wunsequenced",
+    "marginal_gain_samples": 0,
+    "or_catch_rate_pct": 61.6391
+   },
+   {
+    "k": 8,
+    "asset_added": "compile-time",
+    "marginal_gain_samples": 0,
+    "or_catch_rate_pct": 61.6391
+   }
+  ],
+  "marginals_diminishing": true,
+  "saturation_fit": {
+   "lambda": 0.783,
+   "f_sat_samples": 708.33,
+   "f_sat_pct_of_n": 61.7548,
+   "fit_at_k8_pct": 61.6373,
+   "predicted_at_k16_pct": 61.7546,
+   "predicted_at_k32_pct": 61.7548,
+   "sse_samples2": 1209.342,
+   "model": "f(k) = f_sat·(1 − e^{−λk})，**双参数**拟合（λ 网格搜索 + f_sat 闭式最小二乘）",
+   "observed_plateau": {
+    "plateau_from_k": 6,
+    "zero_marginal_assets": [
+     "wunsequenced",
+     "compile-time"
+    ],
+    "note": "实测 k=6 即达 61.64%，k=7/8 边际为 0（两个结构性恒 unknown 资产）⇒ 曲线已平台"
+   }
+  },
+  "submodular_upper_bound": {
+   "f8_samples": 707,
+   "last_nonzero_marginal_samples": 10,
+   "upper_bound_k16_samples": 787,
+   "upper_bound_k32_samples": 947,
+   "upper_bound_k16_pct": 68.6138,
+   "upper_bound_k32_pct": 82.5632,
+   "note": "由 f 子模 ⇒ 边际递减 ⇒ f(8+j) ≤ f(8) + j·Δ_last（684-A2 已实测验证子模性）"
+  },
+  "submodularity_random_check": {
+   "tests": 200,
+   "violations": 0,
+   "pass": true,
+   "note": "随机抽 200 组 (S,a,b) 检验 Δ_a(S) ≥ Δ_a(S∪{b})；与 684-A2 的结论交叉验证"
+  },
+  "honest_note": "k>8 的外推是**模型外推**，不是实测：Queyi 只有 8 个资产。饱和曲线与子模上界给出的是**两个不同强度**的界 —— 前者是拟合（可能过拟合 8 个点），后者是**严格上界**（只要子模性成立就成立）。引用时应以后者为准。"
+ },
+ "operational_levels": {
+  "definitions": {
+   "L1": "现有检测器可检测（检出率 >50%）",
+   "L2": "需要新检测器才能检测（当前 <50%，但缺陷属 ∃-执行性质 ⇒ 原理上可达）",
+   "L3": "即使新检测器也很难（判定需外部规约 / oracle）"
+  },
+  "counts": {
+   "L3": 5,
+   "L1": 19,
+   "L2": 10
+  },
+  "by_level": {
+   "L1": [
+    {
+     "defect_type": "memory_safety",
+     "n": 11,
+     "catch_rate": 1.0,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "null_pointer_deref",
+     "n": 26,
+     "catch_rate": 1.0,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "use_after_free",
+     "n": 25,
+     "catch_rate": 1.0,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "data_race",
+     "n": 23,
+     "catch_rate": 0.956522,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "integer_overflow",
+     "n": 61,
+     "catch_rate": 0.934426,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "stl_container_ub",
+     "n": 35,
+     "catch_rate": 0.914286,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "out_of_bounds",
+     "n": 92,
+     "catch_rate": 0.902174,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "smart_pointer",
+     "n": 30,
+     "catch_rate": 0.9,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "memory_leak",
+     "n": 28,
+     "catch_rate": 0.892857,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "string_ub",
+     "n": 35,
+     "catch_rate": 0.885714,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "double_free",
+     "n": 15,
+     "catch_rate": 0.866667,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "other_ub",
+     "n": 72,
+     "catch_rate": 0.861111,
+     "decidability": "U",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "bit_operation",
+     "n": 54,
+     "catch_rate": 0.833333,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "lambda_capture",
+     "n": 30,
+     "catch_rate": 0.833333,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "alignment",
+     "n": 27,
+     "catch_rate": 0.703704,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "iterator_invalidation",
+     "n": 35,
+     "catch_rate": 0.628571,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "raii_violation",
+     "n": 31,
+     "catch_rate": 0.612903,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "register_ub",
+     "n": 20,
+     "catch_rate": 0.55,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    },
+    {
+     "defect_type": "type_punning",
+     "n": 23,
+     "catch_rate": 0.521739,
+     "decidability": "S",
+     "level": "L1",
+     "why": "现有检测器已可检测（>50%）"
+    }
+   ],
+   "L2": [
+    {
+     "defect_type": "memory_order",
+     "n": 42,
+     "catch_rate": 0.5,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "move_semantics",
+     "n": 30,
+     "catch_rate": 0.5,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "atomic_ub",
+     "n": 65,
+     "catch_rate": 0.461538,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "linker_odr",
+     "n": 24,
+     "catch_rate": 0.416667,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "deadlock",
+     "n": 65,
+     "catch_rate": 0.153846,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "endianness",
+     "n": 28,
+     "catch_rate": 0.107143,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "volatile_misuse",
+     "n": 28,
+     "catch_rate": 0.071429,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "cross_tu_ub",
+     "n": 7,
+     "catch_rate": 0.0,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "strict_aliasing",
+     "n": 15,
+     "catch_rate": 0.0,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    },
+    {
+     "defect_type": "uninitialized_read",
+     "n": 20,
+     "catch_rate": 0.0,
+     "decidability": "S",
+     "level": "L2",
+     "why": "当前 <50%，但属 ∃-执行性质 ⇒ 换/加检测器在原理上可达"
+    }
+   ],
+   "L3": [
+    {
+     "defect_type": "condition_variable",
+     "n": 30,
+     "catch_rate": 0.433333,
+     "decidability": "U",
+     "level": "L3",
+     "why": "需外部规约（oracle）才能判定 ⇒ 加检测器也难以根本解决"
+    },
+    {
+     "defect_type": "virtual_function",
+     "n": 30,
+     "catch_rate": 0.4,
+     "decidability": "U",
+     "level": "L3",
+     "why": "需外部规约（oracle）才能判定 ⇒ 加检测器也难以根本解决"
+    },
+    {
+     "defect_type": "interrupt_safety",
+     "n": 20,
+     "catch_rate": 0.35,
+     "decidability": "U",
+     "level": "L3",
+     "why": "需外部规约（oracle）才能判定 ⇒ 加检测器也难以根本解决"
+    },
+    {
+     "defect_type": "logic_error",
+     "n": 35,
+     "catch_rate": 0.257143,
+     "decidability": "U",
+     "level": "L3",
+     "why": "需外部规约（oracle）才能判定 ⇒ 加检测器也难以根本解决"
+    },
+    {
+     "defect_type": "algorithm_misuse",
+     "n": 35,
+     "catch_rate": 0.228571,
+     "decidability": "U",
+     "level": "L3",
+     "why": "需外部规约（oracle）才能判定 ⇒ 加检测器也难以根本解决"
+    }
+   ]
+  },
+  "sample_weighted_share": {
+   "L3": 13.08,
+   "L1": 58.67,
+   "L2": 28.25
+  }
+ }
+}
