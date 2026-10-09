@@ -1,0 +1,1121 @@
+{
+ "schema": "queyi-700/llm-drift/v1",
+ "generated_by": "tools/compute_700_llm_drift.py",
+ "generated_at": "2026-10-09T09:43:58+08:00",
+ "detect_calls": 0,
+ "data_provenance": {
+  "source": "data/692_llm_audit_raw.jsonl + data/692_llm_audit_results.json",
+  "why_not_699": "**699 未完成**（`data/raw_external/` 不存在，已实测）⇒ 按任务书的降级条款改用**仓库内已有的 LLM 评估数据**（692 的 LLM 臂）。",
+  "design": {
+   "n_samples": 80,
+   "models": [
+    "A_glm-4.5",
+    "B_glm-4-flash"
+   ],
+   "prompts": [
+    "p1",
+    "p2"
+   ],
+   "calls": 480,
+   "temperature": 0
+  },
+  "honest_limit": "692 的 LLM 臂**不是**为跨领域迁移设计的：只有 2 个模型、2 个 prompt、80 个样本；模型家族是**推理型 vs 非推理型**（不是两家公司）。"
+ },
+ "type_II_environment_axis_model_change": {
+  "pp1_A_glm-4.5_vs_B_glm-4-flash": {
+   "left": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p1",
+    "long_run": true
+   },
+   "right": {
+    "model_slot": "B_glm-4-flash",
+    "prompt": "p1",
+    "long_run": false
+   },
+   "n_pairs": 55,
+   "n_agree": 32,
+   "agreement_pct": 58.1818,
+   "confusion_3x3": {
+    "catch->catch": 29,
+    "catch->miss": 3,
+    "miss->catch": 5,
+    "miss->miss": 3,
+    "unknown->catch": 14,
+    "unknown->miss": 1
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 3,
+    "c_right_only_catch": 19,
+    "discordant": 22,
+    "psi": 0.4,
+    "one_directional": false,
+    "mcnemar_exact_p": 0.0008554458618164062
+   },
+   "disagreement_samples": [
+    "A081",
+    "B061",
+    "C026",
+    "C071",
+    "C072",
+    "C094",
+    "C101",
+    "C160",
+    "D072",
+    "D110",
+    "D130",
+    "E022",
+    "E100",
+    "E137",
+    "E164",
+    "E172",
+    "E183",
+    "E192",
+    "F020",
+    "F077",
+    "F079",
+    "G068",
+    "G093"
+   ]
+  },
+  "pp2_A_glm-4.5_vs_B_glm-4-flash": {
+   "left": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p2",
+    "long_run": true
+   },
+   "right": {
+    "model_slot": "B_glm-4-flash",
+    "prompt": "p2",
+    "long_run": false
+   },
+   "n_pairs": 58,
+   "n_agree": 36,
+   "agreement_pct": 62.069,
+   "confusion_3x3": {
+    "catch->catch": 34,
+    "catch->miss": 1,
+    "miss->catch": 5,
+    "miss->miss": 2,
+    "unknown->catch": 13,
+    "unknown->miss": 2,
+    "contradiction->catch": 1
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 1,
+    "c_right_only_catch": 19,
+    "discordant": 20,
+    "psi": 0.344828,
+    "one_directional": false,
+    "mcnemar_exact_p": 4.00543212890625e-05
+   },
+   "disagreement_samples": [
+    "A081",
+    "C026",
+    "C071",
+    "C072",
+    "C101",
+    "D110",
+    "D130",
+    "E022",
+    "E100",
+    "E101",
+    "E137",
+    "E164",
+    "E172",
+    "E183",
+    "E192",
+    "F020",
+    "F077",
+    "F079",
+    "F081",
+    "F082",
+    "F128",
+    "G068"
+   ]
+  }
+ },
+ "type_I_caliber_axis_prompt_change": {
+  "A_glm-4.5": {
+   "left": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p1",
+    "long_run": true
+   },
+   "right": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p2",
+    "long_run": true
+   },
+   "n_pairs": 50,
+   "n_agree": 38,
+   "agreement_pct": 76.0,
+   "confusion_3x3": {
+    "catch->catch": 23,
+    "catch->unknown": 5,
+    "miss->miss": 6,
+    "miss->unknown": 1,
+    "unknown->catch": 4,
+    "unknown->miss": 1,
+    "unknown->unknown": 9,
+    "unknown->contradiction": 1
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 5,
+    "c_right_only_catch": 4,
+    "discordant": 9,
+    "psi": 0.18,
+    "one_directional": false,
+    "mcnemar_exact_p": 1.0
+   },
+   "disagreement_samples": [
+    "B061",
+    "C160",
+    "D072",
+    "D130",
+    "E101",
+    "E137",
+    "E164",
+    "E192",
+    "F081",
+    "F082",
+    "F128",
+    "G093"
+   ]
+  },
+  "B_glm-4-flash": {
+   "left": {
+    "model_slot": "B_glm-4-flash",
+    "prompt": "p1",
+    "long_run": false
+   },
+   "right": {
+    "model_slot": "B_glm-4-flash",
+    "prompt": "p2",
+    "long_run": false
+   },
+   "n_pairs": 80,
+   "n_agree": 77,
+   "agreement_pct": 96.25,
+   "confusion_3x3": {
+    "catch->catch": 69,
+    "catch->miss": 3,
+    "miss->miss": 8
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 3,
+    "c_right_only_catch": 0,
+    "discordant": 3,
+    "psi": 0.0375,
+    "one_directional": true,
+    "mcnemar_exact_p": 0.25
+   },
+   "disagreement_samples": [
+    "A064",
+    "A067",
+    "D147"
+   ]
+  }
+ },
+ "type_III_label_axis": {
+  "by_model": {
+   "A_glm-4.5": {
+    "defect_type_fine": {
+     "n_categories": 34,
+     "n_high": 6,
+     "share_pct": 17.6471
+    },
+    "defect_group_coarse": {
+     "n_categories": 11,
+     "n_high": 1,
+     "share_pct": 9.0909
+    },
+    "share_spread_pp": 8.5562
+   },
+   "B_glm-4-flash": {
+    "defect_type_fine": {
+     "n_categories": 34,
+     "n_high": 2,
+     "share_pct": 5.8824
+    },
+    "defect_group_coarse": {
+     "n_categories": 11,
+     "n_high": 0,
+     "share_pct": 0.0
+    },
+    "share_spread_pp": 5.8824
+   }
+  },
+  "interpretation": "标签轴在 LLM 领域**存在且可测**：同一批 judge 裁决在细/粗词表下给出不同的「高盲类占比」。这与 C++ 领域（698-A Type III）同构。"
+ },
+ "type_IV_aggregation_axis": {
+  "rows": [
+   {
+    "model_slot": "A_glm-4.5",
+    "prereg_p1_tiebreak": {
+     "conditional_recall_pct": 100.0,
+     "false_report_rate_pct": 72.0,
+     "unknown_n": 18,
+     "n_judged": 62
+    },
+    "asset_consistent_or": {
+     "conditional_recall_pct": 100.0,
+     "false_report_rate_pct": 70.9677,
+     "unknown_n": 10,
+     "n_judged": 70
+    },
+    "delta_conditional_recall_pp": 0.0,
+    "delta_false_report_rate_pp": 1.0323,
+    "delta_unknown_n": 8,
+    "delta_n_judged": -8
+   },
+   {
+    "model_slot": "B_glm-4-flash",
+    "prereg_p1_tiebreak": {
+     "conditional_recall_pct": 95.0,
+     "false_report_rate_pct": 85.0,
+     "unknown_n": 0,
+     "n_judged": 80
+    },
+    "asset_consistent_or": {
+     "conditional_recall_pct": 95.0,
+     "false_report_rate_pct": 85.0,
+     "unknown_n": 0,
+     "n_judged": 80
+    },
+    "delta_conditional_recall_pp": 0.0,
+    "delta_false_report_rate_pp": 0.0,
+    "delta_unknown_n": 0,
+    "delta_n_judged": 0
+   }
+  ],
+  "max_abs_delta_false_report_rate_pp": 1.0323,
+  "detectable": true,
+  "interpretation": "聚合轴在 LLM 领域**可测但效应很小**：两种聚合规则下 glm-4.5 的假报率差 1.03pp、被判样本数差 8；glm-4-flash 完全不变。⇒ 该领域的聚合轴**不如 C++ 领域敏感**（C++ 的均值口径可被拉低 33.33%，698-A §4）。"
+ },
+ "type_I_budget_axis_max_tokens": {
+  "pp1_glm4.5_max2000_vs_max700": {
+   "left": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p1",
+    "long_run": true
+   },
+   "right": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p1",
+    "long_run": false
+   },
+   "n_pairs": 13,
+   "n_agree": 10,
+   "agreement_pct": 76.9231,
+   "confusion_3x3": {
+    "catch->catch": 9,
+    "miss->miss": 1,
+    "unknown->catch": 3
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 0,
+    "c_right_only_catch": 3,
+    "discordant": 3,
+    "psi": 0.230769,
+    "one_directional": false,
+    "mcnemar_exact_p": 0.25
+   },
+   "disagreement_samples": [
+    "B061",
+    "C160",
+    "D072"
+   ]
+  },
+  "pp2_glm4.5_max2000_vs_max700": {
+   "left": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p2",
+    "long_run": true
+   },
+   "right": {
+    "model_slot": "A_glm-4.5",
+    "prompt": "p2",
+    "long_run": false
+   },
+   "n_pairs": 8,
+   "n_agree": 8,
+   "agreement_pct": 100.0,
+   "confusion_3x3": {
+    "catch->catch": 7,
+    "miss->miss": 1
+   },
+   "binary_catch_vs_not": {
+    "b_left_only_catch": 0,
+    "c_right_only_catch": 0,
+    "discordant": 0,
+    "psi": 0.0,
+    "one_directional": true,
+    "mcnemar_exact_p": 1.0
+   },
+   "disagreement_samples": []
+  }
+ },
+ "structural_goodhart": {
+  "by_model": {
+   "A_glm-4.5": {
+    "n": 80,
+    "tp": 36,
+    "fp": 21,
+    "fn": 4,
+    "tn": 19,
+    "precision": 0.631579,
+    "recall": 0.9,
+    "structural_goodhart_rate_pct": 26.25,
+    "definition": "结构性 Goodhart 率 = 判官说 catch 而声明标签说 miss 的比例（= 1 − precision）",
+    "false_positive_cases": [
+     {
+      "uid": "E007",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The producer stores to stage2 using std::memory_order_relaxed, which fails to establish a happens-before relationship with the consumer's acquire load, allowing"
+     },
+     {
+      "uid": "E047",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The failure memory order (std::memory_order_acq_rel) is stronger than the success memory order (std::memory_order_relaxed) and is not a valid failure order, whi"
+     },
+     {
+      "uid": "E057",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "Casting a pointer to a plain int to std::atomic<int>* and dereferencing it violates strict aliasing rules and object lifetime requirements, causing undefined be"
+     },
+     {
+      "uid": "E061",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The increment is performed as a separate load and store instead of an atomic read-modify-write operation like fetch_add, causing a race condition and lost updat"
+     },
+     {
+      "uid": "F036",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Dereferencing a reinterpret_cast<uint16_t*> on an unsigned char array violates the strict aliasing rule, causing undefined behavior."
+     },
+     {
+      "uid": "F041",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Dereferencing a reinterpret_cast from unsigned char* to uint32_t* violates the strict aliasing rule, resulting in undefined behavior."
+     },
+     {
+      "uid": "F065",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Type punning a double to uint64_t via reinterpret_cast violates the strict aliasing rule, which causes undefined behavior."
+     },
+     {
+      "uid": "F070",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Dereferencing the casted pointer violates strict aliasing rules and causes misaligned access, both of which result in undefined behavior."
+     },
+     {
+      "uid": "F081",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 0.95,
+      "reason": "Referring to an object defined with a volatile-qualified type through a non-volatile glvalue (obtained via const_cast) is undefined behavior."
+     },
+     {
+      "uid": "F082",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Accessing an object defined with a volatile-qualified type through a non-volatile-qualified lvalue after casting away volatile with const_cast results in undefi"
+     },
+     {
+      "uid": "F086",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Accessing an object defined with a volatile-qualified type through a non-volatile-qualified lvalue, as done when dereferencing p, is undefined behavior."
+     },
+     {
+      "uid": "F128",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Casting an integer value outside the valid range of an enumeration without a fixed underlying type to that enum type results in undefined behavior."
+     },
+     {
+      "uid": "A060",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "The variable 'x' is used uninitialized in the expression 'x + 7', which causes undefined behavior."
+     },
+     {
+      "uid": "A064",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "The variable 'a' is read without being initialized, which causes undefined behavior."
+     },
+     {
+      "uid": "A067",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "The variable 'd' is used uninitialized in the condition, which causes undefined behavior."
+     },
+     {
+      "uid": "A072",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "Reading uninitialized members p.a and p.b results in undefined behavior."
+     },
+     {
+      "uid": "C157",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "optimization_sensitive",
+      "confidence": 1.0,
+      "reason": "Accessing a float object through an int pointer violates the strict aliasing rule, resulting in undefined behavior."
+     },
+     {
+      "uid": "D015",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "Dereferencing an iterator that was invalidated by a prior call to vector::erase results in undefined behavior."
+     },
+     {
+      "uid": "D023",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "Inserting elements into the unordered_map can trigger a rehash, which invalidates all iterators, making the subsequent dereference of 'it' undefined behavior."
+     },
+     {
+      "uid": "D032",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "The iterator 'e' is invalidated by the vector insertion, so using it in a comparison results in undefined behavior."
+     },
+     {
+      "uid": "D130",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 0.95,
+      "reason": "Passing an integer initial value (0) to std::accumulate for a container of doubles causes the accumulation to use integer arithmetic, silently truncating the fr"
+     }
+    ],
+    "fp_by_defect_group": {
+     "embedded": 8,
+     "concurrency": 4,
+     "memory_safety": 4,
+     "stl": 4,
+     "optimization_sensitive": 1
+    }
+   },
+   "B_glm-4-flash": {
+    "n": 80,
+    "tp": 38,
+    "fp": 34,
+    "fn": 2,
+    "tn": 6,
+    "precision": 0.527778,
+    "recall": 0.95,
+    "structural_goodhart_rate_pct": 42.5,
+    "definition": "结构性 Goodhart 率 = 判官说 catch 而声明标签说 miss 的比例（= 1 − precision）",
+    "false_positive_cases": [
+     {
+      "uid": "E007",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The consumer thread may read an uninitialized value of 'payload' if the producer does not complete the first store before the consumer starts waiting for 'stage"
+     },
+     {
+      "uid": "E022",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "Registry instance is deleted and then reused."
+     },
+     {
+      "uid": "E047",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The use of std::memory_order_relaxed can lead to a race condition with other threads."
+     },
+     {
+      "uid": "E057",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The use of std::memory_order_relaxed in fetch_add can lead to a memory error if the compiler reorders the operations."
+     },
+     {
+      "uid": "E061",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The use of relaxed memory order in load and store operations can lead to a race condition where the increment operation may not be atomic."
+     },
+     {
+      "uid": "E137",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The use of std::memory_order_acquire and std::memory_order_release without proper synchronization can lead to a race condition."
+     },
+     {
+      "uid": "E164",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The `urgent` function may read the `state` variable after the `commit` function has modified it but before the `commit` function has released the mutex, leading"
+     },
+     {
+      "uid": "E172",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The producer thread may notify the condition variable after the consumer thread has already consumed the items, leading to a spurious wake-up and undefined beha"
+     },
+     {
+      "uid": "E183",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The `issuer` function increments `permits` and then immediately notifies all waiters, which can lead to a race condition where `permits` is incremented but not "
+     },
+     {
+      "uid": "E192",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "concurrency",
+      "confidence": 1.0,
+      "reason": "The `trigger` function sets `one_shot` to true and then notifies all waiters, but it does not ensure that the `served.fetch_add(1, std::memory_order_release)` o"
+     },
+     {
+      "uid": "F020",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "The order of members in the struct Packed is not guaranteed to match the order of their memory layout due to packing, leading to undefined behavior when casting"
+     },
+     {
+      "uid": "F036",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Pointer cast to an object of an unrelated type."
+     },
+     {
+      "uid": "F041",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Pointer cast to an object of an unrelated type."
+     },
+     {
+      "uid": "F065",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": " reinterpret_cast is used to cast a double to an uint64_t, which can lead to undefined behavior due to the loss of precision."
+     },
+     {
+      "uid": "F070",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Pointer arithmetic with 'raw + 1' may cause undefined behavior if 'raw' is not properly aligned for 'uint64_t'."
+     },
+     {
+      "uid": "F077",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Writing to a volatile pointer without proper synchronization can lead to undefined behavior."
+     },
+     {
+      "uid": "F079",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Writing to a volatile pointer without proper synchronization can lead to undefined behavior."
+     },
+     {
+      "uid": "F081",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "const_cast is used to cast away constness, which is not appropriate in this context as the object is not const."
+     },
+     {
+      "uid": "F082",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "const_cast is used to cast away constness, which is not appropriate in this context as the object is not const."
+     },
+     {
+      "uid": "F086",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "const_cast and reinterpret_cast are used to modify a const volatile variable."
+     },
+     {
+      "uid": "F128",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "embedded",
+      "confidence": 1.0,
+      "reason": "Bitwise OR with 0x80000000u may cause undefined behavior due to enum overflow."
+     },
+     {
+      "uid": "C026",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "language_semantics",
+      "confidence": 1.0,
+      "reason": "std::move(a) invalidates a, making subsequent use of a undefined behavior."
+     },
+     {
+      "uid": "C071",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "language_semantics",
+      "confidence": 1.0,
+      "reason": "Virtual function call on a base class pointer to a derived class object can lead to undefined behavior if the base class does not have a virtual destructor."
+     },
+     {
+      "uid": "C072",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "language_semantics",
+      "confidence": 1.0,
+      "reason": "Virtual function call on a base class pointer to a derived class object can lead to undefined behavior if the base class does not have a virtual destructor."
+     },
+     {
+      "uid": "A060",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "Variable 'x' is used without being initialized."
+     },
+     {
+      "uid": "A064",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "Variable 'a' is not initialized before being used in a conditional statement."
+     },
+     {
+      "uid": "A067",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "memory_safety",
+      "confidence": 1.0,
+      "reason": "Variable 'd' is not initialized before being used in a conditional statement."
+     },
+     {
+      "uid": "C101",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "odr_link",
+      "confidence": 1.0,
+      "reason": "Function 'fa' returns the result of 'f', which may not be intended as a direct alias."
+     },
+     {
+      "uid": "C157",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "optimization_sensitive",
+      "confidence": 1.0,
+      "reason": "Passing a pointer to an integer by value to a function expecting a pointer to an integer by reference."
+     },
+     {
+      "uid": "C160",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "optimization_sensitive",
+      "confidence": 1.0,
+      "reason": "Passing a pointer to an integer by value to a function expecting a pointer to an integer by reference."
+     },
+     {
+      "uid": "G068",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "real_world",
+      "confidence": 1.0,
+      "reason": "The `resend_bytes` function does not check if `confirmed_offset` is within the bounds of `SEND_BUF`, potentially causing buffer overruns."
+     },
+     {
+      "uid": "D015",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "Erase operation may invalidate iterator 'it'."
+     },
+     {
+      "uid": "D023",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "The iterator 'it' is used after the map has been modified."
+     },
+     {
+      "uid": "D032",
+      "judge": "catch",
+      "expected": "miss",
+      "defect_group": "stl",
+      "confidence": 1.0,
+      "reason": "v.end() is reassigned before the insert operation."
+     }
+    ],
+    "fp_by_defect_group": {
+     "embedded": 11,
+     "concurrency": 10,
+     "language_semantics": 3,
+     "memory_safety": 3,
+     "stl": 3,
+     "optimization_sensitive": 2,
+     "odr_link": 1,
+     "real_world": 1
+    }
+   }
+  },
+  "note": "真值参照 = 冻结矩阵的 expected_verdict（**声明可检出性标签**），不是人类标注（692 已登记人类 IAA = 0）⇒ 「judge 错」与「标签错」不可分。"
+ },
+ "published_692_cross_check": {
+  "A_glm-4.5": {
+   "published_prompt_invariance": {
+    "agree": 70,
+    "total": 80,
+    "rate_pct": 87.5,
+    "disagreements": [
+     {
+      "uid": "C094",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "D130",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "E101",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "E137",
+      "p1": "unknown",
+      "p2": "miss"
+     },
+     {
+      "uid": "E164",
+      "p1": "unknown",
+      "p2": "contradiction"
+     },
+     {
+      "uid": "E192",
+      "p1": "miss",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F081",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F082",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "F128",
+      "p1": "catch",
+      "p2": "unknown"
+     },
+     {
+      "uid": "G093",
+      "p1": "unknown",
+      "p2": "catch"
+     }
+    ]
+   },
+   "published_calibration_ece": 0.2927,
+   "published_false_report": {
+    "on_expected_miss": 18,
+    "silent_on_expected_miss": 7,
+    "unknown_on_expected_miss": 15,
+    "false_report_rate_pct": 72.0
+   },
+   "published_three_components": {
+    "catch": 37,
+    "miss": 0,
+    "unknown": 18,
+    "conditional_recall_pct": 100.0
+   },
+   "run_tag": "a2000",
+   "max_tokens": 2000
+  },
+  "B_glm-4-flash": {
+   "published_prompt_invariance": {
+    "agree": 77,
+    "total": 80,
+    "rate_pct": 96.25,
+    "disagreements": [
+     {
+      "uid": "A064",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "A067",
+      "p1": "catch",
+      "p2": "miss"
+     },
+     {
+      "uid": "D147",
+      "p1": "catch",
+      "p2": "miss"
+     }
+    ]
+   },
+   "published_calibration_ece": 0.45,
+   "published_false_report": {
+    "on_expected_miss": 34,
+    "silent_on_expected_miss": 6,
+    "unknown_on_expected_miss": 0,
+    "false_report_rate_pct": 85.0
+   },
+   "published_three_components": {
+    "catch": 38,
+    "miss": 2,
+    "unknown": 0,
+    "conditional_recall_pct": 95.0
+   },
+   "run_tag": "default",
+   "max_tokens": 700
+  }
+ },
+ "run_inference_robustness": {
+  "pp1": {
+   "glm4.5_long_run_agreement_pct": 58.1818,
+   "glm4.5_short_run_agreement_pct": 97.3684,
+   "range_pp": 39.1866
+  },
+  "pp2": {
+   "glm4.5_long_run_agreement_pct": 62.069,
+   "glm4.5_short_run_agreement_pct": 83.3333,
+   "range_pp": 21.2643
+  }
+ },
+ "top10_structural_goodhart_cases": [
+  {
+   "uid": "E007",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "concurrency",
+   "confidence": 1.0,
+   "reason": "The producer stores to stage2 using std::memory_order_relaxed, which fails to establish a happens-before relationship with the consumer's acquire load, allowing",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "E047",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "concurrency",
+   "confidence": 1.0,
+   "reason": "The failure memory order (std::memory_order_acq_rel) is stronger than the success memory order (std::memory_order_relaxed) and is not a valid failure order, whi",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "E057",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "concurrency",
+   "confidence": 1.0,
+   "reason": "Casting a pointer to a plain int to std::atomic<int>* and dereferencing it violates strict aliasing rules and object lifetime requirements, causing undefined be",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "E061",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "concurrency",
+   "confidence": 1.0,
+   "reason": "The increment is performed as a separate load and store instead of an atomic read-modify-write operation like fetch_add, causing a race condition and lost updat",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F036",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Dereferencing a reinterpret_cast<uint16_t*> on an unsigned char array violates the strict aliasing rule, causing undefined behavior.",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F041",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Dereferencing a reinterpret_cast from unsigned char* to uint32_t* violates the strict aliasing rule, resulting in undefined behavior.",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F065",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Type punning a double to uint64_t via reinterpret_cast violates the strict aliasing rule, which causes undefined behavior.",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F070",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Dereferencing the casted pointer violates strict aliasing rules and causes misaligned access, both of which result in undefined behavior.",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F082",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Accessing an object defined with a volatile-qualified type through a non-volatile-qualified lvalue after casting away volatile with const_cast results in undefi",
+   "model_slot": "A_glm-4.5"
+  },
+  {
+   "uid": "F086",
+   "judge": "catch",
+   "expected": "miss",
+   "defect_group": "embedded",
+   "confidence": 1.0,
+   "reason": "Accessing an object defined with a volatile-qualified type through a non-volatile-qualified lvalue, as done when dereferencing p, is undefined behavior.",
+   "model_slot": "A_glm-4.5"
+  }
+ ],
+ "migration_score": {
+  "components": {
+   "C1_caliber_axis_prompt": {
+    "score": 15.62,
+    "max": 25,
+    "evidence": "已发布 prompt 不变性最低 87.5% ⇒ 不一致 12.5%；本批重算 24.0%（见 cross_check）"
+   },
+   "C2_environment_axis_model": {
+    "score": 16.25,
+    "max": 25,
+    "evidence": "已发布假报率跨模型差 13.0pp（配对表因 run 推断不可靠，见 robustness）",
+    "confidence": "中（用已发布聚合量，非配对表）"
+   },
+   "C3_aggregation_axis": {
+    "score": 2.58,
+    "max": 25,
+    "evidence": "换聚合规则最大效应 1.0323pp"
+   },
+   "C4_label_axis": {
+    "score": 21.39,
+    "max": 25,
+    "evidence": "换分组词表最大摆幅 8.5562pp"
+   }
+  },
+  "total": 55.839999999999996,
+  "verdict": "**协议可直接迁移**（≥ 50 分）",
+  "cpp_baseline": {
+   "note": "C++ 领域（Queyi）四型全部可测，作为 100 分的参照点",
+   "type_I_measured": "g_app 5.30 → 29.88pp（698-A）",
+   "type_II_measured": "−35.34pp（697-B）",
+   "type_III_measured": "13/34 vs 18/70（698-A）",
+   "type_IV_measured": "均值口径可被拉低 33.33%（698-A）"
+  }
+ },
+ "comparison_with_cpp": {
+  "caliber_axis": {
+   "cpp": "环境漂移 −35.34pp（697-B）",
+   "llm": "prompt 变体不一致率 [76.0, 96.25]%"
+  },
+  "environment_axis": {
+   "cpp": "E1→E2 60.07% → 24.74%（692）",
+   "llm": "judge 变体不一致率 [58.1818, 62.069]%"
+  },
+  "structural_goodhart": {
+   "cpp": "g_app 中 72.2% 来自构成（698-A）",
+   "llm": "见 structural_goodhart.by_model 的假报率"
+  }
+ },
+ "honest_limits": [
+  "**699 未完成** ⇒ 用的是 692 的 LLM 臂，样本量与模型数都远小于理想设计。",
+  "真值参照是**声明标签**（expected_verdict），人类 IAA = 0 ⇒ 「judge 错」与「标签错」不可分。",
+  "只有 2 个 prompt、2 个模型 ⇒ 口径/环境轴的**控制点各只有 2 个**，无法拟合趋势。",
+  "迁移性分数的阈值（50）与分量权重（各 25）是本批自定的，无外部标定。",
+  "跨领域结论只覆盖「LLM-as-a-Judge」这一种 LLM 评估形态，不代表全部 LLM 评估。"
+ ]
+}
