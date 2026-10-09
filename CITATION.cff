@@ -2,15 +2,16 @@
 # 规范：CFF 1.2.0（https://citation-file-format.github.io/）
 cff-version: 1.2.0
 message: "If you use the Queyi datasets, real-world benchmark, or tooling, please cite this repository."
-title: "Queyi: Failure-Driven Verifier Evolution for C++ Defect Detection (datasets, benchmark, and tooling)"
+title: "Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation"
 abstract: >-
-  Queyi is a research line and reproducible toolchain for failure-driven evolution of
-  C++ defect detector portfolios: four-state verdicts (pass/fail/unknown/contradict),
-  an append-only ledger with Merkle integrity, and a deterministic portfolio operator E
-  scored by failure coverage / novelty / cost / redundancy. This repository also hosts
-  (a) a 1,147-sample x 8-asset frozen detection matrix, and (b) a real-world benchmark of
-  reconstructed C++ defects with traceable CVE/issue/commit provenance and NVD-verified
-  metadata.
+  Queyi is a research line and reproducible audit toolchain for software-verification
+  evaluation: it asks whether an apparently convincing evaluation result survives an
+  audit of the evaluator that produced it. It ships a measurement-drift algebra (caliber
+  signature, four drift types, seven axioms), a capability-boundary map of the instrument,
+  and a real-world validation arm. This repository also hosts (a) a 1,147-sample x 8-asset
+  frozen detection matrix with four-state verdicts (pass/fail/unknown/contradict) and an
+  append-only ledger with Merkle integrity, and (b) a real-world benchmark of reconstructed
+  C++ defects with traceable CVE/issue/commit provenance and NVD-verified metadata.
 type: software
 authors:
   - family-names: "Liao"
@@ -31,7 +32,7 @@ version: "1.0.0"
 date-released: "2026-10-07"
 preferred-citation:
   type: article
-  title: "Evolving Verifiers: Failure-Driven Portfolio Evolution for C++ Defect Detection"
+  title: "Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation"
   authors:
     - family-names: "Liao"
       given-names: "Ran"
