@@ -1,0 +1,120 @@
+{
+ "schema": "queyi-698/structural-goodhart-risk/v1",
+ "generated_by": "tools/detect_698_structural_goodhart.py",
+ "generated_at": "2026-10-09T09:22:12+08:00",
+ "detect_calls": 0,
+ "system": "Queyi (C/C++ verification apparatus, 8 declared assets)",
+ "n_samples": 1147,
+ "risk_scores": {
+  "type_I_composition": 46.02,
+  "type_II_environment": 50.89,
+  "type_III_label": 41.88,
+  "type_IV_aggregation": 33.33
+ },
+ "overall_max_risk": 50.89,
+ "overall_mean_risk": 43.03,
+ "overall_verdict": "HIGH：报告值的一半以上可被口径操作改变，必须补齐口径声明与配对重测",
+ "details": {
+  "type_I_composition": {
+   "risk_score": 46.02,
+   "apparent_gain_now_pp": 18.6075,
+   "apparent_gain_after_removing_zero_yield_pp": 10.0436,
+   "composition_share_of_gain": 0.460241,
+   "zero_yield_assets": [
+    "wunsequenced",
+    "compile-time"
+   ],
+   "n_declared": 8,
+   "n_productive": 6,
+   "early_warning_signals": [
+    "声明资产集中存在「恒 unknown / 零产出」组件（本项目：wunsequenced, compile-time）",
+    "随机基线臂的覆盖率对池大小高度敏感（掺资产即掉分）",
+    "表观增益 > 非退化池增益的 2 倍（本项目 18.61 vs 10.04 pp）"
+   ]
+  },
+  "type_II_environment": {
+   "risk_score": 50.89,
+   "poisoned_negatives": 456,
+   "reported_negatives": 896,
+   "poisoned_share": 0.508929,
+   "lost_assets": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "early_warning_signals": [
+    "参考口径支持但当前口径**未运行**的组件：asan, ubsan, tsan",
+    "报出的负例中有 50.89% 在参考口径下是正例",
+    "静默性：丢失的能力被写成 miss 而非 unknown（Δ_unknown = 0）"
+   ]
+  },
+  "type_III_label": {
+   "risk_score": 41.88,
+   "vocabularies": [
+    {
+     "vocabulary": "defect_type",
+     "n_categories": 34,
+     "n_high_blindspot": 13,
+     "share_high_blindspot_pct": 38.2353,
+     "macro_mean_blindspot_pct": 42.1264
+    },
+    {
+     "vocabulary": "source_batch",
+     "n_categories": 9,
+     "n_high_blindspot": 2,
+     "share_high_blindspot_pct": 22.2222,
+     "macro_mean_blindspot_pct": 32.3758
+    },
+    {
+     "vocabulary": "defect_type_x_source_batch",
+     "n_categories": 75,
+     "n_high_blindspot": 20,
+     "share_high_blindspot_pct": 26.6667,
+     "macro_mean_blindspot_pct": 29.7317
+    }
+   ],
+   "share_spread_pp": 16.0131,
+   "relative_spread": 0.418804,
+   "monotone_in_granularity": false,
+   "early_warning_signals": [
+    "同一批裁决在不同词表下给出 16.01 pp 的「高盲类占比」摆动",
+    "细粒度词表未必给出更高占比（本项目单调性 = False）",
+    "存在单样本类（类别数虚高，占比被稀释）"
+   ]
+  },
+  "type_IV_aggregation": {
+   "risk_score": 33.33,
+   "aggregation_table": [
+    {
+     "rule": "or_any",
+     "value_pct": 61.6391,
+     "value_after_padding_3_zero_yield_pct": 61.6391,
+     "manipulability_pp": 0.0,
+     "manipulability_relative": 0.0
+    },
+    {
+     "rule": "mean_per_asset",
+     "value_pct": 17.6693,
+     "value_after_padding_3_zero_yield_pct": 11.7795,
+     "manipulability_pp": 5.8898,
+     "manipulability_relative": 0.333333
+    },
+    {
+     "rule": "at_least_2_assets",
+     "value_pct": 28.1604,
+     "value_after_padding_3_zero_yield_pct": 28.1604,
+     "manipulability_pp": 0.0,
+     "manipulability_relative": 0.0
+    }
+   ],
+   "most_manipulable_rule": "mean_per_asset",
+   "most_robust_rule": "or_any",
+   "early_warning_signals": [
+    "聚合口径含**平均/求和**类运算 ⇒ 对掺入零产组件敏感（mean_per_asset：33.33%）",
+    "若报告值可在**不增加任何有效能力**的前提下被改变 ⇒ 存在 Type IV 漂移",
+    "OR / max 类口径对零产组件免疫（可操纵性 0）"
+   ]
+  }
+ },
+ "honest_note": "四型风险分是**启发式**指标（0–100），不是统计检验。它们回答「这个评估系统的报告值有多少可被口径操作改变」，不回答「报告值是否正确」——后者需要参考口径的实测（697 定理 A1）。"
+}
