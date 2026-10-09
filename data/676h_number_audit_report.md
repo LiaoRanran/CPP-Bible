@@ -1,6 +1,6 @@
 # 676h · 论文数字可追溯性审计报告
 
-- 生成时间：2026-10-09T20:16:40+08:00
+- 生成时间：2026-10-10T01:02:54+08:00
 - 被审计稿件：`research/latex/queyi_neurips2027_v1.1.tex`（正文 None 页 / 全稿 37 页，取自编译日志）
 - 权威源：14 个文件
 - 检察条数：**130**，其中 consistent 116，硬 missing（active）0，软 missing（not_printed 等）0，skipped/no_source 0
@@ -62,7 +62,12 @@
 
 ## 3. 待 676f / 676g 更新清单
 
-依赖就绪状态：**676f `True` / 676g `True`**
+依赖就绪状态（712 起为严格 AND：全部必需文件满足才算 ready；部分满足单列 `partial`，不再与 `ready` 混为一谈）：
+
+| 依赖组 | 组状态 | 满足/必需 |
+|---|---|---|
+| 676f | `partial`（ready=False） | 1/3 |
+| 676g | `partial`（ready=False） | 1/2 |
 
 | 依赖 | 文件 | 当前行数 | 需要 | 就绪 |
 |---|---|---|---|---|
@@ -71,6 +76,18 @@
 | 676f | `data/a5_676f_matrix_san.jsonl` | 1054 | ≥1147 | False |
 | 676g | `data/blindspot_676g_stats.json` | 1 | ≥1 | True |
 | 676g | `data/blindspot_676g_ckpt_san.jsonl` | None | ≥3126 | False |
+
+- **676f 数量不足**：`data/a5_676f_matrix_local.jsonl`(673<1147)、`data/a5_676f_matrix_san.jsonl`(1054<1147)
+- **676g 缺失文件**：`data/blindspot_676g_ckpt_san.jsonl`
+
+### 3b. 权威重算源（712 新增，与上面的「声明依赖」并列、不互相替代）
+
+上面两个不满足的 .jsonl 是检测过程中的**流式导出**，历史上就从未达到声明规模；真正供陌生研究者重算关键数字的**完整检测矩阵**是下列 JSON。这里单列核验，既不把它塞进 DEPENDENCY_FILES 顶绿，也不让声明依赖的 partial 状态被它掩盖。
+
+| 组 | 权威重算源 | 样本数 | 需要 | 可重算 |
+|---|---|---|---|---|
+| 676f | `data/a5_676f_detection_matrix.json` | 1137 | ≥1137 | True |
+| 676g | `data/blindspot_676g_detection_matrix.json` | 1147 | ≥1147 | True |
 
 | ID | 说明 |
 |---|---|

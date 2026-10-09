@@ -74,6 +74,22 @@ DEPENDENCY_FILES = {
     ],
 }
 
+# ---------------------------------------------------------------------------
+# 712 新增：权威重算源（与上面的「声明依赖」是两套东西，不互相替代）
+#
+# 背景：DEPENDENCY_FILES 里的两个 .jsonl 是检测过程中的**流式导出**，历史上就
+# 从未达到声明的规模（676f: 673/1147 与 1054/1147；676g 的 ckpt_san 根本不存在）。
+# 修复 `ready = ready or ok` 之后，这两组会诚实地显示 partial。
+#
+# 但「声明依赖未达成」≠「关键数字不可重算」。真正供陌生研究者重算的完整产物是
+# 下面这两个 JSON 检测矩阵。为避免把它们混进 DEPENDENCY_FILES（那会变成"改需求
+# 让检查变绿"），这里单列一张表，口径与判定都在报告里摊开。
+# ---------------------------------------------------------------------------
+RECOMPUTE_SOURCES = {
+    "676f": ("data/a5_676f_detection_matrix.json", 1137),
+    "676g": ("data/blindspot_676g_detection_matrix.json", 1147),
+}
+
 _NUM_RE = re.compile(r"(?<![\w.])\d+(?:\.\d+)?(?![\w.])")
 _YEAR_RE = re.compile(r"^(19|20)\d{2}$")
 _SKIP_LINE_HINTS = (
@@ -327,12 +343,95 @@ def count_lines(rel: str) -> int | None:
     return n
 
 
+def aggregate_dep_state(entry: dict) -> dict:
+    """把一组依赖文件状态 {rel: {'n': 行数/None, 'need': 需求}} 聚合为组级状态。
+
+    712 修复（`ready = ready or ok` → 严格合取）：
+    只要有一个必需文件缺失或数量不足，整组就不是 ready。
+
+    返回：
+        ready    : bool —— 全部必需文件均满足（严格 AND）
+        state    : 'ready' | 'partial' | 'not_ready'
+                   ready     = 全部满足
+                   partial   = 至少 1 个满足、但存在未满足项
+                   not_ready = 一个都没满足（含全缺）
+        n_ready / n_total : 满足个数 / 必需文件个数
+        missing  : 缺失文件相对路径列表（文件不存在）
+        short    : 存在但行数不足的 (rel, n, need) 列表
+    """
+    n_ready = 0
+    missing = []
+    short = []
+    for rel, info in entry.items():
+        n = info.get("n")
+        need = info.get("need")
+        ready_one = n is not None and need is not None and n >= need
+        if ready_one:
+            n_ready += 1
+        elif n is None:
+            missing.append(rel)
+        else:
+            short.append((rel, n, need))
+    n_total = len(entry)
+    ready = n_total > 0 and n_ready == n_total
+    if ready:
+        state = "ready"
+    elif n_ready > 0:
+        state = "partial"
+    else:
+        state = "not_ready"
+    return {
+        "ready": ready,
+        "state": state,
+        "n_ready": n_ready,
+        "n_total": n_total,
+        "missing": missing,
+        "short": short,
+    }
+
+
+def check_recompute_sources():
+    """712 新增：逐条核验「权威重算源」（完整检测矩阵 JSON）是否可加载且样本数达标。
+
+    这是给陌生研究者用的：只要这张表全绿，关键数字就能从完整矩阵重算出来，
+    不必依赖作者提供的中间 .jsonl 导出。
+
+    返回 {name: {'path': 相对路径, 'n': 样本数/None, 'need': 需求, 'ok': bool, 'error': str|None}}
+    """
+    out = {}
+    for name, (rel, need) in RECOMPUTE_SOURCES.items():
+        rec = {"path": rel, "n": None, "need": need, "ok": False, "error": None}
+        try:
+            obj = load_json(rel)
+        except Exception as e:  # noqa: BLE001
+            rec["error"] = f"load failed: {e}"
+            out[name] = rec
+            continue
+        n = None
+        if isinstance(obj, dict):
+            if isinstance(obj.get("samples"), list):
+                n = len(obj["samples"])
+            elif isinstance(obj.get("n_samples"), int):
+                n = obj["n_samples"]
+            elif isinstance(obj.get("total"), dict) and isinstance(obj["total"].get("n"), int):
+                n = obj["total"]["n"]
+        if n is None:
+            rec["error"] = "样本数字段缺失（既无 samples 列表，也无 n_samples / total.n）"
+        else:
+            rec["n"] = n
+            rec["ok"] = n >= need
+        out[name] = rec
+    return out
+
+
 def check_dependencies():
-    """返回 {name: {file: {'n': 行数/None, 'need': 需求, 'ready': bool}}} 与总就绪情况。"""
+    """返回 {name: {file: {'n': 行数/None, 'need': 需求, 'ready': bool}, <组级聚合字段>}}。
+
+    组级 `ready` 为严格 AND（712 修复）；`state` 区分 ready / partial / not_ready。
+    """
     res = {}
     for name, files in DEPENDENCY_FILES.items():
         entry = {}
-        ready = False
         for rel, need in files:
             p = _p(rel)
             if os.path.exists(p):
@@ -340,9 +439,9 @@ def check_dependencies():
             else:
                 n = None
             ok = n is not None and n >= need
-            ready = ready or ok
             entry[rel] = {"n": n, "need": need, "ready": ok}
-        res[name] = {"files": entry, "ready": ready}
+        res[name] = {"files": entry}
+        res[name].update(aggregate_dep_state(entry))
     return res
 
 
@@ -2189,13 +2288,52 @@ def write_report(path, payload):
     L.append("")
     L.append("## 3. 待 676f / 676g 更新清单")
     L.append("")
-    L.append(f"依赖就绪状态：**676f `{payload['deps']['676f']['ready']}` / 676g `{payload['deps']['676g']['ready']}`**")
+    L.append(
+        "依赖就绪状态（712 起为严格 AND：全部必需文件满足才算 ready；"
+        "部分满足单列 `partial`，不再与 `ready` 混为一谈）："
+    )
+    L.append("")
+    L.append("| 依赖组 | 组状态 | 满足/必需 |")
+    L.append("|---|---|---|")
+    for name in ("676f", "676g"):
+        d = payload["deps"][name]
+        L.append(f"| {name} | `{d['state']}`（ready={d['ready']}） | {d['n_ready']}/{d['n_total']} |")
     L.append("")
     L.append("| 依赖 | 文件 | 当前行数 | 需要 | 就绪 |")
     L.append("|---|---|---|---|---|")
     for name in ("676f", "676g"):
         for rel, info in payload["deps"][name]["files"].items():
             L.append(f"| {name} | `{rel}` | {info['n']} | ≥{info['need']} | {info['ready']} |")
+    L.append("")
+    for name in ("676f", "676g"):
+        d = payload["deps"][name]
+        if d["missing"]:
+            L.append(f"- **{name} 缺失文件**：" + "、".join(f"`{r}`" for r in d["missing"]))
+        if d["short"]:
+            L.append(
+                f"- **{name} 数量不足**："
+                + "、".join(f"`{r}`({n}<{need})" for r, n, need in d["short"])
+            )
+    L.append("")
+    L.append(
+        "### 3b. 权威重算源（712 新增，与上面的「声明依赖」并列、不互相替代）"
+    )
+    L.append("")
+    L.append(
+        "上面两个不满足的 .jsonl 是检测过程中的**流式导出**，历史上就从未达到声明规模；"
+        "真正供陌生研究者重算关键数字的**完整检测矩阵**是下列 JSON。这里单列核验，"
+        "既不把它塞进 DEPENDENCY_FILES 顶绿，也不让声明依赖的 partial 状态被它掩盖。"
+    )
+    L.append("")
+    L.append("| 组 | 权威重算源 | 样本数 | 需要 | 可重算 |")
+    L.append("|---|---|---|---|---|")
+    for name in ("676f", "676g"):
+        r = payload["recompute_sources"][name]
+        L.append(f"| {name} | `{r['path']}` | {r['n']} | ≥{r['need']} | {r['ok']} |")
+    for name in ("676f", "676g"):
+        r = payload["recompute_sources"][name]
+        if r["error"]:
+            L.append(f"- **{name} 重算源异常**：{r['error']}")
     L.append("")
     L.append("| ID | 说明 |")
     L.append("|---|---|")
@@ -2703,6 +2841,9 @@ def main(argv=None):
             total_pages = int(m.group(1))
     deps = check_dependencies()
 
+    # 712：权威重算源（完整检测矩阵）单独核验，与「声明依赖」并列不互相替代
+    recompute = check_recompute_sources()
+
     # 692：本批不改正文 ⇒ 新数字没有 tex 落点，只做「产物 ↔ 建议文件」自洽检查（另立一组，不进 tex 审计）
     batch_692 = check_batch_692_artifacts()
 
@@ -2718,6 +2859,7 @@ def main(argv=None):
         "total_pages": total_pages,
         "main_text_pages": None,
         "deps": deps,
+        "recompute_sources": recompute,
         "results": results,
         "coverage_summary": {"total": len(tokens), "by_class": by_class},
         "unclassified_tokens": uncov,

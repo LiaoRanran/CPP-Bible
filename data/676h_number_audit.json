@@ -1,6 +1,6 @@
 {
   "schema": "queyi-676h/number-audit",
-  "generated_at": "2026-10-09T20:16:40+08:00",
+  "generated_at": "2026-10-10T01:02:54+08:00",
   "tex": "research/latex/queyi_neurips2027_v1.1.tex",
   "tex_extra": "supplementary/paper_appendix_extras.tex",
   "sources": {
@@ -40,7 +40,23 @@
           "ready": false
         }
       },
-      "ready": true
+      "ready": false,
+      "state": "partial",
+      "n_ready": 1,
+      "n_total": 3,
+      "missing": [],
+      "short": [
+        [
+          "data/a5_676f_matrix_local.jsonl",
+          673,
+          1147
+        ],
+        [
+          "data/a5_676f_matrix_san.jsonl",
+          1054,
+          1147
+        ]
+      ]
     },
     "676g": {
       "files": {
@@ -55,7 +71,30 @@
           "ready": false
         }
       },
-      "ready": true
+      "ready": false,
+      "state": "partial",
+      "n_ready": 1,
+      "n_total": 2,
+      "missing": [
+        "data/blindspot_676g_ckpt_san.jsonl"
+      ],
+      "short": []
+    }
+  },
+  "recompute_sources": {
+    "676f": {
+      "path": "data/a5_676f_detection_matrix.json",
+      "n": 1137,
+      "need": 1137,
+      "ok": true,
+      "error": null
+    },
+    "676g": {
+      "path": "data/blindspot_676g_detection_matrix.json",
+      "n": 1147,
+      "need": 1147,
+      "ok": true,
+      "error": null
     }
   },
   "results": [
