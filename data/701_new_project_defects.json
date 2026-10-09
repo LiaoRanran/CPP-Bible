@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "batch": "701-B",
+    "title": "新增原始开源项目缺陷（第二批，凑足可构建案例库）",
+    "generated": "2026-10-09",
+    "purpose": "在 699 的 22 个之上再收集 15-20 个真实 C/C++ 项目缺陷，覆盖内存安全/UB/逻辑/并发，凑够 35-40 个可构建原始项目案例。",
+    "defect_family_legend": {
+      "memory-safety": "heap/stack overflow, OOB, UAF, info-leak",
+      "concurrency": "race condition / signal-handler race / TOCTOU",
+      "logic": "protocol/parsing/logic flaw, sandbox-escape, DoS-via-missing-limit",
+      "ub": "integer overflow, type confusion, signed overflow"
+    },
+    "provenance_policy": {
+      "fixing_commit.verified": "本批新增缺陷的修复 commit 均以官方公告/安全跟踪器 URL 引用（verified=false）。与 699 不同，本次未逐一核对完整 SHA——如需 verified=true 短 SHA，应经对应仓库 commit 页或 GitHub API 在可联网环境解析。",
+      "cvss.source": "全部标记为 nvd-reported；本环境 NVD API 经本地代理不稳定，数值为 NVD 常见公布值，发表前须用 NVD 2.0 API 复核。",
+      "build_status": "新增 18 个缺陷的构建脚本已提供（build_command），本批未逐一实测编译；与 699 一致标记为 script-provided-not-executed。其中 redis/nginx/sudo/libpng/krb5/nghttp2/python 等在标准工具链下可直接构建，可行性高。"
+    },
+    "counts": {
+      "total": 18,
+      "by_family": {"memory-safety": 8, "ub": 4, "logic": 4, "concurrency": 2},
+      "verified_fix_commit": 0,
+      "actually_built": 0
+    }
+  },
+  "defects": [
+    {
+      "id": "NPD-001", "cve": "CVE-2021-3156", "project": "sudo", "repo": "https://github.com/sudo-project/sudo",
+      "ecosystem": "C/C++", "affected_versions": "1.8.2 - 1.8.31p2, 1.9.0 - 1.9.5p1", "fixed_version": "1.9.5p2",
+      "severity": "High", "cvss": {"score": 7.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "heap-buffer-overflow", "cwe": "CWE-122",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://www.sudo.ws/security/advisories/Sudo_BaronSamedit/", "verified": false, "source": "sudo 官方安全公告"},
+      "files": ["plugins/sudoers/sudoers.c"], "build_command": "git clone https://github.com/sudo-project/sudo && cd sudo && git checkout SUDO_1_9_5P2 && ./configure && make",
+      "trigger": "sudoedit -s 后跟以单个反斜杠结尾的参数触发 off-by-one 堆溢出，本地提权到 root。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-3156", "notes": "Baron Samedit，本地提权代表案例。"
+    },
+    {
+      "id": "NPD-002", "cve": "CVE-2014-6271", "project": "GNU Bash", "repo": "git://git.savannah.gnu.org/bash.git",
+      "ecosystem": "C/C++", "affected_versions": "1.14 - 4.3", "fixed_version": "4.3 (patch)",
+      "severity": "Critical", "cvss": {"score": 9.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "logic", "defect_type": "env-var-function-def-injection (RCE)", "cwe": "CWE-78",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2014-6271", "verified": false, "source": "NVD / Debian tracker"},
+      "files": ["variables.c"], "build_command": "git clone git://git.savannah.gnu.org/bash.git && cd bash && git checkout bash-4.3 && ./configure && make",
+      "trigger": "环境变量值中函数定义后的尾部字符串被 Bash 当作命令执行，远程/本地 RCE（Shellshock）。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2014-6271", "notes": "Shellshock，解析逻辑缺陷导致 RCE。"
+    },
+    {
+      "id": "NPD-003", "cve": "CVE-2023-44487", "project": "nghttp2", "repo": "https://github.com/nghttp2/nghttp2",
+      "ecosystem": "C/C++", "affected_versions": "< 1.57.0", "fixed_version": "1.57.0",
+      "severity": "High", "cvss": {"score": 7.5, "vector": null, "source": "nvd-reported"},
+      "defect_family": "logic", "defect_type": "DoS (HTTP/2 Rapid Reset, missing stream limit)", "cwe": "CWE-400",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nghttp2.org/blog/2023/10/10/nghttp2-v1-57-0/", "verified": false, "source": "nghttp2 官方发布说明"},
+      "files": ["lib/nghttp2_session.c"], "build_command": "git clone https://github.com/nghttp2/nghttp2 && cd nghttp2 && git checkout v1.57.0 && autoreconf -fiv && ./configure && make",
+      "trigger": "高频发送并立即取消 HTTP/2 请求（RST_STREAM），耗尽服务器资源造成 DoS。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2023-44487", "notes": "Rapid Reset，协议层缺流控导致的 DoS。"
+    },
+    {
+      "id": "NPD-004", "cve": "CVE-2022-0543", "project": "Redis", "repo": "https://github.com/redis/redis",
+      "ecosystem": "C/C++", "affected_versions": "< 7.0.11 (及部分 6.x；Debian/Ubuntu 打包引入)", "fixed_version": "7.0.11",
+      "severity": "High", "cvss": {"score": 7.0, "vector": null, "source": "nvd-reported"},
+      "defect_family": "logic", "defect_type": "Lua sandbox escape (packaging-dependent)", "cwe": "CWE-265",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0543", "verified": false, "source": "NVD / Debian tracker"},
+      "files": ["deps/lua/src/"], "build_command": "git clone https://github.com/redis/redis && cd redis && git checkout 7.0.11 && make",
+      "trigger": "利用 Debian/Ubuntu 打包引入的 lua5.1 变量绕过 Redis Lua 沙盒，执行任意系统命令。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0543", "notes": "沙盒逃逸，与发行版打包耦合。"
+    },
+    {
+      "id": "NPD-005", "cve": "CVE-2017-7529", "project": "nginx", "repo": "https://github.com/nginx/nginx",
+      "ecosystem": "C/C++", "affected_versions": "0.5.6 - 1.13.2 (含 1.12.0)", "fixed_version": "1.13.3 / 1.12.1",
+      "severity": "High", "cvss": {"score": 7.5, "vector": null, "source": "nvd-reported"},
+      "defect_family": "ub", "defect_type": "integer-overflow (range filter)", "cwe": "CWE-190",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nginx.org/pipermail/nginx/2017-July/054288.html", "verified": false, "source": "nginx 安全公告邮件"},
+      "files": ["src/http/modules/ngx_http_range_filter_module.c"], "build_command": "git clone https://github.com/nginx/nginx && cd nginx && git checkout release-1.13.3 && ./auto/configure && make",
+      "trigger": "特制 Range 请求触发 64 位有符号整数溢出，越界读取缓存文件头导致信息泄露。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-7529", "notes": "整数溢出导致内存泄露。"
+    },
+    {
+      "id": "NPD-006", "cve": "CVE-2019-11043", "project": "PHP (php-fpm)", "repo": "https://github.com/php/php-src",
+      "ecosystem": "C/C++", "affected_versions": "7.1.x<7.1.33, 7.2.x<7.2.24, 7.3.x<7.3.11 (特定 nginx+php-fpm 配置)", "fixed_version": "7.1.33/7.2.24/7.3.11",
+      "severity": "Critical", "cvss": {"score": 9.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "buffer-underflow/overflow (env_path_info)", "cwe": "CWE-119",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11043", "verified": false, "source": "NVD / PHP 安全公告"},
+      "files": ["sapi/fpm/fpm/fpm_main.c"], "build_command": "git clone https://github.com/php/php-src && cd php-src && git checkout PHP-7.3.11 && ./buildconf --force && ./configure && make",
+      "trigger": "nginx fastcgi_split_path_info 遇 %0a 使 PATH_INFO 为空，php-fpm 处理空 PATH_INFO 时内存下溢，可 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11043", "notes": "需特定 nginx 配置才触发。"
+    },
+    {
+      "id": "NPD-007", "cve": "CVE-2024-6387", "project": "OpenSSH (sshd)", "repo": "https://github.com/openssh/openssh-portable",
+      "ecosystem": "C/C++", "affected_versions": "8.5p1 <= OpenSSH < 9.8p1", "fixed_version": "9.8p1",
+      "severity": "High", "cvss": {"score": 8.1, "vector": null, "source": "nvd-reported"},
+      "defect_family": "concurrency", "defect_type": "signal-handler race (regreSSHion)", "cwe": "CWE-362",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://www.qualys.com/2024/07/01/cve-2024-6387/regresshion.txt", "verified": false, "source": "Qualys / OpenSSH 9.8 公告"},
+      "files": ["sshd.c"], "build_command": "git clone https://github.com/openssh/openssh-portable && cd openssh-portable && git checkout V_9_8_P1 && autoreconf && ./configure && make",
+      "trigger": "在 LoginGraceTime 内未认证触发信号处理竞态，非异步信号安全函数 exit() 导致 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2024-6387", "notes": "regreSSHion，信号处理器竞态。"
+    },
+    {
+      "id": "NPD-008", "cve": "CVE-2021-38001", "project": "V8 (Chrome)", "repo": "https://github.com/v8/v8",
+      "ecosystem": "C/C++", "affected_versions": "V8 < 9.5.172.21 (Chrome < 95.0.4638.69)", "fixed_version": "Chrome 95.0.4638.69",
+      "severity": "High", "cvss": {"score": 8.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "ub", "defect_type": "type-confusion (inline cache)", "cwe": "CWE-843",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://bugs.chromium.org/p/chromium/issues/detail?id=1260577", "verified": false, "source": "Chromium issue tracker"},
+      "files": ["src/ic/ic.cc"], "build_command": "git clone https://github.com/v8/v8 && cd v8 && git checkout 9.5.172.21 && gclient sync && tools/dev/gm.py x64.release",
+      "trigger": "receiver 与 lookup_start_object 在 inline cache 中存在类型混淆，可越界读写。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-38001", "notes": "V8 类型混淆，需 depot_tools 构建，较重。"
+    },
+    {
+      "id": "NPD-009", "cve": "CVE-2016-8655", "project": "Linux kernel", "repo": "https://github.com/torvalds/linux",
+      "ecosystem": "C/C++", "affected_versions": "< 4.8.12 (net/packet/af_packet.c)", "fixed_version": "4.8.12",
+      "severity": "High", "cvss": {"score": 7.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "heap-buffer-overflow (packet_set_ring)", "cwe": "CWE-122",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2016-8655", "verified": false, "source": "NVD / Red Hat"},
+      "files": ["net/packet/af_packet.c"], "build_command": "git clone https://github.com/torvalds/linux && cd linux && git checkout v4.8.12 && make defconfig && make -j$(nproc)",
+      "trigger": "创建 AF_PACKET 套接字时 packet_set_ring 中环形缓冲区大小计算错误导致堆溢出，本地提权。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2016-8655", "notes": "内核本地提权。"
+    },
+    {
+      "id": "NPD-010", "cve": "CVE-2017-1000367", "project": "sudo", "repo": "https://github.com/sudo-project/sudo",
+      "ecosystem": "C/C++", "affected_versions": "< 1.8.20p2", "fixed_version": "1.8.20p2",
+      "severity": "High", "cvss": {"score": 7.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "heap-buffer-overflow (getopt)", "cwe": "CWE-122",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000367", "verified": false, "source": "NVD / sudo 公告"},
+      "files": ["plugins/sudoers/policy.c"], "build_command": "git clone https://github.com/sudo-project/sudo && cd sudo && git checkout SUDO_1_8_20P2 && ./configure && make",
+      "trigger": "getopt 处理长选项时堆溢出，可覆盖任意文件提权。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-1000367", "notes": "sudo 第二个案例。"
+    },
+    {
+      "id": "NPD-011", "cve": "CVE-2022-42898", "project": "MIT Kerberos 5 (krb5)", "repo": "https://github.com/krb5/krb5",
+      "ecosystem": "C/C++", "affected_versions": "< 1.19.4, 1.20.x < 1.20.1", "fixed_version": "1.19.4 / 1.20.1",
+      "severity": "High", "cvss": {"score": 8.1, "vector": null, "source": "nvd-reported"},
+      "defect_family": "ub", "defect_type": "integer-overflow (PAC parsing)", "cwe": "CWE-190",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-42898", "verified": false, "source": "NVD / krb5 公告"},
+      "files": ["src/krb5/krb/pac.c"], "build_command": "git clone https://github.com/krb5/krb5 && cd krb5/src && git checkout krb5-1.20.1 && autoreconf && ./configure && make",
+      "trigger": "PAC 解析中整数溢出导致堆溢出，可 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-42898", "notes": "Kerberos PAC 整数溢出。"
+    },
+    {
+      "id": "NPD-012", "cve": "CVE-2020-10735", "project": "CPython", "repo": "https://github.com/python/cpython",
+      "ecosystem": "C/C++", "affected_versions": "< 3.7.15, 3.8.x<3.8.13, 3.9.x<3.9.15, 3.10.x<3.10.7", "fixed_version": "3.7.15+",
+      "severity": "Medium", "cvss": {"score": 5.3, "vector": null, "source": "nvd-reported"},
+      "defect_family": "logic", "defect_type": "algorithmic-complexity DoS (int<->str)", "cwe": "CWE-400",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://github.com/python/cpython/issues/95778", "verified": false, "source": "CPython issue 95778"},
+      "files": ["Objects/longobject.c"], "build_command": "git clone https://github.com/python/cpython && cd cpython && git checkout v3.7.15 && ./configure && make",
+      "trigger": "超大十进制字符串转 int 时近二次复杂度导致 CPU DoS。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-10735", "notes": "CPython C 代码（longobject）DoS。"
+    },
+    {
+      "id": "NPD-013", "cve": "CVE-2021-35937", "project": "rpm", "repo": "https://github.com/rpm-software-management/rpm",
+      "ecosystem": "C/C++", "affected_versions": "< 4.18.0", "fixed_version": "4.18.0",
+      "severity": "High", "cvss": {"score": 7.0, "vector": null, "source": "nvd-reported"},
+      "defect_family": "concurrency", "defect_type": "race-condition (signature check bypass)", "cwe": "CWE-362",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-35937", "verified": false, "source": "NVD / rpm 公告"},
+      "files": ["lib/rpmvs.c"], "build_command": "git clone https://github.com/rpm-software-management/rpm && cd rpm && git checkout rpm-4.18.0 && ./autogen.sh && ./configure && make",
+      "trigger": "本地非特权用户利用检查签名时的竞态绕过校验，提权。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-35937", "notes": "rpm 签名校验竞态。"
+    },
+    {
+      "id": "NPD-014", "cve": "CVE-2017-15277", "project": "ImageMagick", "repo": "https://github.com/ImageMagick/ImageMagick",
+      "ecosystem": "C/C++", "affected_versions": "< 7.0.7-29 (approx)", "fixed_version": "7.0.7-29+",
+      "severity": "High", "cvss": {"score": 6.5, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "uninitialized-memory-leak (GIF encoder)", "cwe": "CWE-200",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2017-15277", "verified": false, "source": "NVD / HackerOne"},
+      "files": ["coders/gif.c"], "build_command": "git clone https://github.com/ImageMagick/ImageMagick && cd ImageMagick && git checkout 7.0.7-29 && ./configure && make",
+      "trigger": "GIF 编码器未初始化内存被写入输出，泄露服务器内存（Cookie/SQL/路径等）。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2017-15277", "notes": "内存信息泄露。"
+    },
+    {
+      "id": "NPD-015", "cve": "CVE-2022-38784", "project": "poppler", "repo": "https://gitlab.freedesktop.org/poppler/poppler.git",
+      "ecosystem": "C/C++", "affected_versions": "<= 22.08.0", "fixed_version": "22.09.0",
+      "severity": "High", "cvss": {"score": 7.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "ub", "defect_type": "integer-overflow (JBIG2 decoder)", "cwe": "CWE-190",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-38784", "verified": false, "source": "NVD / Poppler 公告"},
+      "files": ["poppler/JBIG2Stream.cc"], "build_command": "git clone https://gitlab.freedesktop.org/poppler/poppler.git && cd poppler && git checkout poppler-22.09.0 && cmake . && make",
+      "trigger": "特制 PDF 触发 JBIG2 解码器整数溢出，可 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-38784", "notes": "PDF 解析整数溢出。"
+    },
+    {
+      "id": "NPD-016", "cve": "CVE-2019-7310", "project": "libpng", "repo": "https://github.com/glennrp/libpng",
+      "ecosystem": "C/C++", "affected_versions": "< 1.6.37", "fixed_version": "1.6.37",
+      "severity": "Critical", "cvss": {"score": 9.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "use-after-free (png_image_free)", "cwe": "CWE-416",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-7310", "verified": false, "source": "NVD / libpng 公告"},
+      "files": ["png.c"], "build_command": "git clone https://github.com/glennrp/libpng && cd libpng && git checkout v1.6.37 && ./configure && make",
+      "trigger": "应用重复释放 png_image 结构时 png_image_free 存在 UAF，可 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-7310", "notes": "与 CVE-2019-7317 同族（png_image_free UAF）。"
+    },
+    {
+      "id": "NPD-017", "cve": "CVE-2021-44790", "project": "Apache HTTP Server (httpd)", "repo": "https://github.com/apache/httpd",
+      "ecosystem": "C/C++", "affected_versions": "<= 2.4.51", "fixed_version": "2.4.52",
+      "severity": "High", "cvss": {"score": 8.2, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "buffer-overflow (mod_lua parsebody)", "cwe": "CWE-122",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://httpd.apache.org/security/vulnerabilities_24.html", "verified": false, "source": "Apache httpd 安全页"},
+      "files": ["modules/lua/mod_lua.c"], "build_command": "git clone https://github.com/apache/httpd && cd httpd && git checkout 2.4.52 && ./buildconf && ./configure && make",
+      "trigger": "mod_lua 解析 multipart 时整数溢出导致缓冲区溢出，可 RCE。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44790", "notes": "mod_lua 缓冲区溢出。"
+    },
+    {
+      "id": "NPD-018", "cve": "CVE-2022-0847", "project": "Linux kernel (Dirty Pipe)", "repo": "https://github.com/torvalds/linux",
+      "ecosystem": "C/C++", "affected_versions": "5.8 - 5.16.10", "fixed_version": "5.16.11 / 5.15.25 / 5.10.102",
+      "severity": "High", "cvss": {"score": 7.8, "vector": null, "source": "nvd-reported"},
+      "defect_family": "memory-safety", "defect_type": "page-cache-corruption (PIPE_BUF_FLAG_CAN_MERGE)", "cwe": "CWE-665",
+      "introducing_commit": null, "fixing_commit": {"sha": null, "url": "https://dirtypipe.cm4all.com/", "verified": false, "source": "Dirty Pipe 披露页 / kernel 修复"},
+      "files": ["fs/pipe.c"], "build_command": "git clone https://github.com/torvalds/linux && cd linux && git checkout v5.16.11 && make defconfig && make -j$(nproc)",
+      "trigger": "利用 PIPE_BUF_FLAG_CAN_MERGE 缺陷覆盖任意只读文件数据，本地提权至 root。", "build_status": "script-provided-not-executed",
+      "advisory_url": "https://nvd.nist.gov/vuln/detail/CVE-2022-0847", "notes": "Dirty Pipe，与 Dirty COW 同源思路。"
+    }
+  ]
+}
