@@ -1,0 +1,92 @@
+{
+ "schema": "queyi-710/llm-aggregation-sim/v1",
+ "generated_by": "tools/compute_710_llm_aggregation_sim.py",
+ "generated_at": "2026-10-09T19:11:20+08:00",
+ "detect_calls": 0,
+ "source": {
+  "file": "692_llm_audit_raw.jsonl",
+  "prompt": "p1",
+  "n_frames": 80,
+  "judges": [
+   "A_glm-4.5",
+   "B_glm-4-flash"
+  ],
+  "catch_base_rate": 0.475
+ },
+ "base_aggregation_values_pct": {
+  "or": 95.0,
+  "majority": 70.0,
+  "mean_ge_50": 95.0
+ },
+ "zero_capability_padding": {
+  "coin_flip": {
+   "or": {
+    "base_pct": 95.0,
+    "padded_mean_pct": 97.3563,
+    "padded_p05_pct": 95.0,
+    "padded_p95_pct": 98.75,
+    "abs_change_pp": 2.3563,
+    "relative_change_pct": 2.4803,
+    "manipulable": true
+   },
+   "majority": {
+    "base_pct": 70.0,
+    "padded_mean_pct": 81.9125,
+    "padded_p05_pct": 77.5,
+    "padded_p95_pct": 86.25,
+    "abs_change_pp": 11.9125,
+    "relative_change_pct": 17.0179,
+    "manipulable": true
+   },
+   "mean_ge_50": {
+    "base_pct": 95.0,
+    "padded_mean_pct": 81.9125,
+    "padded_p05_pct": 77.5,
+    "padded_p95_pct": 86.25,
+    "abs_change_pp": 13.0875,
+    "relative_change_pct": 13.7763,
+    "manipulable": true
+   }
+  },
+  "abstain": {
+   "or": {
+    "base_pct": 95.0,
+    "padded_mean_pct": 95.0,
+    "padded_p05_pct": 95.0,
+    "padded_p95_pct": 95.0,
+    "abs_change_pp": 0.0,
+    "relative_change_pct": 0.0,
+    "manipulable": false
+   },
+   "majority": {
+    "base_pct": 70.0,
+    "padded_mean_pct": 70.0,
+    "padded_p05_pct": 70.0,
+    "padded_p95_pct": 70.0,
+    "abs_change_pp": 0.0,
+    "relative_change_pct": 0.0,
+    "manipulable": false
+   },
+   "mean_ge_50": {
+    "base_pct": 95.0,
+    "padded_mean_pct": 70.0,
+    "padded_p05_pct": 70.0,
+    "padded_p95_pct": 70.0,
+    "abs_change_pp": 25.0,
+    "relative_change_pct": 26.3158,
+    "manipulable": true
+   }
+  }
+ },
+ "worst_relative_change": {
+  "relative_pct": 26.3158,
+  "judge_type": "abstain",
+  "rule": "mean_ge_50"
+ },
+ "conclusion": "在**同一批冻结裁决**上，把聚合族扩到「掺零能力裁判」这一步后：OR 型规则的变化 = 2.36 pp（免疫），mean 型规则的变化 = 26.32%（可被操纵）⇒ 700-D 的 C3=2.58/25 是**测试口径太窄**（majority↔OR 两条规则都在「不掺组件」的同一族内），不是 LLM 领域缺少 Type IV 结构。",
+ "honest_limits": [
+  "本模拟**不是** LLM 实测：零能力裁判是**合成**的（coin-flip/弃权），真实零能力裁判（乱答模型）的裁决分布会更接近真实模型的错误模式。",
+  "n=80 帧、2 个真裁判、1 个 prompt ⇒ 只够做**符号级**结论（免疫 vs 可操纵），不足以标定具体数字。",
+  "「mean_ge_50」是一个为了演示而定义的规则（裁判级 catch 比例的 0.5 阈值）；真实 LLM 评估里的均值类聚合（如平均 confidence、平均 pass@k）需要单独映射。"
+ ]
+}
