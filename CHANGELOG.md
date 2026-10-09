@@ -4,6 +4,21 @@
 
 ---
 
+### 2026-10-09 研究线「阙疑」：论文重构 + 理论 + 真实靶场 + 案例库 + 投稿材料（676g→706）
+
+> 摘要性质：按批次报告汇总研究线的主要变更，可能遗漏细节（诚实边界）。研究线入口见 `README.md` §1–§6 与 `research/latex/`。
+
+- **论文 v1.1 定稿（NeurIPS 2027 E&D 投稿）**：题名 *Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation*；全稿 **36 页**（正文 9 页）、摘要 229 词；框架为「可审计治理框架 + 子模形式化 + 大规模实证 + 能力边界」四贡献，不宣称算法更优；paper_quality_gate **6/6**。
+- **理论（700/684/685）**：测量漂移代数（七公理六定理）；元定理证明仅两条公理独立（单调性、超可加性）、系统**不完备**（缺 A8 标签轴闭合）；caliber arbitrage **NP-hard** + 贪心 $(1{-}1/e)$ 近似；自适应选择天花板 $+2.29$pp、5% 噪声下 Jaccard 0.96；子模化 17,186 组 **0 违反**、贪心=最优。
+- **冻结矩阵与实证（676f/676g/676l/676m/681）**：**1147×8** 检测矩阵（真实编译/运行，-O0/-O2）；八资产并集 **99.22%** vs 单检测器最高 asan **61.65%**；全资产盲区 **38.4%**（440/1147），**13/34** 缺陷类盲区率 >50%；标签修复后 catch 640 / miss 507（676l 报告系修复前，recall 列系统性偏低）。
+- **核心负面结果（691/692）**：A5 的 $+24.03$pp 在 $k{=}4$ 并列分析塌缩为 $+0.00$pp（必须并报）；环境感知协议 declared **60.07%** vs reduced **24.74%**，$\Delta$unknown $=0.00$pp（unaware）vs $75.27$pp（aware）——**静默退化**；配对 McNemar $(b,c){=}(200,0)$，$p{=}1.24\times10^{-60}$。
+- **真实靶场（683）**：**110 条**真实 CVE 重构（RW-001..110），**113 唯一 CVE 全部 NVD 在线验证 FOUND**；OR 检出率 **59.09%**（65/110）。
+- **外部锚定与 LLM 臂（692）**：clang-tidy 22.1.8 / cppcheck 2.21.0 同环境公平对比（预注册主口径 T1 零判别力，如实留证）；LLM 第四臂（GLM）prompt invariance 87.5%–96.25%、与 sanitizer failure topology 正交。
+- **AI 一致性（682/692）**：缺陷类型 $\kappa{=}0.727$；所有 $\kappa$ 一律标注为 **AI 自洽性**，非人类 IAA——**人类 IAA 仍为 0**（材料包已备、未执行）。
+- **案例库（699/701）**：699 收集 **22 个**真实开源项目缺陷（含 5 个 verified 修复 commit）；**701 在 WSL 实测编译 14/22 成功**（推翻 699「无出口、未实测」结论），并新增 **18 个**缺陷，统一为 **40 个**可构建案例库（`raw_external/index.json` + `build_all.sh`）。
+- **投稿材料（687/692/703/704/706）**：cover letter v1.7（477 词）；rebuttal v3（Q19 环境感知 / Q20 外部对比）；`SUBMISSION_CHECKLIST.md`；supplementary 材料包（README + 声明类 + 复现 + `paper_appendix_extras.tex`）；arXiv 实名版同步。
+- **706（投稿前最后工程批次）**：修 `README.md` §6 旧题名（Evolving Verifiers → 现行题名）；**减页 40 → 36**（`app:humanize`/`app:a5full`/`app:bench676l`/`app:incidents` 移入 `supplementary/paper_appendix_extras.tex`，只移动不删除，diff=0 验证）；CHANGELOG 更新至此。**遗留**：人类 IAA=0；`CITATION.cff` 仍含旧题名（超出本批 README-only 范围，登记待办）。
+
 ### 2026-09-09 L2 真机实证收官 + 工程突破 R1–R6 + 工具自愈三连（09-06～09-09）
 
 - **赝品清零战役收官**：全书 prose-fake/占位符块清零（`23b78ee` 起 repo-wide zero）——

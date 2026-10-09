@@ -123,10 +123,10 @@ docker compose -f docker/reproduce/docker-compose.yml run --rm reproduce
 
 ```bibtex
 @misc{liao2027queyi,
-  title        = {Evolving Verifiers: Failure-Driven Portfolio Evolution for C++ Defect Detection},
+  title        = {Caliber Drift and Capability Boundaries: An Audit Protocol for Software-Verification Evaluation},
   author       = {Liao, Ran},
   year         = {2027},
-  note         = {Manuscript in preparation (NeurIPS 2027 Datasets \& Benchmarks track)},
+  note         = {Manuscript in preparation (NeurIPS 2027 Evaluations \& Datasets track)},
   howpublished = {\url{https://github.com/LiaoRanran/CPP-Bible}},
   license      = {Apache-2.0}
 }
