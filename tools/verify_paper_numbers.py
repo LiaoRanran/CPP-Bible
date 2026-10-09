@@ -1689,6 +1689,8 @@ def check_batch_692_artifacts():
 def main(argv=None):
     ap = argparse.ArgumentParser(description="676h 论文数字可追溯性审计")
     ap.add_argument("--tex", default="research/latex/queyi_neurips2027_v1.1.tex")
+    ap.add_argument("--tex-extra", default="supplementary/paper_appendix_extras.tex",
+                    help="附加 tex：706 减页后移入 Supplementary 的节；其文本并入数字扫描（页数仍取主稿 log）。传空字符串禁用。")
     ap.add_argument("--out-json", default="data/676h_number_audit.json")
     ap.add_argument("--out-md", default="data/676h_number_audit_report.md")
     ap.add_argument("--no-cmd", action="store_true", help="跳过需执行命令的重算检察")
@@ -1696,6 +1698,15 @@ def main(argv=None):
 
     tex_rel = args.tex
     text = open(_p(tex_rel), encoding="utf-8").read()
+    extra_rel = args.tex_extra
+    if extra_rel and os.path.exists(_p(extra_rel)):
+        # 706：减页把若干附录节移到 Supplementary（只移动、未删除）。
+        # 追数字时并入附加 tex，否则其中数字会被误判为 missing。
+        # 注：附加 tex 的报错行号为「主稿行数 + 偏移」，非该文件自身行号。
+        text = text + "\n\n% ==== supplementary (" + extra_rel + ") ====\n" + \
+            open(_p(extra_rel), encoding="utf-8").read()
+    else:
+        extra_rel = None
 
     src = {}
     for key, rel in SOURCE_FILES.items():
@@ -1736,6 +1747,7 @@ def main(argv=None):
         "schema": "queyi-676h/number-audit",
         "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
         "tex": tex_rel,
+        "tex_extra": extra_rel,
         "sources": {k: v for k, v in SOURCE_FILES.items()},
         "total_pages": total_pages,
         "main_text_pages": None,
