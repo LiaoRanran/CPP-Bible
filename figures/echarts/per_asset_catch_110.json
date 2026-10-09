@@ -1,0 +1,99 @@
+{
+  "title": {
+    "text": "逐资产 catch 表现 · 真实靶场 110（683 矩阵）",
+    "left": "center",
+    "textStyle": {
+      "fontSize": 14,
+      "color": "#333"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis"
+  },
+  "legend": {
+    "top": 30,
+    "textStyle": {
+      "fontSize": 11
+    }
+  },
+  "grid": {
+    "left": 60,
+    "right": 30,
+    "top": 60,
+    "bottom": 60
+  },
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "wunsequenced",
+      "cross-compile",
+      "linker",
+      "compile-time"
+    ],
+    "axisLabel": {
+      "fontSize": 10
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "条数"
+  },
+  "series": [
+    {
+      "name": "catch",
+      "type": "bar",
+      "data": [
+        54,
+        20,
+        25,
+        5,
+        0,
+        22,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "miss",
+      "type": "bar",
+      "data": [
+        55,
+        89,
+        84,
+        105,
+        0,
+        87,
+        110,
+        0
+      ]
+    },
+    {
+      "name": "unknown",
+      "type": "bar",
+      "data": [
+        1,
+        1,
+        1,
+        0,
+        110,
+        1,
+        0,
+        110
+      ]
+    }
+  ],
+  "color": [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#9C755F"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "真实靶场按缺陷类型 OR 检出率（683 §1.2）",
+  "caliber": "683_real_world_analysis.md §1.2。",
+  "types": [
+    "out_of_bounds",
+    "logic_error",
+    "integer_overflow",
+    "use_after_free",
+    "null_pointer_deref",
+    "data_race",
+    "type_punning",
+    "double_free",
+    "memory_leak"
+  ],
+  "n": [
+    38,
+    31,
+    14,
+    10,
+    6,
+    4,
+    4,
+    2,
+    1
+  ],
+  "or_catch_pct": [
+    84.21,
+    3.23,
+    71.43,
+    100.0,
+    100.0,
+    75.0,
+    0.0,
+    100.0,
+    100.0
+  ]
+}

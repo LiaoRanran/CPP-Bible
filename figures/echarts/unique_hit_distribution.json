@@ -1,0 +1,63 @@
+{
+  "title": {
+    "text": "独苗命中资产分布（27 条）",
+    "left": "center",
+    "textStyle": {
+      "fontSize": 14,
+      "color": "#333"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis"
+  },
+  "legend": {
+    "top": 30,
+    "textStyle": {
+      "fontSize": 11
+    }
+  },
+  "grid": {
+    "left": 60,
+    "right": 30,
+    "top": 60,
+    "bottom": 60
+  },
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "asan",
+      "cross-compile",
+      "tsan",
+      "ubsan"
+    ],
+    "axisLabel": {
+      "fontSize": 10
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "条数"
+  },
+  "series": [
+    {
+      "name": "sole-catcher count",
+      "type": "bar",
+      "data": [
+        18,
+        3,
+        3,
+        3
+      ]
+    }
+  ],
+  "color": [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#9C755F"
+  ]
+}

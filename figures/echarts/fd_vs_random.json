@@ -1,0 +1,94 @@
+{
+  "title": {
+    "text": "FD（贪心组合）vs Random 基线 · 真实靶场 110 条（k=1..8 资产数）",
+    "left": "center",
+    "textStyle": {
+      "fontSize": 14,
+      "color": "#333"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis"
+  },
+  "legend": {
+    "top": 30,
+    "textStyle": {
+      "fontSize": 11
+    }
+  },
+  "grid": {
+    "left": 60,
+    "right": 30,
+    "top": 60,
+    "bottom": 60
+  },
+  "xAxis": {
+    "type": "category",
+    "name": "k (资产数)",
+    "nameLocation": "middle",
+    "nameGap": 30,
+    "data": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "OR catch%",
+    "min": 0,
+    "max": 100
+  },
+  "series": [
+    {
+      "name": "FD (greedy)",
+      "type": "line",
+      "data": [
+        49.09,
+        53.64,
+        56.36,
+        59.09,
+        59.09,
+        59.09,
+        59.09,
+        59.09
+      ],
+      "smooth": true,
+      "symbolSize": 7
+    },
+    {
+      "name": "Random mean",
+      "type": "line",
+      "data": [
+        14.59,
+        26.01,
+        34.89,
+        42.58,
+        48.14,
+        52.72,
+        56.18,
+        59.09
+      ],
+      "smooth": true,
+      "symbolSize": 7,
+      "lineStyle": {
+        "type": "dashed"
+      }
+    }
+  ],
+  "color": [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#9C755F"
+  ]
+}

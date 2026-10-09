@@ -1,0 +1,44 @@
+{
+  "title": "FD（贪心组合）vs Random 基线 · 真实靶场 110 条（k=1..8 资产数）",
+  "caliber": "real-world 110 (683 frozen matrix)；资产顺序=贪心边际增益；random=2000 次均匀随机 k-子集 OR 覆盖均值。论文合成帧等效锚点：684 greedy 4 资产=58.49% vs random_mean(full8)=42.52%（+15.97pp）。",
+  "k": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "fd_greedy_pct": [
+    49.09,
+    53.64,
+    56.36,
+    59.09,
+    59.09,
+    59.09,
+    59.09,
+    59.09
+  ],
+  "random_mean_pct": [
+    14.59,
+    26.01,
+    34.89,
+    42.58,
+    48.14,
+    52.72,
+    56.18,
+    59.09
+  ],
+  "greedy_asset_order": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile",
+    "compiler-warn",
+    "wunsequenced",
+    "linker",
+    "compile-time"
+  ]
+}

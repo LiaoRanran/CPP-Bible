@@ -1,0 +1,54 @@
+{
+  "title": "逐资产 catch 表现 · 真实靶场 110（683 矩阵）",
+  "caliber": "683_real_world_detection_matrix.json per_asset_summary。",
+  "assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+  ],
+  "catch": [
+    54,
+    20,
+    25,
+    5,
+    0,
+    22,
+    0,
+    0
+  ],
+  "miss": [
+    55,
+    89,
+    84,
+    105,
+    0,
+    87,
+    110,
+    0
+  ],
+  "unknown": [
+    1,
+    1,
+    1,
+    0,
+    110,
+    1,
+    0,
+    110
+  ],
+  "catch_pct": [
+    49.09,
+    18.18,
+    22.73,
+    4.55,
+    0.0,
+    20.0,
+    0.0,
+    0.0
+  ]
+}

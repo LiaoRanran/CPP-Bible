@@ -1,0 +1,73 @@
+{
+  "title": {
+    "text": "四型（缺陷家族）真实 vs 合成 catch% 结构性漂移（705-C 代理指标）",
+    "left": "center",
+    "textStyle": {
+      "fontSize": 14,
+      "color": "#333"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis"
+  },
+  "legend": {
+    "top": 30,
+    "textStyle": {
+      "fontSize": 11
+    }
+  },
+  "grid": {
+    "left": 60,
+    "right": 30,
+    "top": 60,
+    "bottom": 60
+  },
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "memory_safety",
+      "undefined_behavior",
+      "concurrency",
+      "logic_error"
+    ],
+    "axisLabel": {
+      "fontSize": 10
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "%"
+  },
+  "series": [
+    {
+      "name": "真实 OR%",
+      "type": "bar",
+      "data": [
+        89.47,
+        55.56,
+        75.0,
+        3.23
+      ]
+    },
+    {
+      "name": "合成 OR%",
+      "type": "bar",
+      "data": [
+        null,
+        null,
+        49.47,
+        null
+      ]
+    }
+  ],
+  "color": [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#9C755F"
+  ]
+}

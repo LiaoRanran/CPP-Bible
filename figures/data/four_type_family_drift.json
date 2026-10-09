@@ -1,0 +1,23 @@
+{
+  "title": "四型（缺陷家族）真实 vs 合成 catch% 结构性漂移（705-C 代理指标）",
+  "caliber": "真实=683 110 by_type 分组聚合；合成=blindspot_676g_stats by family 聚合。注：精确「Goodhart 漂移量」未在本批冻结数据中独立核算 → 本图以四家族真实/合成 OR% 差作为结构性漂移的代理指标，最终采用权在作者。",
+  "families": [
+    "memory_safety",
+    "undefined_behavior",
+    "concurrency",
+    "logic_error"
+  ],
+  "real_or_pct": [
+    89.47,
+    55.56,
+    75.0,
+    3.23
+  ],
+  "synthetic_or_pct": [
+    null,
+    null,
+    49.47,
+    null
+  ],
+  "status": "代理指标（精确 Goodhart 漂移量待补）"
+}

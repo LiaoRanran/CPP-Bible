@@ -1,0 +1,45 @@
+{
+  "title": "真实 CVE vs 自造语料 · 逐资产 catch%（683 §1.1）",
+  "caliber": "683_real_world_analysis.md §1.1；真实=110 真实缺陷，自造=1147 合成语料（同 8 资产）。",
+  "assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+  ],
+  "real_pct": [
+    49.09,
+    18.18,
+    22.73,
+    4.55,
+    0.0,
+    20.0,
+    0.0,
+    0.0
+  ],
+  "synthetic_pct": [
+    35.57,
+    23.54,
+    22.93,
+    12.47,
+    0.0,
+    10.64,
+    0.87,
+    0.0
+  ],
+  "delta_pp": [
+    13.52,
+    -5.36,
+    -0.2,
+    -7.92,
+    0.0,
+    9.36,
+    -0.87,
+    0.0
+  ],
+  "note": "z 检验：asan p=0.005 / cross-compile p=0.003（真实更强）；compiler-warn p=0.014（真实更弱）；总体 OR 真实 59.09% vs 自造 61.64% 无显著差异（z=-0.52, p=0.60）。"
+}

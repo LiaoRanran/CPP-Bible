@@ -1,0 +1,28 @@
+{
+  "title": "环境感知对比 · WSL(g++) vs native(MinGW)（692 配对实验）",
+  "caliber": "692_environment_report.md；E1=wsl-gcc-13.3(6 可捕获资产), E2=windows-native-mingw(3 资产)。unaware 记账。",
+  "frames": [
+    {
+      "frame": "A5 evaluation 566",
+      "E1_catch_pct": 60.07,
+      "E2_catch_pct": 24.74,
+      "delta_pp": -35.34
+    },
+    {
+      "frame": "真实靶场 110",
+      "E1_catch_pct": 59.09,
+      "E2_catch_pct": 23.64,
+      "delta_pp": -35.45
+    }
+  ],
+  "lost_by_asset_A5": {
+    "asan": 60,
+    "ubsan": 44,
+    "tsan": 29,
+    ">=2_assets": 67,
+    "total_lost": 200,
+    "total_E1_catch": 340
+  },
+  "silent_fingerprint_delta_unknown_pp": 0.0,
+  "conditional_recall_E2": "不可计算（分母为 0，aware 口径）"
+}

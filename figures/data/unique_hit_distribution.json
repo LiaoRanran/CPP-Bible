@@ -1,0 +1,22 @@
+{
+  "title": "检测器独苗命中分布（真实靶场 110，688）",
+  "caliber": "688_unique_hit_analysis.json；n_unique_hit=27（占 catch 41.5%）。",
+  "sole_catcher_counts": {
+    "asan": 18,
+    "cross-compile": 3,
+    "tsan": 3,
+    "ubsan": 3
+  },
+  "unique_hit_by_type": {
+    "out_of_bounds": 16,
+    "double_free": 2,
+    "data_race": 2,
+    "use_after_free": 2,
+    "integer_overflow": 3,
+    "memory_leak": 1,
+    "logic_error": 1
+  },
+  "n_or_catch": 65,
+  "n_unique_hit": 27,
+  "unique_fraction_pct": 41.54
+}

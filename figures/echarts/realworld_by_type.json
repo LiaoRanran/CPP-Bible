@@ -1,0 +1,73 @@
+{
+  "title": {
+    "text": "真实靶场按缺陷类型 OR 检出率（683 §1.2）",
+    "left": "center",
+    "textStyle": {
+      "fontSize": 14,
+      "color": "#333"
+    }
+  },
+  "tooltip": {
+    "trigger": "axis"
+  },
+  "legend": {
+    "top": 30,
+    "textStyle": {
+      "fontSize": 11
+    }
+  },
+  "grid": {
+    "left": 60,
+    "right": 30,
+    "top": 60,
+    "bottom": 60
+  },
+  "xAxis": {
+    "type": "category",
+    "data": [
+      "out_of_bounds",
+      "logic_error",
+      "integer_overflow",
+      "use_after_free",
+      "null_pointer_deref",
+      "data_race",
+      "type_punning",
+      "double_free",
+      "memory_leak"
+    ],
+    "axisLabel": {
+      "fontSize": 10
+    }
+  },
+  "yAxis": {
+    "type": "value",
+    "name": "%"
+  },
+  "series": [
+    {
+      "name": "OR catch%",
+      "type": "bar",
+      "data": [
+        84.21,
+        3.23,
+        71.43,
+        100.0,
+        100.0,
+        75.0,
+        0.0,
+        100.0,
+        100.0
+      ]
+    }
+  ],
+  "color": [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#9C755F"
+  ]
+}
