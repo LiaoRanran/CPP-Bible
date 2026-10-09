@@ -58,7 +58,7 @@ jobs:
     # 只构建、不推送：本 job 的目的是"证明它能构建"，不是发布镜像。
     # 推送留到 release.yml（打 tag 时）。
     - name: Build reproduce image (no push)
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: docker/reproduce/Dockerfile
@@ -100,7 +100,7 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Build reproduce image
-      uses: docker/build-push-action@v6
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: docker/reproduce/Dockerfile
