@@ -61,7 +61,7 @@ opentimestamps==0.4.5
 opentimestamps-client==0.7.2
 python-bitcoinlib==0.12.2
 jsbeautifier==2.0.3
-librt==0.15.0
+librt==0.16.0
 appdirs==1.4.4
 PyYAML==6.0.3
 requests==2.34.2
