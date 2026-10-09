@@ -1,0 +1,93 @@
+{
+ "schema": "queyi-707/axiom-substantive-check/v1",
+ "generated_by": "tools/compute_700_axiom_independence.py --substantive-only",
+ "generated_at": "2026-10-09T14:09:42+08:00",
+ "detect_calls": 0,
+ "research_basis": "700-A：A3/A4/A6 恒真（定理），A2/A5 独立（真公理）",
+ "domain": {
+  "n_samples": 4,
+  "n_assets": 3,
+  "n_structures": 4096
+ },
+ "substantive_check": {
+  "checked_axioms": [
+   "A2",
+   "A5"
+  ],
+  "skipped_axioms": {
+   "A3": "恒真（幂等：τ_G∘τ_G = τ_G，由 τ 定义推出）",
+   "A4": "恒真（交换闭包：τ_G∘τ_H = τ_{G∪H}，由 τ 定义推出）",
+   "A6": "恒真（不可逆：列删去 M↦M|_{A\\G} 非单射）",
+   "A7": "域级定理（698-B T3），非逐结构约束",
+   "A1": "元公理（约束语言/分类法，不参与结构检查）"
+  },
+  "truth": {
+   "A2": {
+    "or_union": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "at_least_2": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "max_single": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "min_single": {
+     "holds_on_all": false,
+     "n_violating_structures": 3750
+    },
+    "mean_single": {
+     "holds_on_all": false,
+     "n_violating_structures": 3750
+    },
+    "sum_single": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "exactly_one_nonmonotone": {
+     "holds_on_all": false,
+     "n_violating_structures": 3600
+    }
+   },
+   "A5": {
+    "or_union": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "at_least_2": {
+     "holds_on_all": false,
+     "n_violating_structures": 3471
+    },
+    "max_single": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "min_single": {
+     "holds_on_all": false,
+     "n_violating_structures": 2589
+    },
+    "mean_single": {
+     "holds_on_all": false,
+     "n_violating_structures": 3750
+    },
+    "sum_single": {
+     "holds_on_all": true,
+     "n_violating_structures": 0
+    },
+    "exactly_one_nonmonotone": {
+     "holds_on_all": false,
+     "n_violating_structures": 1671
+    }
+   }
+  },
+  "a8_placeholder": {
+   "axiom": "A8（标签轴闭包）",
+   "status": "TODO / 不可自动验证",
+   "reason": "标签轴 λ 属**报告规范层**（非覆盖结构性质）⇒ 无结构反例可检；以「未声明 λ 的分组统计不可比较」的规范约束落地（698-A Type III 实测）。",
+   "candidate_formalization": "A8（标签轴闭包）：口径签名必须扩为 (D, A, E, Θ, P, λ)，且任何报告统计量都必须显式声明其**分组轴** λ；未声明 λ 的统计量**不可比较**（与 698-A Type III 的实测结论一致）。"
+  }
+ }
+}

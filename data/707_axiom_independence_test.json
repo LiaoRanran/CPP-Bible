@@ -1,0 +1,105 @@
+{
+ "schema": "queyi-707/axiom-independence-test/v1",
+ "generated_by": "tools/test_axiom_independence.py",
+ "generated_at": "2026-10-09T14:09:17+08:00",
+ "detect_calls": 0,
+ "research_basis": "700-A 元理论发现：A3/A4/A6 恒真，A2/A5 独立（data/700_axiom_independence.json）",
+ "authority_source": "data/700_axiom_independence.json",
+ "classification": {
+  "n_structures": 4096,
+  "n_aggregations": 7,
+  "truth_table": {
+   "A2": {
+    "or_union": true,
+    "at_least_2": true,
+    "max_single": true,
+    "min_single": false,
+    "mean_single": false,
+    "sum_single": true,
+    "exactly_one_nonmonotone": false
+   },
+   "A3": {
+    "or_union": true,
+    "at_least_2": true,
+    "max_single": true,
+    "min_single": true,
+    "mean_single": true,
+    "sum_single": true,
+    "exactly_one_nonmonotone": true
+   },
+   "A4": {
+    "or_union": true,
+    "at_least_2": true,
+    "max_single": true,
+    "min_single": true,
+    "mean_single": true,
+    "sum_single": true,
+    "exactly_one_nonmonotone": true
+   },
+   "A5": {
+    "or_union": true,
+    "at_least_2": false,
+    "max_single": true,
+    "min_single": false,
+    "mean_single": false,
+    "sum_single": true,
+    "exactly_one_nonmonotone": false
+   }
+  },
+  "a6_non_injective_holds": true,
+  "a7_witness_exists": true,
+  "genuine_axioms": [
+   "A2",
+   "A5"
+  ],
+  "theorems": [
+   "A3",
+   "A4",
+   "A6",
+   "A7"
+  ],
+  "violating_aggregations": {
+   "A2": [
+    "min_single",
+    "mean_single",
+    "exactly_one_nonmonotone"
+   ],
+   "A5": [
+    "at_least_2",
+    "min_single",
+    "mean_single",
+    "exactly_one_nonmonotone"
+   ]
+  }
+ },
+ "expected": {
+  "genuine_axioms": [
+   "A2",
+   "A5"
+  ],
+  "theorems": [
+   "A3",
+   "A4",
+   "A6",
+   "A7"
+  ],
+  "meta_axioms": [
+   "A1"
+  ]
+ },
+ "a8_placeholder": {
+  "axiom": "A8（标签轴闭包）",
+  "status": "MISSING / TODO",
+  "why": "存在漂移 τ_λ（标签词表变化）使**逐样本裁决与全部公理量都不变**，但**分组统计改变** ⇒ 现有 7 公理系统**无法表达** Type III（标签）漂移。这是**不完备性**的具体见证。",
+  "cannot_auto_verify_reason": "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；本穷举域（覆盖 + 聚合）无法表达它 ⇒ 只能以「未声明 λ 的分组统计不可比较」这一规则人工/规范约束，无法像 A2/A5 那样给出结构反例。",
+  "candidate_formalization": "A8（标签轴闭包）：口径签名必须扩为 (D, A, E, Θ, P, λ)，且任何报告统计量都必须显式声明其**分组轴** λ；未声明 λ 的统计量**不可比较**（与 698-A Type III 的实测结论一致）。"
+ },
+ "checks": {
+  "only_A2_A5_genuine": true,
+  "A3_A4_A6_A7_are_theorems": true,
+  "A2_has_counterexample": true,
+  "A5_has_counterexample": true,
+  "A8_missing_confirmed": true
+ },
+ "pass": true
+}

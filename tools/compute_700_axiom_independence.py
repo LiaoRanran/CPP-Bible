@@ -329,14 +329,83 @@ def completeness_probe() -> dict[str, Any]:
 
 
 # ══════════════════════════════════════════════════════════════════════════
+# 707-A 简化：只做实质性公理检查（跳过恒真的 A3/A4/A6）
+# ══════════════════════════════════════════════════════════════════════════
+def substantive_axiom_check(structures: list[dict[str, frozenset[int]]]) -> dict[str, Any]:
+    """**简化检查器**（707-A 工程落地）。
+
+    科研依据（700-A 元理论发现）：A3（幂等）/ A4（交换闭包）/ A6（不可逆）在本框架
+    （τ = 资产列删去）内**恒真**——由 τ 的构造直接推出，把它们写成公理是冗余，逐结构
+    全量重算它们**永远通过、纯属浪费**。真正需要逐结构检验的只有 **A2（撤除单调）与
+    A5（超可加）**。A7 是域级存在性命题（698-B T3 已证），A1 是元公理 ⇒ 两者都不进循环。
+
+    ⇒ 本函数只对全部结构跑 A2/A5（把结构检查从 4 项降到 2 项），并给出 A8（标签轴闭包）
+    占位（TODO：见 ``a8_placeholder`` 的不可自动验证原因）。
+    """
+    truth: dict[str, dict[str, Any]] = {}
+    for aname, checker in (("A2", check_a2), ("A5", check_a5)):
+        truth[aname] = {}
+        for agg_name, fn in AGGREGATIONS.items():
+            violators = sum(0 if checker(cov, fn) else 1 for cov in structures)
+            truth[aname][agg_name] = {
+                "holds_on_all": violators == 0,
+                "n_violating_structures": violators,
+            }
+    a8_placeholder = {
+        "axiom": "A8（标签轴闭包）",
+        "status": "TODO / 不可自动验证",
+        "reason": ("标签轴 λ 属**报告规范层**（非覆盖结构性质）⇒ 无结构反例可检；"
+                   "以「未声明 λ 的分组统计不可比较」的规范约束落地（698-A Type III 实测）。"),
+        "candidate_formalization": completeness_probe()["missing_axiom_candidate"],
+    }
+    return {
+        "checked_axioms": ["A2", "A5"],
+        "skipped_axioms": {
+            "A3": "恒真（幂等：τ_G∘τ_G = τ_G，由 τ 定义推出）",
+            "A4": "恒真（交换闭包：τ_G∘τ_H = τ_{G∪H}，由 τ 定义推出）",
+            "A6": "恒真（不可逆：列删去 M↦M|_{A\\G} 非单射）",
+            "A7": "域级定理（698-B T3），非逐结构约束",
+            "A1": "元公理（约束语言/分类法，不参与结构检查）",
+        },
+        "truth": truth,
+        "a8_placeholder": a8_placeholder,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════
 # 主流程
 # ══════════════════════════════════════════════════════════════════════════
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="700-A 公理独立性穷举模型检查")
     ap.add_argument("--out", type=Path, default=OUT_JSON)
+    ap.add_argument("--substantive-only", action="store_true",
+                    help="707-A：只检查实质性公理 A2/A5，跳过恒真的 A3/A4/A6（省算力）；附 A8 占位")
     args = ap.parse_args(argv)
 
     structures = all_coverages()
+
+    if args.substantive_only:  # 707-A 简化路径（科研依据：700-A 元理论发现）
+        sub = substantive_axiom_check(structures)
+        doc: dict[str, Any] = {
+            "schema": "queyi-707/axiom-substantive-check/v1",
+            "generated_by": "tools/compute_700_axiom_independence.py --substantive-only",
+            "generated_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+            "detect_calls": 0,
+            "research_basis": "700-A：A3/A4/A6 恒真（定理），A2/A5 独立（真公理）",
+            "domain": {"n_samples": N_SAMPLES, "n_assets": N_ASSETS, "n_structures": len(structures)},
+            "substantive_check": sub,
+        }
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
+        _log.info("已写出（substantive-only）%s", args.out)
+        print("== 700-A 公理检查（substantive-only：仅 A2/A5）==")
+        for a, per in sub["truth"].items():
+            print(f"  {a}: " + ", ".join(
+                f"{k}={'ok' if v['holds_on_all'] else 'violated(%d)' % v['n_violating_structures']}"
+                for k, v in per.items()))
+        print(f"  跳过（恒真/定理/元公理）：{list(sub['skipped_axioms'])}")
+        print(f"  A8 占位：{sub['a8_placeholder']['status']}")
+        return 0
     _log.info("结构域大小 = %d（|X|=%d, |A|=%d）；聚合族 %d 种",
               len(structures), N_SAMPLES, N_ASSETS, len(AGGREGATIONS))
 
