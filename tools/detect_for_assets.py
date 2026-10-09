@@ -82,6 +82,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 
+import asset_capabilities as _ac  # noqa: E402  707-B：聚合规则/声明的单一事实源（700-F P1/P3）
+
 VERSION = "1.0"
 OUT_DEFAULT = ROOT / "data" / "experiments" / "asset_attribution_673r.json"
 
@@ -311,8 +313,20 @@ def detect_one_asset(rv: Any, spec: SampleSpec, asset_id: str, *, atoms_root: st
             "wall_seconds": round(time.perf_counter() - t0, 4)}
 
 
-def aggregate(by_asset: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """OR 聚合。**unknown 绝不许当 miss**。"""
+def aggregate(by_asset: dict[str, dict[str, Any]], rule: str = "or") -> dict[str, Any]:
+    """聚合。**unknown 绝不许当 miss**。
+
+    科研依据（707-B / 700-F P3）：聚合规则必须**显式声明**。默认 ``rule="or"``
+    （旧行为，与冻结矩阵逐字一致，**对零产资产免疫**）；``mean`` 会被零产资产稀释
+    （8 资产 vs 6 资产稀释因子 1.3333）。非 ``or`` 规则交给单一事实源
+    ``asset_capabilities.aggregate_one`` 处理。
+    """
+    if rule != "or":
+        v = _ac.aggregate_one({a: vv.get("verdict") for a, vv in by_asset.items()},
+                              tuple(by_asset), rule=rule)
+        caught = [a for a, vv in by_asset.items() if str(vv.get("verdict")) == "catch"]
+        return {"verdict": v, "caught_by": (sorted(caught)[0] if caught else None),
+                "caught_by_all": sorted(caught)}
     verdicts = {a: str(v.get("verdict")) for a, v in by_asset.items()}
     caught = [a for a, v in verdicts.items() if v == "catch"]
     if caught:
@@ -323,7 +337,8 @@ def aggregate(by_asset: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
 
 def detect_for_assets(spec: SampleSpec, selected: list[str] | tuple[str, ...], *,
-                      rv: Any | None = None, pool_ids: list[str] | None = None) -> dict[str, Any]:
+                      rv: Any | None = None, pool_ids: list[str] | None = None,
+                      rule: str = "or") -> dict[str, Any]:
     """样本 × 资产子集 的真实判定。
 
     参数
@@ -369,7 +384,7 @@ def detect_for_assets(spec: SampleSpec, selected: list[str] | tuple[str, ...], *
         if tmpdir:
             shutil.rmtree(tmpdir, ignore_errors=True)
 
-    agg = aggregate(by_asset)
+    agg = aggregate(by_asset, rule=rule)
     unknown_reasons = {a: v["note"] for a, v in by_asset.items() if v["verdict"] == "unknown"}
     return {
         "id": spec.id,
@@ -399,7 +414,7 @@ class AttributionResult:
 
 
 def build_attribution(dataset: str, *, assets: list[str] | None = None, limit: int | None = None,
-                      rv: Any | None = None, verbose: bool = True) -> dict[str, Any]:
+                      rv: Any | None = None, verbose: bool = True, rule: str = "or") -> dict[str, Any]:
     """对一个数据集跑 **全资产**：每条样本 × 每个可选资产各一次真实 detect。"""
     import verifier_pool_673p as vp
 
@@ -413,7 +428,7 @@ def build_attribution(dataset: str, *, assets: list[str] | None = None, limit: i
         res = AttributionResult(dataset=dataset)
         t_all = time.perf_counter()
         for i, sp in enumerate(specs, 1):
-            out = detect_for_assets(sp, asset_ids, rv=rv, pool_ids=asset_ids)
+            out = detect_for_assets(sp, asset_ids, rv=rv, pool_ids=asset_ids, rule=rule)
             row = sp.as_dict()
             row["per_asset"] = {a: {"verdict": v["verdict"], "note": v["note"][:300],
                                     "wall_seconds": v["wall_seconds"]}
@@ -441,7 +456,7 @@ def build_attribution(dataset: str, *, assets: list[str] | None = None, limit: i
 
 
 def attribution_doc(datasets: list[str], *, limit: int | None = None, verbose: bool = True,
-                    out_path: Path | None = None) -> dict[str, Any]:
+                    out_path: Path | None = None, rule: str = "or") -> dict[str, Any]:
     """跑多个数据集。**每跑完一个就增量落盘**（840 次真跑很贵，中途崩了也不该全丢）。"""
     import verifier_pool_673p as vp
 
@@ -453,7 +468,7 @@ def attribution_doc(datasets: list[str], *, limit: int | None = None, verbose: b
         return _doc_shell(vp, parts, time.perf_counter() - t0)
 
     for d in datasets:
-        parts[d] = build_attribution(d, limit=limit, rv=rv, verbose=verbose)
+        parts[d] = build_attribution(d, limit=limit, rv=rv, verbose=verbose, rule=rule)
         if out_path is not None:            # 增量落盘
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(json.dumps(_snapshot(), ensure_ascii=False, indent=1) + "\n",
@@ -608,7 +623,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--check", action="store_true", help="自检")
     ap.add_argument("--probe", action="store_true", help="只探测 WSL 横幅/环境")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--aggregation", choices=tuple(_ac.AGGREGATION_RULES),
+                    default=_ac.DEFAULT_AGGREGATION,
+                    help="707-B / 700-F P3：聚合规则**显式声明**（默认 or，对零产资产免疫；mean 会被稀释）")
     a = ap.parse_args(argv)
+
+    if a.aggregation == "mean":
+        print("[707-B / 700-F P3] 警告：mean 聚合会被零产资产稀释"
+              "（8 vs 6 资产稀释因子 1.3333）；报告须显式声明聚合规则。", flush=True)
 
     if a.probe:
         print(json.dumps(probe_wsl_banner(), ensure_ascii=False, indent=2))
@@ -623,7 +645,8 @@ def main(argv: list[str] | None = None) -> int:
     out = Path(a.out)
     if not out.is_absolute():                 # 相对路径按仓库根解析（673r 首次运行在此崩过）
         out = ROOT / out
-    doc = attribution_doc(datasets, limit=a.limit, out_path=None if a.no_write else out)
+    doc = attribution_doc(datasets, limit=a.limit, out_path=None if a.no_write else out,
+                          rule=a.aggregation)
     doc["fidelity_vs_frozen"] = fidelity_report(doc)
 
     if a.json:

@@ -1,0 +1,104 @@
+{
+ "schema": "queyi-707/zero-cost-landing-validation/v1",
+ "generated_by": "tools/asset_capabilities.py --validate",
+ "generated_at": "2026-10-09T14:10:52+08:00",
+ "detect_calls": 0,
+ "research_basis": "700-F 零成本改进（data/700_design_simulation.json）；对账 703 只读验证（data/703_zero_cost_validation.json）",
+ "cross_check_703": {
+  "703_P1_delta_detection_pp": 0.0,
+  "703_P1_composition_inflation_8": 0.460241,
+  "703_P2_delta_unknown_aware_pp": 75.265,
+  "703_P3_mean_dilution_factor": 1.333331
+ },
+ "P1": {
+  "per_asset_catch": {
+   "asan": 408,
+   "ubsan": 270,
+   "tsan": 263,
+   "compiler-warn": 143,
+   "wunsequenced": 0,
+   "cross-compile": 122,
+   "linker": 10,
+   "compile-time": 0
+  },
+  "zero_yield_catch_total": 0,
+  "detection_rate_declared8_pct": 61.6391,
+  "detection_rate_effective6_pct": 61.6391,
+  "delta_detection_pp": 0.0,
+  "claim_p1_holds": true
+ },
+ "P2": {
+  "n": 566,
+  "E1": {
+   "accounting": "unaware",
+   "catch": 340,
+   "miss": 226,
+   "unknown": 0,
+   "total": 566,
+   "catch_rate_pct": 60.0707,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 60.0707
+  },
+  "E2_unaware": {
+   "accounting": "unaware",
+   "catch": 140,
+   "miss": 426,
+   "unknown": 0,
+   "total": 566,
+   "catch_rate_pct": 24.735,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 24.735
+  },
+  "E2_aware": {
+   "accounting": "unaware",
+   "catch": 140,
+   "miss": 0,
+   "unknown": 426,
+   "total": 566,
+   "catch_rate_pct": 24.735,
+   "unknown_rate_pct": 75.265,
+   "conditional_recall_pct": 100.0
+  },
+  "delta_unknown_unaware_pp": 0.0,
+  "delta_unknown_aware_pp": 75.265,
+  "claim_p2_holds": true
+ },
+ "P3": {
+  "rates": {
+   "or": {
+    "declared8_pct": 61.6391,
+    "effective6_pct": 61.6391
+   },
+   "max": {
+    "declared8_pct": 61.6391,
+    "effective6_pct": 61.6391
+   },
+   "at_least_2": {
+    "declared8_pct": 28.1604,
+    "effective6_pct": 28.1604
+   },
+   "mean": {
+    "declared8_pct": 13.252,
+    "effective6_pct": 17.6693
+   }
+  },
+  "delta_or_pp": 0.0,
+  "delta_mean_pp": 4.4173,
+  "mean_dilution_factor": 1.333331,
+  "or_is_zero_yield_immune": true,
+  "claim_p3_holds": true
+ },
+ "anti_drift_score": {
+  "A_current": 53.05,
+  "B_theory_optimal": 66.67,
+  "note": "700-D 设计模拟：落地 P1/P2/P3 后抗漂移评分 53.05 → 66.67（检出率不变）。"
+ },
+ "all_claims_hold": true,
+ "honest_limits": [
+  "全部为只读复算（冻结矩阵 + 692 剖面）；detect_calls = 0。",
+  "P1「零产」是**在本冻结矩阵上**零 catch；换语料可能不再零产。",
+  "P2 aware 读数基于**单一环境对**（E1 vs E2）⇒ 不声称普适。",
+  "检出率是 1147 条（92.9% 人工植入）冻结矩阵上的 OR 覆盖率 ⇒ 不代表真实缺陷分布。",
+  "抗漂移评分 53.05/66.67 来自 700-D 设计模拟（同冻结矩阵，四轴模拟），非新实测。"
+ ]
+}
