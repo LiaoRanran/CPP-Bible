@@ -1,0 +1,232 @@
+{
+ "schema": "queyi-700/axiom-metatheory/v1",
+ "generated_by": "tools/compute_700_axiom_independence.py",
+ "generated_at": "2026-10-09T09:43:57+08:00",
+ "detect_calls": 0,
+ "domain": {
+  "n_samples": 4,
+  "n_assets": 3,
+  "n_structures": 4096,
+  "aggregations": {
+   "or_union": "并集覆盖：单调 + **子模**",
+   "at_least_2": "至少 2 个资产捕获：单调，非子模",
+   "max_single": "最好单资产：单调，非子模",
+   "min_single": "最差单资产：单调，非子模",
+   "mean_single": "单资产均值：单调，非子模",
+   "sum_single": "单资产求和：单调，**可加**（故 A5 取等号）",
+   "exactly_one_nonmonotone": "恰被 1 个捕获：**非单调**（A2 的反例来源）"
+  },
+  "drift_operator": "τ_G = 保留 A\\G（撤除型）",
+  "damage": "h(G) = R(A) − R(A\\G)"
+ },
+ "axiom_truth_table": {
+  "A2": {
+   "or_union": true,
+   "at_least_2": true,
+   "max_single": true,
+   "min_single": false,
+   "mean_single": false,
+   "sum_single": true,
+   "exactly_one_nonmonotone": false
+  },
+  "A3": {
+   "or_union": true,
+   "at_least_2": true,
+   "max_single": true,
+   "min_single": true,
+   "mean_single": true,
+   "sum_single": true,
+   "exactly_one_nonmonotone": true
+  },
+  "A4": {
+   "or_union": true,
+   "at_least_2": true,
+   "max_single": true,
+   "min_single": true,
+   "mean_single": true,
+   "sum_single": true,
+   "exactly_one_nonmonotone": true
+  },
+  "A5": {
+   "or_union": true,
+   "at_least_2": false,
+   "max_single": true,
+   "min_single": false,
+   "mean_single": false,
+   "sum_single": true,
+   "exactly_one_nonmonotone": false
+  }
+ },
+ "a6_non_injectivity": {
+  "per_G_non_injective": {
+   "['a']": true,
+   "['b']": true,
+   "['c']": true,
+   "['a', 'b']": true,
+   "['a', 'c']": true,
+   "['b', 'c']": true,
+   "['a', 'b', 'c']": true
+  },
+  "holds": true
+ },
+ "a7_domain_witness": {
+  "witness_exists": true,
+  "n_witnesses": 3840,
+  "example": {
+   "coverage": {
+    "a": [
+     0
+    ],
+    "b": [],
+    "c": []
+   },
+   "G": [
+    "a"
+   ],
+   "lost_samples": [
+    0
+   ]
+  },
+  "verdict": "**定理**（非公理）：一旦把 unaware/aware 记账规则写进结构，「静默性是 (τ, 记账口径) 二元组的性质」就是**可证的**——698-B 定理 T3 已给出证明，本批的穷举见证与之一致。"
+ },
+ "classification": {
+  "A2": {
+   "always_true_on_domain": false,
+   "violating_aggregations": [
+    "min_single",
+    "mean_single",
+    "exactly_one_nonmonotone"
+   ],
+   "verdict": "**真公理**（存在反例模型）"
+  },
+  "A3": {
+   "always_true_on_domain": true,
+   "violating_aggregations": [],
+   "verdict": "**定理**（在框架内恒真，不能算公理）"
+  },
+  "A4": {
+   "always_true_on_domain": true,
+   "violating_aggregations": [],
+   "verdict": "**定理**（在框架内恒真，不能算公理）"
+  },
+  "A5": {
+   "always_true_on_domain": false,
+   "violating_aggregations": [
+    "at_least_2",
+    "min_single",
+    "mean_single",
+    "exactly_one_nonmonotone"
+   ],
+   "verdict": "**真公理**（存在反例模型）"
+  },
+  "A6": {
+   "always_true_on_domain": true,
+   "violating_aggregations": [],
+   "verdict": "**定理**（由 τ 定义为列删去直接推出）"
+  },
+  "A1": {
+   "always_true_on_domain": null,
+   "violating_aggregations": [],
+   "verdict": "**元公理**（约束语言/分类法，不是结构性质 ⇒ 不参与结构检查）"
+  },
+  "A7": {
+   "always_true_on_domain": true,
+   "violating_aggregations": [],
+   "verdict": "**定理**（非公理）：一旦把 unaware/aware 记账规则写进结构，「静默性是 (τ, 记账口径) 二元组的性质」就是**可证的**——698-B 定理 T3 已给出证明，本批的穷举见证与之一致。"
+  }
+ },
+ "independence_witnesses": {
+  "A2": {
+   "aggregation": "min_single",
+   "coverage": {
+    "a": [
+     0
+    ],
+    "b": [
+     0
+    ],
+    "c": []
+   }
+  },
+  "A5": {
+   "aggregation": "at_least_2",
+   "coverage": {
+    "a": [
+     0
+    ],
+    "b": [
+     0
+    ],
+    "c": []
+   }
+  }
+ },
+ "minimal_axiom_set": {
+  "meta_axioms": [
+   "A1（口径可枚举性）"
+  ],
+  "genuine_axioms": [
+   "A2",
+   "A5"
+  ],
+  "theorems": [
+   "A3",
+   "A4",
+   "A6",
+   "A7"
+  ],
+  "statement": "在覆盖型框架（τ = 列删去 + 报告函数 R）内：**A3（幂等）/ A4（交换闭包）/ A6（不可逆）是定义域内的恒真命题**（由 τ 的构造直接推出）；**A7（可观测性分层）在把记账规则写进结构后也可证**（698-B 定理 T3）。⇒ 把 A3/A4/A6/A7 写成公理是**冗余**，真正起约束作用的结构公理只有 **A2（单调性）与 A5（超可加性）**，外加元公理 A1。"
+ },
+ "completeness": {
+  "coverage_fixed": {
+   "a": [
+    0,
+    1
+   ],
+   "b": [
+    2
+   ],
+   "c": []
+  },
+  "verdicts_unchanged": true,
+  "aggregation_unchanged": {
+   "or_union": 0.75,
+   "note": "标签 λ 不进入任何公理的形式化（口径签名 = (A,E,Θ,P)，无标签槽）"
+  },
+  "group_statistics_fine": {
+   "t1": 0.0,
+   "t2": 0.0,
+   "t3": 1.0
+  },
+  "group_statistics_coarse": {
+   "T": 0.25
+  },
+  "conclusion": "存在漂移 τ_λ（标签词表变化）使**逐样本裁决与全部公理量都不变**，但**分组统计改变** ⇒ 现有 7 公理系统**无法表达** Type III（标签）漂移。这是**不完备性**的具体见证。",
+  "missing_axiom_candidate": "A8（标签轴闭包）：口径签名必须扩为 (D, A, E, Θ, P, λ)，且任何报告统计量都必须显式声明其**分组轴** λ；未声明 λ 的统计量**不可比较**（与 698-A Type III 的实测结论一致）。"
+ },
+ "complexity": {
+  "decision_caliber_enumerated": {
+   "problem": "给定配对裁决矩阵，判定是否存在口径变化使 |D_τ| > 0",
+   "complexity": "O(|T|·n)——有限枚举，**多项式可解**",
+   "basis": "697 定理 A3(a)：沉默可判定；口径枚举后不变性检验有限（695-P2）"
+  },
+  "decision_structural": {
+   "problem": "判定漂移是结构性（R* 不变）还是真实能力变化",
+   "complexity": "**不可判定**（在仅有配对数据时）",
+   "basis": "697 定理 A1（构造性不可识别）"
+  },
+  "adversarial_caliber_selection": {
+   "problem": "口径套利：选择口径变化使报告值 ≥ v（预算 |A\\S| ≤ k）",
+   "complexity": "**NP-hard**（由最大覆盖归约；最大覆盖的 NP-hardness 是经典结果）",
+   "approximation": "对 OR 型（子模）聚合，贪心达 (1 − 1/e) 近似 ⇒ **684 的贪心 (1−1/e) 保证在元理论层就是「口径套利最优化的近似算法」**",
+   "note": "|A| 小时（本项目 |A|=8）2^8 = 256 可穷举 ⇒ 实践上多项式"
+  }
+ },
+ "honest_limits": [
+  "结构域仅 |X|=4、|A|=3（4096 结构）⇒ 「恒真」的结论只对**该域**成立，不是对任意域的证明。",
+  "聚合族只有 7 种，不是全部可能的报告函数 ⇒ 「有反例」是充分证据，「恒真」是**域内**证据而非普遍证明。",
+  "A1 是元公理，无法用结构检查 ⇒ 本批只做定性讨论。",
+  "A7 的检验用了与 692-A §3 同构的记账规则，但只检查了 |G|=1 的情形。",
+  "复杂性结论中的 NP-hardness 是**归约论证**（引用最大覆盖的经典结果），本批未做形式化归约证明。"
+ ]
+}
