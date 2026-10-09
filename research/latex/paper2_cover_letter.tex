@@ -1,0 +1,87 @@
+% =====================================================================
+%  Cover letter — paper 2 of the two-paper programme (batch 708, task D)
+%  "The Boundary of Evaluator Auditing: Identifiability, Correctability and
+%   Sample Complexity of Measurement Drift"
+%
+%  Target venue: TMLR (rolling, no page limit) or NeurIPS 2027 Evaluations &
+%  Datasets (E&D). The 2027 CFP is unpublished; no style assumptions are made.
+%
+%  DISCIPLINE (inherited from the first paper's letter, v1.7/703):
+%   - The letter carries the paper's own title verbatim.
+%   - Narrative body <= 500 words, counted from "To the" to "The Authors".
+%   - No priority claim, no "first", no universality claim.
+%   - Every number in this letter appears in the paper, from a frozen artifact.
+%   - This letter must NOT be read as a claim that the manuscript is
+%     camera-ready: it is a draft (see data/708_paper2_submission_checklist.md).
+%
+%  Compile: tectonic paper2_cover_letter.tex
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\begin{document}
+
+\begin{flushright}
+  \today
+\end{flushright}
+
+\noindent
+To the Editors of \emph{Transactions on Machine Learning Research}, and (alternatively)
+the NeurIPS 2027 Evaluations \& Datasets Chairs and Reviewers,
+
+\bigskip
+\noindent
+We submit \textbf{``The Boundary of Evaluator Auditing: Identifiability, Correctability and
+Sample Complexity of Measurement Drift''}, a theory paper on how far an audit of an evaluator can go.
+
+\paragraph{This is the second of two papers, and it is deliberately complementary.}
+Our first paper, submitted separately, is a \emph{case study}: it audits one C/C++ verification
+apparatus and reports five findings about what that audit found. The present paper asks the
+orthogonal question---what an audit can establish \emph{in principle}---and answers it with three
+boundary results. We cite the first paper for its findings only, restate none of its arguments, and
+reuse none of its headline numbers.
+
+\paragraph{Four contributions.}
+(1)~\textbf{A measurement-drift algebra}: seven axioms and six theorems (T1--T6). Its metatheory is
+settled by exhaustive model checking over all $4096$ coverage structures crossed with seven
+aggregation families---only \textbf{two} axioms are independent (monotonicity, super-additivity),
+four are theorems, one is a meta-axiom---and the system is \textbf{incomplete}: label drift cannot
+be expressed, so we register a missing \textbf{A8 (label-axis closure)} and extend the caliber
+signature to a six-tuple. Caliber arbitrage is NP-hard with a greedy $(1-1/e)$ approximation.
+(2)~\textbf{Three boundary results}: structural versus real drift is \emph{not identifiable} from
+paired data alone but is point-identified under nested calibers; post-hoc repair is possible exactly
+on the post-measurement layer, with residual error up to $30.0\%$ where it fails; and paired designs
+have \emph{identically zero} power against label and aggregation drift.
+(3)~\textbf{An information-theoretic audit bound}: component-removal drift costs $849$ paired samples
+against $17$ for environment drift, so cost is governed by how many samples \emph{carry} the drift,
+not by how large it looks; the paired step of our earlier protocol becomes a \emph{dual} design.
+(4)~\textbf{Four validation experiments}, all computed from frozen artifacts of earlier batches, plus
+a partial cross-domain arm on LLM-as-a-judge evaluation (migration score $55.84/100$).
+
+\paragraph{What we do \emph{not} claim.}
+No priority: the four-variant taxonomy of Goodhart's law and a two-dimensional construct-validity
+profile for LLM judges are both already in the literature, and we cite them as nearest neighbours.
+No new measurement: every number was computed in an earlier batch from a frozen matrix. No
+universality: one C/C++ apparatus plus one partial LLM arm. And no completeness: the axiom system is
+missing A8, and two of its axioms could not be separated within the tested domain.
+
+\paragraph{Venue fit.}
+The contribution is a set of boundaries rather than a system, and its central claims are negative.
+That suits TMLR, where rigour is weighed over novelty narrative, and the E\&D track, whose remit
+includes evaluation methodology and negative results.
+
+\medskip
+\noindent
+We hope the boundaries prove useful to anyone who must decide whether an evaluation number can be
+trusted, repaired, or must be re-measured.
+
+\bigskip
+\noindent
+Sincerely,\\
+The Authors
+
+\end{document}

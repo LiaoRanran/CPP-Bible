@@ -1,0 +1,55 @@
+% =====================================================================
+%  Standalone abstract — paper 2 of the two-paper programme (batch 708, task D)
+%  Purpose: the abstract alone, for submission systems that ask for it as a
+%  separate item. The text is VERBATIM identical to the abstract in
+%  research/latex/paper2_measurement_drift.tex; if one is edited, edit both.
+%
+%  Anonymous: no author, affiliation, or contact information anywhere in this file.
+%  Compile: tectonic paper2_abstract.tex
+%  Word count of the abstract body: 235 words (verified identical to the paper's
+%  abstract by the batch-708 checker).
+% =====================================================================
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+\title{The Boundary of Evaluator Auditing:\\
+Identifiability, Correctability and Sample Complexity of Measurement Drift}
+
+\author{Anonymous Author(s)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Evaluation numbers are treated as facts about the systems they measure. We show that a large class of
+evaluation failures requires \textbf{no optimisation pressure at all}: the number changes because the
+\emph{caliber} of measurement changed, while the capability being measured does not. We call this
+structural (passive) Goodhart and build an algebra for it.
+
+We present a seven-axiom system for measurement drift and prove that only \textbf{two} of the axioms are
+genuinely independent: idempotence, commutativity, non-invertibility and observability-stratification are
+\emph{theorems} of the framework, and enumerability is a meta-requirement. We show the system is
+\textbf{incomplete}: label-vocabulary drift (Type~III) cannot be expressed, and we register an eighth axiom
+closing the label axis.
+
+We then prove three boundary results. (i)~\textbf{Identifiability}: structural and real drift are not
+decidable from paired data alone, yet are point-identified under nested calibers. (ii)~\textbf{Correctability}:
+post-hoc repair is possible exactly when the drift acts on the post-measurement layer; acquisition-layer
+drift requires re-measurement, with residual error up to $30.0\%$. (iii)~\textbf{Sample complexity}: the
+paired design is \emph{powerless} against label and aggregation drift (discordance rate zero
+$\Rightarrow$ infinite samples), while component-removal drift costs $849$ paired samples versus $17$ for
+environment drift---cost is governed by the discordance rate, not the effect size.
+
+We instantiate the framework on a C/C++ verification apparatus ($1{,}147$ samples) and, partially, on
+LLM-as-a-judge evaluation (migration score $55.8/100$). All numbers come from frozen artifacts of earlier
+batches; no new measurement was taken for this paper.
+\end{abstract}
+
+\end{document}
