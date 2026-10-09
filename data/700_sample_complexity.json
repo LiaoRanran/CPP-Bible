@@ -1,0 +1,402 @@
+{
+ "schema": "queyi-700/sample-complexity/v1",
+ "generated_by": "tools/compute_700_sample_complexity.py",
+ "generated_at": "2026-10-09T09:43:58+08:00",
+ "detect_calls": 0,
+ "formulation": {
+  "H0": "无漂移（两个口径的边际率相同）",
+  "H1": "有漂移，|边际率差| ≥ ε",
+  "design": "配对（同一样本两个口径）⇒ 对不一致对做符号检验（= 精确 McNemar）",
+  "psi": "不一致率 Pr[两口径裁决不同]",
+  "pi": "方向概率 Pr[方向 | 不一致]",
+  "identity": "ε = ψ·(2π − 1)",
+  "formula": "m ≥ (z_{1−α/2}·√(1/4) + z_{1−β}·√(π(1−π)))² / (π−1/2)²；n = m/ψ（α = 0.05, power = 0.8）",
+  "kl_floor": "Chernoff–Stein：m ≥ log(1/β)/KL(π‖1/2)"
+ },
+ "measured_pairs": {
+  "pairs": {
+   "type_I_composition_drop_degenerate": {
+    "n": 566,
+    "b": 4,
+    "c": 0,
+    "discordant": 4,
+    "psi": 0.007067137809187279,
+    "epsilon_abs": 0.007067137809187279,
+    "epsilon_signed": 0.007067137809187279
+   },
+   "type_II_environment_E1_to_E2": {
+    "n": 566,
+    "b": 200,
+    "c": 0,
+    "discordant": 200,
+    "psi": 0.35335689045936397,
+    "epsilon_abs": 0.35335689045936397,
+    "epsilon_signed": 0.35335689045936397
+   },
+   "type_III_label_vocabulary": {
+    "n": 566,
+    "b": 0,
+    "c": 0,
+    "discordant": 0,
+    "psi": 0.0,
+    "epsilon_abs": 0.0,
+    "epsilon_signed": 0.0,
+    "why": "标签词表变化**不改变任何逐样本裁决** ⇒ 配对设计下 ψ = 0（698-A Type III 已证）"
+   },
+   "type_IV_aggregation_rule": {
+    "n": 566,
+    "b": 0,
+    "c": 0,
+    "discordant": 0,
+    "psi": 0.0,
+    "epsilon_abs": 0.0,
+    "epsilon_signed": 0.0,
+    "why": "聚合规则变化**不改变任何逐样本裁决** ⇒ 配对设计下 ψ = 0（698-A Type IV 已证）"
+   }
+  },
+  "n_evaluation": 566,
+  "e1_supported": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "e2_supported": [
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "reference_692_e2": {
+   "catch": 140,
+   "miss": 426,
+   "unknown": 0,
+   "total": 566,
+   "catch_rate_pct": 24.735,
+   "unknown_rate_pct": 0.0,
+   "conditional_recall_pct": 24.735
+  }
+ },
+ "sample_complexity_by_type": {
+  "type_I_composition_drop_degenerate": {
+   "measured": {
+    "n": 566,
+    "b": 4,
+    "c": 0,
+    "discordant": 4,
+    "psi": 0.007067137809187279,
+    "epsilon_abs": 0.007067137809187279,
+    "epsilon_signed": 0.007067137809187279
+   },
+   "required": {
+    "psi": 0.007067,
+    "epsilon": 0.007067,
+    "pi": 1.0,
+    "m_discordant": 6,
+    "n_total": 849,
+    "detectable_by_paired_design": true,
+    "reason": "完全单向（π = 1.0）⇒ 用**精确二项**判据 m ≥ log(α/2)/log(1/2) = 6 （正态近似在此退化，不用）"
+   },
+   "kl_floor": {
+    "pi": 1.0,
+    "kl_nats": 0.693147,
+    "m_lower_bound": 3,
+    "n_lower_bound": 329,
+    "note": "完全单向：KL(Bernoulli(1)‖Bernoulli(1/2)) = log 2"
+   }
+  },
+  "type_II_environment_E1_to_E2": {
+   "measured": {
+    "n": 566,
+    "b": 200,
+    "c": 0,
+    "discordant": 200,
+    "psi": 0.35335689045936397,
+    "epsilon_abs": 0.35335689045936397,
+    "epsilon_signed": 0.35335689045936397
+   },
+   "required": {
+    "psi": 0.353357,
+    "epsilon": 0.353357,
+    "pi": 1.0,
+    "m_discordant": 6,
+    "n_total": 17,
+    "detectable_by_paired_design": true,
+    "reason": "完全单向（π = 1.0）⇒ 用**精确二项**判据 m ≥ log(α/2)/log(1/2) = 6 （正态近似在此退化，不用）"
+   },
+   "kl_floor": {
+    "pi": 1.0,
+    "kl_nats": 0.693147,
+    "m_lower_bound": 3,
+    "n_lower_bound": 7,
+    "note": "完全单向：KL(Bernoulli(1)‖Bernoulli(1/2)) = log 2"
+   }
+  },
+  "type_III_label_vocabulary": {
+   "measured": {
+    "n": 566,
+    "b": 0,
+    "c": 0,
+    "discordant": 0,
+    "psi": 0.0,
+    "epsilon_abs": 0.0,
+    "epsilon_signed": 0.0,
+    "why": "标签词表变化**不改变任何逐样本裁决** ⇒ 配对设计下 ψ = 0（698-A Type III 已证）"
+   },
+   "required": {
+    "psi": 0.0,
+    "epsilon": 0.0,
+    "pi": null,
+    "m_discordant": null,
+    "n_total": null,
+    "detectable_by_paired_design": false,
+    "reason": "逐样本裁决在口径变化下**完全相同**（ψ = 0）⇒ 配对设计下功效恒为 0 ⇒ n = ∞"
+   },
+   "kl_floor": {
+    "m_lower_bound": null,
+    "n_lower_bound": null,
+    "reason": "ψ = 0 ⇒ KL = 0 ⇒ 下界为 ∞"
+   }
+  },
+  "type_IV_aggregation_rule": {
+   "measured": {
+    "n": 566,
+    "b": 0,
+    "c": 0,
+    "discordant": 0,
+    "psi": 0.0,
+    "epsilon_abs": 0.0,
+    "epsilon_signed": 0.0,
+    "why": "聚合规则变化**不改变任何逐样本裁决** ⇒ 配对设计下 ψ = 0（698-A Type IV 已证）"
+   },
+   "required": {
+    "psi": 0.0,
+    "epsilon": 0.0,
+    "pi": null,
+    "m_discordant": null,
+    "n_total": null,
+    "detectable_by_paired_design": false,
+    "reason": "逐样本裁决在口径变化下**完全相同**（ψ = 0）⇒ 配对设计下功效恒为 0 ⇒ n = ∞"
+   },
+   "kl_floor": {
+    "m_lower_bound": null,
+    "n_lower_bound": null,
+    "reason": "ψ = 0 ⇒ KL = 0 ⇒ 下界为 ∞"
+   }
+  }
+ },
+ "general_grid": [
+  {
+   "psi": 0.05,
+   "epsilon": 0.0125,
+   "epsilon_over_psi": 0.25,
+   "m_discordant": 124,
+   "n_total": 2464
+  },
+  {
+   "psi": 0.05,
+   "epsilon": 0.025,
+   "epsilon_over_psi": 0.5,
+   "m_discordant": 29,
+   "n_total": 579
+  },
+  {
+   "psi": 0.05,
+   "epsilon": 0.045,
+   "epsilon_over_psi": 0.9,
+   "m_discordant": 7,
+   "n_total": 134
+  },
+  {
+   "psi": 0.05,
+   "epsilon": 0.05,
+   "epsilon_over_psi": 1.0,
+   "m_discordant": 6,
+   "n_total": 120
+  },
+  {
+   "psi": 0.1,
+   "epsilon": 0.025,
+   "epsilon_over_psi": 0.25,
+   "m_discordant": 124,
+   "n_total": 1232
+  },
+  {
+   "psi": 0.1,
+   "epsilon": 0.05,
+   "epsilon_over_psi": 0.5,
+   "m_discordant": 29,
+   "n_total": 290
+  },
+  {
+   "psi": 0.1,
+   "epsilon": 0.09,
+   "epsilon_over_psi": 0.9,
+   "m_discordant": 7,
+   "n_total": 67
+  },
+  {
+   "psi": 0.1,
+   "epsilon": 0.1,
+   "epsilon_over_psi": 1.0,
+   "m_discordant": 6,
+   "n_total": 60
+  },
+  {
+   "psi": 0.2,
+   "epsilon": 0.05,
+   "epsilon_over_psi": 0.25,
+   "m_discordant": 124,
+   "n_total": 616
+  },
+  {
+   "psi": 0.2,
+   "epsilon": 0.1,
+   "epsilon_over_psi": 0.5,
+   "m_discordant": 29,
+   "n_total": 145
+  },
+  {
+   "psi": 0.2,
+   "epsilon": 0.18,
+   "epsilon_over_psi": 0.9,
+   "m_discordant": 7,
+   "n_total": 34
+  },
+  {
+   "psi": 0.2,
+   "epsilon": 0.2,
+   "epsilon_over_psi": 1.0,
+   "m_discordant": 6,
+   "n_total": 30
+  },
+  {
+   "psi": 0.35,
+   "epsilon": 0.0875,
+   "epsilon_over_psi": 0.25,
+   "m_discordant": 124,
+   "n_total": 352
+  },
+  {
+   "psi": 0.35,
+   "epsilon": 0.175,
+   "epsilon_over_psi": 0.5,
+   "m_discordant": 29,
+   "n_total": 83
+  },
+  {
+   "psi": 0.35,
+   "epsilon": 0.315,
+   "epsilon_over_psi": 0.9,
+   "m_discordant": 7,
+   "n_total": 20
+  },
+  {
+   "psi": 0.35,
+   "epsilon": 0.35,
+   "epsilon_over_psi": 1.0,
+   "m_discordant": 6,
+   "n_total": 18
+  },
+  {
+   "psi": 0.5,
+   "epsilon": 0.125,
+   "epsilon_over_psi": 0.25,
+   "m_discordant": 124,
+   "n_total": 247
+  },
+  {
+   "psi": 0.5,
+   "epsilon": 0.25,
+   "epsilon_over_psi": 0.5,
+   "m_discordant": 29,
+   "n_total": 58
+  },
+  {
+   "psi": 0.5,
+   "epsilon": 0.45,
+   "epsilon_over_psi": 0.9,
+   "m_discordant": 7,
+   "n_total": 14
+  },
+  {
+   "psi": 0.5,
+   "epsilon": 0.5,
+   "epsilon_over_psi": 1.0,
+   "m_discordant": 6,
+   "n_total": 12
+  }
+ ],
+ "strategy_simulation": {
+  "n": 566,
+  "trials": 400,
+  "budgets": {
+   "5": {
+    "uniform": 0.0,
+    "stratified_proportional": 0.0,
+    "neyman_oracle": 0.0
+   },
+   "8": {
+    "uniform": 0.035,
+    "stratified_proportional": 0.02,
+    "neyman_oracle": 0.0275
+   },
+   "10": {
+    "uniform": 0.0925,
+    "stratified_proportional": 0.1175,
+    "neyman_oracle": 0.125
+   },
+   "12": {
+    "uniform": 0.215,
+    "stratified_proportional": 0.13,
+    "neyman_oracle": 0.13
+   },
+   "15": {
+    "uniform": 0.4125,
+    "stratified_proportional": 0.455,
+    "neyman_oracle": 0.3975
+   },
+   "20": {
+    "uniform": 0.7775,
+    "stratified_proportional": 0.75,
+    "neyman_oracle": 0.8625
+   },
+   "30": {
+    "uniform": 0.985,
+    "stratified_proportional": 0.9725,
+    "neyman_oracle": 0.9975
+   },
+   "50": {
+    "uniform": 1.0,
+    "stratified_proportional": 1.0,
+    "neyman_oracle": 1.0
+   }
+  },
+  "stratum_discordance_rates": {
+   "concurrency": 0.3394,
+   "conditional_trigger": 0.4,
+   "embedded": 0.0811,
+   "language_semantics": 0.1556,
+   "legacy": 0.5319,
+   "memory_safety": 0.5918,
+   "odr_link": 0.0667,
+   "optimization_sensitive": 0.35,
+   "real_world": 0.4091,
+   "stl": 0.38,
+   "undefined_behavior": 0.5581
+  }
+ },
+ "comparison_with_698B": {
+  "698B_finding": "B=15 时均匀 0.505 vs 两阶段自适应 0.280；B≥60 全部饱和",
+  "本批新增": "加入分层比例与 Neyman（真值）两种策略；Neyman 是**可达到的上限**",
+  "gap_to_lower_bound": "见 strategy_simulation 与 sample_complexity_by_type 的 kl_floor 列"
+ },
+ "honest_limits": [
+  "样本复杂度用**正态近似**（符号检验）；ψ 小时近似变差。",
+  "KL 地板不含 α 的两侧修正 ⇒ 比实际所需小（是**地板**不是估计）。",
+  "Type III/IV 的 ψ = 0 是**结构性**结论（698-A 已证逐样本裁决不变），不是测量噪声。",
+  "Neyman 用**真值**层不一致率 ⇒ 是**上界**（现实中需试点估计，698-B 已示其代价）。",
+  "策略模拟只在 Queyi 的 566 条 + 一个环境对上做；不声称对其他漂移幅度成立。"
+ ]
+}
