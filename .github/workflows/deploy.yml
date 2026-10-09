@@ -48,7 +48,7 @@ jobs:
     - name: Set up Node 20
       # 本机是 Node 18（jsdom 的 @exodus/bytes 在 18 下 ERR_REQUIRE_ESM ⇒ 只能 SKIP），
       # CI 用 20 ⇒ 真 DOM 冒烟能跑起来（不是"永远 SKIP"的摆设）。
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version: '20'
 
