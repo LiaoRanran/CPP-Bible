@@ -28,7 +28,7 @@ for arg in "$@"; do
   esac
 done
 
-PASS=0; FAIL=0; WARN=0
+PASS=0; FAIL=0; WARN=0; ACQ_GAP=0   # ACQ_GAP=1 表示检测到「获取层能力缺口」（698-B T6，707-C）
 note()  { echo "[verify_env] $*"; }
 ok()    { echo "  OK   $*"; PASS=$((PASS+1)); }
 bad()   { echo "  FAIL $*"; FAIL=$((FAIL+1)); }
@@ -115,11 +115,13 @@ if [ -n "$CXX_BIN" ]; then
     elif [ "$PROFILE" = "wsl-gcc-13.3" ] || [ "$PROFILE" = "docker-ubuntu-22.04" ]; then
       # 画像明确声称支持 sanitizer 却不可用 ⇒ 真 FAIL
       bad "-fsanitize=$san 不可用，但画像 $PROFILE 声明支持该资产 ⇒ 该资产会系统性假 miss"
+      ACQ_GAP=1
     else
       # Windows native (MinGW) 无 sanitizer 运行时是**已知预期**（689/692 已实测登记），
       # 不是环境配置错误 ⇒ 警告而非失败。
       warn "-fsanitize=$san 在当前画像下不可用（MinGW 无 sanitizer 运行时，属已知预期）；"
       warn "    ⇒ asan/ubsan/tsan 必须在 WSL(13.3.0) 或容器内跑，否则系统性假 miss"
+      ACQ_GAP=1
     fi
   done
 else
@@ -133,6 +135,7 @@ if [ -n "$CXX_BIN" ]; then
     ok "-Wunsequenced 被接受（clang 系或支持该选项的 gcc）"
   else
     warn "-Wunsequenced 不被接受 ⇒ 该资产恒 unknown（673u 已登记的 MinGW 坑，属预期）"
+    ACQ_GAP=1
   fi
 fi
 # 坑 2：WSL UTF-16LE 横幅（本机测量环境的已知坑；容器内不适用）
@@ -141,6 +144,19 @@ if command -v wsl.exe >/dev/null 2>&1 || command -v wsl >/dev/null 2>&1; then
   warn "            否则 stderr 解码失败会让 ASan/UBSan 报告全丢（系统性假 miss）。"
 else
   ok "未检测到 WSL（容器内预期如此）"
+fi
+
+# ── 707-C / 698-B 定理 T6：可纠错边界警告 ──────────────────────────────
+# 科研依据（698-B 定理 T6）：可纠正 ⟺ 漂移只作用于后处理层；**获取层漂移必须重测**。
+# 当本环境缺失某个**环境门控**资产（asan/ubsan/tsan 等）时，该缺口属获取层 ——
+# 原始矩阵里根本没有这次测量 ⇒ 事后校正不可靠（实测残留误差 asan 30.04% / ubsan 21.38%
+# / tsan 21.73%）⇒ **必须重测**，不要靠事后校正。检查器：tools/check_drift_correctability.py
+echo "-- 707-C / 698-B T6：可纠错边界 --"
+if [ "$ACQ_GAP" -gt 0 ]; then
+  warn "检测到【获取层能力缺口】：缺失资产/工具 ⇒ 按 698-B 定理 T6，此漂移【不可事后纠正】，"
+  warn "     必须【重测】（re-measure），不要靠事后校正；详见 tools/check_drift_correctability.py"
+else
+  ok "未检测到获取层能力缺口（按 T6 无需强制重测）"
 fi
 
 echo "=============================================="

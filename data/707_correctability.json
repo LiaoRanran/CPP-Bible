@@ -1,0 +1,56 @@
+{
+ "schema": "queyi-707/drift-correctability/v1",
+ "generated_by": "tools/check_drift_correctability.py",
+ "generated_at": "2026-10-09T14:12:25+08:00",
+ "detect_calls": 0,
+ "research_basis": "698-B 定理 T6：可纠正 ⟺ 漂移只作用于后处理层；获取层漂移必须重测",
+ "authority_source": "data/700_design_simulation.json（T6 陈述）",
+ "case": "692-e1e2",
+ "E1_supported": [
+  "asan",
+  "ubsan",
+  "tsan",
+  "compiler-warn",
+  "cross-compile",
+  "linker"
+ ],
+ "E2_supported": [
+  "compiler-warn",
+  "cross-compile",
+  "linker"
+ ],
+ "classification": {
+  "removed_assets": [
+   "asan",
+   "tsan",
+   "ubsan"
+  ],
+  "added_assets": [],
+  "changed_assets": [],
+  "acquisition_layer_assets": [
+   "asan",
+   "tsan",
+   "ubsan"
+  ],
+  "structural_assets": [
+   "compile-time",
+   "wunsequenced"
+  ],
+  "layer": "acquisition（获取层）",
+  "correctable": false,
+  "must_retest": true,
+  "action": "必须重测（re-measure）：原始矩阵无此测量，事后校正不可靠",
+  "residual_698b_pct_reference": {
+   "asan": 30.04,
+   "ubsan": 21.38,
+   "tsan": 21.73
+  }
+ },
+ "expected_must_retest_assets": [
+  "asan",
+  "ubsan",
+  "tsan"
+ ],
+ "claim_T6_holds": true,
+ "note": "结构性资产 wunsequenced/compile-time 两环境同等缺（静态未实现）⇒ 不算获取层漂移，属可纠正的结构缺口（残留 0）。"
+}
