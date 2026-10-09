@@ -357,6 +357,13 @@ targets the hidden assumption), \textbf{unresolved} (controls cannot be run unde
 declared environment/caliber---the honest state for e.g.\ cross-regime comparisons). Findings
 \S\ref{sec:exp} carry these grades; \S\ref{sec:validity} records what stays unresolved.
 
+\paragraph{Design requirement.}
+Paired controls identify only Types~I and II. Types~III and IV leave every per-sample verdict
+unchanged, so their discordance rate is zero and no per-sample test---paired or not---can see
+them; the protocol therefore pairs a \emph{sample-level} control (I/II) with a
+\emph{design-level} contrast (III/IV) and reports the sample size the paired step needs
+(Appendix~\ref{app:samplecomplexity}).
+
 % =====================================================================
 \section{Experimental Design}
 \label{sec:protocol}
@@ -555,6 +562,14 @@ audits.} Remove degenerate components, re-run at matched budget, and re-split by
 family before calling a delta an improvement (Finding~1, F5).
 \end{enumerate}
 
+\paragraph{Do the rules travel?}
+A degradation-grade replication in LLM-as-a-judge evaluation scores $55.84/100$ on a
+four-component transfer scale: caliber, environment and label drift transfer, while the
+\emph{aggregation} axis does not (a rule change moves the LLM report by $1.03$pp against
+$33.33$pp here), and the silence signature \emph{inverts} (a lost measurement becomes
+\texttt{unknown} rather than \texttt{miss}). The protocol travels; its diagnostic signatures do
+not travel unchanged (Appendix~\ref{app:related}).
+
 The AGEA abstraction (assets--governance--evolution--accountability) and the submodular
 selection formalization are kept as \emph{tools} supporting R5, not as contributions
 (Appendices~\ref{app:formal}, \ref{app:submodular687}).
@@ -575,8 +590,8 @@ one: on the 25\% blind re-label ($n{=}287$; $n{=}262$ for severity)
 \texttt{expected\_verdict} $\kappa{=}0.437$ and \texttt{severity} $\kappa{=}0.157$
 (near chance). Severity is thus the least reliable field we collected, which is why
 Finding~2's ``severity does not predict detection'' carries a label-side caveat as well as an
-instrument-side reading; the two lowest values were unreported before this batch
-(\texttt{data/682\_kappa.json}). A
+instrument-side reading; the two lowest values were unreported before this batch (the
+per-field $\kappa$ artifact is listed in Appendix~\ref{app:reframe689}). A
 two-annotator blind protocol with a de-identified 145-sample package, 10 calibration items,
 and pre-registered thresholds (verdict $\kappa\ge0.8$; family $\kappa\ge0.7$) is
 \emph{designed and packaged but not executed} (Appendix~\ref{app:reframe689}); until then,
@@ -1275,6 +1290,26 @@ but does not formalise orthogonality, nor attribute failures to budget-gating ve
 bounds}; that attribution---whether a miss reflects an exhausted measurement budget or a genuine
 capability limit---is the object of Finding~7, and is what distinguishes our treatment.
 
+\paragraph{(10) Cross-domain transfer to LLM-as-a-judge evaluation (added in 703).}
+Structural Goodhart is not specific to C++ verification. On a companion collection of public
+LLM-judge benchmarks (240 samples downloaded live), a ``longer is better'' lazy judge agrees with
+the human-preferred side only $44.17\%$ of the time on JudgeBench---so on $55.83\%$ of samples
+length is a confident but wrong proxy---while RewardBench agrees $100\%$ because its curation makes
+length a confounder rather than a signal. A degradation-grade cross-domain replication on our own
+LLM arm scores $55.84/100$ on a four-component transfer scale (caliber $15.62$, environment
+$16.25$, label $21.39$, aggregation $2.58$). Three of the four axes are isomorphic to the C++ case;
+the \emph{aggregation} axis is not: changing the aggregation rule moves the LLM report by only
+$1.03$pp against $33.33$pp in C++, because an LLM aggregation rule acts on a single judge's
+verdicts and offers no ``zero-capability component'' to pad with---reusing the protocol there
+would need a domain-specific definition of that component. The silence signature also inverts: in
+C++ a lost measurement is written as \texttt{miss} (silent), whereas the LLM judge writes
+\texttt{unknown} (loud). \emph{Honest boundary:} this is a degradation-grade replication, not a
+pre-registered cross-domain study; the 240 samples were downloaded live and their
+prompt/model invariance was \emph{not} measured (no judge endpoint was available), the
+transfer-scale weights and its $50/100$ threshold are ours with no external calibration, and the
+human side is a curated preference label, so ``judge wrong'' and ``label wrong'' remain
+inseparable without human IAA (\S\ref{sec:validity}~T1).
+
 \paragraph{Device-side vs.\ result-side auditing (a second axis, orthogonal to Table~\ref{tab:neighbours}).}
 Table~\ref{tab:deviceside} splits prior work by \emph{where the audited object sits}: result-side
 systems audit labels, scores or rankings; Queyi audits the evidence-acquisition instrument
@@ -1381,6 +1416,91 @@ theorem; we claim no general law, and the evidence is a single environment pair
 \paragraph{Conservation checks.} Every matrix satisfies (i) row sums equal the E1 state counts,
 (ii) column sums equal the E2 state counts, and (iii) the total equals $n$. The generating
 script asserts all three, so the matrix is reproducible from the frozen counts alone.
+
+\subsection{A metatheory: which axioms are actually independent}
+\label{app:metatheory}
+The seven axioms are usually presented as a system. A finite model check ($|X|{=}4$,
+$|A|{=}3$, \emph{all} $2^{4\times3}{=}4096$ coverage structures, seven aggregation families
+spanning the monotone/non-monotone and submodular/non-submodular quadrants) shows that
+\textbf{only two of the seven are independent}: A2 (monotone removal) and A5
+(super-additivity). A3 (idempotence), A4 (commutativity/closure), A6 (irreversibility) and A7
+(observability stratification) follow from defining $\tau$ as column deletion, and A1 (caliber
+enumerability) is a \emph{meta-axiom} that constrains the language rather than the structure.
+The minimal system is therefore $\{$A1 meta$\}\cup\{$A2, A5 structural$\}$, with $\{$A3, A4,
+A6, A7$\}$ as theorems. Writing theorems as axioms makes the system look stronger than it is and
+hides where the real constraints lie; those two constraints are exactly the axiom-level
+counterpart of Type~IV manipulability---\emph{mean} calibers violate A5 (padding with a
+zero-yield asset moves the report) and \emph{min} calibers violate A2.
+\emph{Honest boundary:} ``identically true'' here means true \emph{within} this finite domain
+(4096 structures, seven aggregation families), not a proof for arbitrary domains; and A2 and A5
+could not be separated within this family, so A2's independence is registered as not strictly
+established.
+
+\paragraph{Incompleteness: the missing A8.}
+The system does not describe all four drift types. Fix a coverage structure $C_a{=}\{0,1\}$,
+$C_b{=}\{2\}$, $C_c{=}\varnothing$ and a per-sample adjudication $V{=}(c,c,c,m)$; coarsening the
+label vocabulary from three classes to one leaves \emph{every} quantity the seven axioms mention
+unchanged ($R_{\mathrm{or}}{=}0.75$), while the per-group blind-spot rate moves from
+$\{0,0,1\}$ to $\{0.25\}$. Type~III (label) drift is thus \emph{inexpressible}: $\lambda$ is not
+in the caliber signature $(D,A,E,\Theta,P)$. We register the missing axiom \textbf{A8
+(label-axis closure)}: the signature must become $(D,A,E,\Theta,P,\lambda)$ and any reported
+statistic must declare its grouping axis; statistics without a declared $\lambda$ are not
+comparable. This is the axiom-level statement of the measured non-monotonicity of the
+high-blindness share (38.24\% under 34 classes vs.\ 25.71\% under 70). Within this finite domain
+we found no gap other than A8, and we do not claim there is none.
+
+\paragraph{Complexity of caliber arbitrage.}
+Choosing a reported asset set $S$ with $R(S)\ge v$ under a budget $|A\setminus S|\le k$ is
+\emph{maximum coverage}, hence NP-hard, with the greedy algorithm attaining $(1-1/e)$; the
+submodular guarantee used for asset selection (Appendix~\ref{app:submodular687}) is therefore the
+approximation algorithm for caliber arbitrage. \emph{Honest boundary:} this is a reduction
+argument citing the classical NP-hardness of maximum coverage, not a formal proof here, and at
+Queyi's scale ($|A|{=}8$) the problem is trivial by enumeration---the complexity claim matters
+only for evaluation systems with many assets (e.g.\ a CI pipeline with 100 checkers).
+
+\subsection{Sample complexity, and why the protocol needs a second design}
+\label{app:samplecomplexity}
+Read Step~3 of the audit protocol as a paired design (the same sample scored under two calibers,
+analysed by an exact McNemar / sign test). With discordance rate $\psi$ and directional
+probability $\pi$, the effect is $\varepsilon=\psi(2\pi-1)$, the required number of discordant
+pairs is
+$m\ge\bigl(z_{1-\alpha/2}\sqrt{1/4}+z_{1-\beta}\sqrt{\pi(1-\pi)}\bigr)^{2}/(\pi-1/2)^{2}$,
+and the sample size is $n=m/\psi$. On the 566-sample evaluation frame:
+
+\begin{table}[h]
+\caption{Sample complexity of the four drift types on the 566-sample paired frame
+($\alpha{=}0.05$, power $0.8$). Types III and IV are not merely expensive: no per-sample test
+can see them.}
+\label{tab:samplecomplexity}
+\centering
+\small
+\begin{tabular}{@{}clrrc@{}}
+\toprule
+Type & Caliber change & Discordance $\psi$ & Paired $n$ & KL floor $n$ \\
+\midrule
+I   & remove 3 degenerate assets & $0.0071$ & $\mathbf{849}$ & 329 \\
+II  & environment E1$\to$E2       & $0.3534$ & $\mathbf{17}$  & 7 \\
+III & label vocabulary            & $0.0000$ & $\infty$       & --- \\
+IV  & aggregation rule            & $0.0000$ & $\infty$       & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two consequences follow. (i)~Audit cost is driven by \emph{how many samples carry the drift}
+($\psi$), not by how large it is: a $-35$pp drift is detected with $17$ paired samples, while a
+$0.71$pp drift needs $849$. (ii)~Types III and IV are not ``hard to detect'' but
+\emph{undetectable by any per-sample test}: they leave every per-sample verdict unchanged, so
+$\psi{=}0$ and the power of any paired test (McNemar, permutation, bootstrap) is
+\emph{identically zero}. The protocol's Step~3 must therefore be a \textbf{dual design}:
+sample-level pairing identifies Types I/II, while Types III/IV require a \emph{design-level}
+contrast---two label vocabularies or two aggregation rules applied to the \emph{same} raw
+adjudications and compared on grouped statistics rather than on verdicts. This refines the
+five-step audit protocol of the extended framework, in which Step~3 was stated as a generic paired
+experiment; the pairing step is valid only on the asset and environment axes.
+\emph{Honest boundary:} the normal approximation degrades as $\psi\to0$ (we use an exact binomial
+criterion for the completely one-sided cases); the KL floor omits the two-sided $\alpha$
+correction, so it is a floor, not an estimate; the strategy simulations behind these numbers ran
+only on Queyi's 566 samples and one environment pair.
 
 % =====================================================================
 \section{Humanization Material (full versions; 673c)}
