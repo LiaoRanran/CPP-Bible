@@ -1,0 +1,222 @@
+{
+ "schema": "queyi-700/design-simulation/v1",
+ "generated_by": "tools/compute_700_design_simulation.py",
+ "generated_at": "2026-10-09T09:43:58+08:00",
+ "detect_calls": 0,
+ "n_samples": 1147,
+ "design_principles_from_theory": {
+  "从 7 公理": [
+   "A1（口径可枚举）⇒ 口径签名必须显式且有限 ⇒ 设计 B 把 λ 写进签名",
+   "A2（单调）⇒ 撤除组件只能降率 ⇒ 报告必须区分「降率」与「丢测量」",
+   "A5（超可加）⇒ 多口径变化同时发生时**不能线性相加** ⇒ 报告必须逐口径分别声明",
+   "A6/A7（不可逆 / 可观测分层）⇒ 必须 aware 记账，否则丢失不可见"
+  ],
+  "从 T5/T6": [
+   "T5（链式 CK 条件）⇒ 跨多步漂移**不能**靠矩阵相乘推断 ⇒ 每步都要配对重测",
+   "T6（可纠错边界）⇒ 获取层漂移不可事后纠正 ⇒ 组件不可随意撤除；后处理层（聚合/标签/记账）可纠正 ⇒ 保留原始 per-asset 矩阵是**硬要求**"
+  ],
+  "从相变理论（700-B）": [
+   "Type II/IV 是一阶相变（不连续跳变）⇒ 一旦发生就**已经**跳完，无法提前干预 ⇒ 设计上要**避免不连续的口径切换**（如换环境），改为可平滑过渡的口径",
+   "Type I 无临界点（平滑退化）⇒ 可用**结构性预警指标**（零产组件数）监测"
+  ],
+  "从信息论下界（700-C）": [
+   "Type III/IV 在配对设计下 ψ = 0 ⇒ **配对设计对它们无效** ⇒ 设计必须包含**非配对的口径对比**（设计级对照）",
+   "Type I 需 n ≈ 849 个配对样本（ψ = 0.0071）⇒ 审计成本由**不一致率**而非效应量主导 ⇒ 应优先提高不一致率（如撤除高独有贡献的组件）"
+  ]
+ },
+ "designs": {
+  "A_current": {
+   "design": "A_current",
+   "declared_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "pool_used_for_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "n_pool": 8,
+   "accounting": "unaware（单一 recall）",
+   "greedy_k4_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "detection_rate_pct": 59.5466,
+   "random_mean_k4_pct": 40.9391,
+   "apparent_gain_g_app_pp": 18.6075,
+   "composition_inflation_share": 0.460241,
+   "aggregation_manipulability": 0.333333,
+   "audit_cost_paired_samples": 18,
+   "risk_scores": {
+    "type_I": 46.02,
+    "type_II": 46.95,
+    "type_III": 12.53,
+    "type_IV": 33.33
+   },
+   "drift_resistance_100": 53.05,
+   "composite_score": 0.622978
+  },
+  "B_theory_optimal": {
+   "design": "B_theory_optimal",
+   "declared_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "pool_used_for_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "n_pool": 6,
+   "accounting": "aware（三组件）",
+   "greedy_k4_selection": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "detection_rate_pct": 59.5466,
+   "random_mean_k4_pct": 49.5031,
+   "apparent_gain_g_app_pp": 10.0436,
+   "composition_inflation_share": 0.0,
+   "aggregation_manipulability": 0.333333,
+   "audit_cost_paired_samples": 18,
+   "risk_scores": {
+    "type_I": 0.0,
+    "type_II": 0.0,
+    "type_III": 0.0,
+    "type_IV": 33.33
+   },
+   "drift_resistance_100": 66.67,
+   "composite_score": 0.772088
+  },
+  "C_minimal": {
+   "design": "C_minimal",
+   "declared_assets": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "pool_used_for_selection": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "n_pool": 3,
+   "accounting": "unaware（单一 recall）",
+   "greedy_k4_selection": [
+    "asan",
+    "ubsan",
+    "tsan"
+   ],
+   "detection_rate_pct": 54.8387,
+   "random_mean_k4_pct": 0.0,
+   "apparent_gain_g_app_pp": 54.8387,
+   "composition_inflation_share": 1.0,
+   "aggregation_manipulability": 0.5,
+   "audit_cost_paired_samples": 18,
+   "risk_scores": {
+    "type_I": 100.0,
+    "type_II": 46.95,
+    "type_III": 12.53,
+    "type_IV": 50.0
+   },
+   "drift_resistance_100": 0.0,
+   "composite_score": 0.338935
+  }
+ },
+ "ranking": [
+  {
+   "design": "B_theory_optimal",
+   "composite_score": 0.772088
+  },
+  {
+   "design": "A_current",
+   "composite_score": 0.622978
+  },
+  {
+   "design": "C_minimal",
+   "composite_score": 0.338935
+  }
+ ],
+ "best_design": "B_theory_optimal",
+ "recommendations": [
+  {
+   "priority": 1,
+   "change": "把 2 个**零产资产**从「声明」里移除（保留其作为能力边界记录）",
+   "effect": "构成膨胀份额从 0.4602 降到 0.0000",
+   "cost": "极低（改声明，不动代码）",
+   "type": "低垂果实"
+  },
+  {
+   "priority": 2,
+   "change": "记账口径从 unaware 改为 **aware（三组件向量）**",
+   "effect": "Type II 风险从 46.95 降到 0（负例污染率不再被隐藏）",
+   "cost": "低（692 已有 aware 实现）",
+   "type": "低垂果实"
+  },
+  {
+   "priority": 3,
+   "change": "在报告里**显式声明聚合规则**并附可操纵性检查",
+   "effect": "Type IV 风险从 33.33 被暴露（不再静默）",
+   "cost": "低（698-A 的评分器已实现）",
+   "type": "低垂果实"
+  },
+  {
+   "priority": 4,
+   "change": "把标签词表 λ 写进口径签名（6 元组），所有分组统计附词表",
+   "effect": "Type III 风险从静默变为可检出（698-A Type III 的实测）",
+   "cost": "中（需改报告规范）",
+   "type": "中等改动"
+  },
+  {
+   "priority": 5,
+   "change": "补齐第 3 个环境 profile（容器化）",
+   "effect": "环境轴从 2 个控制点升到 3 个；H-D4 从「一个环境对」升到「两个」",
+   "cost": "高（需新实测，受红线限制）",
+   "type": "大改"
+  },
+  {
+   "priority": 6,
+   "change": "引入等边际替换设计以分离 g_comp 与 g_mech",
+   "effect": "把「不可识别」变成「可识别」（697 定理 A2 推论）",
+   "cost": "中（只读重排，不需新 detect）",
+   "type": "中等改动"
+  },
+  {
+   "priority": 7,
+   "change": "**不要**减少资产数以求简洁（设计 C 的反面教材）",
+   "effect": "设计 C 检出率 54.84% vs 设计 A 59.55%",
+   "cost": "—",
+   "type": "设计原则"
+  }
+ ],
+ "honest_limits": [
+  "三个设计都在**同一冻结矩阵**上模拟 ⇒ 只反映「资产池 / 记账 / 聚合 / 标签」四轴，不含真实环境变化（那需要新实测）。",
+  "综合分的四个权重（0.35/0.25/0.25/0.15）与本批自定的成本标定（900 样本 = 0 分）都**无外部标定**。",
+  "设计 B 的「理论最优」是**相对本批的四轴**而言，不是全局最优；**不声称全局最优**（资产池只有 8 个可选，搜索空间极小）。",
+  "设计 C（3 资产）的检出率下降幅度取决于**贪心序**；换序会变。",
+  "所有数字来自 1147 条（92.9% 人工植入）的冻结矩阵 ⇒ 不代表真实缺陷分布。"
+ ]
+}
