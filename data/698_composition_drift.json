@@ -1,0 +1,790 @@
+{
+ "schema": "queyi-698/composition-drift/v1",
+ "generated_by": "tools/compute_698_composition_drift.py",
+ "generated_at": "2026-10-09T09:22:12+08:00",
+ "detect_calls": 0,
+ "frames": {
+  "capability_boundary_1147": {
+   "n": 1147,
+   "type_I_composition": {
+    "frame": "capability_boundary_1147",
+    "n": 1147,
+    "k": 4,
+    "degeneracy_definitions": {
+     "d_low_yield": "|C_a|/n < 5%（684 预注册下限；全池 d=3，Pool A d=0，Pool B/C d=1）",
+     "d_abs_zero_yield": "C_a = ∅（恒 unknown 资产）"
+    },
+    "canonical_pools": {
+     "full_8": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "wunsequenced",
+       "cross-compile",
+       "linker",
+       "compile-time"
+      ],
+      "d_low_yield": 3,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 40.9391,
+      "g_app_pp": 18.6075
+     },
+     "pool_B_C_6": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "cross-compile",
+       "linker"
+      ],
+      "d_low_yield": 1,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 49.5031,
+      "g_app_pp": 10.0436
+     },
+     "pool_A_5": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "cross-compile"
+      ],
+      "d_low_yield": 0,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 54.2459,
+      "g_app_pp": 5.3008
+     }
+    },
+    "real_pool_scan": {
+     "n_subsets_scanned": 163,
+     "grouped_by_d_low_yield": {
+      "0": {
+       "n_pools": 6,
+       "g_app_mean_pp": 0.8835,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 5.3008,
+       "d_range_observed": [
+        0
+       ]
+      },
+      "1": {
+       "n_pools": 48,
+       "g_app_mean_pp": 2.5758,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 10.6248,
+       "d_range_observed": [
+        0,
+        1
+       ]
+      },
+      "2": {
+       "n_pools": 78,
+       "g_app_mean_pp": 5.2226,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 15.1625,
+       "d_range_observed": [
+        1,
+        2
+       ]
+      },
+      "3": {
+       "n_pools": 31,
+       "g_app_mean_pp": 8.8266,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 18.6075,
+       "d_range_observed": [
+        2
+       ]
+      }
+     },
+     "note": "8 资产的全部 255 个非空子集中 |P|≥4 的部分；随机臂用**精确枚举**期望，非蒙特卡洛。"
+    },
+    "injection_scan_d0_to_7": [
+     {
+      "d": 0,
+      "n_assets": 5,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 54.2459,
+      "g_app_pp": 5.3008,
+      "E_J_wasted_slots": 0.0
+     },
+     {
+      "d": 1,
+      "n_assets": 6,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 48.9218,
+      "g_app_pp": 10.6248,
+      "E_J_wasted_slots": 0.666667
+     },
+     {
+      "d": 2,
+      "n_assets": 7,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 44.3841,
+      "g_app_pp": 15.1625,
+      "E_J_wasted_slots": 1.142857
+     },
+     {
+      "d": 3,
+      "n_assets": 8,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 40.5032,
+      "g_app_pp": 19.0435,
+      "E_J_wasted_slots": 1.5
+     },
+     {
+      "d": 4,
+      "n_assets": 9,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 37.177,
+      "g_app_pp": 22.3696,
+      "E_J_wasted_slots": 1.777778
+     },
+     {
+      "d": 5,
+      "n_assets": 10,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 34.3135,
+      "g_app_pp": 25.2331,
+      "E_J_wasted_slots": 2.0
+     },
+     {
+      "d": 6,
+      "n_assets": 11,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 31.8332,
+      "g_app_pp": 27.7134,
+      "E_J_wasted_slots": 2.181818
+     },
+     {
+      "d": 7,
+      "n_assets": 12,
+      "greedy_k4_pct": 59.5466,
+      "random_mean_k4_pct": 29.6704,
+      "g_app_pp": 29.8763,
+      "E_J_wasted_slots": 2.333333
+     }
+    ],
+    "curve_fits": {
+     "linear_in_d": {
+      "degree": 1,
+      "coefficients": [
+       7.290108,
+       3.464398
+      ],
+      "r2": 0.977703,
+      "ss_res": 11.496077
+     },
+     "quadratic_in_d": {
+      "degree": 2,
+      "coefficients": [
+       5.470342,
+       5.284164,
+       -0.259967
+      ],
+      "r2": 0.999724,
+      "ss_res": 0.142189
+     },
+     "linear_in_E_J_684_model": {
+      "degree": 1,
+      "coefficients": [
+       4.038894,
+       10.602314
+      ],
+      "r2": 0.989548,
+      "ss_res": 5.389014
+     }
+    },
+    "best_fit": "quadratic_in_d",
+    "interpretation": "g_app 随 d 单调上升；684 的 E[J]=k·d/n 模型与线性-in-d 模型的 R² 比较用于判断「表观增益」到底由**退化资产数量**还是**浪费槽位期望**解释得更好。"
+   },
+   "type_II_environment": {
+    "frame": "capability_boundary_1147",
+    "n": 1147,
+    "per_asset_sensitivity": [
+     {
+      "asset": "asan",
+      "n_catch": 408,
+      "catch_rate_pct": 35.5711,
+      "sole_catch": 139,
+      "sole_catch_pct_of_n": 12.1186,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 408
+     },
+     {
+      "asset": "tsan",
+      "n_catch": 263,
+      "catch_rate_pct": 22.9294,
+      "sole_catch": 85,
+      "sole_catch_pct_of_n": 7.4106,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 263
+     },
+     {
+      "asset": "ubsan",
+      "n_catch": 270,
+      "catch_rate_pct": 23.5397,
+      "sole_catch": 83,
+      "sole_catch_pct_of_n": 7.2363,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 270
+     },
+     {
+      "asset": "compiler-warn",
+      "n_catch": 143,
+      "catch_rate_pct": 12.4673,
+      "sole_catch": 53,
+      "sole_catch_pct_of_n": 4.6207,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "cross-compile",
+      "n_catch": 122,
+      "catch_rate_pct": 10.6364,
+      "sole_catch": 14,
+      "sole_catch_pct_of_n": 1.2206,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "linker",
+      "n_catch": 10,
+      "catch_rate_pct": 0.8718,
+      "sole_catch": 10,
+      "sole_catch_pct_of_n": 0.8718,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "wunsequenced",
+      "n_catch": 0,
+      "catch_rate_pct": 0.0,
+      "sole_catch": 0,
+      "sole_catch_pct_of_n": 0.0,
+      "env_gated": false,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "compile-time",
+      "n_catch": 0,
+      "catch_rate_pct": 0.0,
+      "sole_catch": 0,
+      "sole_catch_pct_of_n": 0.0,
+      "env_gated": false,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     }
+    ],
+    "environment_gap_assets": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ],
+    "from_692": {
+     "lost_e1_catches_by_asset_sole": {
+      "asan": 60,
+      "ubsan": 44,
+      "tsan": 29
+     },
+     "lost_e1_catches": 200,
+     "e2_reported_negatives": 426,
+     "poisoned_share_of_e2_negatives_pct": 46.9484
+    },
+    "interpretation": "环境敏感度 = 该资产的捕获在换环境时被静默写成 miss 的量。**独有捕获数**是关键：被别的资产也覆盖的样本丢了也不影响 OR，只有独有捕获才真正造成不可信负例。"
+   },
+   "type_IV_aggregation": {
+    "frame": "capability_boundary_1147",
+    "n": 1147,
+    "total_asset_catch_events": 1216,
+    "or_rate_pct": 61.6391,
+    "mean_rate_over_8_pct": 13.252,
+    "mean_rate_over_productive_pct": 17.6693,
+    "aggregation_table": [
+     {
+      "rule": "or_any",
+      "value_on_productive_pool_pct": 61.6391,
+      "value_after_padding_3_zero_yield_pct": 61.6391,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "max_asset",
+      "value_on_productive_pool_pct": 35.5711,
+      "value_after_padding_3_zero_yield_pct": 35.5711,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "at_least_2_assets",
+      "value_on_productive_pool_pct": 28.1604,
+      "value_after_padding_3_zero_yield_pct": 28.1604,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "min_asset",
+      "value_on_productive_pool_pct": 0.8718,
+      "value_after_padding_3_zero_yield_pct": 0.0,
+      "manipulability_pp": 0.8718,
+      "manipulability_relative_pct": 100.0
+     },
+     {
+      "rule": "mean_per_asset",
+      "value_on_productive_pool_pct": 17.6693,
+      "value_after_padding_3_zero_yield_pct": 11.7795,
+      "manipulability_pp": 5.8898,
+      "manipulability_relative_pct": 33.3333
+     }
+    ],
+    "most_robust_rule": "or_any",
+    "most_manipulable_rule": "mean_per_asset",
+    "interpretation": "**OR 口径对掺入零产资产完全免疫**（可操纵性 0）——因为 OR 只看并集；**均值口径最容易被操纵**——往池里塞任意多零产资产就能把报告值拉低。⇒ 若一个评估系统的分数可以被**不增加任何有效能力**的操作改变，它就存在 Type IV 结构性漂移。"
+   },
+   "type_III_label": {
+    "n": 1147,
+    "ladder": [
+     {
+      "granularity": "family_8",
+      "n_categories": 8,
+      "n_high_blindspot_gt50": 3,
+      "share_high_blindspot_pct": 37.5,
+      "macro_mean_blindspot_pct": 38.712,
+      "n_singleton_categories": 0
+     },
+     {
+      "granularity": "source_batch_9",
+      "n_categories": 9,
+      "n_high_blindspot_gt50": 2,
+      "share_high_blindspot_pct": 22.2222,
+      "macro_mean_blindspot_pct": 32.3758,
+      "n_singleton_categories": 0
+     },
+     {
+      "granularity": "defect_type_34_normalized",
+      "n_categories": 34,
+      "n_high_blindspot_gt50": 13,
+      "share_high_blindspot_pct": 38.2353,
+      "macro_mean_blindspot_pct": 42.1264,
+      "n_singleton_categories": 0
+     },
+     {
+      "granularity": "raw_70_vocabulary_from_676g_by_type",
+      "n_categories": 70,
+      "n_high_blindspot_gt50": 18,
+      "share_high_blindspot_pct": 25.7143,
+      "macro_mean_blindspot_pct": 32.3731,
+      "n_singleton_categories": 14,
+      "note": "原始混合词表（粗码 + 细名 + 元标签混杂），与 34 粒度是**两套不同的划分**，不可互相校验。"
+     },
+     {
+      "granularity": "type_x_batch_fine",
+      "n_categories": 75,
+      "n_high_blindspot_gt50": 20,
+      "share_high_blindspot_pct": 26.6667,
+      "macro_mean_blindspot_pct": 29.7317,
+      "n_singleton_categories": 12
+     }
+    ],
+    "headline": {
+     "raw_70": "18 / 70 = 25.71% 的类 >50% 盲（676g by_type）",
+     "normalized_34": "13 / 34 = 38.24% 的类 >50% 盲（681 归一化词表）",
+     "delta_pp": 12.521
+    },
+    "interpretation": "「盲区类占比」是**标签粒度**的函数：粒度越粗，类越少，高盲类的**占比**越高（分子被合并进去了）。⇒ 任何形如「X/Y 的类 >50% 盲」的表述**必须附带词表**，否则不可比较。"
+   }
+  },
+  "A5_1137": {
+   "n": 1137,
+   "type_I_composition": {
+    "frame": "A5_1137",
+    "n": 1137,
+    "k": 4,
+    "degeneracy_definitions": {
+     "d_low_yield": "|C_a|/n < 5%（684 预注册下限；全池 d=3，Pool A d=0，Pool B/C d=1）",
+     "d_abs_zero_yield": "C_a = ∅（恒 unknown 资产）"
+    },
+    "canonical_pools": {
+     "full_8": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "wunsequenced",
+       "cross-compile",
+       "linker",
+       "compile-time"
+      ],
+      "d_low_yield": 3,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 42.0656,
+      "g_app_pp": 16.4217
+     },
+     "pool_B_C_6": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "cross-compile",
+       "linker"
+      ],
+      "d_low_yield": 1,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 50.7359,
+      "g_app_pp": 7.7514
+     },
+     "pool_A_5": {
+      "pool": [
+       "asan",
+       "ubsan",
+       "tsan",
+       "compiler-warn",
+       "cross-compile"
+      ],
+      "d_low_yield": 0,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 55.4969,
+      "g_app_pp": 2.9903
+     }
+    },
+    "real_pool_scan": {
+     "n_subsets_scanned": 163,
+     "grouped_by_d_low_yield": {
+      "0": {
+       "n_pools": 6,
+       "g_app_mean_pp": 0.4984,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 2.9903,
+       "d_range_observed": [
+        0
+       ]
+      },
+      "1": {
+       "n_pools": 48,
+       "g_app_mean_pp": 2.4409,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 8.3377,
+       "d_range_observed": [
+        0,
+        1
+       ]
+      },
+      "2": {
+       "n_pools": 78,
+       "g_app_mean_pp": 5.1844,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 12.9212,
+       "d_range_observed": [
+        1,
+        2
+       ]
+      },
+      "3": {
+       "n_pools": 31,
+       "g_app_mean_pp": 8.8928,
+       "g_app_min_pp": 0.0,
+       "g_app_max_pp": 16.4217,
+       "d_range_observed": [
+        2
+       ]
+      }
+     },
+     "note": "8 资产的全部 255 个非空子集中 |P|≥4 的部分；随机臂用**精确枚举**期望，非蒙特卡洛。"
+    },
+    "injection_scan_d0_to_7": [
+     {
+      "d": 0,
+      "n_assets": 5,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 55.4969,
+      "g_app_pp": 2.9903,
+      "E_J_wasted_slots": 0.0
+     },
+     {
+      "d": 1,
+      "n_assets": 6,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 50.1495,
+      "g_app_pp": 8.3377,
+      "E_J_wasted_slots": 0.666667
+     },
+     {
+      "d": 2,
+      "n_assets": 7,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 45.566,
+      "g_app_pp": 12.9212,
+      "E_J_wasted_slots": 1.142857
+     },
+     {
+      "d": 3,
+      "n_assets": 8,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 41.6258,
+      "g_app_pp": 16.8614,
+      "E_J_wasted_slots": 1.5
+     },
+     {
+      "d": 4,
+      "n_assets": 9,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 38.2369,
+      "g_app_pp": 20.2503,
+      "E_J_wasted_slots": 1.777778
+     },
+     {
+      "d": 5,
+      "n_assets": 10,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 35.3122,
+      "g_app_pp": 23.175,
+      "E_J_wasted_slots": 2.0
+     },
+     {
+      "d": 6,
+      "n_assets": 11,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 32.7744,
+      "g_app_pp": 25.7128,
+      "E_J_wasted_slots": 2.181818
+     },
+     {
+      "d": 7,
+      "n_assets": 12,
+      "greedy_k4_pct": 58.4872,
+      "random_mean_k4_pct": 30.5585,
+      "g_app_pp": 27.9287,
+      "E_J_wasted_slots": 2.333333
+     }
+    ],
+    "curve_fits": {
+     "linear_in_d": {
+      "degree": 1,
+      "coefficients": [
+       4.955733,
+       3.518983
+      ],
+      "r2": 0.978701,
+      "ss_res": 11.318528
+     },
+     "quadratic_in_d": {
+      "degree": 2,
+      "coefficients": [
+       3.148917,
+       5.3258,
+       -0.258117
+      ],
+      "r2": 0.999764,
+      "ss_res": 0.12566
+     },
+     "linear_in_E_J_684_model": {
+      "degree": 1,
+      "coefficients": [
+       1.667012,
+       10.759906
+      ],
+      "r2": 0.988819,
+      "ss_res": 5.941837
+     }
+    },
+    "best_fit": "quadratic_in_d",
+    "interpretation": "g_app 随 d 单调上升；684 的 E[J]=k·d/n 模型与线性-in-d 模型的 R² 比较用于判断「表观增益」到底由**退化资产数量**还是**浪费槽位期望**解释得更好。"
+   },
+   "type_II_environment": {
+    "frame": "A5_1137",
+    "n": 1137,
+    "per_asset_sensitivity": [
+     {
+      "asset": "asan",
+      "n_catch": 399,
+      "catch_rate_pct": 35.0923,
+      "sole_catch": 126,
+      "sole_catch_pct_of_n": 11.0818,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 399
+     },
+     {
+      "asset": "ubsan",
+      "n_catch": 268,
+      "catch_rate_pct": 23.5708,
+      "sole_catch": 82,
+      "sole_catch_pct_of_n": 7.212,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 268
+     },
+     {
+      "asset": "tsan",
+      "n_catch": 255,
+      "catch_rate_pct": 22.4274,
+      "sole_catch": 71,
+      "sole_catch_pct_of_n": 6.2445,
+      "env_gated": true,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": true,
+      "sensitivity": "HIGH",
+      "loss_when_moving_to_E2": 255
+     },
+     {
+      "asset": "compiler-warn",
+      "n_catch": 143,
+      "catch_rate_pct": 12.577,
+      "sole_catch": 55,
+      "sole_catch_pct_of_n": 4.8373,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "cross-compile",
+      "n_catch": 170,
+      "catch_rate_pct": 14.9516,
+      "sole_catch": 41,
+      "sole_catch_pct_of_n": 3.606,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "linker",
+      "n_catch": 10,
+      "catch_rate_pct": 0.8795,
+      "sole_catch": 10,
+      "sole_catch_pct_of_n": 0.8795,
+      "env_gated": true,
+      "in_E2_supported": true,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "wunsequenced",
+      "n_catch": 0,
+      "catch_rate_pct": 0.0,
+      "sole_catch": 0,
+      "sole_catch_pct_of_n": 0.0,
+      "env_gated": false,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     },
+     {
+      "asset": "compile-time",
+      "n_catch": 0,
+      "catch_rate_pct": 0.0,
+      "sole_catch": 0,
+      "sole_catch_pct_of_n": 0.0,
+      "env_gated": false,
+      "in_E2_supported": false,
+      "in_E2_gap_lost": false,
+      "sensitivity": "none",
+      "loss_when_moving_to_E2": 0
+     }
+    ],
+    "environment_gap_assets": [
+     "asan",
+     "tsan",
+     "ubsan"
+    ],
+    "from_692": {
+     "lost_e1_catches_by_asset_sole": {
+      "asan": 60,
+      "ubsan": 44,
+      "tsan": 29
+     },
+     "lost_e1_catches": 200,
+     "e2_reported_negatives": 426,
+     "poisoned_share_of_e2_negatives_pct": 46.9484
+    },
+    "interpretation": "环境敏感度 = 该资产的捕获在换环境时被静默写成 miss 的量。**独有捕获数**是关键：被别的资产也覆盖的样本丢了也不影响 OR，只有独有捕获才真正造成不可信负例。"
+   },
+   "type_IV_aggregation": {
+    "frame": "A5_1137",
+    "n": 1137,
+    "total_asset_catch_events": 1245,
+    "or_rate_pct": 62.9727,
+    "mean_rate_over_8_pct": 13.6873,
+    "mean_rate_over_productive_pct": 18.2498,
+    "aggregation_table": [
+     {
+      "rule": "or_any",
+      "value_on_productive_pool_pct": 62.9727,
+      "value_after_padding_3_zero_yield_pct": 62.9727,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "max_asset",
+      "value_on_productive_pool_pct": 35.0923,
+      "value_after_padding_3_zero_yield_pct": 35.0923,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "at_least_2_assets",
+      "value_on_productive_pool_pct": 29.1117,
+      "value_after_padding_3_zero_yield_pct": 29.1117,
+      "manipulability_pp": 0.0,
+      "manipulability_relative_pct": 0.0
+     },
+     {
+      "rule": "min_asset",
+      "value_on_productive_pool_pct": 0.8795,
+      "value_after_padding_3_zero_yield_pct": 0.0,
+      "manipulability_pp": 0.8795,
+      "manipulability_relative_pct": 100.0
+     },
+     {
+      "rule": "mean_per_asset",
+      "value_on_productive_pool_pct": 18.2498,
+      "value_after_padding_3_zero_yield_pct": 12.1665,
+      "manipulability_pp": 6.0833,
+      "manipulability_relative_pct": 33.3333
+     }
+    ],
+    "most_robust_rule": "or_any",
+    "most_manipulable_rule": "mean_per_asset",
+    "interpretation": "**OR 口径对掺入零产资产完全免疫**（可操纵性 0）——因为 OR 只看并集；**均值口径最容易被操纵**——往池里塞任意多零产资产就能把报告值拉低。⇒ 若一个评估系统的分数可以被**不增加任何有效能力**的操作改变，它就存在 Type IV 结构性漂移。"
+   }
+  }
+ }
+}
