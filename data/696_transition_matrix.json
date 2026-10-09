@@ -1,0 +1,460 @@
+{
+  "schema": "queyi-696/transition-matrix/v1",
+  "generated_by": "tools/compute_696_transition_matrix.py",
+  "source": "data/692_environment_paired_experiment.json",
+  "detect_calls": 0,
+  "states": [
+    "catch",
+    "miss",
+    "unknown"
+  ],
+  "note": "三态转移矩阵基于 692 的**单一环境对**（E1 wsl-gcc-13.3 / E2 windows-native-mingw）；n_env=1，不声称普适。unaware 与 aware 的**原始测量完全相同**，只有 caliber 不同 ⇒ 本矩阵是'结构性（被动）Goodhart'的可计算实例。",
+  "frames": {
+    "A5_evaluation_566": {
+      "frame": "A5 holdout evaluation split (566)",
+      "n": 566,
+      "E1": {
+        "catch": 340,
+        "miss": 226,
+        "unknown": 0
+      },
+      "E2_unaware": {
+        "catch": 140,
+        "miss": 426,
+        "unknown": 0
+      },
+      "E2_aware": {
+        "catch": 140,
+        "miss": 0,
+        "unknown": 426
+      },
+      "T_unaware": {
+        "catch": {
+          "catch": 140,
+          "miss": 200,
+          "unknown": 0
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 226,
+          "unknown": 0
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "T_aware": {
+        "catch": {
+          "catch": 140,
+          "miss": 0,
+          "unknown": 200
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 226
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "row_sums_unaware": {
+        "catch": 340,
+        "miss": 226,
+        "unknown": 0
+      },
+      "col_sums_unaware": {
+        "catch": 140,
+        "miss": 426,
+        "unknown": 0
+      },
+      "row_sums_aware": {
+        "catch": 340,
+        "miss": 226,
+        "unknown": 0
+      },
+      "col_sums_aware": {
+        "catch": 140,
+        "miss": 0,
+        "unknown": 426
+      },
+      "reclassified_miss_to_unknown": 426,
+      "mcnemar": {
+        "b_e1_catch_only": 200,
+        "c_e2_catch_only": 0,
+        "discordant": 200,
+        "mcnemar_exact_p": 1.2446030555722283e-60,
+        "log10_p": -59.9,
+        "delta_catch_rate_pp": 35.3357,
+        "delta_ci95_pp_wald": [
+          31.3976,
+          39.2738
+        ],
+        "ci_note": "配对比例差 Wald（正态近似）区间；p 为精确二项 McNemar"
+      },
+      "silent_false_miss": {
+        "lost_e1_catches": 200,
+        "lost_e1_catches_pct_of_e1_catch": 58.8235,
+        "lost_e1_catches_by_asset_sole": {
+          "asan": 60,
+          "ubsan": 44,
+          "tsan": 29
+        },
+        "lost_e1_catches_by_group": {
+          "stl": 38,
+          "concurrency": 37,
+          "memory_safety": 29,
+          "legacy": 25,
+          "undefined_behavior": 24,
+          "real_world": 18,
+          "conditional_trigger": 8,
+          "language_semantics": 7,
+          "optimization_sensitive": 7,
+          "embedded": 6,
+          "odr_link": 1
+        },
+        "gained_e2_catches": 0,
+        "e2_reported_negatives": 426,
+        "e2_reported_negatives_that_e1_catches": 200,
+        "poisoned_share_of_e2_negatives_pct": 46.9484
+      }
+    },
+    "A5_all_1137": {
+      "frame": "A5 full pool (1137)",
+      "n": 1137,
+      "E1": {
+        "catch": 716,
+        "miss": 421,
+        "unknown": 0
+      },
+      "E2_unaware": {
+        "catch": 298,
+        "miss": 839,
+        "unknown": 0
+      },
+      "E2_aware": {
+        "catch": 298,
+        "miss": 0,
+        "unknown": 839
+      },
+      "T_unaware": {
+        "catch": {
+          "catch": 298,
+          "miss": 418,
+          "unknown": 0
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 421,
+          "unknown": 0
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "T_aware": {
+        "catch": {
+          "catch": 298,
+          "miss": 0,
+          "unknown": 418
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 421
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "row_sums_unaware": {
+        "catch": 716,
+        "miss": 421,
+        "unknown": 0
+      },
+      "col_sums_unaware": {
+        "catch": 298,
+        "miss": 839,
+        "unknown": 0
+      },
+      "row_sums_aware": {
+        "catch": 716,
+        "miss": 421,
+        "unknown": 0
+      },
+      "col_sums_aware": {
+        "catch": 298,
+        "miss": 0,
+        "unknown": 839
+      },
+      "reclassified_miss_to_unknown": 839,
+      "mcnemar": {
+        "b_e1_catch_only": 418,
+        "c_e2_catch_only": 0,
+        "discordant": 418,
+        "mcnemar_exact_p": 2.9545531576914354e-126,
+        "log10_p": -125.53,
+        "delta_catch_rate_pp": 36.7634,
+        "delta_ci95_pp_wald": [
+          33.9608,
+          39.5661
+        ],
+        "ci_note": "配对比例差 Wald（正态近似）区间；p 为精确二项 McNemar"
+      },
+      "silent_false_miss": {
+        "lost_e1_catches": 418,
+        "lost_e1_catches_pct_of_e1_catch": 58.3799,
+        "lost_e1_catches_by_asset_sole": {
+          "asan": 126,
+          "ubsan": 82,
+          "tsan": 71
+        },
+        "lost_e1_catches_by_group": {
+          "concurrency": 77,
+          "stl": 69,
+          "memory_safety": 68,
+          "legacy": 53,
+          "undefined_behavior": 44,
+          "real_world": 35,
+          "embedded": 21,
+          "language_semantics": 20,
+          "conditional_trigger": 18,
+          "optimization_sensitive": 11,
+          "odr_link": 2
+        },
+        "gained_e2_catches": 0,
+        "e2_reported_negatives": 839,
+        "e2_reported_negatives_that_e1_catches": 418,
+        "poisoned_share_of_e2_negatives_pct": 49.8212
+      }
+    },
+    "A5_derivation_571": {
+      "frame": "A5 derivation split (571)",
+      "n": 571,
+      "E1": {
+        "catch": 376,
+        "miss": 195,
+        "unknown": 0
+      },
+      "E2_unaware": {
+        "catch": 158,
+        "miss": 413,
+        "unknown": 0
+      },
+      "E2_aware": {
+        "catch": 158,
+        "miss": 0,
+        "unknown": 413
+      },
+      "T_unaware": {
+        "catch": {
+          "catch": 158,
+          "miss": 218,
+          "unknown": 0
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 195,
+          "unknown": 0
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "T_aware": {
+        "catch": {
+          "catch": 158,
+          "miss": 0,
+          "unknown": 218
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 195
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "row_sums_unaware": {
+        "catch": 376,
+        "miss": 195,
+        "unknown": 0
+      },
+      "col_sums_unaware": {
+        "catch": 158,
+        "miss": 413,
+        "unknown": 0
+      },
+      "row_sums_aware": {
+        "catch": 376,
+        "miss": 195,
+        "unknown": 0
+      },
+      "col_sums_aware": {
+        "catch": 158,
+        "miss": 0,
+        "unknown": 413
+      },
+      "reclassified_miss_to_unknown": 413,
+      "mcnemar": {
+        "b_e1_catch_only": 218,
+        "c_e2_catch_only": 0,
+        "discordant": 218,
+        "mcnemar_exact_p": 4.7477838728798994e-66,
+        "log10_p": -65.32,
+        "delta_catch_rate_pp": 38.1786,
+        "delta_ci95_pp_wald": [
+          34.1937,
+          42.1635
+        ],
+        "ci_note": "配对比例差 Wald（正态近似）区间；p 为精确二项 McNemar"
+      },
+      "silent_false_miss": {
+        "lost_e1_catches": 218,
+        "lost_e1_catches_pct_of_e1_catch": 57.9787,
+        "lost_e1_catches_by_asset_sole": {
+          "asan": 66,
+          "tsan": 42,
+          "ubsan": 38
+        },
+        "lost_e1_catches_by_group": {
+          "concurrency": 40,
+          "memory_safety": 39,
+          "stl": 31,
+          "legacy": 28,
+          "undefined_behavior": 20,
+          "real_world": 17,
+          "embedded": 15,
+          "language_semantics": 13,
+          "conditional_trigger": 10,
+          "optimization_sensitive": 4,
+          "odr_link": 1
+        },
+        "gained_e2_catches": 0,
+        "e2_reported_negatives": 413,
+        "e2_reported_negatives_that_e1_catches": 218,
+        "poisoned_share_of_e2_negatives_pct": 52.7845
+      }
+    },
+    "real_world_110": {
+      "frame": "real-world benchmark (110)",
+      "n": 110,
+      "E1": {
+        "catch": 65,
+        "miss": 45,
+        "unknown": 0
+      },
+      "E2_unaware": {
+        "catch": 26,
+        "miss": 84,
+        "unknown": 0
+      },
+      "E2_aware": {
+        "catch": 26,
+        "miss": 0,
+        "unknown": 84
+      },
+      "T_unaware": {
+        "catch": {
+          "catch": 26,
+          "miss": 39,
+          "unknown": 0
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 45,
+          "unknown": 0
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "T_aware": {
+        "catch": {
+          "catch": 26,
+          "miss": 0,
+          "unknown": 39
+        },
+        "miss": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 45
+        },
+        "unknown": {
+          "catch": 0,
+          "miss": 0,
+          "unknown": 0
+        }
+      },
+      "row_sums_unaware": {
+        "catch": 65,
+        "miss": 45,
+        "unknown": 0
+      },
+      "col_sums_unaware": {
+        "catch": 26,
+        "miss": 84,
+        "unknown": 0
+      },
+      "row_sums_aware": {
+        "catch": 65,
+        "miss": 45,
+        "unknown": 0
+      },
+      "col_sums_aware": {
+        "catch": 26,
+        "miss": 0,
+        "unknown": 84
+      },
+      "reclassified_miss_to_unknown": 84,
+      "mcnemar": {
+        "b_e1_catch_only": 39,
+        "c_e2_catch_only": 0,
+        "discordant": 39,
+        "mcnemar_exact_p": 3.637978807091713e-12,
+        "log10_p": -11.44,
+        "delta_catch_rate_pp": 35.4545,
+        "delta_ci95_pp_wald": [
+          26.5147,
+          44.3944
+        ],
+        "ci_note": "配对比例差 Wald（正态近似）区间；p 为精确二项 McNemar"
+      },
+      "silent_false_miss": {
+        "lost_e1_catches": 39,
+        "lost_e1_catches_pct_of_e1_catch": 60.0,
+        "lost_e1_catches_by_asset_sole": {
+          "asan": 18,
+          "tsan": 3,
+          "ubsan": 3
+        },
+        "lost_e1_catches_by_group": {
+          "unknown": 39
+        },
+        "gained_e2_catches": 0,
+        "e2_reported_negatives": 84,
+        "e2_reported_negatives_that_e1_catches": 39,
+        "poisoned_share_of_e2_negatives_pct": 46.4286
+      }
+    }
+  },
+  "headline": {
+    "primary_frame": "A5_evaluation_566",
+    "secondary_frame": "real_world_110"
+  }
+}

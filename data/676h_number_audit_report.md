@@ -1,7 +1,7 @@
 # 676h · 论文数字可追溯性审计报告
 
-- 生成时间：2026-10-08T19:38:28+08:00
-- 被审计稿件：`research/latex/queyi_neurips2027_v1.1.tex`（正文 None 页 / 全稿 37 页，取自编译日志）
+- 生成时间：2026-10-09T08:53:17+08:00
+- 被审计稿件：`research/latex/queyi_neurips2027_v1.1.tex`（正文 None 页 / 全稿 39 页，取自编译日志）
 - 权威源：14 个文件
 - 检察条数：**130**，其中 consistent 116，硬 missing（active）0，软 missing（not_printed 等）0，skipped/no_source 0
 
@@ -77,166 +77,166 @@
 
 ## 4. 数字覆盖度（tex 全量扫描）
 
-扫描到数字 token **1721** 个（已排除注释行与导言区行）。分类：
+扫描到数字 token **1784** 个（已排除注释行与导言区行）。分类：
 
 | 类别 | 数量 | 占比 |
 |---|---|---|
-| claim | 1318 | 76.6% |
-| unclassified | 133 | 7.7% |
-| design_constant | 65 | 3.8% |
-| batch_id | 59 | 3.4% |
-| method_constant | 41 | 2.4% |
-| format_layout | 24 | 1.4% |
-| repro_command | 24 | 1.4% |
-| year | 10 | 0.6% |
+| claim | 1364 | 76.5% |
+| unclassified | 144 | 8.1% |
+| design_constant | 65 | 3.6% |
+| batch_id | 61 | 3.4% |
+| method_constant | 40 | 2.2% |
+| format_layout | 26 | 1.5% |
+| repro_command | 24 | 1.3% |
+| year | 11 | 0.6% |
+| system_constant | 9 | 0.5% |
 | engineering_narrative | 9 | 0.5% |
-| system_constant | 8 | 0.5% |
 | logic_constant | 7 | 0.4% |
 | external_literature | 6 | 0.3% |
 | historical_retired | 5 | 0.3% |
 | structural | 4 | 0.2% |
 | sample_id | 4 | 0.2% |
-| cited_context | 2 | 0.1% |
+| cited_context | 3 | 0.2% |
 | external_regulation | 2 | 0.1% |
 
-未归类 token：133 个（前 60 条见下；全量在 json 里）。
+未归类 token：144 个（前 60 条见下；全量在 json 里）。
 
 | 行 | token | 上下文 |
 |---|---|---|
-| 298 | `40` | `\emph{same} 40 catches; a flag change once moved holdout recall $66.7\%\to87.5\%$ with the` |
-| 363 | `34` | `across 34 normalized types (8 families), including 64 corpus-null controls and 35 hung` |
-| 364 | `110` | `samples. \emph{Source-derived real-defect corpus} (110 samples): minimal reconstructions of` |
-| 365 | `30` | `defects from 30+ real projects (CVE/NVD-verified mechanisms, responses frozen; \emph{not}` |
-| 389 | `13.3` | `Four profiles are declared: \texttt{wsl-gcc-13.3} (asan/ubsan/tsan, primary),` |
-| 391 | `200` | `\texttt{wsl-clang-18.1.3} (200-sample stratified replication), and MSVC/clang-cl (absent on` |
-| 419 | `24` | `\paragraph{F1. A $+24$pp ``selection gain'' is mostly measurement-pool composition` |
-| 432 | `5` | `$1/\binom{5}{4}{=}0.2$). Against the 2000-draw random \emph{mean} the same tiers read` |
-| 444 | `13` | `\textbf{13 of 34} normalized types exceed $50\%$ blindness. Blindness is organized by defect` |
-| 444 | `34` | `\textbf{13 of 34} normalized types exceed $50\%$ blindness. Blindness is organized by defect` |
-| 446 | `60` | `link/ODR $\approx67.7\%$, while CRITICAL/HIGH/MEDIUM real defects all detect at $60$--$62\%$;` |
-| 446 | `62` | `link/ODR $\approx67.7\%$, while CRITICAL/HIGH/MEDIUM real defects all detect at $60$--$62\%$;` |
-| 451 | `86.96` | `parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server` |
-| 451 | `30.77` | `parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server` |
-| 454 | `52.2` | `harder on real defects than on synthetic ones (type punning $-52.2$pp, logic $-22.5$pp,` |
-| 459 | `65` | `Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the` |
-| 459 | `110` | `Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the` |
-| 461 | `39` | `\textbf{23.64\%} ($-35.45$pp) with \emph{no} unknown increase: 39 catches depend on Linux` |
-| 482 | `36.9` | `instrument is good at (bounds$+$memory$+$integer $=64.5\%$ of samples vs.\ $36.9\%$ in the` |
-| 484 | `31` | `(\texttt{language\_oop}/logic: real $1/31$ vs.\ synthetic $9/35$). Two corpora can share a` |
-| 504 | `17496` | `simple optimal selection already exists (all 17496 triples checked; greedy attains ratio` |
-| 539 | `19` | `We report five threat classes with direction and mitigation status (the 19-item table and` |
-| 557 | `6.6` | `$6.6\%\to14.3\%$ under $\le15\%$ flips, though contrast directions are stable).` |
-| 562 | `110` | `The 110-sample source-derived corpus improves ecological validity but is` |
-| 588 | `5` | `rate by $-16.36$pp. Cross-run stability: 5\% grid flips; the shadow-mapped` |
-| 597 | `24` | `detecting that collapse. On a software-verification apparatus: a $+24$pp selection gain was` |
-| 601 | `17.9` | `explained by a $-17.9$pp composition offset; and failure-driven evolution produced no` |
-| 894 | `30` | `665 & expand 20$\to$30 & true 17, \textbf{66.7\%} (single flag) & --- & denominator changed \\` |
-| 894 | `17` | `665 & expand 20$\to$30 & true 17, \textbf{66.7\%} (single flag) & --- & denominator changed \\` |
-| 1307 | `200` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `219` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `149` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `95` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `99` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `90` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1307 | `88` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
-| 1332 | `93` | `676m unification, which is exactly why the vocabulary was unified. (iii) $93\%$ of samples are` |
-| 1337 | `34` | `Two data-quality defects were repaired and are visible in this appendix's numbers: $34$` |
-| 1339 | `56` | `(a hung sanitizer emits no report), and the $56$-value \texttt{defect\_type} vocabulary was` |
-| 1340 | `34` | `consolidated to $34$ canonical types (with \texttt{conditional\_trigger} /` |
-| 1399 | `5` | `Two \emph{distinct} pools are pre-registered on the same matrix: \textbf{A} (strict; 5 assets)` |
-| 1427 | `24.5` | `3 & 51.1\% & 30.6\% & +20.5 & [+16.5, +24.5] & $2.2\times10^{-22}$ \\` |
-| 1428 | `27.5` | `\textbf{4} & \textbf{54.6\%} & \textbf{30.6\%} & \textbf{+24.0} & [+20.5, +27.5] & $2.3\times10^{-41}$ \\` |
-| 1429 | `5` | `5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\` |
-| 1429 | `17.3` | `5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\` |
-| 1450 | `6.1` | `conditional trigger & 20 & +45.0 & $6.1\times10^{-3}$ & $4.3\times10^{-2}$ \\` |
-| 1464 | `34` | `production code}; 34 evaluated) FD reads \textbf{64.7\%} vs.\ Random 35.3\%,` |
-| 1544 | `13` | `\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 13 of 34 normalized types):` |
-| 1544 | `34` | `\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 13 of 34 normalized types):` |
-| 1566 | `9176` | `from the frozen $1147\times8$ matrix ($9176$ cells, $0$ missing); recall uses the` |
-| 1575 | `58.5` | `asan & \textbf{58.5\%} & 95.3\% & 0.725 & 0.87\% & \textbf{+19.29} \\` |
-| 1575 | `95.3` | `asan & \textbf{58.5\%} & 95.3\% & 0.725 & 0.87\% & \textbf{+19.29} \\` |
-| 1575 | `19.29` | `asan & \textbf{58.5\%} & 95.3\% & 0.725 & 0.87\% & \textbf{+19.29} \\` |
-| 1576 | `38.2` | `ubsan & 38.2\% & 94.1\% & 0.543 & 0.87\% & +10.98 \\` |
-| 1576 | `94.1` | `ubsan & 38.2\% & 94.1\% & 0.543 & 0.87\% & +10.98 \\` |
-| 1577 | `36.1` | `tsan & 36.1\% & 91.3\% & 0.517 & 0.87\% & +10.39 \\` |
-| 1577 | `91.3` | `tsan & 36.1\% & 91.3\% & 0.517 & 0.87\% & +10.39 \\` |
-| 1578 | `19.1` | `compiler-warn & 19.1\% & 90.2\% & 0.316 & 0.00\% & +5.93 \\` |
-| 1578 | `90.2` | `compiler-warn & 19.1\% & 90.2\% & 0.316 & 0.00\% & +5.93 \\` |
-| 1578 | `5.93` | `compiler-warn & 19.1\% & 90.2\% & 0.316 & 0.00\% & +5.93 \\` |
+| 301 | `40` | `\emph{same} 40 catches; a flag change once moved holdout recall $66.7\%\to87.5\%$ with the` |
+| 366 | `34` | `across 34 normalized types (8 families), including 64 corpus-null controls and 35 hung` |
+| 367 | `110` | `samples. \emph{Source-derived real-defect corpus} (110 samples): minimal reconstructions of` |
+| 368 | `30` | `defects from 30+ real projects (CVE/NVD-verified mechanisms, responses frozen; \emph{not}` |
+| 392 | `13.3` | `Four profiles are declared: \texttt{wsl-gcc-13.3} (asan/ubsan/tsan, primary),` |
+| 394 | `200` | `\texttt{wsl-clang-18.1.3} (200-sample stratified replication), and MSVC/clang-cl (absent on` |
+| 422 | `24` | `\paragraph{F1. A $+24$pp ``selection gain'' is mostly measurement-pool composition` |
+| 429 | `24.03` | `\textbf{composition-dominated within the pools measured} ($+24.03$pp at $k{=}4$,` |
+| 439 | `5` | `$1/\binom{5}{4}{=}0.2$). Against the 2000-draw random \emph{mean} the same tiers read` |
+| 455 | `13` | `\textbf{13 of 34} normalized types exceed $50\%$ blindness. Blindness is organized by defect` |
+| 455 | `34` | `\textbf{13 of 34} normalized types exceed $50\%$ blindness. Blindness is organized by defect` |
+| 457 | `60` | `link/ODR $\approx67.7\%$, while CRITICAL/HIGH/MEDIUM real defects all detect at $60$--$62\%$;` |
+| 457 | `62` | `link/ODR $\approx67.7\%$, while CRITICAL/HIGH/MEDIUM real defects all detect at $60$--$62\%$;` |
+| 462 | `86.96` | `parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server` |
+| 462 | `30.77` | `parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server` |
+| 465 | `52.2` | `harder on real defects than on synthetic ones (type punning $-52.2$pp, logic $-22.5$pp,` |
+| 471 | `65` | `Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the` |
+| 471 | `110` | `Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the` |
+| 473 | `39` | `\textbf{23.64\%} ($-35.45$pp) with \emph{no} unknown increase: 39 catches depend on Linux` |
+| 483 | `13.3` | `($n_{\text{env}}{=}1$; E1 \texttt{wsl-gcc-13.3} vs.\ E2 \texttt{windows-native-mingw}), \emph{not}` |
+| 504 | `36.9` | `instrument is good at (bounds$+$memory$+$integer $=64.5\%$ of samples vs.\ $36.9\%$ in the` |
+| 506 | `31` | `(\texttt{language\_oop}/logic: real $1/31$ vs.\ synthetic $9/35$). Two corpora can share a` |
+| 529 | `17496` | `simple optimal selection already exists (all 17496 triples checked; greedy attains ratio` |
+| 566 | `19` | `We report five threat classes with direction and mitigation status (the 19-item table and` |
+| 584 | `6.6` | `$6.6\%\to14.3\%$ under $\le15\%$ flips, though contrast directions are stable).` |
+| 589 | `110` | `The 110-sample source-derived corpus improves ecological validity but is` |
+| 615 | `5` | `rate by $-16.36$pp. Cross-run stability: 5\% grid flips; the shadow-mapped` |
+| 624 | `24` | `detecting that collapse. On a software-verification apparatus: a $+24$pp selection gain was` |
+| 628 | `17.9` | `explained by a $-17.9$pp composition offset; and failure-driven evolution produced no` |
+| 926 | `30` | `665 & expand 20$\to$30 & true 17, \textbf{66.7\%} (single flag) & --- & denominator changed \\` |
+| 926 | `17` | `665 & expand 20$\to$30 & true 17, \textbf{66.7\%} (single flag) & --- & denominator changed \\` |
+| 1335 | `13.3` | `The experiment ran the same samples under E1 (\texttt{wsl-gcc-13.3}; six assets) and E2` |
+| 1354 | `200` | `catch   & 140 & 200 & 0 & 140 & 0 & 200 \\` |
+| 1354 | `200` | `catch   & 140 & 200 & 0 & 140 & 0 & 200 \\` |
+| 1355 | `226` | `miss    & 0   & 226 & 0 & 0   & 0 & 226 \\` |
+| 1355 | `226` | `miss    & 0   & 226 & 0 & 0   & 0 & 226 \\` |
+| 1362 | `200` | `Under un-aware accounting the matrix looks like a \emph{capability loss}: 200 samples move` |
+| 1365 | `200` | `the same 200 samples move catch$\to$unknown, and the 226 misses move miss$\to$unknown: the` |
+| 1365 | `226` | `the same 200 samples move catch$\to$unknown, and the 226 misses move miss$\to$unknown: the` |
+| 1366 | `426` | `conclusion changes from ``capability dropped 35.45pp'' to ``426 of 566 samples were not measured` |
+| 1470 | `200` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `219` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `149` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `95` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `99` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `90` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1470 | `88` | `stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,` |
+| 1495 | `93` | `676m unification, which is exactly why the vocabulary was unified. (iii) $93\%$ of samples are` |
+| 1500 | `34` | `Two data-quality defects were repaired and are visible in this appendix's numbers: $34$` |
+| 1502 | `56` | `(a hung sanitizer emits no report), and the $56$-value \texttt{defect\_type} vocabulary was` |
+| 1503 | `34` | `consolidated to $34$ canonical types (with \texttt{conditional\_trigger} /` |
+| 1562 | `5` | `Two \emph{distinct} pools are pre-registered on the same matrix: \textbf{A} (strict; 5 assets)` |
+| 1590 | `24.5` | `3 & 51.1\% & 30.6\% & +20.5 & [+16.5, +24.5] & $2.2\times10^{-22}$ \\` |
+| 1591 | `27.5` | `\textbf{4} & \textbf{54.6\%} & \textbf{30.6\%} & \textbf{+24.0} & [+20.5, +27.5] & $2.3\times10^{-41}$ \\` |
+| 1592 | `5` | `5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\` |
+| 1592 | `17.3` | `5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\` |
+| 1613 | `6.1` | `conditional trigger & 20 & +45.0 & $6.1\times10^{-3}$ & $4.3\times10^{-2}$ \\` |
+| 1627 | `34` | `production code}; 34 evaluated) FD reads \textbf{64.7\%} vs.\ Random 35.3\%,` |
+| 1707 | `13` | `\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 13 of 34 normalized types):` |
+| 1707 | `34` | `\textbf{High-blind-spot bands} ($>50\%$ miss$+$unknown, 13 of 34 normalized types):` |
 
 ## 5. 每条检察的命中明细
 
 **A01 · holdout 可测检出率 82.9% (34/41) CI[67.9,92.8]** — consistent/active `✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `82.9` × 9 @ L729,750,813,899,1080,1494,1557,1623
-  - ✓ `34/41` × 5 @ L729,750,813,899,1080
-  - ✓ `67.9, 92.8` × 4 @ L729,750,813,899
+  - ✓ `82.9` × 9 @ L761,782,845,931,1112,1657,1720,1786
+  - ✓ `34/41` × 5 @ L761,782,845,931,1112
+  - ✓ `67.9, 92.8` × 4 @ L761,782,845,931
 **A02 · corpus 可测检出率 62.5% (40/64) CI[49.5,74.3]** — consistent/active `✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `62.5` × 8 @ L729,750,813,881,892,1080,1245,1623
-  - ✓ `40/64` × 4 @ L729,750,813,1080
-  - ✓ `49.5, 74.3` × 3 @ L729,750,813
+  - ✓ `62.5` × 8 @ L761,782,845,913,924,1112,1408,1786
+  - ✓ `40/64` × 4 @ L761,782,845,1112
+  - ✓ `49.5, 74.3` × 3 @ L761,782,845
 **A03 · corpus 全样本口径 52.6%** — consistent/active `✓`
 - 源：`data/current_numbers.json`
-  - ✓ `52.6` × 2 @ L731,1245
+  - ✓ `52.6` × 2 @ L763,1408
 **A04 · Static 臂 holdout 2.4% (1/41) / corpus 17.2% (11/64)** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `2.4` × 3 @ L744,748,1466
-  - ✓ `1/41` × 1 @ L748
-  - ✓ `17.2` × 1 @ L748
-  - ✓ `11/64` × 1 @ L748
+  - ✓ `2.4` × 3 @ L776,780,1629
+  - ✓ `1/41` × 1 @ L780
+  - ✓ `17.2` × 1 @ L780
+  - ✓ `11/64` × 1 @ L780
 **A05 · Random† 臂 holdout 9.8% (4/41) / corpus 21.9% (14/64)** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `9.8` × 1 @ L749
-  - ✓ `4/41` × 1 @ L749
-  - ✓ `21.9` × 1 @ L749
-  - ✓ `14/64` × 1 @ L749
+  - ✓ `9.8` × 1 @ L781
+  - ✓ `4/41` × 1 @ L781
+  - ✓ `21.9` × 1 @ L781
+  - ✓ `14/64` × 1 @ L781
 **A06 · Δ(Static→FD) holdout +80.5pp CI[68.4,92.6] p=2.3e-10 h=1.98** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `+80.5pp` × 1 @ L751
-  - ✓ `68.4, 92.6` × 1 @ L751
-  - ✓ `2.3\times10^{-10}` × 1 @ L677
-  - ✓ `1.98` × 1 @ L677
+  - ✓ `+80.5pp` × 1 @ L783
+  - ✓ `68.4, 92.6` × 1 @ L783
+  - ✓ `2.3\times10^{-10}` × 1 @ L709
+  - ✓ `1.98` × 1 @ L709
 **A07 · Δ(Random†→FD) holdout +73.2pp CI[59.6,86.7] p=1.9e-9 h=1.65** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `+73.2pp` × 1 @ L752
-  - ✓ `59.6, 86.7` × 1 @ L752
-  - ✓ `1.9\times10^{-9}` × 1 @ L679
-  - ✓ `1.65` × 1 @ L679
+  - ✓ `+73.2pp` × 1 @ L784
+  - ✓ `59.6, 86.7` × 1 @ L784
+  - ✓ `1.9\times10^{-9}` × 1 @ L711
+  - ✓ `1.65` × 1 @ L711
 **A08 · Δ(Static→FD) corpus +45.3pp CI[33.1,57.5] p=3.7e-9 h=0.97** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `+45.3pp` × 1 @ L751
-  - ✓ `33.1, 57.5` × 1 @ L751
-  - ✓ `3.7\times10^{-9}` × 1 @ L678
-  - ✓ `0.97` × 3 @ L678,1030,1989
+  - ✓ `+45.3pp` × 1 @ L783
+  - ✓ `33.1, 57.5` × 1 @ L783
+  - ✓ `3.7\times10^{-9}` × 1 @ L710
+  - ✓ `0.97` × 3 @ L710,1062,2152
 **A09 · Δ(Random†→FD) corpus +40.6pp CI[28.6,52.7] p=3.0e-8 h=0.85** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `+40.6pp` × 1 @ L752
-  - ✓ `28.6, 52.7` × 1 @ L752
-  - ✓ `3.0\times10^{-8}` × 1 @ L680
-  - ✓ `0.85` × 1 @ L680
+  - ✓ `+40.6pp` × 1 @ L784
+  - ✓ `28.6, 52.7` × 1 @ L784
+  - ✓ `3.0\times10^{-8}` × 1 @ L712
+  - ✓ `0.85` × 1 @ L712
 **A10 · 配对不一致对 (b, c)（tab:e5 四行）** — consistent/active `✓✓✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `(33, 0)` × 1 @ L677
-  - ✓ `(29, 0)` × 1 @ L678
-  - ✓ `(30, 0)` × 1 @ L679
-  - ✓ `(26, 0)` × 1 @ L680
+  - ✓ `(33, 0)` × 1 @ L709
+  - ✓ `(29, 0)` × 1 @ L710
+  - ✓ `(30, 0)` × 1 @ L711
+  - ✓ `(26, 0)` × 1 @ L712
   - 注：四个对比都是 c=0 结构（对手的 catch 是 FD catch 的子集）
 **A11 · 对照假阳性 0.0% (0/11)** — consistent/active `✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `0.0\% (0/11)` × 4 @ L750,875,1623,1673
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
+  - ✓ `0.0\% (0/11)` × 4 @ L782,907,1786,1836
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
 **A12 · 缺陷重注入 6/6 = 100%** — consistent/active `✓✗`
 - 源：`data/current_numbers.json`
-  - ✓ `6/6` × 2 @ L748,750
+  - ✓ `6/6` × 2 @ L780,782
   - ✗ `100.0` × 0 @ L
 **A13 · CP95 半宽 12.5pp（holdout）** — consistent/active `✓`
 - 源：`data/current_numbers.json`
-  - ✓ `12.5` × 3 @ L749,1274,1541
+  - ✓ `12.5` × 3 @ L781,1437,1704
 **A14 · 扩样前 holdout 81.0% (17/21) CI[58.1,94.6]** — consistent/active `✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `81.0` × 3 @ L730,731,898
-  - ✓ `17/21` × 1 @ L898
+  - ✓ `81.0` × 3 @ L762,763,930
+  - ✓ `17/21` × 1 @ L930
 **A15 · 扩样前 corpus 54.2% (26/48)** — retired/superseded:689重构 `✗✗`
 - 源：`data/current_numbers.json`
   - ✗ `54.2` × 0 @ L
@@ -249,44 +249,44 @@
   - 注：689 重构：H4 子集差额随旧正文段落移出正文（数据仍在产物）
 **A17 · ±5pp 半宽所需样本量 holdout 236 / corpus 378** — consistent/active `✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `236` × 4 @ L822,875,1052,1056
-  - ✓ `378` × 4 @ L822,875,1052,1056
+  - ✓ `236` × 4 @ L854,907,1084,1088
+  - ✓ `378` × 4 @ L854,907,1084,1088
 **A18 · ±10pp 半宽所需样本量 holdout 61 / corpus 97** — consistent/active `✓✓`
 - 源：`data/current_numbers.json`
-  - ✓ `61` × 12 @ L315,473,477,875,897,1051,1539,1590
-  - ✓ `97` × 5 @ L875,1051,1375,1752,2005
+  - ✓ `61` × 12 @ L318,495,499,907,929,1083,1702,1753
+  - ✓ `97` × 5 @ L907,1083,1538,1915,2168
 **B01 · holdout 累计 catch/miss/unknown = 34/7/1，分母 41** — consistent/active `✓✓`
 - 源：`data/holdout_reveal_5_672h.json`
-  - ✓ `34/41` × 5 @ L729,750,813,899,1080
-  - ✓ `1` × 150 @ L16,17,38,71,107,115,150,219
+  - ✓ `34/41` × 5 @ L761,782,845,931,1112
+  - ✓ `1` × 155 @ L16,17,38,71,107,115,150,169
 **B02 · holdout 口径 B（unknown→miss）34/42 = 81.0%** — consistent/active `✓✓`
 - 源：`data/holdout_reveal_5_672h.json`
-  - ✓ `34/42` × 2 @ L730,731
-  - ✓ `81.0` × 3 @ L730,731,898
+  - ✓ `34/42` × 2 @ L762,763
+  - ✓ `81.0` × 3 @ L762,763,930
 **B03 · holdout 分层 sanitizer 84.6% (33/39)** — consistent/active `✓✓`
 - 源：`data/holdout_reveal_5_672h.json`
-  - ✓ `84.6` × 1 @ L645
-  - ✓ `33/39` × 1 @ L645
+  - ✓ `84.6` × 1 @ L677
+  - ✓ `33/39` × 1 @ L677
 **B04 · corpus 分层 sanitizer 85.3% (29/34) / compiler-warn 50.0% (9/18) / cross-compile 16.7% (2/12)** — consistent/active `✓✓✓✓✓✓`
 - 源：`data/external_corpus_reveal_672h.json`
-  - ✓ `85.3` × 1 @ L643
-  - ✓ `29/34` × 1 @ L643
-  - ✓ `50.0` × 2 @ L643,1547
-  - ✓ `9/18` × 1 @ L643
-  - ✓ `16.7` × 3 @ L643,1273,1667
-  - ✓ `2/12` × 1 @ L644
+  - ✓ `85.3` × 1 @ L675
+  - ✓ `29/34` × 1 @ L675
+  - ✓ `50.0` × 2 @ L675,1710
+  - ✓ `9/18` × 1 @ L675
+  - ✓ `16.7` × 3 @ L675,1436,1830
+  - ✓ `2/12` × 1 @ L676
 **B05 · corpus 口径 B（unknown→miss）40/73 = 54.8%** — consistent/active `✓✓`
 - 源：`data/external_corpus_reveal_672h.json`
-  - ✓ `40/73` × 1 @ L730
-  - ✓ `54.8` × 1 @ L730
+  - ✓ `40/73` × 1 @ L762
+  - ✓ `54.8` × 1 @ L762
 **B06 · corpus 口径 C（全样本）40/76 = 52.6%** — consistent/active `✓✓`
 - 源：`data/external_corpus_reveal_672h.json`
-  - ✓ `40/76` × 1 @ L731
-  - ✓ `52.6` × 2 @ L731,1245
+  - ✓ `40/76` × 1 @ L763
+  - ✓ `52.6` × 2 @ L763,1408
 **B07 · corpus 分层 Excluded unknown=9 / not_error=3** — consistent/active `✓✓`
 - 源：`data/external_corpus_reveal_672h.json`
-  - ✓ `9` × 35 @ L15,297,315,484,487,495,563,613
-  - ✓ `3` × 67 @ L17,25,27,110,158,206,311,394
+  - ✓ `9` × 37 @ L15,300,318,506,509,520,590,645
+  - ✓ `3` × 73 @ L17,25,27,110,158,209,314,397
 **B08 · holdout 新子集 17/20 = 85.0%（round5）** — retired/superseded:689重构 `✗✗`
 - 源：`data/holdout_reveal_5_672h.json`
   - ✗ `17/20` × 0 @ L
@@ -294,23 +294,23 @@
   - 注：689 重构：round5 子集数字随旧正文段落移出正文（数据仍在产物）
 **B09 · 历史批次 669：87.5%（14/16）与 CI[61.7, 98.4]** — consistent/active `✓`
 - 源：`data/holdout_reveal_3_665.json`
-  - ✓ `87.5` × 4 @ L720,896,897,1075
+  - ✓ `87.5` × 4 @ L752,928,929,1107
 **B10 · 历史批次 660：80.0%（batch compare before）** — consistent/active `✓`
 - 源：`data/holdout_reveal_3_665.json`
-  - ✓ `80.0` × 2 @ L634,893
+  - ✓ `80.0` × 2 @ L666,925
 **C01 · 判决规则数 67（len(gate_engine.RULES)）** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');import gate_engine;print(len(gate_engine.RULES))"`
-  - ✓ `67` × 13 @ L19,261,729,750,764,813,899,906
+  - ✓ `67` × 13 @ L19,264,761,782,796,845,931,938
 **C02 · 权威账本事件数 452（decision_event_v2_ledger.jsonl 非空行）** — consistent/active `✓`
 - 源：`python -c "n=sum(1 for l in open(r'data/authority/decision_event_v2_ledger.jsonl',encoding='utf-8') if l.strip());print(n)"`
-  - ✓ `452` × 7 @ L19,260,267,764,815,854,1087
+  - ✓ `452` × 8 @ L19,263,270,796,847,886,1119,1298
 **C03 · 实卡数 atoms_real = 42（counts_659.py 现算）** — consistent/active `✓`
 - 源：`python tools/counts_659.py --json`
-  - ✓ `42` × 6 @ L730,731,1084,1926,1927
+  - ✓ `42` × 6 @ L762,763,1116,2089,2090
 **C04 · Verifier Coverage = 31/42 = 73.8%** — consistent/active `✗✓`
 - 源：`atoms/**/ATOM-*.md 排除 draft650/；status∈{verified,red-team-verified,machine-verified}`
   - ✗ `31/42` × 0 @ L
-  - ✓ `73.8` × 2 @ L38,1083
+  - ✓ `73.8` × 2 @ L38,1115
   - 注：本工具重算 anchored=31 real=42
 **C05.conc · VC 分域 conc 3/3** — retired/superseded:689重构 `✗`
 - 源：`atoms/conc/ATOM-*.md`
@@ -339,15 +339,15 @@
 **C07 · 规则严重度分解 block 44 / warn 16 / advice 7** — consistent/active `✗✓✓✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');import gate_engine;from collections import Counter;c=Counter(getattr(r,'severity',None) for r in gate_engine.RULES);print(c.get('block',0),c.get('warn',0),c.get('advice',0))"`
   - ✗ `44/16/7` × 0 @ L
-  - ✓ `44` × 4 @ L634,1448,1485,1549
-  - ✓ `16` × 14 @ L588,643,721,896,1237,1273,1393,1427
-  - ✓ `7` × 36 @ L16,17,45,108,305,342,429,430
+  - ✓ `44` × 4 @ L666,1611,1648,1712
+  - ✓ `16` × 15 @ L615,675,753,928,1400,1436,1556,1590
+  - ✓ `7` × 41 @ L16,17,45,108,308,345,436,437
   - 注：旧稿的 0/176/55 不可复现，已按现算值纠正
 **C08 · 边界卡 26 张；provenance 完整 26/26；scope 完整 0/26** — consistent/active `✓✗✓`
 - 源：`data/boundary_provenance_658.json`
-  - ✓ `26` × 13 @ L680,821,849,874,1289,1369,1391,1426
+  - ✓ `26` × 12 @ L712,853,881,906,1452,1532,1554,1589
   - ✗ `26/26` × 0 @ L
-  - ✓ `0/26` × 5 @ L821,849,874,1289,1812
+  - ✓ `0/26` × 5 @ L853,881,906,1452,1975
   - 注：provenance 完整 = provenance 字典字段数 ≥3（mutationset/generator/evidence）
 **N01 · 81.2% 必须在出现的每一处都被标为从未落盘/作废** — consistent/active `✓`
 - 源：`673c/676h 诚实边界：81.2% 不得作为已落盘结果引用`
@@ -355,11 +355,11 @@
   - 注：若 81.2 出现在没有 never-landed 标注的句子里 ⇒ 违反
 **D01 · A5 holdout 主端点 FD 90.0% (18/20) vs Random 35.0%** — consistent/superseded_by_676f `✓✗✓✗✓✗✗✗✗✗`
 - 源：`data/experiments/a5_673p.json`
-  - ✓ `90.0` × 2 @ L1236,1580
+  - ✓ `90.0` × 2 @ L1399,1743
   - ✗ `18/20` × 0 @ L
-  - ✓ `35.0` × 5 @ L720,1076,1106,1236,1259
+  - ✓ `35.0` × 5 @ L752,1108,1138,1399,1422
   - ✗ `7/20` × 0 @ L
-  - ✓ `10.0` × 1 @ L1106
+  - ✓ `10.0` × 1 @ L1138
   - ✗ `2/20` × 0 @ L
   - ✗ `+55.0pp` × 0 @ L
   - ✗ `33.2, 76.8` × 0 @ L
@@ -370,23 +370,23 @@
 - 源：`data/experiments/a5_673p.json`
   - ✗ `93.75` × 0 @ L
   - ✗ `93.8` × 0 @ L
-  - ✓ `55.0` × 1 @ L1449
+  - ✓ `55.0` × 1 @ L1612
   - ✗ `23.4` × 0 @ L
 **D01c · A5 设计量：holdout 派生 n=21 / 评估 n=20** — consistent/superseded_by_676f `✓✓✓✓✓✓`
 - 源：`data/experiments/a5_673p.json`
-  - ✓ `21` × 10 @ L749,874,898,899,1370,1486,1549,1631
-  - ✓ `20` × 19 @ L225,227,305,340,455,662,778,874
-  - ✓ `4` × 74 @ L25,112,286,307,318,341,423,425
-  - ✓ `2000` × 9 @ L287,432,1375,1404,1594,1749,1753,1927
-  - ✓ `8` × 52 @ L16,155,363,429,624,680,748,795
-  - ✓ `41` × 31 @ L109,340,377,452,662,677,679,729
+  - ✓ `21` × 12 @ L511,781,906,930,931,1237,1533,1649
+  - ✓ `20` × 19 @ L228,230,308,343,466,694,810,906
+  - ✓ `4` × 76 @ L25,112,289,310,321,344,426,428
+  - ✓ `2000` × 9 @ L290,439,1538,1567,1757,1912,1916,2090
+  - ✓ `8` × 53 @ L16,155,366,436,656,712,780,827
+  - ✓ `41` × 31 @ L109,343,380,463,694,709,711,761
 **D02 · A5 corpus 主端点 FD 81.25% (13/16) vs Random 37.5%** — consistent/superseded_by_676f `✓✓✓✗✓✗✗✗✗✗`
 - 源：`data/experiments/a5_673p.json`
-  - ✓ `81.2` × 4 @ L895,1268,1662,1809
-  - ✓ `13/16` × 1 @ L1662
-  - ✓ `37.5` × 1 @ L1236
+  - ✓ `81.2` × 4 @ L927,1431,1825,1972
+  - ✓ `13/16` × 1 @ L1825
+  - ✓ `37.5` × 1 @ L1399
   - ✗ `6/16` × 0 @ L
-  - ✓ `37.5` × 1 @ L1236
+  - ✓ `37.5` × 1 @ L1399
   - ✗ `6/16` × 0 @ L
   - ✗ `+43.8pp` × 0 @ L
   - ✗ `13.9, 73.6` × 0 @ L
@@ -401,457 +401,457 @@
   - ✗ `16.0` × 0 @ L
 **D02c · A5 设计量：corpus 派生 n=48 / 评估 n=16** — consistent/superseded_by_676f `✓✓✓✓✓✓`
 - 源：`data/experiments/a5_673p.json`
-  - ✓ `48` × 11 @ L874,881,892,899,1430,1494,1624,1629
-  - ✓ `16` × 14 @ L588,643,721,896,1237,1273,1393,1427
-  - ✓ `4` × 74 @ L25,112,286,307,318,341,423,425
-  - ✓ `2000` × 9 @ L287,432,1375,1404,1594,1749,1753,1927
-  - ✓ `8` × 52 @ L16,155,363,429,624,680,748,795
-  - ✓ `64` × 25 @ L363,377,482,678,680,729,731,748
+  - ✓ `48` × 11 @ L906,913,924,931,1593,1657,1787,1792
+  - ✓ `16` × 15 @ L615,675,753,928,1400,1436,1556,1590
+  - ✓ `4` × 76 @ L25,112,289,310,321,344,426,428
+  - ✓ `2000` × 9 @ L290,439,1538,1567,1757,1912,1916,2090
+  - ✓ `8` × 53 @ L16,155,366,436,656,712,780,827
+  - ✓ `64` × 25 @ L366,380,504,710,712,761,763,780
 **F01x · 676f 样本簿记：1137 总样本；派生 571；评估 566** — consistent/active `✓✓✓✓✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `1137` × 11 @ L370,1117,1238,1296,1302,1308,1387,1713
-  - ✓ `571` × 1 @ L1303
-  - ✓ `566` × 19 @ L286,340,376,385,422,662,818,875
-  - ✓ `1063` × 1 @ L1306
-  - ✓ `74` × 16 @ L729,750,813,1306,1324,1453,1462,1486
-  - ✓ `10` × 37 @ L31,32,113,369,433,475,476,553
+  - ✓ `1137` × 11 @ L373,1149,1401,1459,1465,1471,1550,1876
+  - ✓ `571` × 1 @ L1466
+  - ✓ `566` × 22 @ L289,343,379,388,425,694,850,907
+  - ✓ `1063` × 1 @ L1469
+  - ✓ `74` × 15 @ L761,782,845,1469,1487,1616,1625,1649
+  - ✓ `10` × 37 @ L31,32,113,372,440,497,498,580
 **F02x · 676f 主端点（k=4，全 8 资产池）FD/Random/Static 三臂** — consistent/active `✓✓✓✓✓✓✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `54.6` × 4 @ L421,1368,1380,1428
-  - ✓ `309/566` × 1 @ L1368
-  - ✓ `30.6` × 7 @ L421,662,818,1369,1382,1427,1428
-  - ✓ `173/566` × 1 @ L1369
-  - ✓ `24.7` × 1 @ L1370
-  - ✓ `140/566` × 1 @ L1370
-  - ✓ `60.1` × 5 @ L1371,1430,1431,1432
-  - ✓ `340/566` × 1 @ L1371
+  - ✓ `54.6` × 4 @ L424,1531,1543,1591
+  - ✓ `309/566` × 1 @ L1531
+  - ✓ `30.6` × 7 @ L424,694,850,1532,1545,1590,1591
+  - ✓ `173/566` × 1 @ L1532
+  - ✓ `24.7` × 1 @ L1533
+  - ✓ `140/566` × 1 @ L1533
+  - ✓ `60.1` × 5 @ L1534,1593,1594,1595
+  - ✓ `340/566` × 1 @ L1534
 **F03x · 676f 主端点 Δ(FD−Random) +24.0pp CI[+20.5, +27.5] p=2.3e-41 h=0.49 (b=136, c=0)** — consistent/active `✓✗✓✓✗`
 - 源：`data/a5_676f_results.json`
-  - ✓ `+24.0pp` × 10 @ L29,45,107,303,340,422,662,823
+  - ✓ `+24.0pp` × 10 @ L29,45,107,306,343,425,694,855
   - ✗ `20.5, 27.5` × 0 @ L
-  - ✓ `2.3\times10^{-41}` × 4 @ L340,662,1369,1428
-  - ✓ `0.49` × 1 @ L1369
+  - ✓ `2.3\times10^{-41}` × 4 @ L343,694,1532,1591
+  - ✓ `0.49` × 1 @ L1532
   - ✗ `(136,0)` × 0 @ L
 **F04x · 676f 主端点 Δ(FD−Static) +29.9pp CI[+25.2, +34.5] p=1.9e-31** — consistent/active `✓✗✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `+29.9pp` × 4 @ L662,818,1370,1792
+  - ✓ `+29.9pp` × 4 @ L694,850,1533,1955
   - ✗ `25.2, 34.5` × 0 @ L
-  - ✓ `1.9\times10^{-31}` × 3 @ L662,818,1370
-  - ✓ `0.62` × 1 @ L1370
+  - ✓ `1.9\times10^{-31}` × 3 @ L694,850,1533
+  - ✓ `0.62` × 1 @ L1533
 **F05x · 676f 2000 次随机分布：FD 严格优于 97.6%（Random 均值 40.2%，SD 9.3pp）** — consistent/active `✓✓✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `97.6` × 2 @ L1375,2005
-  - ✓ `40.2` × 1 @ L1376
-  - ✓ `9.3` × 1 @ L1376
-  - ✓ `2000` × 9 @ L287,432,1375,1404,1594,1749,1753,1927
+  - ✓ `97.6` × 2 @ L1538,2168
+  - ✓ `40.2` × 1 @ L1539
+  - ✓ `9.3` × 1 @ L1539
+  - ✓ `2000` × 9 @ L290,439,1538,1567,1757,1912,1916,2090
 **F06x · 676f 并列分析（剔退化资产）：Δ(FD−Random)=0.0pp p=1.0；Δ(FD−Static)=+30.6pp CI[+26.0,+35.1] p=8.1e-34** — consistent/active `✓✓✓✗✓✓✗`
 - 源：`data/a5_676f_results.json`
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
-  - ✓ `1.0` × 20 @ L341,424,430,505,764,824,1022,1078
-  - ✓ `+30.6pp` × 3 @ L662,818,1382
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
+  - ✓ `1.0` × 20 @ L344,427,437,530,796,856,1054,1110
+  - ✓ `+30.6pp` × 3 @ L694,850,1545
   - ✗ `26.0, 35.1` × 0 @ L
-  - ✓ `8.1\times10^{-34}` × 1 @ L1382
-  - ✓ `24.0` × 13 @ L29,45,107,303,340,422,662,823
+  - ✓ `8.1\times10^{-34}` × 1 @ L1545
+  - ✓ `24.0` × 13 @ L29,45,107,306,343,425,694,855
   - ✗ `136/566` × 0 @ L
 **F07x · 676f k 扫描（k=1..8）各档 Δ 与 p** — consistent/active `✗✓✗✓✓✓✗✓✗✓✓✓✗✓✗✗✓✓✓✓✗✓✓✓✗✓✗✓✓✓✓✓✗✓✓✓✗✓✗✓✓✓✗✗✓✗✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+33.0pp` × 0 @ L
-  - ✓ `+33.0` × 1 @ L1425
+  - ✓ `+33.0` × 1 @ L1588
   - ✗ `29.2, 36.9` × 0 @ L
-  - ✓ `1.0\times10^{-56}` × 1 @ L1425
-  - ✓ `33.0` × 2 @ L1425
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
+  - ✓ `1.0\times10^{-56}` × 1 @ L1588
+  - ✓ `33.0` × 2 @ L1588
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
   - ✗ `+30.7pp` × 0 @ L
-  - ✓ `+30.7` × 1 @ L1426
+  - ✓ `+30.7` × 1 @ L1589
   - ✗ `26.2, 35.3` × 0 @ L
-  - ✓ `7.8\times10^{-35}` × 1 @ L1426
-  - ✓ `45.1` × 1 @ L1426
-  - ✓ `14.3` × 1 @ L1426
+  - ✓ `7.8\times10^{-35}` × 1 @ L1589
+  - ✓ `45.1` × 1 @ L1589
+  - ✓ `14.3` × 1 @ L1589
   - ✗ `+20.5pp` × 0 @ L
-  - ✓ `+20.5` × 5 @ L340,662,1369,1427,1428
+  - ✓ `+20.5` × 5 @ L343,694,1532,1590,1591
   - ✗ `16.5, 24.5` × 0 @ L
   - ✗ `2.1\times10^{-22}` × 0 @ L
-  - ✓ `51.1` × 1 @ L1427
-  - ✓ `30.6` × 7 @ L421,662,818,1369,1382,1427,1428
-  - ✓ `+24.0pp` × 10 @ L29,45,107,303,340,422,662,823
-  - ✓ `+24.0` × 13 @ L29,45,107,303,340,422,662,823
+  - ✓ `51.1` × 1 @ L1590
+  - ✓ `30.6` × 7 @ L424,694,850,1532,1545,1590,1591
+  - ✓ `+24.0pp` × 10 @ L29,45,107,306,343,425,694,855
+  - ✓ `+24.0` × 13 @ L29,45,107,306,343,425,694,855
   - ✗ `20.5, 27.5` × 0 @ L
-  - ✓ `2.3\times10^{-41}` × 4 @ L340,662,1369,1428
-  - ✓ `54.6` × 4 @ L421,1368,1380,1428
-  - ✓ `30.6` × 7 @ L421,662,818,1369,1382,1427,1428
+  - ✓ `2.3\times10^{-41}` × 4 @ L343,694,1532,1591
+  - ✓ `54.6` × 4 @ L424,1531,1543,1591
+  - ✓ `30.6` × 7 @ L424,694,850,1532,1545,1590,1591
   - ✗ `+20.7pp` × 0 @ L
-  - ✓ `+20.7` × 1 @ L1429
+  - ✓ `+20.7` × 1 @ L1592
   - ✗ `17.3, 24.0` × 0 @ L
-  - ✓ `1.2\times10^{-35}` × 1 @ L1429
-  - ✓ `59.4` × 1 @ L1429
-  - ✓ `38.7` × 1 @ L1429
-  - ✓ `+11.3pp` × 4 @ L342,1512,1792,1802
-  - ✓ `+11.3` × 5 @ L342,1430,1512,1792,1802
+  - ✓ `1.2\times10^{-35}` × 1 @ L1592
+  - ✓ `59.4` × 1 @ L1592
+  - ✓ `38.7` × 1 @ L1592
+  - ✓ `+11.3pp` × 4 @ L345,1675,1955,1965
+  - ✓ `+11.3` × 5 @ L345,1593,1675,1955,1965
   - ✗ `8.7, 13.9` × 0 @ L
-  - ✓ `1.1\times10^{-19}` × 1 @ L1430
-  - ✓ `60.1` × 5 @ L1371,1430,1431,1432
-  - ✓ `48.8` × 3 @ L1430,1494,1624
+  - ✓ `1.1\times10^{-19}` × 1 @ L1593
+  - ✓ `60.1` × 5 @ L1534,1593,1594,1595
+  - ✓ `48.8` × 3 @ L1593,1657,1787
   - ✗ `+10.6pp` × 0 @ L
-  - ✓ `+10.6` × 1 @ L1431
+  - ✓ `+10.6` × 1 @ L1594
   - ✗ `8.1, 13.1` × 0 @ L
-  - ✓ `1.7\times10^{-18}` × 1 @ L1431
-  - ✓ `60.1` × 5 @ L1371,1430,1431,1432
-  - ✓ `49.5` × 4 @ L729,750,813,1431
+  - ✓ `1.7\times10^{-18}` × 1 @ L1594
+  - ✓ `60.1` × 5 @ L1534,1593,1594,1595
+  - ✓ `49.5` × 4 @ L761,782,845,1594
   - ✗ `+0.0pp` × 0 @ L
   - ✗ `+0.0` × 0 @ L
-  - ✓ `0.0, 0.0` × 1 @ L1432
+  - ✓ `0.0, 0.0` × 1 @ L1595
   - ✗ `1.000` × 0 @ L
-  - ✓ `60.1` × 5 @ L1371,1430,1431,1432
-  - ✓ `60.1` × 5 @ L1371,1430,1431,1432
+  - ✓ `60.1` × 5 @ L1534,1593,1594,1595
+  - ✓ `60.1` × 5 @ L1534,1593,1594,1595
 **F08x.undefined_behavior · 676f 子组 undefined_behavior：Δ +58.1pp，BH-FDR p=1e-06，Bonferroni p=1e-06** — consistent/active `✗✓✓✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+58.1pp` × 0 @ L
-  - ✓ `+58.1` × 1 @ L1444
-  - ✓ `1.0\times10^{-6}` × 3 @ L1444,1445
-  - ✓ `1.0\times10^{-6}` × 3 @ L1444,1445
-  - ✓ `43` × 2 @ L720,1444
+  - ✓ `+58.1` × 1 @ L1607
+  - ✓ `1.0\times10^{-6}` × 3 @ L1607,1608
+  - ✓ `1.0\times10^{-6}` × 3 @ L1607,1608
+  - ✓ `43` × 3 @ L752,1607,2241
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.memory_safety · 676f 子组 memory_safety：Δ +46.9pp，BH-FDR p=1e-06，Bonferroni p=3e-06** — consistent/active `✗✓✓✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+46.9pp` × 0 @ L
-  - ✓ `+46.9` × 1 @ L1445
-  - ✓ `1.0\times10^{-6}` × 3 @ L1444,1445
-  - ✓ `3.0\times10^{-6}` × 1 @ L1445
-  - ✓ `49` × 6 @ L729,750,813,1431,1445,1829
+  - ✓ `+46.9` × 1 @ L1608
+  - ✓ `1.0\times10^{-6}` × 3 @ L1607,1608
+  - ✓ `3.0\times10^{-6}` × 1 @ L1608
+  - ✓ `49` × 6 @ L761,782,845,1594,1608,1992
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.legacy · 676f 子组 legacy：Δ +36.2pp，BH-FDR p=5.6e-05，Bonferroni p=0.00017** — consistent/active `✗✓✓✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+36.2pp` × 0 @ L
-  - ✓ `+36.2` × 1 @ L1446
-  - ✓ `5.6\times10^{-5}` × 1 @ L1446
-  - ✓ `1.7\times10^{-4}` × 2 @ L1446,1447
-  - ✓ `47` × 1 @ L1446
+  - ✓ `+36.2` × 1 @ L1609
+  - ✓ `5.6\times10^{-5}` × 1 @ L1609
+  - ✓ `1.7\times10^{-4}` × 2 @ L1609,1610
+  - ✓ `47` × 1 @ L1609
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.stl · 676f 子组 stl：Δ +15.0pp，BH-FDR p=0.00017，Bonferroni p=0.00067** — consistent/active `✗✓✓✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+15.0pp` × 0 @ L
-  - ✓ `+15.0` × 1 @ L1447
-  - ✓ `1.7\times10^{-4}` × 2 @ L1446,1447
-  - ✓ `6.7\times10^{-4}` × 1 @ L1447
-  - ✓ `100` × 17 @ L748,750,1323,1356,1357,1447,1581,1582
+  - ✓ `+15.0` × 1 @ L1610
+  - ✓ `1.7\times10^{-4}` × 2 @ L1609,1610
+  - ✓ `6.7\times10^{-4}` × 1 @ L1610
+  - ✓ `100` × 17 @ L780,782,1486,1519,1520,1610,1744,1745
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.real_world · 676f 子组 real_world：Δ +29.5pp，BH-FDR p=0.00054，Bonferroni p=0.0027** — consistent/active `✗✓✓✓✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+29.5pp` × 0 @ L
-  - ✓ `+29.5` × 1 @ L1448
-  - ✓ `5.4\times10^{-4}` × 1 @ L1448
-  - ✓ `0.003` × 1 @ L1840
-  - ✓ `44` × 4 @ L634,1448,1485,1549
+  - ✓ `+29.5` × 1 @ L1611
+  - ✓ `5.4\times10^{-4}` × 1 @ L1611
+  - ✓ `0.003` × 1 @ L2003
+  - ✓ `44` × 4 @ L666,1611,1648,1712
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.optimization_sensitive · 676f 子组 optimization_sensitive：Δ +55.0pp，BH-FDR p=0.0018，Bonferroni p=0.011** — consistent/active `✗✓✗✗✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+55.0pp` × 0 @ L
-  - ✓ `+55.0` × 1 @ L1449
+  - ✓ `+55.0` × 1 @ L1612
   - ✗ `0.002` × 0 @ L
   - ✗ `0.011` × 0 @ L
-  - ✓ `20` × 19 @ L225,227,305,340,455,662,778,874
+  - ✓ `20` × 19 @ L228,230,308,343,466,694,810,906
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.conditional_trigger · 676f 子组 conditional_trigger：Δ +45.0pp，BH-FDR p=0.0061，Bonferroni p=0.043** — consistent/active `✗✓✗✗✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+45.0pp` × 0 @ L
-  - ✓ `+45.0` × 1 @ L1450
+  - ✓ `+45.0` × 1 @ L1613
   - ✗ `0.006` × 0 @ L
   - ✗ `0.043` × 0 @ L
-  - ✓ `20` × 19 @ L225,227,305,340,455,662,778,874
+  - ✓ `20` × 19 @ L228,230,308,343,466,694,810,906
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.concurrency · 676f 子组 concurrency：Δ +7.3pp，BH-FDR p=0.0095，Bonferroni p=0.086** — consistent/active `✓✓✗✗✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `+7.3pp` × 1 @ L1460
-  - ✓ `+7.3` × 2 @ L1451,1460
+  - ✓ `+7.3pp` × 1 @ L1623
+  - ✓ `+7.3` × 2 @ L1614,1623
   - ✗ `0.010` × 0 @ L
   - ✗ `0.086` × 0 @ L
-  - ✓ `109` × 2 @ L1451,1459
+  - ✓ `109` × 2 @ L1614,1622
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.language_semantics · 676f 子组 language_semantics：Δ +17.8pp，BH-FDR p=0.0095，Bonferroni p=0.086** — consistent/active `✗✓✗✗✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+17.8pp` × 0 @ L
-  - ✓ `+17.8` × 1 @ L1452
+  - ✓ `+17.8` × 1 @ L1615
   - ✗ `0.010` × 0 @ L
   - ✗ `0.086` × 0 @ L
-  - ✓ `45` × 7 @ L751,1426,1450,1452,1848,1854,2077
+  - ✓ `45` × 6 @ L783,1589,1613,1615,2011,2017
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.embedded · 676f 子组 embedded：Δ +8.1pp，BH-FDR p=0.034，Bonferroni p=0.34** — consistent/active `✗✓✗✗✓`
 - 源：`data/a5_676f_results.json`
   - ✗ `+8.1pp` × 0 @ L
-  - ✓ `+8.1` × 2 @ L1431,1453
+  - ✓ `+8.1` × 2 @ L1594,1616
   - ✗ `0.034` × 0 @ L
   - ✗ `0.344` × 0 @ L
-  - ✓ `74` × 16 @ L729,750,813,1306,1324,1453,1462,1486
+  - ✓ `74` × 15 @ L761,782,845,1469,1487,1616,1625,1649
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F08x.odr_link · 676f 子组 odr_link：Δ +6.7pp，BH-FDR p=1，Bonferroni p=1** — consistent/active `✓✓✗✗✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `+6.7pp` × 1 @ L1458
-  - ✓ `+6.7` × 2 @ L1454,1458
+  - ✓ `+6.7pp` × 1 @ L1621
+  - ✓ `+6.7` × 2 @ L1617,1621
   - ✗ `1.000` × 0 @ L
   - ✗ `1.000` × 0 @ L
-  - ✓ `15` × 16 @ L634,875,1057,1105,1259,1353,1447,1454
+  - ✓ `15` × 16 @ L666,907,1089,1137,1422,1516,1610,1617
   - 注：子组 p 必须报校正后值；未校正 p 不得单独宣称显著
 **F09x · 676f 子组检验族大小 11** — consistent/active `✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `11` × 31 @ L16,108,342,429,476,499,748,750
+  - ✓ `11` × 32 @ L16,108,345,436,498,524,780,782
 **F10x.planted_false · 676f 真实缺陷 planted=false: FD 64.7% (22/34)，Δ +29.4pp** — consistent/active `✓✗✓✗✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `64.7` × 1 @ L1464
+  - ✓ `64.7` × 1 @ L1627
   - ✗ `22/34` × 0 @ L
-  - ✓ `+29.4pp` × 1 @ L1465
+  - ✓ `+29.4pp` × 1 @ L1628
   - ✗ `14.1, 44.7` × 0 @ L
-  - ✓ `2.0\times10^{-3}` × 1 @ L1465
-  - ✓ `35.3` × 2 @ L1426,1464
+  - ✓ `2.0\times10^{-3}` × 1 @ L1628
+  - ✓ `35.3` × 2 @ L1589,1627
 **F10x.planted_true · 676f planted=true: FD 53.9% (287/532)，Δ +23.7pp** — consistent/active `✓✗✓✗✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `53.9` × 1 @ L1466
+  - ✓ `53.9` × 1 @ L1629
   - ✗ `287/532` × 0 @ L
-  - ✓ `+23.7pp` × 1 @ L1466
+  - ✓ `+23.7pp` × 1 @ L1629
   - ✗ `20.1, 27.3` × 0 @ L
-  - ✓ `2.4\times10^{-38}` × 1 @ L1466
-  - ✓ `30.3` × 1 @ L1466
+  - ✓ `2.4\times10^{-38}` × 1 @ L1629
+  - ✓ `30.3` × 1 @ L1629
 **F11x · 676f 资产诊断：8 资产各自 catch 率；wunsequenced/compile-time 100% unknown（退化）** — consistent/active `✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓`
 - 源：`data/a5_676f_results.json`
-  - ✓ `35.1` × 1 @ L1350
-  - ✓ `399` × 1 @ L1350
-  - ✓ `0.88` × 6 @ L14,985,1350,1351,1352,1355
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
-  - ✓ `0` × 222 @ L14,18,116,220,221,222,224,226
-  - ✓ `100` × 17 @ L748,750,1323,1356,1357,1447,1581,1582
-  - ✓ `12.6` × 1 @ L1354
-  - ✓ `143` × 1 @ L1354
-  - ✓ `15.0` × 2 @ L1353,1447
-  - ✓ `170` × 3 @ L1044,1353,1595
-  - ✓ `3.34` × 1 @ L1353
-  - ✓ `0.9` × 1 @ L1542
-  - ✓ `10` × 37 @ L31,32,113,369,433,475,476,553
-  - ✓ `22.4` × 1 @ L1352
-  - ✓ `255` × 2 @ L1352,1758
-  - ✓ `0.88` × 6 @ L14,985,1350,1351,1352,1355
-  - ✓ `23.6` × 1 @ L1351
-  - ✓ `268` × 1 @ L1351
-  - ✓ `0.88` × 6 @ L14,985,1350,1351,1352,1355
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
-  - ✓ `0` × 222 @ L14,18,116,220,221,222,224,226
-  - ✓ `100` × 17 @ L748,750,1323,1356,1357,1447,1581,1582
+  - ✓ `35.1` × 1 @ L1513
+  - ✓ `399` × 1 @ L1513
+  - ✓ `0.88` × 6 @ L14,1017,1513,1514,1515,1518
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
+  - ✓ `0` × 238 @ L14,18,116,169,223,224,225,227
+  - ✓ `100` × 17 @ L780,782,1486,1519,1520,1610,1744,1745
+  - ✓ `12.6` × 1 @ L1517
+  - ✓ `143` × 1 @ L1517
+  - ✓ `15.0` × 2 @ L1516,1610
+  - ✓ `170` × 3 @ L1076,1516,1758
+  - ✓ `3.34` × 1 @ L1516
+  - ✓ `0.9` × 1 @ L1705
+  - ✓ `10` × 37 @ L31,32,113,372,440,497,498,580
+  - ✓ `22.4` × 1 @ L1515
+  - ✓ `255` × 2 @ L1515,1921
+  - ✓ `0.88` × 6 @ L14,1017,1513,1514,1515,1518
+  - ✓ `23.6` × 1 @ L1514
+  - ✓ `268` × 1 @ L1514
+  - ✓ `0.88` × 6 @ L14,1017,1513,1514,1515,1518
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
+  - ✓ `0` × 238 @ L14,18,116,169,223,224,225,227
+  - ✓ `100` × 17 @ L780,782,1486,1519,1520,1610,1744,1745
   - 注：退化资产是 A5 主/并列分析差异的唯一来源
 **G01x · 676g 总盘：n=1147，catch 707，miss 440，盲区比 38.4%** — consistent/active `✓✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `1147` × 14 @ L106,155,214,362,371,442,819,1481
-  - ✓ `707` × 3 @ L1481,1538,2019
-  - ✓ `440` × 3 @ L442,1481,1538
-  - ✓ `38.4` × 11 @ L109,214,315,326,442,598,819,1482
+  - ✓ `1147` × 14 @ L106,155,217,365,374,453,851,1644
+  - ✓ `707` × 3 @ L1644,1701,2182
+  - ✓ `440` × 3 @ L453,1644,1701
+  - ✓ `38.4` × 11 @ L109,217,318,329,453,625,851,1645
 **G02x · 676g 互补性：6 资产并集 61.6%，最佳单资产 35.6%** — consistent/active `✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `61.6` × 3 @ L315,1539,1590
-  - ✓ `707` × 3 @ L1481,1538,2019
-  - ✓ `35.6` × 2 @ L1539,1541
+  - ✓ `61.6` × 3 @ L318,1702,1753
+  - ✓ `707` × 3 @ L1644,1701,2182
+  - ✓ `35.6` × 2 @ L1702,1704
 **G03x · 676g 逐资产覆盖率（asan/ubsan/tsan/compiler-warn/cross-compile/linker）** — consistent/active `✓✓✓✓✓✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `35.6` × 2 @ L1539,1541
-  - ✓ `23.5` × 1 @ L1541
-  - ✓ `22.9` × 1 @ L1541
-  - ✓ `12.5` × 3 @ L749,1274,1541
-  - ✓ `10.6` × 2 @ L1431,1542
-  - ✓ `0.9` × 1 @ L1542
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
-  - ✓ `0.0` × 24 @ L341,423,439,500,662,750,823,826
+  - ✓ `35.6` × 2 @ L1702,1704
+  - ✓ `23.5` × 1 @ L1704
+  - ✓ `22.9` × 1 @ L1704
+  - ✓ `12.5` × 3 @ L781,1437,1704
+  - ✓ `10.6` × 2 @ L1594,1705
+  - ✓ `0.9` × 1 @ L1705
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
+  - ✓ `0.0` × 24 @ L344,426,446,525,694,782,855,858
 **G04x · 676g 按 planted：true 41.0% [38.0, 44.1]；false 21.6% [13.8, 32.3]** — consistent/active `✓✓✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `41.0` × 2 @ L1485,1549
-  - ✓ `38.0, 44.1` × 2 @ L1485,1549
-  - ✓ `21.6` × 2 @ L1486,1549
-  - ✓ `13.8, 32.3` × 2 @ L1486,1549
-  - ✓ `74` × 16 @ L729,750,813,1306,1324,1453,1462,1486
+  - ✓ `41.0` × 2 @ L1648,1712
+  - ✓ `38.0, 44.1` × 2 @ L1648,1712
+  - ✓ `21.6` × 4 @ L511,1237,1649,1712
+  - ✓ `13.8, 32.3` × 2 @ L1649,1712
+  - ✓ `74` × 15 @ L761,782,845,1469,1487,1616,1625,1649
 **G05x · 676g 盲区分带：18 个类型 >50% 盲；类型总数 70** — consistent/active `✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `18` × 10 @ L37,391,453,587,643,1128,1431,1672
-  - ✓ `70` × 2 @ L37,1771
-  - ✓ `50` × 19 @ L326,444,624,634,643,819,858,1252
+  - ✓ `18` × 12 @ L37,167,168,394,464,614,675,1160
+  - ✓ `70` × 2 @ L37,1934
+  - ✓ `50` × 19 @ L329,455,656,666,675,851,890,1415
 **G06x · 676g TSan 稳定性：3/180 不稳定（1.7%）** — consistent/active `✓✓✓`
 - 源：`data/blindspot_676g_stats.json`
-  - ✓ `3` × 67 @ L17,25,27,110,158,206,311,394
-  - ✓ `180` × 3 @ L1352,1495,1553
-  - ✓ `1.7` × 7 @ L744,791,1431,1446,1447,1496,1554
+  - ✓ `3` × 73 @ L17,25,27,110,158,209,314,397
+  - ✓ `180` × 3 @ L1515,1658,1716
+  - ✓ `1.7` × 7 @ L776,823,1594,1609,1610,1659,1717
 **E01 · clang-analyzer holdout 48.8% (20/41) p=1.2e-4** — consistent/active `✓✗✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `48.8` × 3 @ L1430,1494,1624
+  - ✓ `48.8` × 3 @ L1593,1657,1787
   - ✗ `20/41` × 0 @ L
-  - ✓ `1.2\times10^{-4}` × 1 @ L1624
+  - ✓ `1.2\times10^{-4}` × 1 @ L1787
 **E02 · cppcheck holdout 41.5% (17/41) p=1.5e-5** — consistent/active `✓✗✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `41.5` × 4 @ L109,452,1625,1833
+  - ✓ `41.5` × 4 @ L109,463,1788,1996
   - ✗ `17/41` × 0 @ L
-  - ✓ `1.5\times10^{-5}` × 1 @ L1625
+  - ✓ `1.5\times10^{-5}` × 1 @ L1788
 **E03 · cppcheck corpus 54.7% (35/64) p=0.38331031799316406** — consistent/active `✓✗✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `54.7` × 1 @ L1625
+  - ✓ `54.7` × 1 @ L1788
   - ✗ `35/64` × 0 @ L
-  - ✓ `0.383` × 1 @ L1625
+  - ✓ `0.383` × 1 @ L1788
 **E03b · cppcheck corpus Δ +7.8pp CI[-6.1, 21.7]（CI 跨 0 ⇒ tie）** — consistent/active `✓✓✗`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `+7.8pp` × 1 @ L1630
-  - ✓ `-6.1, 21.7` × 1 @ L1630
+  - ✓ `+7.8pp` × 1 @ L1793
+  - ✓ `-6.1, 21.7` × 1 @ L1793
   - ✗ `(13,8)` × 0 @ L
 **E04 · E9 附录 StrictA 对照 FPR 9.1% (1/11)** — consistent/active `✓✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `9.1\% (1/11)` × 2 @ L1624,1625
-  - ✓ `1/11` × 2 @ L1624,1625
+  - ✓ `9.1\% (1/11)` × 2 @ L1787,1788
+  - ✓ `1/11` × 2 @ L1787,1788
   - 注：控制组 n=11（= holdout 对照样本数）；分母必须是 11
 **E05 · E9 附录 cppcheck 主口径 对照 FPR 9.1% (1/11)** — consistent/active `✓✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `9.1\% (1/11)` × 2 @ L1624,1625
-  - ✓ `1/11` × 2 @ L1624,1625
+  - ✓ `9.1\% (1/11)` × 2 @ L1787,1788
+  - ✓ `1/11` × 2 @ L1787,1788
   - 注：控制组 n=11（= holdout 对照样本数）；分母必须是 11
 **E06 · E9 附录：holdout Δ(FD−StrictA) +34.1pp [19.6, 48.7]，对子 (14,0)** — consistent/active `✓✓✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `+34.1pp` × 1 @ L1629
-  - ✓ `19.6, 48.7` × 1 @ L1629
-  - ✓ `(14,0)` × 1 @ L1629
+  - ✓ `+34.1pp` × 1 @ L1792
+  - ✓ `19.6, 48.7` × 1 @ L1792
+  - ✓ `(14,0)` × 1 @ L1792
 **E07 · E9 附录：corpus StrictA 34.4% (22/64)，Δ +28.1pp 对子 (23,5)，p=9.1e-4** — consistent/active `✓✗✓✓✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `34.4` × 1 @ L1624
+  - ✓ `34.4` × 1 @ L1787
   - ✗ `22/64` × 0 @ L
-  - ✓ `+28.1pp` × 1 @ L1630
-  - ✓ `(23,5)` × 1 @ L1630
-  - ✓ `9.1\times10^{-4}` × 1 @ L1624
+  - ✓ `+28.1pp` × 1 @ L1793
+  - ✓ `(23,5)` × 1 @ L1793
+  - ✓ `9.1\times10^{-4}` × 1 @ L1787
 **E08 · E9 附录：corpus 分层 FD/ct/cp（sanitizer 29/17/26；compiler-warn 9/5/8；cross-compile 2/0/1）** — consistent/active `✗✗✓✓✓✓✓`
 - 源：`data/673e_comparison_stats.json`
   - ✗ `29 / 17 / 26` × 0 @ L
   - ✗ `9 / 5 / 8` × 0 @ L
-  - ✓ `2 / 0 / 1` × 1 @ L1635
-  - ✓ `12` × 22 @ L45,425,433,623,644,748,749,822
-  - ✓ `FD 29 vs clang-analyzer 17 / cppcheck 26` × 1 @ L1634
-  - ✓ `FD 9 / cppcheck 8` × 1 @ L1634
-  - ✓ `2 / 0 / 1` × 1 @ L1635
+  - ✓ `2 / 0 / 1` × 1 @ L1798
+  - ✓ `12` × 22 @ L45,430,440,655,676,780,781,854
+  - ✓ `FD 29 vs clang-analyzer 17 / cppcheck 26` × 1 @ L1797
+  - ✓ `FD 9 / cppcheck 8` × 1 @ L1797
+  - ✓ `2 / 0 / 1` × 1 @ L1798
 **E10 · E9 附录：clang-tidy 主口径 holdout 100% recall / 100% FPR（零区分度 ⇒ 该口径被弃用）** — consistent/active `✗✓✗✓✗✗`
 - 源：`data/673e_comparison_stats.json`
   - ✗ `100.0` × 0 @ L
-  - ✓ `100` × 17 @ L748,750,1323,1356,1357,1447,1581,1582
+  - ✓ `100` × 17 @ L780,782,1486,1519,1520,1610,1744,1745
   - ✗ `100.0` × 0 @ L
-  - ✓ `100` × 17 @ L748,750,1323,1356,1357,1447,1581,1582
+  - ✓ `100` × 17 @ L780,782,1486,1519,1520,1610,1744,1745
   - ✗ `41/41` × 0 @ L
   - ✗ `11/11` × 0 @ L
 **E09 · E9 附录：8 个反向对（工具 catch / FD miss）** — consistent/active `✓`
 - 源：`data/673e_comparison_stats.json`
-  - ✓ `8` × 52 @ L16,155,363,429,624,680,748,795
+  - ✓ `8` × 53 @ L16,155,366,436,656,712,780,827
 **F01 · 外部锚点子集 A（准则原文）28.6% (10/35) CI[14.6,46.3]** — consistent/active `✓✗✗`
 - 源：`data/external_anchor_reveal_672j.json`
-  - ✓ `28.6` × 3 @ L633,752,817
+  - ✓ `28.6` × 3 @ L665,784,849
   - ✗ `10/35` × 0 @ L
   - ✗ `14.6, 46.3` × 0 @ L
 **F02 · 外部锚点子集 B（UB 片段重建）80.0% (12/15)** — consistent/active `✓✗`
 - 源：`data/external_anchor_reveal_672j.json`
-  - ✓ `80.0` × 2 @ L634,893
+  - ✓ `80.0` × 2 @ L666,925
   - ✗ `12/15` × 0 @ L
 **F03 · 外部锚点合计 44.0% (22/50)；扫描规则 87** — consistent/active `✓✗✓✓✓✓✓✗`
 - 源：`data/external_anchor_reveal_672j.json`
-  - ✓ `44.0` × 1 @ L634
+  - ✓ `44.0` × 1 @ L666
   - ✗ `22/50` × 0 @ L
-  - ✓ `22` × 12 @ L454,1102,1103,1128,1352,1427,1541,1612
-  - ✓ `50` × 19 @ L326,444,624,634,643,819,858,1252
-  - ✓ `87` × 6 @ L632,720,896,897,1075,1307
-  - ✓ `35` × 20 @ L363,461,484,571,600,633,720,1076
-  - ✓ `15` × 16 @ L634,875,1057,1105,1259,1353,1447,1454
+  - ✓ `22` × 12 @ L465,1134,1135,1160,1515,1590,1704,1775
+  - ✓ `50` × 19 @ L329,455,656,666,675,851,890,1415
+  - ✓ `87` × 6 @ L664,752,928,929,1107,1470
+  - ✓ `35` × 22 @ L366,473,506,598,627,665,752,1108
+  - ✓ `15` × 16 @ L666,907,1089,1137,1422,1516,1610,1617
   - ✗ `11/60` × 0 @ L
 **F04 · LLM 臂：GLM-4 12/12 vs FD 6/12；对照误报 4/8 = 50%** — consistent/active `✓✓✓✓✓`
 - 源：`data/experiments/llm_arm_672i.json`
-  - ✓ `12/12` × 2 @ L623,1292
-  - ✓ `6/12` × 1 @ L623
-  - ✓ `4/8` × 2 @ L624,1292
-  - ✓ `50.0` × 2 @ L643,1547
-  - ✓ `50.0` × 2 @ L643,1547
+  - ✓ `12/12` × 2 @ L655,1455
+  - ✓ `6/12` × 1 @ L655
+  - ✓ `4/8` × 2 @ L656,1455
+  - ✓ `50.0` × 2 @ L675,1710
+  - ✓ `50.0` × 2 @ L675,1710
   - 注：FD 的 6/12 由 fd_detect_rate_pct=50.0% × llm_n 重算得到
 **F05 · LLM 臂配对 b/c = (0,6)，p=0.03125** — consistent/active `✗✓`
 - 源：`data/experiments/llm_arm_672i.json`
   - ✗ `0,6` × 0 @ L
-  - ✓ `0.031` × 1 @ L625
+  - ✓ `0.031` × 1 @ L657
 **G01 · 变异（core）110/114 = 96.5%** — consistent/active `✓✓✗`
 - 源：`data/656_mutation_report.json`
-  - ✓ `110/114` × 2 @ L882,897
-  - ✓ `96.5` × 3 @ L825,897,1077
+  - ✓ `110/114` × 2 @ L914,929
+  - ✓ `96.5` × 3 @ L857,929,1109
   - ✗ `91.3, 99.0` × 0 @ L
 **G02 · 变异（all-scope）130/159 = 81.8%** — consistent/active `✓✓`
 - 源：`data/656_mutation_report_all.json`
-  - ✓ `130/159` × 1 @ L882
-  - ✓ `81.8` × 1 @ L1077
+  - ✓ `130/159` × 1 @ L914
+  - ✓ `81.8` × 1 @ L1109
 **G03 · 缺陷重注入 6/6 = 100%；total 15；软覆盖 12/15** — consistent/active `✓✗✓`
 - 源：`data/defect_injection_661.json`
-  - ✓ `6/6` × 2 @ L748,750
+  - ✓ `6/6` × 2 @ L780,782
   - ✗ `12/15` × 0 @ L
-  - ✓ `15` × 16 @ L634,875,1057,1105,1259,1353,1447,1454
+  - ✓ `15` × 16 @ L666,907,1089,1137,1422,1516,1610,1617
 **H01 · 样本量：独立两比例 0.35→0.50 ⇒ n=170** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.5,psi=None, α=0.05, power=0.8, recomputed=169.09`
-  - ✓ `170` × 3 @ L1044,1353,1595
+  - ✓ `170` × 3 @ L1076,1516,1758
   - ✗ `170 (holdout)` × 0 @ L
 **H02 · 样本量：独立两比例 0.35→0.55 ⇒ n=96** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.55,psi=None, α=0.05, power=0.8, recomputed=95.77`
-  - ✓ `96` × 5 @ L825,897,1045,1077,1594
+  - ✓ `96` × 5 @ L857,929,1077,1109,1757
   - ✗ `96 (holdout)` × 0 @ L
 **H03 · 样本量：独立两比例 0.35→0.45 ⇒ n=376** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.45,psi=None, α=0.05, power=0.8, recomputed=375.27`
-  - ✓ `376` × 1 @ L1046
+  - ✓ `376` × 1 @ L1078
   - ✗ `376 (holdout)` × 0 @ L
 **H04 · 样本量：配对 ψ=0.3 ⇒ n=103** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.5,psi=0.3, α=0.05, power=0.8, recomputed=102.26`
-  - ✓ `103` × 3 @ L1047,1318,1331
+  - ✓ `103` × 3 @ L1079,1481,1494
   - ✗ `103 (holdout)` × 0 @ L
 **H05 · 样本量：配对 ψ=0.4 ⇒ n=138** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.5,psi=0.4, α=0.05, power=0.8, recomputed=137.15`
-  - ✓ `138` × 1 @ L1048
+  - ✓ `138` × 1 @ L1080
   - ✗ `138 (holdout)` × 0 @ L
 **H06 · 样本量：配对 ψ=0.5 ⇒ n=173** — consistent/active `✓✗`
 - 源：`Cohen arcsine h + Connor 配对；p1=0.35,p2=0.5,psi=0.5, α=0.05, power=0.8, recomputed=172.04`
-  - ✓ `173` × 6 @ L875,1049,1369,1470,1499,1798
+  - ✓ `173` × 6 @ L907,1081,1532,1633,1662,1961
   - ✗ `173 (holdout)` × 0 @ L
 **K01 · tab:e3 第 656 行 “变异 core 62.5% (30/48)”：无任何现存产物可复现** — consistent/unpinned_no_artifact `✓✓`
 - 源：`data/656_mutation_report*.json 现存值为 110/114 与 130/159；全仓扫描 `30/48` 无产物命中（唯一产出是更早被覆盖的报告）`
-  - ✓ `62.5` × 8 @ L729,750,813,881,892,1080,1245,1623
-  - ✓ `30/48` × 2 @ L881,892
+  - ✓ `62.5` × 8 @ L761,782,845,913,924,1112,1408,1786
+  - ✓ `30/48` × 2 @ L913,924
   - 注：论文必须显式标注该行为 un-pinned 历史值，不得当作可复现结果（676h 已加脚注）
 **K02 · tab:e3 第 665 行 “66.7%（旧 -O1 单档口径）”：源为已退役草稿口径** — consistent/unpinned_retired_caliber `✓`
 - 源：`仅能追溯到 research/paper_v0.4.md 与 data/669_caliber_report.json::doc_sightings；对应 -O1 单档产物已被 665/668 双档口径取代`
-  - ✓ `66.7` × 3 @ L298,883,894
+  - ✓ `66.7` × 3 @ L301,915,926
   - 注：该值口径已退休，只能作为“当时口径下读到的数”引用
 **I01 · Static holdout 1/41 CI ⇒ [0.1, 12.9]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(1,41)])"`
-  - ✓ `0.1, 12.9` × 1 @ L748
+  - ✓ `0.1, 12.9` × 1 @ L780
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I02 · Random† holdout 4/41 CI ⇒ [2.7, 23.1]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(4,41)])"`
-  - ✓ `2.7, 23.1` × 1 @ L749
+  - ✓ `2.7, 23.1` × 1 @ L781
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I03 · FD holdout 34/41 CI ⇒ [67.9, 92.8]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(34,41)])"`
-  - ✓ `67.9, 92.8` × 4 @ L729,750,813,899
+  - ✓ `67.9, 92.8` × 4 @ L761,782,845,931
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I04 · Caliber B holdout 34/42 CI ⇒ [65.9, 91.4]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(34,42)])"`
-  - ✓ `65.9, 91.4` × 2 @ L730,731
+  - ✓ `65.9, 91.4` × 2 @ L762,763
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I05 · Static corpus 11/64 CI ⇒ [8.9, 28.7]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(11,64)])"`
-  - ✓ `8.9, 28.7` × 1 @ L748
+  - ✓ `8.9, 28.7` × 1 @ L780
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I06 · Random† corpus 14/64 CI ⇒ [12.5, 34.0]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(14,64)])"`
-  - ✓ `12.5, 34.0` × 1 @ L749
+  - ✓ `12.5, 34.0` × 1 @ L781
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I07 · FD corpus 40/64 CI ⇒ [49.5, 74.3]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(40,64)])"`
-  - ✓ `49.5, 74.3` × 3 @ L729,750,813
+  - ✓ `49.5, 74.3` × 3 @ L761,782,845
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I08 · Caliber B corpus 40/73 CI ⇒ [42.7, 66.5]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(40,73)])"`
-  - ✓ `42.7, 66.5` × 1 @ L730
+  - ✓ `42.7, 66.5` × 1 @ L762
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I09 · Caliber C corpus 40/76 CI ⇒ [40.8, 64.2]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(40,76)])"`
-  - ✓ `40.8, 64.2` × 1 @ L731
+  - ✓ `40.8, 64.2` × 1 @ L763
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I10 · 对照 FPR 0/11 CI ⇒ [0.0, 28.5]** — consistent/active `✓`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(0,11)])"`
-  - ✓ `0.0, 28.5` × 1 @ L750
+  - ✓ `0.0, 28.5` × 1 @ L782
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算
 **I11 · corpus 分层 sanitizer 29/34 CI ⇒ [68.9, 95.0]** — retired/superseded:689重构 `✗`
 - 源：`python -c "import sys;sys.path.insert(0,'tools');from stat_bounds import cp_interval;print(*[round(x*100,1) for x in cp_interval(29,34)])"`
@@ -871,66 +871,66 @@
   - 注：用仓库自带 tools/stat_bounds.py::cp_interval 现算；论文当前未打印该区间 ⇒ 记为 not_printed，不作不一致
 **D03 · A5 矩阵 105×8 = 840 次 detect** — consistent/superseded_by_676f `✓✗✓`
 - 源：`data/experiments/a5_673p.json`
-  - ✓ `105` × 1 @ L1235
+  - ✓ `105` × 1 @ L1398
   - ✗ `840` × 0 @ L
-  - ✓ `8` × 52 @ L16,155,363,429,624,680,748,795
+  - ✓ `8` × 53 @ L16,155,366,436,656,712,780,827
 **A19 · ±5pp 缺口：holdout 还差 195，corpus 还差 314** — consistent/active `✓✓`
 - 源：`sample_size_672k.±5pp.n − 当前可测 n`
-  - ✓ `195` × 1 @ L1056
-  - ✓ `314` × 1 @ L1056
+  - ✓ `195` × 1 @ L1088
+  - ✓ `314` × 1 @ L1088
 **D11 · clone-aware 重切分 Δ +23.0~+26.7pp（677b，逐 split 为 +23.02/+25.70）** — consistent/active `✓✓`
 - 源：`current_numbers.a5_experiments.clone_aware_677b ← data/677b_a5_results_family_random.json / _family_stratified.json`
-  - ✓ `23.02` × 2 @ L1391,1745
-  - ✓ `25.70` × 2 @ L1391,1746
+  - ✓ `23.02` × 2 @ L1554,1908
+  - ✓ `25.70` × 2 @ L1554,1909
 **D12 · cluster bootstrap 有效 n≈133–140（677b，design effect ≈4.1–4.3）** — consistent/active `✗✓`
 - 源：`current_numbers.a5_experiments.clone_aware_677b ← data/677b_cluster_bootstrap.json`
   - ✗ `133` × 0 @ L
-  - ✓ `140` × 10 @ L319,342,433,580,818,823,1370,1394
+  - ✓ `140` × 12 @ L322,345,440,607,850,855,1354,1533
 **D13 · 非退化池选择效应 +11.31pp（677c，k=1，p=6.02e-08）** — consistent/active `✓`
 - 源：`current_numbers.a5_experiments.nondegenerate_pool_677c ← data/677c_a5_nondegenerate_results.json`
-  - ✓ `11.31` × 5 @ L16,429,823,1384,1402
+  - ✓ `11.31` × 5 @ L16,436,855,1547,1565
 **D14 · 退化资产对均值的贡献 ≈+12.81pp（677c）** — consistent/active `✓`
 - 源：`current_numbers.a5_experiments.nondegenerate_pool_677c ← data/677c_a5_nondegenerate_results.json`
-  - ✓ `12.81` × 1 @ L1404
+  - ✓ `12.81` × 1 @ L1567
 **Z01 · 689 TOST：±10pp 未过，90% CI [-10.61, 5.52]pp，p_TOST=0.064** — consistent/active `✓✓✓`
 - 源：`current_numbers.reframed_689.equivalence_tost ← data/689_equivalence_test.json`
-  - ✓ `-10.61` × 5 @ L32,113,475,1836,2022
-  - ✓ `5.52` × 5 @ L32,113,475,1836,2022
-  - ✓ `0.064` × 3 @ L475,2022,2023
+  - ✓ `-10.61` × 5 @ L32,113,497,1999,2185
+  - ✓ `5.52` × 5 @ L32,113,497,1999,2185
+  - ✓ `0.064` × 3 @ L497,2185,2186
 **E02 · 689 TOST 最小通过 margin 10.61pp（deff 校正 11.67pp）** — consistent/active `✓✓`
 - 源：`data/689_equivalence_test.json`
-  - ✓ `10.61` × 9 @ L32,113,475,476,1836,1837,2022,2023
-  - ✓ `11.67` × 2 @ L476,2025
+  - ✓ `10.61` × 9 @ L32,113,497,498,1999,2000,2185,2186
+  - ✓ `11.67` × 2 @ L498,2188
 **E03 · 689 标准化：正向 -17.92pp（R_syn_std=77.01%），反向 +1.70pp，类型级 -13.52pp** — consistent/active `✓✓✓✓`
 - 源：`current_numbers.reframed_689.standardized_analysis ← data/689_standardized_analysis.json`
-  - ✓ `-17.92` × 4 @ L33,479,1837,2035
-  - ✓ `77.01` × 2 @ L479,2034
-  - ✓ `1.70` × 2 @ L480,2037
-  - ✓ `-13.52` × 2 @ L487,2038
+  - ✓ `-17.92` × 5 @ L33,501,513,2000,2198
+  - ✓ `77.01` × 2 @ L501,2197
+  - ✓ `1.70` × 2 @ L502,2200
+  - ✓ `-13.52` × 2 @ L509,2201
 **E04 · 689 环境：真实 59.09%→23.64%（-35.45pp，Δunknown=0），clang↔g++ 93.5%** — consistent/active `✓✓✓✓`
 - 源：`current_numbers.reframed_689.environment_metrics ← data/689_environment_metrics.json`
-  - ✓ `59.09` × 12 @ L111,311,453,459,473,477,828,1828
-  - ✓ `23.64` × 4 @ L111,461,2049
-  - ✓ `35.45` × 2 @ L461,571
-  - ✓ `93.5` × 4 @ L464,589,1896,2053
+  - ✓ `59.09` × 12 @ L111,314,464,471,495,499,860,1991
+  - ✓ `23.64` × 4 @ L111,473,2212
+  - ✓ `35.45` × 4 @ L473,598,1366,1375
+  - ✓ `93.5` × 4 @ L476,616,2059,2216
 **Z11 · 691 机制级：Pool A k=1 +11.31pp (p=6.0e-8)；k=2/k=3 +7.42pp；k=4 0.00pp** — consistent/active `✓✓✓✓`
 - 源：`current_numbers.reframed_691.mechanism_level_poolA_vs_single_random ← data/677c_a5_nondegenerate_results.json`
-  - ✓ `11.31` × 5 @ L16,429,823,1384,1402
-  - ✓ `6.0` × 4 @ L16,429,823,1402
-  - ✓ `7.42` × 6 @ L16,17,429,1384,1402
-  - ✓ `0.00` × 7 @ L430,1403,1578,1580,1581,1582,1592
+  - ✓ `11.31` × 5 @ L16,436,855,1547,1565
+  - ✓ `6.0` × 4 @ L16,436,855,1565
+  - ✓ `7.42` × 6 @ L16,17,436,1547,1565
+  - ✓ `0.00` × 7 @ L437,1566,1741,1743,1744,1745,1755
 **Z12 · 691 四个 κ（AI 自一致）：0.727 / 0.789 / 0.437 / 0.157** — consistent/active `✓✓✓✓`
 - 源：`current_numbers.reframed_691.label_kappa_ai_self_consistency ← data/682_kappa.json`
-  - ✓ `0.727` × 1 @ L547
-  - ✓ `0.789` × 1 @ L547
-  - ✓ `0.437` × 2 @ L18,548
-  - ✓ `0.157` × 3 @ L18,448,548
+  - ✓ `0.727` × 1 @ L574
+  - ✓ `0.789` × 1 @ L574
+  - ✓ `0.437` × 2 @ L18,575
+  - ✓ `0.157` × 3 @ L18,459,575
 **Z13 · 691 治理计数：452 ledger 事件 / 67 规则 / rules_sha256 v1.0.0** — consistent/active `✓✓`
 - 源：`current_numbers.reframed_691.governance`
-  - ✓ `452` × 7 @ L19,260,267,764,815,854,1087
-  - ✓ `67` × 13 @ L19,261,729,750,764,813,899,906
+  - ✓ `452` × 8 @ L19,263,270,796,847,886,1119,1298
+  - ✓ `67` × 13 @ L19,264,761,782,796,845,931,938
 **Z14 · 691 池计数：Pool B ≡ Pool C（同一六资产集）；9 个不同 (池,k) 块 / 14 块实例** — consistent/active `✓✓✓`
 - 源：`current_numbers.reframed_691.pools ← data/677c_asset_pools.json + 677c_evolution_operator_results.json`
-  - ✓ `2` × 72 @ L16,18,108,154,215,223,225,227
-  - ✓ `9` × 35 @ L15,297,315,484,487,495,563,613
-  - ✓ `14` × 15 @ L495,499,749,826,896,987,1426,1629
+  - ✓ `2` × 75 @ L16,18,108,154,218,226,228,230
+  - ✓ `9` × 37 @ L15,300,318,506,509,520,590,645
+  - ✓ `14` × 15 @ L520,524,781,858,928,1019,1589,1792

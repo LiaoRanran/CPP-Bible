@@ -163,7 +163,10 @@ traced to recomputable artifacts.
 Auditing evaluators is an active 2026 frontier---DeepFact's audit-then-score
 loop~\cite{huang2026deepfact}, metric co-evolution~\cite{zhang2026whogrades}, certified
 self-evolution~\cite{sengupta2026anytimevalid}, and SV-COMP's witness
-validation~\cite{beyer2026svcomp}. \textbf{We do not claim to be the first to audit an
+validation~\cite{beyer2026svcomp}. Validity audits now audit the audit
+itself~\cite{li2026auditingaudit}; tool-calling audits report 18.5\% evaluator--human
+misalignment and 18.9pp run-to-run spans~\cite{bhat2026benchmarkingbenchmarks}; agent-benchmark
+protocol audits find mislead gaps of $0.45$--$1.00$~\cite{shao2026protocolvalidity}. \textbf{We do not claim to be the first to audit an
 evaluator}; our claim concerns the audited object (a software-verification
 \emph{evidence-acquisition apparatus}, including caliber, assets, environment, labels and
 denominators), an executable protocol, and negative findings
@@ -421,8 +424,12 @@ states the audited claim, the control, and the outcome grade.
 A5's budget-matched control reports FD $54.6\%$ vs.\ random $30.6\%$
 ($\Delta{=}+24.0$pp full pool) on $n{=}566$. The adversarial control (remove three degenerate
 assets; same algorithm, same budget) collapses the $k{=}4$ contrast to $0.0$pp
-($p{=}1.0$): random's draw is then the same four assets. The composition contribution is
-$+24.03$pp at the single $k{=}4$ caliber and $\approx+12.8$pp at the mean caliber. What
+($p{=}1.0$): random's draw is then the same four assets. \emph{With degenerate assets controlled
+(Pool~A, $d{=}0$) the $k{=}4$ gain vanishes}; we report the headline gain as
+\textbf{composition-dominated within the pools measured} ($+24.03$pp at $k{=}4$,
+$\approx+12.8$pp at the mean caliber), and do \emph{not} claim a no-confounding separation of
+composition from mechanism---that needs an equal-margin substitution design we did not run
+(Future work). What
 \emph{survives} is a smaller but significant mechanism-level effect that the collapsed headline
 had hidden: on the degenerate-free pool (Pool A, five informative assets, same split, same seed)
 the executable selection beats a budget-matched random draw at
@@ -437,6 +444,10 @@ improvement was substantially an artifact of measurement-pool composition, and t
 real but an order of magnitude smaller than advertised. \emph{Cross-check:} the same
 collapse reproduces on the source-derived corpus: at $k{=}1..7$ the executable operator's
 literal selections coincide with greedy in every tier ($\Delta{=}0.0$pp).
+\emph{Anchors and mechanism.} Apparatus-driven headline gains are not
+isolated~\cite{bhat2026benchmarkingbenchmarks,shao2026protocolvalidity}; unlike those artifacts
+(adversarial exploitation or a scoring defect), ours is non-adversarial apparatus degradation
+plus a caliber choice---not reward hacking.
 
 \paragraph{F2. The instrument has a structured capability boundary (\textbf{survives}).}
 Blind-spot ratio \textbf{38.4\%} ($440/1147$)---an \emph{instrument-boundary} statistic for
@@ -455,6 +466,7 @@ harder on real defects than on synthetic ones (type punning $-52.2$pp, logic $-2
 data race $-20.7$pp; type-level, all reported in Appendix~\ref{app:reframe689}). This is a
 major finding, not a limitation.
 
+
 \paragraph{F3. Environment silently changes conclusions (\textbf{survives}).}
 Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the
 reduced native profile (compiler-warn/cross-compile/linker only) it drops to
@@ -466,7 +478,17 @@ $\le2$pp, $\Delta$unknown $\le1.5$pp. Three-component accounting
 (catch rate / unknown rate / conditional recall) is the minimum caliber that exposes the
 difference; the native profile's sanitizer absence is an \emph{architectural inference}
 (clang-cl/MSVC not present), declared as such. \emph{Reading:} environment is part of the
-measurement, not a reproducibility footnote.
+measurement, not a reproducibility footnote. \textbf{Scope of $\Delta_{\text{unknown}}{=}0$.} We report the absence of an
+unknown increase as a \emph{candidate signature on a single environment pair}
+($n_{\text{env}}{=}1$; E1 \texttt{wsl-gcc-13.3} vs.\ E2 \texttt{windows-native-mingw}), \emph{not}
+a sufficient \emph{fingerprint} of silent degradation: one drift instance cannot define a
+criterion and generalisation is untested.
+\emph{Support.} Environment/tooling is an independent reproducibility smell
+class~\cite{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey}; sanitizers
+themselves miss bugs~\cite{cui2024falsenegatives,li2024ubfuzz}; drift tooling targets
+\emph{stochastic} variance reducible by
+cross-validation~\cite{cerqueira2026conceptdrift,eve2026validationcrisis}, whereas ours is
+systematic.
 
 \paragraph{F4. ``Similar rates'' hide a composition offset; equivalence is not
 established (\textbf{weakened}).}
@@ -486,6 +508,9 @@ headline rate and still measure different things; the adjusted gap, not the raw 
 quantity a reader should carry away. Type-level standardization is directionally identical
 ($-13.52$pp on the 9 shared types). \emph{Naming correction:} source-derived reconstruction
 $\neq$ naturalistic artifact; a three-value provenance schema is adopted.
+\emph{Anchor.} 21.6\% of Defects4J defects are unusable for evaluation and 7.1\% of
+suites under-constrained~\cite{krafczyk2026defects4j}---the same ``the benchmark is not the
+ground truth assumed'' shape as the $-17.92$pp offset.
 
 \paragraph{F5. The evolution hypothesis fails (\textbf{the audited claim collapses; the
 negative result is the finding}).}
@@ -508,6 +533,7 @@ formalized}. We also disclose that FD currently lacks a mechanism that exceeds a
 frequency baseline. What the evolution loop retains is governance value: it forces failures
 to become explicit, registered, and re-measured---falsifiability, not recall.
 
+
 % =====================================================================
 \section{Synthesis: Five Rules for Auditable Evaluators}
 \label{sec:synthesis}
@@ -528,6 +554,7 @@ declared profile cannot be satisfied (Finding~3).
 audits.} Remove degenerate components, re-run at matched budget, and re-split by template
 family before calling a delta an improvement (Finding~1, F5).
 \end{enumerate}
+
 The AGEA abstraction (assets--governance--evolution--accountability) and the submodular
 selection formalization are kept as \emph{tools} supporting R5, not as contributions
 (Appendices~\ref{app:formal}, \ref{app:submodular687}).
@@ -607,7 +634,12 @@ map of what survives.
 Execute the human annotation (the single most important pending item); reproduce a small set
 of original-project builds to test reconstruction fidelity; add an LLM-as-verifier arm and
 semantic/logic-layer verifiers; extend the audit protocol across languages/domains; and
-invite third-party replication challenges under the published caliber.
+invite third-party replication challenges under the published caliber. Three items follow
+from the gaps exposed: (i)~\emph{an equal-margin substitution design} to separate composition
+from mechanism in F1; (ii)~\emph{a drift algebra} with identifiability conditions;
+(iii)~\emph{an axiomatisation of the four-state verdict algebra}. We also intend to
+\emph{pre-register} the A5 downgrade
+clause~\cite{vaccaro2026preregistration}.
 
 \clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
@@ -1142,7 +1174,7 @@ abstract, intro positioning, contributions and related-work table---\emph{no} un
 were introduced, no expanded-sample result was ``corrected'', and no ``first-ever'' claims were
 made. Any unregistered AI contribution is treated as an undeclared author.
 
-\section{Related Work (eight directions; three moved here from the main text)}
+\section{Related Work (nine subsections incl.\ two new in v1.1; three moved here from the main text)}
 \label{app:related}
 \paragraph{(6) Formal verification (partly rejected; moved from main text).}
 seL4~\cite{klein2009sel4} and CompCert~\cite{leroy2009compcert} show that proof power can be
@@ -1168,13 +1200,25 @@ protocol; claim--evidence interfaces~\cite{martinboyle2026papertrail} and the fi
 reproducibility failures live in \emph{interactions}, not missing
 artifacts~\cite{li2026reprobeyond}, motivate our claim table and evidence cards; statistics use
 Clopper--Pearson/Wilson/McNemar/Holm/Cohen \cite{clopper1934use,mcnemar1947note,cohen1960coefficient}.
+A second cluster, added in this version, sharpens the \emph{measurement-science} framing:
+construct validity as a first-class question for
+benchmarks~\cite{bean2025constructvalidity}; standardized item-level data release of model
+\emph{responses}~\cite{jiang2026itemlevel}---the result-side counterpart to our device-side
+disclosure; an independence-free, paradigm-agnostic formalisation of Goodhart's
+law~\cite{majka2025goodhart}; and the demonstration that reliability is not validity in
+LLM-as-a-judge evaluation~\cite{norman2026reliabilityvalidity}. On the ledger side we add
+quantified Merkle-tree collision-probability work to bound our tamper-evidence claim
+honestly~\cite{kuznetsov2024merkletrees} and align evidence packaging with the W3C
+PROV/RO-Crate community standard~\cite{leo2024rocrate}; the environment-as-coordinate argument
+is supported by ``Environment \& Tooling'' as an independent reproducibility smell
+class~\cite{siddiq2025reproducibilitycrisis}.
 
 \paragraph{Nearest neighbours added in v1.1 (2025--2026; metadata checked against arXiv).}
-Table~\ref{tab:neighbours} places six recent systems against ours on the axes that actually divide
+Table~\ref{tab:neighbours} places seven recent systems against ours on the axes that actually divide
 them: \emph{what evolves}, \emph{where the verdict comes from}, and whether a third party can
 recompute it.
 \begin{table}[h]
-\caption{Six 2025--2026 neighbours. None of them is our object of study: they evolve items, judges,
+\caption{Seven 2025--2026 neighbours. None of them is our object of study: they evolve items, judges,
 metric or agents; we evolve a verifier's evidence-acquisition capability over a \emph{knowledge
 corpus}.}
 \label{tab:neighbours}
@@ -1190,6 +1234,7 @@ LLM-as-a-Verifier~\cite{kwok2026llmverifier} & the verifier's \emph{score distri
 PaperTrail~\cite{martinboyle2026papertrail} & the \emph{interface} (claims vs.\ evidence) & human judgement & Same claim/evidence decomposition as our evidence cards, but a UI study with no verdict algebra and no audit trail \\
 Reproducibility Beyond Artifacts~\cite{li2026reprobeyond} & socio-technical process & interview evidence & Explains \emph{why} our guard/pinning gap matters: failures live in interactions, not missing artifacts \\
 Atlas~\cite{spoczynski2025atlas} & ML lifecycle metadata & attestation + transparent logs & Our hash-chained current-state ledger is a smaller sibling; they target supply chain, we target verdicts \\
+Defects4J audit~\cite{krafczyk2026defects4j} & the benchmark \emph{dataset} itself & stricter reproducibility requirements + manual review & Shows the benchmark our field treats as ground truth was never independently audited: 21.6\% of defects unusable, 7.1\% of test suites under-constrained \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1201,7 +1246,7 @@ improved}: the evolved object is model weights, the strategy is distillation, an
 down to trusting the model's behavior. Complementary to, not competing with, our goal: MiniCheck
 evolves ``judging faster''; we evolve ``judging in a process a third party can audit.''
 \begin{table}[h]
-\caption{Seven related-work directions.}
+\caption{Eight related-work directions.}
 \centering
 \small
 \begin{tabular}{@{}lp{10.5cm}@{}}
@@ -1215,9 +1260,127 @@ Direction & Representative work \\
 5 formal verification $+$ LLM & seL4~\cite{klein2009sel4}; CompCert~\cite{leroy2009compcert}; LLVM+Lean~\cite{liao2026llvmlean}; Can LLMs Enable Verification~\cite{shefer2025canllms}; Formal Disco~\cite{poesia2026formaldisco} \\
 6 LLM code error taxonomy & All Smoke No Alarm~\cite{banik2026allsmoke}; Uncovering Weaknesses~\cite{lian2024uncovering}; Pair Programming~\cite{lyu2025pairprogramming} \\
 7 provenance \& auditability & Merkle~\cite{merkle1988digital}; Constant-Size Crypto Evidence~\cite{kao2025constantsize}; Who Audits the Auditor~\cite{wang2026whoaudits}; NeurIPS Dataset Review~\cite{wu2024neurips} \\
+8 evaluator auditing / meta-evaluation & Auditing the Audit~\cite{li2026auditingaudit}; Benchmarking the Benchmarks~\cite{bhat2026benchmarkingbenchmarks}; Sample-Level Auditing~\cite{siedler2026samplelevel}; Who Audits the Auditors~\cite{costanzachock2022whoaudits}; Who Evaluates the Evaluators~\cite{lv2026whoevaluates} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{(9) LLM-vs-traditional failure topology (supports Finding~7).}
+Recent work compares LLM-based and traditional analysis for vulnerability detection and observes
+that they are complementary rather than substitutable~\cite{ramires2026friendsorfoes}, that
+project-scale LLM detection has its own scale/context
+limits~\cite{li2026vulndetection}, and that verification dynamics vary with
+model~\cite{zhou2025variationinverification}. \textbf{Closest prior work observes complementarity
+but does not formalise orthogonality, nor attribute failures to budget-gating versus capability
+bounds}; that attribution---whether a miss reflects an exhausted measurement budget or a genuine
+capability limit---is the object of Finding~7, and is what distinguishes our treatment.
+
+\paragraph{Device-side vs.\ result-side auditing (a second axis, orthogonal to Table~\ref{tab:neighbours}).}
+Table~\ref{tab:deviceside} splits prior work by \emph{where the audited object sits}: result-side
+systems audit labels, scores or rankings; Queyi audits the evidence-acquisition instrument
+itself. The table is offered as positioning, not as a scoreboard.
+\begin{table}[h]
+\caption{Device-side vs.\ result-side auditing.}
+\label{tab:deviceside}
+\centering
+\small
+\begin{tabular}{@{}p{2.5cm}p{2.6cm}p{3.0cm}p{4.6cm}@{}}
+\toprule
+Dimension & DeepFact~\cite{huang2026deepfact} / HELM / SV-COMP~\cite{beyer2026svcomp} & LLM-judge meta-eval (2026)~\cite{li2026auditingaudit,bhat2026benchmarkingbenchmarks} & \textbf{Queyi} \\
+\midrule
+Audited object & benchmark labels / model behaviour / verifier ranking & judge pipeline & \textbf{evidence-acquisition instrument} \\
+Object level & result & rater & \textbf{instrument + environment + caliber} \\
+Verdict states & audit-updated label / score / correct--incorrect--unconfirmed & 7 failure facets & \textbf{four states (\texttt{unresolved} first-class)} \\
+Denominator caliber & --- & fixed item set & \textbf{\texttt{unknown} strictly separated from \texttt{miss}, declared per use} \\
+Environment & not audited / containerized (control variable) & not audited & \textbf{the audited variable} \\
+Failure mechanism & label error / coverage gap / verifier weakness & judge bias & \textbf{non-adversarial apparatus degradation + silent environment loss} \\
+Third-party recompute & versioned rationale / released code / independent witness validation & not applicable & \textbf{one-line recompute (no external executor yet)} \\
+Tamper evidence & --- & --- & \textbf{452-event hash chain + Merkle + OTS external anchor} \\
+Status of negative results & secondary & secondary & \textbf{first-class (F1 collapse / F5 failure / orthogonality)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\emph{Honest boundary for this table:} SV-COMP already has independent witness validation, a
+normalized environment, reproduction packages and a third-party jury; our difference is
+\emph{the audited object}, not the first use of auditability.
+
+\paragraph{Per-section anchors (main-text citations kept minimal for the 9-page budget).}
+For completeness we record here the citation anchors whose main-text sentences were folded into
+this appendix to respect the page limit. \emph{Four-state discipline}: uncertainty-aware
+rejection~\cite{lv2026whoevaluates} and over-consistency as over-simplification rather than
+reliability~\cite{han2025judgesverdict}. \emph{Finding~2 heterogeneity}: construct validity of
+aggregate rates~\cite{bean2025constructvalidity} and sample-level masking~\cite{siedler2026samplelevel}.
+\emph{Finding~5}: dynamicisation introduces new incomparabilities~\cite{zhang2025swebenchlive}.
+\emph{Synthesis R1--R5}: auditor accreditation~\cite{costanzachock2022whoaudits} and validity
+theory~\cite{freiesleben2025benchmarkingepistemology}. \emph{Threats}: $\kappa$
+protocol-sensitivity~\cite{norman2026reliabilityvalidity}; environment validity as a recognised
+class~\cite{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey,cerqueira2026conceptdrift};
+design-effect/ESS/ICC vocabulary~\cite{bean2025constructvalidity}; computable instrument
+reliability~\cite{ishida2025capbencher}. \emph{Item-level disclosure}: device-side
+(instrument/assets/environment) versus result-side release of model
+\emph{responses}~\cite{jiang2026itemlevel}.
+
+
+% =====================================================================
+\section{Measurement Drift Algebra: Three-State Transition Model}
+\label{app:driftalgebra}
+% =====================================================================
+This appendix gives the quantitative form behind Finding~3: a \emph{three-state transition
+matrix} over $\{\texttt{catch},\texttt{miss},\texttt{unknown}\}$, computed from the batch-692
+paired-environment experiment on the same 566 samples
+(\texttt{data/696\_transition\_matrix.json}; recompute with
+\texttt{python tools/compute\_696\_transition\_matrix.py}---no detector is called).
+
+\paragraph{Two calibers, one set of measurements.}
+The experiment ran the same samples under E1 (\texttt{wsl-gcc-13.3}; six assets) and E2
+(\texttt{windows-native-mingw}; three assets: compiler-warn, cross-compile, linker). The
+\emph{raw measurements are identical} under both accounting rules; only the caliber differs:
+under the \emph{un-aware} rule a sample whose Linux sanitizers never ran is recorded as
+\texttt{miss}; under the four-state rule the same sample is \texttt{unknown}.
+Table~\ref{tab:transition} shows the two matrices.
+
+\begin{table}[h]
+\caption{Three-state transition matrices, E1$\to$E2, $n{=}566$ (A5 holdout split). Rows are the
+E1 state, columns the E2 state. Left: un-aware accounting. Right: four-state accounting. The
+two matrices are the \emph{same measurement} under two calibers.}
+\label{tab:transition}
+\centering
+\small
+\begin{tabular}{@{}lccc|ccc@{}}
+\toprule
+ & \multicolumn{3}{c|}{\textbf{un-aware}} & \multicolumn{3}{c}{\textbf{four-state (aware)}} \\
+ & catch & miss & unknown & catch & miss & unknown \\
+\midrule
+catch   & 140 & 200 & 0 & 140 & 0 & 200 \\
+miss    & 0   & 226 & 0 & 0   & 0 & 226 \\
+unknown & 0   & 0   & 0 & 0   & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What the matrices say.}
+Under un-aware accounting the matrix looks like a \emph{capability loss}: 200 samples move
+catch$\to$miss, and the $\to$unknown column is empty, so nothing signals that a measurement is
+missing (McNemar $b{=}200$, $c{=}0$, exact $p{=}1.2\times10^{-60}$). Under four-state accounting
+the same 200 samples move catch$\to$unknown, and the 226 misses move miss$\to$unknown: the
+conclusion changes from ``capability dropped 35.45pp'' to ``426 of 566 samples were not measured
+under this profile''---the denominator itself is no longer comparable. The transition matrix
+makes the two readings \emph{decidable}: a drift whose $\to$unknown column is empty while the
+catch$\to$miss cell is large is a silent one.
+
+\paragraph{Structural (passive) Goodhart.}
+Existing formalisations of Goodhart's law~\cite{majka2025goodhart} presuppose
+\emph{optimisation pressure}: a proxy is gamed because someone optimises it. The transition
+matrix exhibits a case that needs none. Nothing is optimised between E1 and E2; the measurement
+is unchanged; only the accounting caliber changes---and the reported conclusion moves by 35.45pp
+with no guard turning red. We call this \emph{structural (passive) Goodhart}: measurement drift
+produced by a caliber change alone. It is a concept and a measurement recipe, \emph{not} a
+theorem; we claim no general law, and the evidence is a single environment pair
+($n_{\text{env}}{=}1$, stated in F3).
+
+\paragraph{Conservation checks.} Every matrix satisfies (i) row sums equal the E1 state counts,
+(ii) column sums equal the E2 state counts, and (iii) the total equals $n$. The generating
+script asserts all three, so the matrix is reproducible from the frozen counts alone.
 
 % =====================================================================
 \section{Humanization Material (full versions; 673c)}
@@ -2074,8 +2237,11 @@ validity)}: identical samples and labels, but environments cannot be unified (st
 dynamic WSL assets); the pre-registered clang-tidy caliber failed at chance level (100\% recall and
 100\% FPR); StrictA was chosen after results; and 8 reverse pairs are kept as disclosed weaknesses.
 A containerized pre-registered re-run is registered as future work. \textbf{SV-COMP positioning:}
-SV-COMP 2026 registers 74 verifiers (61 C-related; 45 active) and 26 validators, and validates
-witnesses with independent tools; it answers \emph{which verifier performs well on given tasks},
+SV-COMP 2026 registers, by track, \textbf{61 C verifiers and 16 C witness validators}, plus
+11 Java / 3 SV-LIB verifiers and 3 Java / 1 SV-LIB validators, with 43 verifiers and 13
+validators from active teams~\cite{beyer2026svcomp} (per-language counts; ``active'' counts
+teams, not tools). It validates witnesses with independent tools; it answers
+\emph{which verifier performs well on given tasks},
 whereas Queyi asks \emph{whether evaluation results survive an audit of the evaluator}.
 Protocols: \texttt{data/689\_fair\_comparison\_protocol.md},
 \texttt{data/689\_svcomp\_positioning.md}.
