@@ -1,0 +1,56 @@
+# supplementary/environment.yml — Queyi / CPP-Bible 复现依赖清单
+#
+# 格式：conda environment（也可直接用 pip + requirements.txt）。
+# 重要：论文头版数字的「重算」（reveal / stats / counts / 卡计数 / CI）
+#       全部只用 Python 标准库，因此数据链复现的最小 Python 依赖其实是**空的**，
+#       本文件仅列门禁 / 文档站 / 真实检测链辅助所需的第三方包。
+# 详见仓库根 requirements.txt（693-B3 全量钉版本 freeze）。
+
+name: queyi-repro
+
+channels:
+  - conda-forge
+
+dependencies:
+  # ── 语言运行时（产物生成环境为 3.13.13；正式复现请用 3.13.x）──
+  - python=3.13
+  - pip
+
+  # ── 数据链最小依赖（数字重算本身只需标准库；这是门禁/解析需要）──
+  - pip:
+      - pyyaml>=6.0          # verify_paper_numbers / paper_quality_gate 顶层依赖
+      # ── 以下为门禁 / 类型检查 / 文档站（不影响任何论文数字）──
+      - ruff==0.16.5         # 静态检查（仓库 venv 内版本）
+      - mypy==2.3.1          # 类型检查
+      - pytest==9.1.1        # 测试
+      - hypothesis==6.168.0  # 属性测试
+      # ── 文档站（可选，仅 docs/ 站生成）──
+      # mkdocs / mkdocs-material / pymdown-extensions ... （见 requirements.txt）
+
+# ──────────────────────────────────────────────────────────────
+# 系统级依赖（非 pip/conda 管理，需宿主机或容器提供）
+# ──────────────────────────────────────────────────────────────
+# 【数据链 + 编译】（docker/paper 镜像：ubuntu:24.04）
+#   g++-13 (>=13.3)        # 与 WSL Ubuntu 24.04 主版本对齐
+#   python3.13 + venv
+#   tectonic>=0.17         # 论文 PDF 编译（或本地 tectonic）
+#   setarch / util-linux   # 环境画像复现用
+#   git, binutils
+#
+# 【真实检测链（端到端重跑，仅宿主机 Windows+WSL）】
+#   WSL Ubuntu 24.04: g++ 13.3, clang 18
+#   Windows native:       MinGW g++ 13.1, clang 22.1.8（LLVM）
+#   cmake + make          # 真实靶场构建（本机缺 cmake/make 时 693 红线 8 检测臂未执行）
+#   cppcheck, clang-tidy, valgrind  # 外部工具公平对比（692）
+#
+# 【书稿汇编证据】（与论文数字无关，独立镜像）
+#   Windows MinGW GCC 15.3.0  # Examples/*.asm 生成（Intel 语法 / Win64 ABI）
+#   gcc:15.3.0@sha256:8f59ba4bd41dced92b4ab1c0290ae4a6719d286c936f4d25ff75cb689c7c63fe
+#   （根目录 Dockerfile 钉 digest；见该文件头注释）
+
+# ──────────────────────────────────────────────────────────────
+# 必选 / 可选标注
+# ──────────────────────────────────────────────────────────────
+# 必须（复现论文数字）: python=3.13, pyyaml, g++-13（若重跑检测链）, tectonic（若编译）
+# 可选（仅门禁/文档）  : ruff, mypy, pytest, hypothesis, mkdocs 全家桶
+# 不需要（数字重算）   : 除上述外，requirements.txt 中其余包均不参与数字计算
