@@ -1,0 +1,791 @@
+% =====================================================================
+% paper2_refs.bib — references for
+%   "The Boundary of Evaluator Auditing: Identifiability, Correctability
+%    and Sample Complexity of Measurement Drift"  (batch 708, anonymous draft)
+%
+% Provenance discipline (same as the first paper's queyi_refs.bib):
+%   - Entries copied from queyi_refs.bib keep their original metadata verbatim.
+%   - New entries come from data/698_literature_deep_dive.md (46 verified entries)
+%     and data/695_*.md. The 698-E verification tag is recorded in `note`:
+%       verified-698      : title/author/year/arXiv-id checked online in batch 698
+%       verified-695      : checked in batch 695, not re-fetched in 698
+%       classic           : book/journal classic, no arXiv; metadata from domain knowledge
+%       unverified-memory : arXiv id recalled from memory, NOT checked -- do not cite
+%                           as evidence before re-verification
+%   - NO entry is invented for this paper.
+% =====================================================================
+
+% ---------------------------------------------------------------------
+% 1. Goodhart's law: roots and formalisations
+% ---------------------------------------------------------------------
+
+@incollection{goodhart1975problems,
+  title     = {Problems of Monetary Management: The {U.K.} Experience},
+  author    = {Goodhart, Charles A. E.},
+  booktitle = {Papers in Monetary Economics},
+  publisher = {Reserve Bank of Australia},
+  year      = {1975},
+  note      = {classic}
+}
+
+@article{strathern1997improving,
+  title   = {``Improving Ratings'': Audit in the {British} University System},
+  author  = {Strathern, Marilyn},
+  journal = {European Review},
+  volume  = {5},
+  number  = {3},
+  pages   = {305--321},
+  year    = {1997},
+  doi     = {10.1002/(SICI)1234-981X(199707)5:3<305::AID-EURO164>3.0.CO;2-\#},
+  note    = {classic}
+}
+
+@misc{manheim2018categorizing,
+  title  = {Categorizing Variants of {Goodhart's} Law},
+  author = {Manheim, David and Garrabrant, Scott},
+  year   = {2018},
+  note   = {arXiv:1803.04585; verified-698 --- four variants
+            (extremal / causal / adversarial / regressional), all premised on
+            over-optimisation}
+}
+
+@misc{majka2025goodhart,
+  title  = {The Strong, Weak and Benign {Goodhart's} Law:
+            An Independence-Free and Paradigm-Agnostic Formalisation},
+  author = {Majka, Adrien and El-Mhamdi, El-Mahdi},
+  year   = {2025},
+  note   = {arXiv:2505.23445; verified-695}
+}
+
+@misc{karwowski2023goodhart,
+  title  = {{Goodhart's} Law in Reinforcement Learning},
+  author = {Karwowski, Jacek and Hayman, Oliver and Bai, Xingjian and
+            Kiendlhofer, Klaus and Griffin, Charlie and Skalse, Joar},
+  year   = {2023},
+  note   = {arXiv:2310.09144; verified-695 --- geometric characterisation and
+            provably-optimal early stopping; requires an optimisation trajectory}
+}
+
+@misc{skalse2022rewardhacking,
+  title  = {Defining and Characterizing Reward Hacking},
+  author = {Skalse, Joar and Howe, Nikolaus H. R. and Krasheninnikov, Dmitrii and Krueger, David},
+  year   = {2022},
+  note   = {arXiv:2209.13085}
+}
+
+@inproceedings{gao2023scaling,
+  title     = {Scaling Laws for Reward Model Overoptimization},
+  author    = {Gao, Leo and Schulman, John and Hilton, Jacob},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2023},
+  note      = {arXiv:2210.10760}
+}
+
+@book{muller2018tyranny,
+  title     = {The Tyranny of Metrics},
+  author    = {Muller, Jerry Z.},
+  publisher = {Princeton University Press},
+  year      = {2018},
+  note      = {classic; governance narrative, not a formalisation}
+}
+
+@misc{amodei2016concrete,
+  title  = {Concrete Problems in {AI} Safety},
+  author = {Amodei, Dario and Olah, Chris and Steinhardt, Jacob and Christiano, Paul and
+            Schulman, John and Man{\'e}, Dan},
+  year   = {2016},
+  note   = {arXiv:1606.06565; unverified-memory --- re-verify before citing}
+}
+
+% ---------------------------------------------------------------------
+% 2. Construct validity, measurement invariance, psychometrics
+% ---------------------------------------------------------------------
+
+@misc{chen2026judge,
+  title  = {A Judge Should Know What Changed: Construct Validity for
+            {LLM}-as-a-Judge Evaluation},
+  author = {Chen, Jianlin and Chen, Wenhui and Lin, Ziyao and Vong, Chi Man},
+  year   = {2026},
+  note   = {arXiv:2608.24419; verified-698 (abstract fetched) --- invariance $S$
+            and construct sensitivity $R$ profiles, proved mutually independent;
+            the closest neighbour to this work}
+}
+
+@inproceedings{bean2025constructvalidity,
+  author    = {Bean, Andrew M. and Kearns, Ryan Othniel and Romanou, Angelika and others and Rocher, Luc and Mahdi, Adam},
+  title     = {Measuring What Matters: Construct Validity in Large Language Model Benchmarks},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2025},
+  note      = {arXiv:2511.04703; verified-698}
+}
+
+@article{freiesleben2025benchmarkingepistemology,
+  author  = {Freiesleben, Timo and Zezulka, Sebastian},
+  title   = {The Benchmarking Epistemology: Validity Theory for Evaluating Machine Learning Models},
+  journal = {Philosophy of Science},
+  year    = {2026},
+  note    = {arXiv:2510.23191; verified-698}
+}
+
+@article{campbell1959convergent,
+  title   = {Convergent and Discriminant Validation by the Multitrait-Multimethod Matrix},
+  author  = {Campbell, Donald T. and Fiske, Donald W.},
+  journal = {Psychological Bulletin},
+  volume  = {56},
+  number  = {2},
+  pages   = {81--105},
+  year    = {1959},
+  note    = {classic; MTMM separates method variance from trait variance ---
+             structurally the same job our transition matrix does for caliber vs mechanism}
+}
+
+@article{messick1995validity,
+  title   = {Validity of Psychological Assessment},
+  author  = {Messick, Samuel},
+  journal = {American Psychologist},
+  volume  = {50},
+  number  = {9},
+  pages   = {741--749},
+  year    = {1995},
+  note    = {classic}
+}
+
+@article{borsboom2006attack,
+  title   = {The Attack of the Psychometricians},
+  author  = {Borsboom, Denny},
+  journal = {Psychometrika},
+  volume  = {71},
+  number  = {3},
+  pages   = {425--440},
+  year    = {2006},
+  note    = {classic; reflexivity warning against defining the construct by the measurement model}
+}
+
+@article{meredith1993measurement,
+  title   = {Measurement Invariance, Factor Analysis and Factorial Invariance},
+  author  = {Meredith, William},
+  journal = {Psychometrika},
+  volume  = {58},
+  number  = {4},
+  pages   = {525--543},
+  year    = {1993},
+  note    = {classic}
+}
+
+@misc{raji2021ai,
+  title  = {{AI} and the Everything in the Whole Wide World Benchmark},
+  author = {Raji, Inioluwa Deborah and Bender, Emily M. and Paullada, Amandalynne and
+            Denton, Emily and Hanna, Alex},
+  year   = {2021},
+  note   = {arXiv:2111.15366; unverified-memory --- re-verify before citing}
+}
+
+@misc{northcutt2021pervasive,
+  title  = {Pervasive Label Errors in Test Sets Destabilize Machine Learning Benchmarks},
+  author = {Northcutt, Curtis G. and Athalye, Anish and Mueller, Jonas},
+  year   = {2021},
+  note   = {arXiv:2103.14749; unverified-memory --- re-verify before citing;
+            label \emph{errors}, not label \emph{caliber} change --- must be distinguished}
+}
+
+@misc{hutchinson2022evaluation,
+  title  = {Evaluation Gaps in Machine Learning Practice},
+  author = {Hutchinson, Ben and Smart, Andrew and Hanna, Alex and Denton, Emily and
+            Greer, Christina and Kjartansson, Olafur and Barnes, Parker and Mitchell, Margaret},
+  year   = {2022},
+  note   = {arXiv:2202.02211; unverified-memory --- re-verify before citing}
+}
+
+% ---------------------------------------------------------------------
+% 3. Undecidability, static analysis, adequacy criteria
+% ---------------------------------------------------------------------
+
+@article{rice1953classes,
+  title   = {Classes of Recursively Enumerable Sets and Their Decision Problems},
+  author  = {Rice, Henry Gordon},
+  journal = {Transactions of the American Mathematical Society},
+  volume  = {74},
+  number  = {2},
+  pages   = {358--366},
+  year    = {1953},
+  note    = {classic}
+}
+
+@article{turing1936computable,
+  title   = {On Computable Numbers, with an Application to the {Entscheidungsproblem}},
+  author  = {Turing, Alan M.},
+  journal = {Proceedings of the London Mathematical Society},
+  volume  = {s2-42},
+  number  = {1},
+  pages   = {230--265},
+  year    = {1936},
+  note    = {classic}
+}
+
+@article{landi1992undecidability,
+  title   = {Undecidability of Static Analysis},
+  author  = {Landi, William},
+  journal = {ACM Letters on Programming Languages and Systems (LOPLAS)},
+  volume  = {1},
+  number  = {4},
+  pages   = {323--337},
+  year    = {1992},
+  doi     = {10.1145/161494.161501},
+  note    = {verified-698}
+}
+
+@article{ramalingam1994undecidability,
+  title   = {The Undecidability of Aliasing},
+  author  = {Ramalingam, G.},
+  journal = {ACM Transactions on Programming Languages and Systems (TOPLAS)},
+  volume  = {16},
+  number  = {5},
+  pages   = {1467--1471},
+  year    = {1994},
+  note    = {verified-698}
+}
+
+@article{weyuker1988evaluation,
+  title   = {The Evaluation of Program-Based Software Test Data Adequacy Criteria},
+  author  = {Weyuker, Elaine J.},
+  journal = {Communications of the ACM},
+  volume  = {31},
+  number  = {6},
+  pages   = {668--675},
+  year    = {1988},
+  note    = {verified-698; methodological precedent --- axioms used to exclude the
+            existence of a perfect criterion}
+}
+
+@article{demillo1979social,
+  title   = {Social Processes and Proofs of Theorems and Programs},
+  author  = {DeMillo, Richard A. and Lipton, Richard J. and Perlis, Alan J.},
+  journal = {Communications of the ACM},
+  volume  = {22},
+  number  = {5},
+  pages   = {271--280},
+  year    = {1979},
+  note    = {classic}
+}
+
+@inproceedings{cousot1977abstract,
+  title     = {Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs
+               by Construction or Approximation of Fixpoints},
+  author    = {Cousot, Patrick and Cousot, Radhia},
+  booktitle = {Proceedings of the 4th ACM SIGACT-SIGPLAN Symposium on Principles of Programming Languages (POPL)},
+  pages     = {238--252},
+  year      = {1977},
+  doi       = {10.1145/512950.512973},
+  note      = {classic; soundness/completeness trade-off}
+}
+
+@inproceedings{cadar2008klee,
+  title     = {{KLEE}: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs},
+  author    = {Cadar, Cristian and Dunbar, Daniel and Engler, Dawson R.},
+  booktitle = {Proceedings of the 8th USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  pages     = {209--224},
+  year      = {2008}
+}
+
+@article{cui2024falsenegatives,
+  author  = {Cui, Han and Xie, Menglei and Su, Ting and Zhang, Chengyu and Tan, Shin Hwei},
+  title   = {An Empirical Study of False Negatives and Positives of Static Code Analyzers
+             From the Perspective of Historical Issues},
+  journal = {ACM Transactions on Software Engineering and Methodology (TOSEM)},
+  year    = {2026},
+  note    = {arXiv:2408.13855; verified-698}
+}
+
+@inproceedings{li2024ubfuzz,
+  author    = {Li, Shaohua and Su, Zhendong},
+  title     = {{UBfuzz}: Finding Bugs in Sanitizer Implementations},
+  booktitle = {ASPLOS 2024},
+  year      = {2024},
+  note      = {arXiv:2401.04538; verified-698}
+}
+
+@inproceedings{beyer2026svcomp,
+  title     = {Evaluating Software Verifiers for C, Java, and SV-LIB: Report on SV-COMP 2026},
+  author    = {Beyer, Dirk and Strej{\v{c}}ek, Jan},
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems (TACAS 2026)},
+  year      = {2026},
+  doi       = {10.1007/978-3-032-22749-2_23},
+  note      = {verified-698; aggregate ``N verifiers'' is caliber-dependent --- the report
+               quotes per-language splits}
+}
+
+@article{jia2011mutation,
+  title   = {An Analysis and Survey of the Development of Mutation Testing},
+  author  = {Jia, Yue and Harman, Mark},
+  journal = {IEEE Transactions on Software Engineering (TSE)},
+  volume  = {37},
+  number  = {5},
+  pages   = {649--678},
+  year    = {2011},
+  doi     = {10.1109/TSE.2010.62}
+}
+
+@inproceedings{just2014mutants,
+  title     = {Are Mutants a Valid Substitute for Real Faults in Software Testing?},
+  author    = {Just, Ren{\'e} and Jalali, Darioush and Inozemtseva, Laura and
+               Ernst, Michael D. and Holmes, Reid and Fraser, Gordon},
+  booktitle = {ACM SIGSOFT International Symposium on Foundations of Software Engineering (FSE)},
+  year      = {2014},
+  doi       = {10.1145/2635868.2635929}
+}
+
+@inproceedings{klein2009sel4,
+  title     = {{seL4}: Formal Verification of an {OS} Kernel},
+  author    = {Klein, Gerwin and Elphinstone, Kevin and Heiser, Gernot and others},
+  booktitle = {ACM Symposium on Operating Systems Principles (SOSP)},
+  pages     = {207--220},
+  year      = {2009},
+  doi       = {10.1145/1629575.1629596}
+}
+
+@article{leroy2009compcert,
+  title   = {Formal Verification of a Realistic Compiler},
+  author  = {Leroy, Xavier},
+  journal = {Communications of the ACM},
+  volume  = {52},
+  number  = {7},
+  pages   = {107--115},
+  year    = {2009},
+  doi     = {10.1145/1538788.1538814}
+}
+
+% ---------------------------------------------------------------------
+% 4. Evaluator auditing and meta-evaluation
+% ---------------------------------------------------------------------
+
+@misc{li2025meta,
+  title  = {On Meta-Evaluation},
+  author = {Li, Hongxiao and Wang, Chenxi and Fan, Fanda and Wang, Zihan and
+            Gao, Wanling and Wang, Lei and Zhan, Jianfeng},
+  year   = {2025},
+  note   = {arXiv:2601.14262; verified-698 (abstract fetched) --- formalises the
+            evaluation space; compares 10 evaluation methods over 8 domains}
+}
+
+@misc{wang2026whoaudits,
+  title  = {Who Audits the Auditor? Tamper-Proof Fraud Detection with Blockchain-Anchored Explainable {ML}},
+  author = {Wang, Zhaohui},
+  year   = {2026},
+  note   = {arXiv:2604.22096}
+}
+
+@inproceedings{zhang2026whogrades,
+  title        = {Who Grades the Grader? Co-Evolving Evaluation Metrics and Skills for
+                  Self-Improving {LLM} Agents},
+  author       = {Zhang, Xing and Wang, Guanghui and Cui, Yanwei and Li, Ziyuan and
+                  Qiu, Wei and Zhu, Bing and He, Peiyang},
+  year         = {2026},
+  eprint       = {2607.12790},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.AI},
+  note         = {verified-698}
+}
+
+@misc{huang2026deepfact,
+  title         = {{DeepFact}: Co-Evolving Benchmarks and Agents for Deep Research Factuality},
+  author        = {Huang, Yukun and Ribeiro, Leonardo F. R. and Hardalov, Momchil and
+                   Dhingra, Bhuwan and Dreyer, Markus and Saligrama, Venkatesh},
+  year          = {2026},
+  eprint        = {2603.05912},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  note          = {verified-698; audit-then-score}
+}
+
+@inproceedings{costanzachock2022whoaudits,
+  author    = {Costanza-Chock, Sasha and Harvey, Emma and Raji, Inioluwa Deborah and
+               Czernuszenko, Martha and Buolamwini, Joy},
+  title     = {Who Audits the Auditors? Recommendations from a Field Scan of the
+               Algorithmic Auditing Ecosystem},
+  booktitle = {ACM Conference on Fairness, Accountability, and Transparency (FAccT)},
+  year      = {2022},
+  note      = {arXiv:2310.02521; verified-698}
+}
+
+@inproceedings{li2026auditingaudit,
+  author    = {Li, Yanhang and Fan, Zhichao and Zhuang, Zexin},
+  title     = {Auditing the Audit: Five Failure Modes in Benchmark-Validity Audits},
+  booktitle = {ICML 2026 Workshop on Trustworthy AI: Guarantees and Risks (TAIGR)},
+  year      = {2026},
+  note      = {arXiv:2607.02586; verified-698; workshop paper}
+}
+
+@article{shao2026protocolvalidity,
+  author  = {Shao, Jiaqi and Chen, Hanck and Zhang, Wei and Pan, Maxm and Luo, Bing},
+  title   = {Do Agent Benchmarks Measure Capability? Protocol Validity in the Age of Agentic {AI}},
+  journal = {arXiv preprint},
+  year    = {2026},
+  note    = {arXiv:2607.22368; verified-698}
+}
+
+@article{siedler2026samplelevel,
+  author  = {Siedler, Philipp D. and Sassoon, Jordan},
+  title   = {Benchmarks Are Not Monolithic: Sample-Level Auditing and Orchestration for {LLM} Evaluation},
+  journal = {arXiv preprint},
+  year    = {2026},
+  note    = {arXiv:2607.28801; verified-698}
+}
+
+@article{jiang2026itemlevel,
+  author  = {Jiang, Han and Zhang, Susu and Zhu, Dongyao and others and Koyejo, Sanmi and Xiao, Ziang},
+  title   = {{AI} Evaluation Should Require Standardized Item-Level Data Releases},
+  journal = {arXiv preprint},
+  year    = {2026},
+  note    = {arXiv:2604.03244; verified-698}
+}
+
+@misc{shankar2025leaderboard,
+  title  = {The Leaderboard Illusion},
+  author = {Shankar, Shreya and others},
+  year   = {2025},
+  note   = {arXiv:2505.20257}
+}
+
+@misc{norman2026reliabilityvalidity,
+  author  = {Norman, Justin D. and Rivera, Michael U. and Hughes, D. Alex},
+  title   = {Reliability without Validity: A Systematic, Large-Scale Evaluation of
+             {LLM}-as-a-Judge Models},
+  journal = {arXiv preprint},
+  year    = {2026},
+  note    = {arXiv:2606.19544; verified-698}
+}
+
+@misc{gu2024survey,
+  title  = {A Survey on {LLM}-as-a-Judge},
+  author = {Gu, Jiawei and Jiang, Xuhui and Shi, Zhichao and Tan, Hexiang and
+            Zhai, Xueqing and Xu, Can and Li, Wei and Ma, Yuhan and Wang, Hongning and others},
+  year   = {2024},
+  note   = {arXiv:2411.15594; verified-698}
+}
+
+@misc{tan2024judgebench,
+  title  = {{JudgeBench}: A Benchmark for Evaluating {LLM}-based Judges},
+  author = {Tan, Sijun and Zhuang, Siyuan and Chu, Kevin and He, Zheyuan and
+            Wang, Yibo and others},
+  year   = {2024},
+  note   = {arXiv:2410.12784; verified-698; ICLR 2025}
+}
+
+@misc{lambert2024rewardbench,
+  title  = {{RewardBench}: Evaluating Reward Models for Language Modeling},
+  author = {Lambert, Nathan and Pyatkin, Valentina and Morrison, Jacob and
+            Miranda, LJ and Lin, Bill Yuchen and others},
+  year   = {2024},
+  note   = {arXiv:2403.13787; verified-698; NAACL 2025 Findings}
+}
+
+@inproceedings{zheng2023judging,
+  title     = {Judging {LLM}-as-a-Judge with {MT}-Bench and Chatbot Arena},
+  author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and others},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS), Datasets and Benchmarks Track},
+  year      = {2023},
+  note      = {arXiv:2306.05685}
+}
+
+@article{liang2023helm,
+  title   = {Holistic Evaluation of Language Models},
+  author  = {Liang, Percy and Bommasani, Rishi and Lee, Tony and others},
+  journal = {Transactions on Machine Learning Research (TMLR)},
+  year    = {2023},
+  note    = {arXiv:2211.09110}
+}
+
+@inproceedings{mitchell2019modelcards,
+  title     = {Model Cards for Model Reporting},
+  author    = {Mitchell, Margaret and Wu, Simone and Zaldivar, Andrew and others},
+  booktitle = {ACM Conference on Fairness, Accountability, and Transparency (FAT*)},
+  year      = {2019},
+  doi       = {10.1145/3287560.3287596}
+}
+
+@article{gebru2021datasheets,
+  title   = {Datasheets for Datasets},
+  author  = {Gebru, Timnit and Morgenstern, Jamie and Vecchione, Briana and others},
+  journal = {Communications of the ACM},
+  volume  = {64},
+  number  = {12},
+  year    = {2021},
+  note    = {arXiv:1803.09010}
+}
+
+@article{pineau2021improving,
+  title   = {Improving Reproducibility in Machine Learning Research
+             (A Report from the {NeurIPS} 2019 Reproducibility Program)},
+  author  = {Pineau, Joelle and Vincent-Lamarre, Philippe and Sinha, Koustuv and others},
+  journal = {Journal of Machine Learning Research (JMLR)},
+  volume  = {22},
+  number  = {164},
+  pages   = {1--20},
+  year    = {2021}
+}
+
+@article{antunes2024reproducibilitysurvey,
+  author  = {Antunes, Benjamin A. and Hill, David R. C.},
+  title   = {Reproducibility, Replicability, and Repeatability: A Survey of Reproducible
+             Research with a Focus on High Performance Computing},
+  journal = {Computer Science Review},
+  volume  = {53},
+  pages   = {100655},
+  year    = {2024},
+  doi     = {10.1016/j.cosrev.2024.100655},
+  note    = {verified-698}
+}
+
+@article{siddiq2025reproducibilitycrisis,
+  author  = {Siddiq, Mohammed Latif and Islam-Gomes, Arvin and Sekerak, Natalie and
+             Santos, Joanna C. S.},
+  title   = {Large Language Models for Software Engineering: A Reproducibility Crisis},
+  journal = {arXiv preprint},
+  year    = {2025},
+  note    = {arXiv:2512.00651; verified-698}
+}
+
+@article{leo2024rocrate,
+  author  = {Leo, Simone and Crusoe, Michael R. and Rodr{\'i}guez-Navas, Laura and others and Soiland-Reyes, Stian},
+  title   = {Recording Provenance of Workflow Runs with {RO-Crate}},
+  journal = {PLOS ONE},
+  volume  = {19},
+  number  = {9},
+  pages   = {1--35},
+  year    = {2024},
+  doi     = {10.1371/journal.pone.0309210},
+  note    = {verified-698}
+}
+
+@inproceedings{lv2026whoevaluates,
+  author    = {Lv, Shuhan and Li, Yong and Chen, Yuang and Lin, Fang and Cheng, Guantong},
+  title     = {Who Evaluates the Evaluators? A Study on Reflexive Meta-Evaluation Methods
+               for Large Language Models},
+  booktitle = {IEEE ICSIPC 2026},
+  year      = {2026},
+  doi       = {10.1109/ICSIPC69751.2026.11583935},
+  note      = {verified-search only (paywall); RE-VERIFY before camera-ready}
+}
+
+@misc{eve2026validationcrisis,
+  author  = {Eve, C{\'e}lestin and Varoquaux, Ga{\"e}l and Moreau, Thomas},
+  title   = {Crossing the Validation Crisis: Cross-Validation Reduces Benchmarking Variance
+             Surprisingly Well},
+  year    = {2026},
+  note    = {arXiv:2606.12552; verified-698}
+}
+
+@article{cerqueira2026conceptdrift,
+  author  = {Cerqueira, Vitor and Gomes, Heitor Murilo and Heyden, Marco and
+             Pfahringer, Bernhard and Bifet, Albert},
+  title   = {A Framework for Evaluating and Benchmarking Concept Drift Detection Methods},
+  journal = {arXiv preprint},
+  year    = {2026},
+  note    = {arXiv:2606.07789; verified-698; statistical concept drift --- related but
+             the drift is in the data distribution, not in the caliber}
+}
+
+@misc{kiela2021dynabench,
+  title     = {Dynabench: Rethinking Benchmarking in {NLP}},
+  author    = {Kiela, Douwe and Bartolo, Max and Nie, Yixin and others},
+  booktitle = {Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)},
+  year      = {2021},
+  note      = {arXiv:2104.14337}
+}
+
+@inproceedings{white2024livebench,
+  title     = {{LiveBench}: A Challenging, Contamination-Limited {LLM} Benchmark},
+  author    = {White, Colin and Dooley, Samuel and Roberts, Manley and others},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2025},
+  note      = {arXiv:2406.19314}
+}
+
+@inproceedings{wang2024benchmarkevolving,
+  title     = {Benchmark Self-Evolving: A Multi-Agent Framework for Dynamic {LLM} Evaluation},
+  author    = {Wang, Siyuan and Long, Zhuohan and Fan, Zhihao and Wei, Zhongyu and Huang, Xuanjing},
+  booktitle = {International Conference on Computational Linguistics (COLING)},
+  year      = {2025},
+  note      = {arXiv:2402.11443}
+}
+
+% ---------------------------------------------------------------------
+% 5. Statistics, combinatorics, measurement records
+% ---------------------------------------------------------------------
+
+@article{mcnemar1947note,
+  title   = {Note on the Sampling Error of the Difference Between Correlated Proportions or Percentages},
+  author  = {McNemar, Quinn},
+  journal = {Psychometrika},
+  volume  = {12},
+  number  = {2},
+  pages   = {153--157},
+  year    = {1947},
+  doi     = {10.1007/BF02295996}
+}
+
+@article{clopper1934use,
+  title   = {The Use of Confidence or Fiducial Limits Illustrated in the Case of the Binomial},
+  author  = {Clopper, Charles J. and Pearson, Egon S.},
+  journal = {Biometrika},
+  volume  = {26},
+  number  = {4},
+  pages   = {404--413},
+  year    = {1934},
+  doi     = {10.1093/biomet/26.4.404}
+}
+
+@book{cohen1988statistical,
+  title     = {Statistical Power Analysis for the Behavioral Sciences},
+  author    = {Cohen, Jacob},
+  edition   = {2nd},
+  publisher = {Lawrence Erlbaum Associates},
+  address   = {Hillsdale, NJ},
+  year      = {1988},
+  isbn      = {978-0805802832}
+}
+
+@article{connor1987sample,
+  title   = {Sample Size for Testing Differences in Proportions for the Paired-Sample Design},
+  author  = {Connor, Robert J.},
+  journal = {Biometrics},
+  volume  = {43},
+  number  = {1},
+  pages   = {207--211},
+  year    = {1987},
+  doi     = {10.2307/2531961}
+}
+
+@book{fisher1935design,
+  title     = {The Design of Experiments},
+  author    = {Fisher, Ronald A.},
+  publisher = {Oliver and Boyd},
+  address   = {Edinburgh},
+  year      = {1935}
+}
+
+@article{benjamini1995controlling,
+  title   = {Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing},
+  author  = {Benjamini, Yoav and Hochberg, Yosef},
+  journal = {Journal of the Royal Statistical Society: Series B},
+  volume  = {57},
+  number  = {1},
+  pages   = {289--300},
+  year    = {1995},
+  doi     = {10.1111/j.2517-6161.1995.tb02031.x}
+}
+
+@article{holm1979simple,
+  title   = {A Simple Sequentially Rejective Multiple Test Procedure},
+  author  = {Holm, Sture},
+  journal = {Scandinavian Journal of Statistics},
+  volume  = {6},
+  number  = {2},
+  pages   = {65--70},
+  year    = {1979},
+  doi     = {10.2307/4615733}
+}
+
+@article{cohen1960coefficient,
+  title   = {A Coefficient of Agreement for Nominal Scales},
+  author  = {Cohen, Jacob},
+  journal = {Educational and Psychological Measurement},
+  volume  = {20},
+  number  = {1},
+  pages   = {37--46},
+  year    = {1960},
+  doi     = {10.1177/001316446002000104}
+}
+
+@book{krippendorff1980content,
+  title     = {Content Analysis: An Introduction to Its Methodology},
+  author    = {Krippendorff, Klaus},
+  publisher = {Sage},
+  year      = {1980}
+}
+
+@book{shadish2002experimental,
+  title     = {Experimental and Quasi-Experimental Designs for Generalized Causal Inference},
+  author    = {Shadish, William R. and Cook, Thomas D. and Campbell, Donald T.},
+  publisher = {Houghton Mifflin},
+  year      = {2002},
+  isbn      = {0395615569}
+}
+
+@incollection{belnap1977useful,
+  title     = {A Useful Four-Valued Logic},
+  author    = {Belnap, Nuel D.},
+  booktitle = {Modern Uses of Multiple-Valued Logic},
+  editor    = {Dunn, J. Michael and Epstein, George},
+  publisher = {D. Reidel},
+  address   = {Dordrecht},
+  pages     = {5--37},
+  year      = {1977},
+  doi       = {10.1007/978-94-010-1161-7_2}
+}
+
+@article{nemhauser1978submodular,
+  title   = {An Analysis of Approximations for Maximizing Submodular Set Functions---{I}},
+  author  = {Nemhauser, George L. and Wolsey, Laurence A. and Fisher, Marshall L.},
+  journal = {Mathematical Programming},
+  volume  = {14},
+  number  = {1},
+  pages   = {265--294},
+  year    = {1978},
+  doi     = {10.1007/BF01580359}
+}
+
+@incollection{krause2014submodular,
+  title     = {Submodular Function Maximization},
+  author    = {Krause, Andreas and Golovin, Daniel},
+  booktitle = {Tractability: Practical Approaches to Hard Problems},
+  publisher = {Cambridge University Press},
+  year      = {2014}
+}
+
+@inproceedings{golovin2010near,
+  title     = {Near-Optimal {Bayesian} Active Learning with Noisy Observations},
+  author    = {Golovin, Daniel and Krause, Andreas},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2010}
+}
+
+@article{feige1998threshold,
+  title   = {A Threshold of {$\ln n$} for Approximating Set Cover},
+  author  = {Feige, Uriel},
+  journal = {Journal of the ACM},
+  volume  = {45},
+  number  = {4},
+  pages   = {634--652},
+  year    = {1998},
+  doi     = {10.1145/285055.285059}
+}
+
+@inproceedings{merkle1988digital,
+  title     = {A Digital Signature Based on a Conventional Encryption Function},
+  author    = {Merkle, Ralph C.},
+  booktitle = {Advances in Cryptology (CRYPTO '87), LNCS 293},
+  pages     = {369--378},
+  year      = {1988},
+  doi       = {10.1007/3-540-48184-2_32}
+}
+
+@misc{opentimestamps,
+  title        = {{OpenTimestamps}: A Timestamping Protocol and Calendar Service},
+  howpublished = {\url{https://opentimestamps.org}},
+  note         = {external dependency for ledger time-anchoring; currently a zero-attestation placeholder}
+}
+
+% ---------------------------------------------------------------------
+% 6. The authors' own earlier work (cited as a case study, not restated)
+% ---------------------------------------------------------------------
+
+@misc{queyi2027caliber,
+  title        = {Caliber Drift and Capability Boundaries: An Audit Protocol for
+                  Software-Verification Evaluation},
+  author       = {{Anonymous}},
+  year         = {2027},
+  howpublished = {Anonymous submission; title and findings cited as a case study only.
+                  Cited anononymised while under review.},
+  note         = {the first paper of this two-paper programme (batch 691, v1.5)}
+}

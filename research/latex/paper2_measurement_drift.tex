@@ -1,0 +1,1294 @@
+% =====================================================================
+%  The Boundary of Evaluator Auditing — NeurIPS Evaluations & Datasets (anonymous)
+%  Batch 708 (paper 2 of the two-paper programme). Draft, not camera-ready.
+%
+%  WHAT THIS FILE IS
+%    A *reorganisation* of results already produced in batches 697, 698 and 700
+%    into a second, self-contained paper. NO new experiments were run for it:
+%    every number traces to a frozen artifact of an earlier batch (see
+%    data/708_paper2_number_audit.md for the number-by-number provenance table).
+%
+%  WHAT THIS FILE IS NOT
+%    - It does NOT touch the first paper (queyi_neurips2027_v1.1.tex) or queyi_refs.bib.
+%    - It runs no detect() call (detect_calls = 0).
+%    - It claims no priority: 698-E found Manheim-Garrabrant (2018) for the
+%      Goodhart taxonomy and arXiv:2608.24419 for construct-validity profiles.
+%      Our phrasing throughout is "a subclass we name and formalise".
+%
+%  Template: official neurips_2025.sty, unmodified, used as a PLACEHOLDER
+%  (the 2027 CFP is unpublished; the default notice is overridden below with a
+%  neutral "under review" string). Target venue: TMLR (rolling) or NeurIPS 2027 E&D.
+%
+%  Page discipline (batch 708-C): the main text carries six tables; the
+%  universality table, the T1 partition table, the full five-frame transition
+%  matrix, the correctability-layer table, the theory-comparison table and all
+%  supplementary curves live in the appendix.
+% =====================================================================
+\documentclass{article}
+
+\usepackage[dandb]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\Rhat}{\hat R}
+\newcommand{\Rstar}{R^{*}}
+\newcommand{\calQ}{\mathcal{Q}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\catch}{\texttt{catch}}
+\newcommand{\miss}{\texttt{miss}}
+\newcommand{\unk}{\texttt{unknown}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\pp}{\,\mathrm{pp}}
+
+% Neutral notice string (the 2027 CFP is unpublished; do not print a wrong year).
+\makeatletter
+\renewcommand{\@noticestring}{%
+  Under review (anonymized). Do not distribute.%
+}
+\makeatother
+
+\title{The Boundary of Evaluator Auditing:\\
+Identifiability, Correctability and Sample Complexity of Measurement Drift}
+
+\author{%
+  Anonymous Author(s) \\
+  Affiliation \\
+  Address \\
+  \texttt{email} \\
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Evaluation numbers are treated as facts about the systems they measure. We show that a large class of
+evaluation failures requires \textbf{no optimisation pressure at all}: the number changes because the
+\emph{caliber} of measurement changed, while the capability being measured does not. We call this
+structural (passive) Goodhart and build an algebra for it.
+
+We present a seven-axiom system for measurement drift and prove that only \textbf{two} of the axioms are
+genuinely independent: idempotence, commutativity, non-invertibility and observability-stratification are
+\emph{theorems} of the framework, and enumerability is a meta-requirement. We show the system is
+\textbf{incomplete}: label-vocabulary drift (Type~III) cannot be expressed, and we register an eighth axiom
+closing the label axis.
+
+We then prove three boundary results. (i)~\textbf{Identifiability}: structural and real drift are not
+decidable from paired data alone, yet are point-identified under nested calibers. (ii)~\textbf{Correctability}:
+post-hoc repair is possible exactly when the drift acts on the post-measurement layer; acquisition-layer
+drift requires re-measurement, with residual error up to $30.0\%$. (iii)~\textbf{Sample complexity}: the
+paired design is \emph{powerless} against label and aggregation drift (discordance rate zero
+$\Rightarrow$ infinite samples), while component-removal drift costs $849$ paired samples versus $17$ for
+environment drift---cost is governed by the discordance rate, not the effect size.
+
+We instantiate the framework on a C/C++ verification apparatus ($1{,}147$ samples) and, partially, on
+LLM-as-a-judge evaluation (migration score $55.8/100$). All numbers come from frozen artifacts of earlier
+batches; no new measurement was taken for this paper.
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Evaluation numbers are read as facts about the systems they measure. A detection rate, a judge score, a
+benchmark accuracy: each is treated as a property of the artefact, portable across time and context. This
+paper is about the cases where that reading fails for a reason unrelated to the artefact. The reported
+number moves because the \emph{caliber} of the measurement moved---which components ran, which samples
+entered the denominator, how per-sample verdicts were grouped, how they were aggregated---while the
+capability under measurement is unchanged.
+
+The classical literature on metric corruption assumes an optimiser. Goodhart's law
+\citep{goodhart1975problems,strathern1997improving} is stated for a measure that \emph{is used to control} a
+system; reward hacking \citep{skalse2022rewardhacking,amodei2016concrete} and reward-model over-optimisation
+\citep{gao2023scaling} require a policy that maximises a proxy. \citet{manheim2018categorizing} catalogue
+four variants, and the first is unambiguous: a metric \emph{which can be used to improve a system} is used
+to such an extent that further optimisation is ineffective or harmful. \citet{majka2025goodhart} remove the
+independence assumption and the learning paradigm but retain optimisation pressure; \citet{karwowski2023goodhart}
+prove an optimal \emph{early stopping} rule---a rule that presupposes a trajectory to stop. We study the
+subclass in which that premise is absent. Define \emph{structural (passive) Goodhart} as the conjunction of
+three conditions: the reported value moved (SG-1), the mechanism-level capability did not (SG-2), and
+\emph{no optimiser acts on the reported value} (SG-3). SG-3 separates this subclass from every formalisation
+we could find, and it removes the object all classical remedies operate on: early stopping, regularisation,
+robust optimisation, reward shaping and metric substitution all act on an optimisation trajectory, and when
+there is no optimiser there is no trajectory.
+
+That observation turns the subject into a measurement question, and measurement questions have boundaries.
+This paper maps three of them.
+
+\paragraph{Three boundaries.} \emph{Identifiability}: given paired measurements under two calibers, can we
+tell whether the capability changed or only the caliber? Section~\ref{sec:ident} proves that in general we
+cannot, and that under nested calibers we can. \emph{Correctability}: which drifts can be repaired after the
+fact from retained records, and which require re-measurement? Section~\ref{sec:correct} proves a two-sided
+criterion and quantifies the residual where repair fails. \emph{Sample complexity}: how many paired samples
+does an audit need? Section~\ref{sec:sample} shows the answer is governed by how many samples \emph{carry}
+the drift, not by how large the drift looks, and that for two of the four drift types the paired design has
+exactly zero power at any sample size.
+
+\paragraph{Contributions.}
+\begin{itemize}\itemsep2pt
+  \item \textbf{C1 (algebra and metatheory).} A seven-axiom algebra of measurement drift with six theorems
+  (T1--T6). Its metatheory is settled by exhaustive model checking over all $2^{4\times3}=4096$ coverage
+  structures $\times$ seven aggregation families: only A2 (monotonicity) and A5 (super-additivity) are
+  genuinely independent; A3/A4/A6/A7 are theorems; A1 is a meta-axiom. The system is \emph{incomplete}---Type~III
+  drift is inexpressible---so we register a missing A8 (label-axis closure) and extend the caliber signature
+  to a 6-tuple. Caliber arbitrage is NP-hard (max-coverage reduction) with a greedy $(1-1/e)$ approximation.
+  Sections~\ref{sec:algebra}--\ref{sec:meta}.
+  \item \textbf{C2 (four types, and their universality classes).} Structural Goodhart comes in four types
+  (denominator, environment, label, aggregation), each with its own control axis, and they do \emph{not}
+  belong to one universality class: two are discontinuous, one is a smooth sub-critical decay with no
+  critical point inside the observed range, and one is non-monotone. Section~\ref{sec:algebra}.
+  \item \textbf{C3 (information-theoretic audit bound).} Paired designs have identically zero power against
+  Type~III and Type~IV drift ($\psi=0$, hence $n=\infty$); Type~I costs $n=849$ and Type~II $n=17$ at
+  $\alpha=0.05$ and power $0.8$. Audit cost is driven by the discordance rate, not the effect size.
+  Section~\ref{sec:sample}.
+  \item \textbf{C4 (validation, and a cross-domain arm).} Four experiments instantiate the theorems on a
+  frozen C/C++ matrix ($1{,}147$ samples, $566$-sample paired split) and, partially, on an LLM-as-a-judge arm
+  ($80$ samples $\times$ 2 judges $\times$ 2 prompts, temperature $0$), where the protocol migrates with score
+  $55.84/100$---with the aggregation axis essentially non-transferable. Section~\ref{sec:exp}.
+\end{itemize}
+
+\paragraph{Scope and honesty.} The empirical basis is one C/C++ verification apparatus plus one partial LLM
+arm; we claim no universality. We claim no priority: \citet{manheim2018categorizing} already taxonomise
+Goodhart's law, and \citet{chen2026judge} already formalise construct-validity profiles for
+LLM-as-a-judge---the closest neighbour, whose two-dimensional invariance/sensitivity profile answers a
+different question (is the judge stable?) from ours (can the drift be repaired?). We claim no new
+measurement: every number in Section~\ref{sec:exp} and the appendices was computed in an earlier batch from
+a frozen matrix. Where a proof is incomplete we say so rather than fill the gap.
+
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Goodhart's law and its variants.} The roots are \citet{goodhart1975problems} and
+\citet{strathern1997improving}; \citet{muller2018tyranny} is the institutional critique. The formal line runs
+through reward hacking \citep{skalse2022rewardhacking,amodei2016concrete}, over-optimisation scaling laws
+\citep{gao2023scaling}, the four-variant taxonomy \citep{manheim2018categorizing}, the paradigm-agnostic
+formalisation \citep{majka2025goodhart}, and the geometric treatment with an optimal early-stopping rule
+\citep{karwowski2023goodhart}. All presuppose a system that optimises the measure. Our subclass is defined
+by the absence of that system (SG-3), which is why the classical remedies do not apply: there is no
+trajectory to stop, no bias term to bound, no proxy--target gap to shrink.
+
+\paragraph{Construct validity and measurement invariance.} Psychometrics has the vocabulary we need.
+Multitrait--multimethod matrices separate method from trait variance \citep{campbell1959convergent}---the
+job our transition matrix does for caliber versus mechanism; \citet{messick1995validity} argues validity is a
+property of inferences, not of scores; \citet{meredith1993measurement} formalises invariance across groups,
+with \citet{borsboom2006attack} warning against defining the construct by the measurement model. The
+vocabulary has entered machine learning: \citet{bean2025constructvalidity} review $445$ benchmark papers
+from a construct-validity standpoint, and \citet{freiesleben2025benchmarkingepistemology} give a validity
+theory for predictive benchmarking. The closest work is \citet{chen2026judge}, who formalise a judge's
+construct validity as a two-dimensional profile---invariance $S$ under construct-preserving edits and
+sensitivity $R$ under construct-changing edits---prove $S$ and $R$ independent, and show no scalar summary
+preserves all comparisons. We cite that approvingly and draw the boundary explicitly: an $S/R$ profile is a
+\emph{probability profile} answering ``how stable is the judge?''; our object is an algebra answering
+``which caliber operations can be repaired post hoc, and which require re-measurement?'' The latter
+question---our Theorem~\ref{thm:T6}---we did not find there. Related work on statistical concept drift
+\citep{cerqueira2026conceptdrift} concerns a changing data distribution, not a changing caliber.
+
+\paragraph{Undecidability and detection limits.} That perfect static analysis is impossible is classical:
+\citet{turing1936computable}, \citet{rice1953classes}, \citet{landi1992undecidability},
+\citet{ramalingam1994undecidability}, with the soundness/completeness trade-off \citep{cousot1977abstract}
+and the testing-versus-proof distinction \citep{demillo1979social}. The methodological precedent we follow is
+\citet{weyuker1988evaluation}, who uses an axiom set to \emph{exclude} the existence of a perfect
+test-adequacy criterion. We do the same for a perfect drift detector: A2 excludes minimum-type aggregations,
+A5 excludes mean-type aggregations, and Theorem~\ref{thm:T6} excludes post-hoc correction of
+acquisition-layer drift. What differs is the object---test criteria rather than evaluators---and, we believe,
+the addition of a \emph{correctability} boundary.
+
+\paragraph{Evaluator auditing and meta-evaluation.} Existing work falls into five groups: comparisons of
+evaluation \emph{methods} \citep{li2025meta,lv2026whoevaluates}; judge reliability audits
+\citep{gu2024survey,tan2024judgebench,lambert2024rewardbench,zheng2023judging,norman2026reliabilityvalidity};
+reporting templates \citep{mitchell2019modelcards,gebru2021datasheets}; adversarial-use audits; and
+institutional audits \citep{costanzachock2022whoaudits,wang2026whoaudits}. Adjacent negative results include
+audit failure modes \citep{li2026auditingaudit}, protocol-validity critiques \citep{shao2026protocolvalidity},
+sample-level auditing \citep{siedler2026samplelevel}, item-level data release \citep{jiang2026itemlevel},
+leaderboard dynamics \citep{shankar2025leaderboard}, and reproducibility surveys
+\citep{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey,pineau2021improving}. All five groups
+hold the caliber fixed: they audit results, not the act of measuring. We occupy a sixth
+position---algebraising caliber drift---and claim no superiority over any of them
+(\citealp{liang2023helm} audits models across a far broader scenario space than our single apparatus).
+
+\paragraph{Relation to our first paper.} A companion case study \citep{queyi2027caliber} audits one C/C++
+verification apparatus and reports five findings, each an instance of one of the four drift types below. We
+cite it for those findings only and do not restate its reasoning: that paper asks \emph{what was found};
+this one asks what an audit can find \emph{in principle}.
+
+% =====================================================================
+\section{Measurement Drift Algebra}
+\label{sec:algebra}
+
+\subsection{Apparatus and caliber}
+\label{sec:apparatus}
+
+A \emph{measurement apparatus} is a tuple $M=(D,A,E,\Theta,P)$, where $D$ is the sample population, $A$ the
+asset pool (the components that acquire evidence), $E$ the environment, $\Theta$ the configuration, and $P$
+the protocol (accounting rule, aggregation rule, label vocabulary). We call $Q(M)=(A,E,\Theta,P)$ the
+\emph{caliber}; $D$ is not part of it. Two quantities must be kept apart. The \emph{reported rate} is
+\begin{equation}
+\Rhat(M)=\frac{\bigl|\{x: V(x;M)=\catch\}\bigr|}{\bigl|\{x: V(x;M)\in\{\catch,\miss\}\}\bigr|},
+\label{eq:rhat}
+\end{equation}
+where $V(x;M)\in\{\catch,\miss,\unk\}$ is the per-sample verdict and $\unk$ is kept out of the denominator
+under the unaware accounting rule. The \emph{mechanism-level capability} $\Rstar(M)$ is the rate the
+apparatus would report under the reference caliber. $\Rstar$ is latent: it is what is being measured, not
+what is reported. Every difficulty in Section~\ref{sec:ident} traces to that one fact.
+
+Throughout, the instantiation is a C/C++ verification apparatus with $|A|=8$ declared assets (sanitizers,
+compiler warnings, cross-compilation, linker, plus two components that are structurally $\unk$),
+$|X|=1147$ samples, and coverage function $f(S)=|\bigcup_{a\in S}C_a|$, where $C_a$ is the set of samples
+asset $a$ catches; the reference rate is $\Rhat(S)=f(S)/n$.
+
+\subsection{Drift generators and the four types}
+\label{sec:fourtypes}
+
+A \emph{drift generator} is a map $\tau:M\to M'$ that changes the caliber but not $D$ and not the reference
+apparatus; the \emph{drift} is $D_\tau(M)=\Rhat(\tau M)-\Rhat(M)$. Generators are classified by which
+caliber component they act on.
+
+\begin{table}[t]
+\centering
+\small
+\caption{The four drift types and the measured drift on the frozen C/C++ matrix. Frames differ (Type~II is
+a $566$-sample paired split; I, III, IV are computed on the full $1{,}147$-sample matrix) and are flagged
+wherever the distinction matters.}
+\label{tab:fourtypes}
+\begin{tabular}{@{}c p{2.4cm} p{4.0cm} p{3.2cm} r@{}}
+\toprule
+Type & Acts on & Criterion & Instance & Drift \\
+\midrule
+I & denominator ($P$) & numerator fixed, denominator moves & accounting rule / degenerate slots & $+75.265\pp$ \\
+II & environment ($E$) & assets gated by the environment & WSL $\to$ native ($n{=}566$) & $-35.3357\pp$ \\
+III & label axis ($\lambda$) & per-sample verdicts fixed, grouping moves & $34$- vs $70$-type vocabulary & $-9.67\pp$ \\
+IV & aggregation ($P$) & verdicts fixed, merge rule moves & OR vs per-asset mean & $+43.9700\pp$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The types are not mutually exclusive; they superpose. Three of the four numbers deserve a word. For Type~I,
+the same $140$ catches are reported as $24.735\%$ under the unaware denominator and as $100.0\%$ when only
+capability-relevant negatives enter it: a $+75.265\pp$ move produced by \emph{no new measurement}. For
+Type~III the number is vocabulary-dependent in a way that cannot be rescaled---the share of defect types
+whose blind-spot rate exceeds $50\%$ is $13/34=38.24\%$ under the normalised vocabulary and
+$18/70=25.71\%$ under the original mixed one. For Type~IV the identical $1147\times 8$ verdict matrix
+yields $61.6392\%$ under OR and $17.6692\%$ under the per-asset mean ($13.2518\%$ if the two structurally
+$\unk$ assets are counted in the mean's denominator). The practical reading: a single headline number
+cannot be compared across calibers, and a drift invisible under one aggregation rule can be $33.33\%$ under
+another (Appendix~\ref{app:extra}, Table~\ref{tab:manip}).
+
+\subsection{Universality classes: the four types are not one phenomenon}
+\label{sec:universality}
+
+It is tempting to speak of ``the phase transition of structural Goodhart''. The data do not support a single
+one. Treating caliber deviation as a control parameter and measurement distortion $\varphi=|\Rhat-\Rstar|$
+as an order parameter, the four types fall into three different classes (Appendix~\ref{app:extra},
+Table~\ref{tab:universality}). For Type~I the eight-point scan $d=0,\dots,7$ gives
+$g_{\text{app}}(d)=5.470342+5.284164\,d-0.259967\,d^{2}$ ($R^{2}=0.999724$) over $5.30\to29.88\pp$; the
+response function $\chi=5.284164-0.519934\,d$ decreases monotonically and its stationary point
+$d^{*}=10.1632$ lies \emph{outside} the data range $[0,7]$, so over the observable range there is no
+critical point and Type~I is a smooth sub-critical decay. The fitted exponent $\beta=2.022681$ is a
+consequence of the quadratic fit and must be read as model-implied. Consistently, the critical-slowing
+indicators a genuine transition would show are absent: the increment variance and the lag-one
+autocorrelation do not rise with $d$ but fall. What \emph{is} usable is structural---the count of zero-yield
+components, and a label-fragmentation index
+$\mathrm{FI}=(\#\text{singleton}+\#\text{two-sample classes})/\#\text{classes}$, which stood at $0.285714$
+before a vocabulary normalisation and $0.0$ after, i.e.\ it was already signalling before the event.
+
+We therefore downgrade C2 to a \emph{descriptive framework}: with $6$--$8$ data points and a model-implied
+exponent, ``phase transition'' is an analogy. The practical consequence is asymmetric: a discontinuous drift
+has no advance warning, because the jump is complete before any signal appears, so only design-time
+structural indicators can pre-empt it; the smooth type is the one type where monitoring can work.
+
+\subsection{The axiom system}
+\label{sec:axioms}
+
+Let $A$ be the asset set, $X$ the sample population, $C_a$ the catch set of asset $a$, and
+$h(G):=f(A)-f(A\setminus G)$ the \emph{damage} of removing asset set $G$ (removal-type generator $\tau_G$).
+
+\begin{table}[t]
+\centering
+\small
+\caption{The seven axioms, and the metatheory verdict of Section~\ref{sec:meta}. The axioms are stated in
+full here; the independence witnesses are in Table~\ref{tab:independence}.}
+\label{tab:axioms}
+\begin{tabular}{@{}c l p{8.6cm}@{}}
+\toprule
+\# & Axiom & Formalisation, and verdict \\
+\midrule
+A1 & caliber enumerability & each $\tau$ declares its type from a finite taxonomy; \emph{meta-axiom} \\
+A2 & removal monotonicity & $G\subseteq H\Rightarrow\Rhat(\tau_H M)\le\Rhat(\tau_G M)\le\Rhat(M)$; \emph{genuine axiom} \\
+A3 & idempotence & $\tau_G\circ\tau_G=\tau_G$; \emph{theorem} \\
+A4 & commutativity, closure & $\tau_G\circ\tau_H=\tau_H\circ\tau_G=\tau_{G\cup H}$; \emph{theorem} \\
+A5 & super-additivity of damage & $h(G\cup H)\ge h(G)+h(H)$, $G\cap H=\varnothing$; \emph{genuine axiom} \\
+A6 & non-invertibility & the only invertible element is $\tau_\varnothing$; \emph{theorem} \\
+A7 & observability stratification & silence is a property of $(\tau,\text{accounting})$, not of $\tau$; \emph{theorem} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A3 and A4 give $(\{\tau_G\}_{G\subseteq A},\circ)\cong(2^{A},\cup)$: the generators form a commutative
+idempotent monoid---a join-semilattice---and \emph{not} a group, because A6 says every non-identity element
+lacks an inverse. That is the algebraic content behind the most practically useful corollary of the paper:
+knowing $\Rhat(\tau_G M)$ and $G$ does not determine $\Rhat(M)$, since inversion would require the assets'
+\emph{unique} catch sets---exactly what removal destroys. Drift cannot be corrected after the fact; it can
+only be re-measured. Section~\ref{sec:correct} sharpens this into a two-sided criterion.
+
+\subsection{T1: super-additivity with a closed-form residual}
+\label{sec:T1}
+
+\begin{theorem}[Super-additivity of removal-type damage]
+\label{thm:T1}
+Let $f$ be monotone and submodular, and let $S_0=A\cup B\cup L$ with $A,B,L$ pairwise disjoint. Write
+$h(G)=f(S_0)-f(S_0\setminus G)$. Then $h(A\cup L)\ge h(A)+h(L)$, with closed-form residual
+\begin{equation}
+h(A\cup L)-h(A)-h(L)=\bigl|C_A\cap C_L\setminus C_B\bigr|\ \ge 0 .
+\label{eq:t1residual}
+\end{equation}
+Equivalently, for the drift $D=-h/n$,
+$D_{A\cup L}-(D_A+D_L)=-\bigl|C_A\cap C_L\setminus C_B\bigr|/n\le 0$.
+\end{theorem}
+
+The proof (Appendix~\ref{app:proofs}) expands
+$m=|C_A\setminus C_B|+|C_L\setminus C_B|-|C_A\cap C_L\setminus C_B|$ against
+$a=|C_A\setminus C_B|-|C_A\cap C_L\setminus C_B|$ and
+$l=|C_L\setminus C_B|-|C_A\cap C_L\setminus C_B|$. Note the trap: the residual is \emph{not} the
+intersection of the two assets' unique-contribution sets---those are disjoint by construction, so a test
+built on them would pass for every input while testing nothing. On the $566$-sample split the closed form
+matches the measured residual exactly in all three partitions tested, with one partition attaining
+equality (Appendix~\ref{app:extra}, Table~\ref{tab:t1}), so the bound is tight here. The reading is
+quantitative: when several calibers change in one evaluation their effects \emph{cannot be added up} to
+correct for them---superposition \emph{understates} the total, by $4.95\pp$ in the partition where $28$
+samples are catchable by both removals.
+
+\subsection{T2--T4: non-invertibility, stratification, one-directionality}
+\label{sec:T234}
+
+\begin{theorem}[Non-invertibility]
+\label{thm:T2}
+For every $G\neq\varnothing$ there exist $M_1\neq M_2$ with $\tau_G M_1=\tau_G M_2$ (identical reported
+verdict sequences). Hence $\tau_G$ has no inverse.
+\end{theorem}
+
+The construction takes $G=\{a\}$ and two apparatuses differing only in $a$'s catch set ($\varnothing$ versus
+some non-empty $C_B$); after removal both verdict sequences are decided by $A\setminus\{a\}$, while their
+reported rates differ. The generator is many-to-one.
+
+\begin{theorem}[Silence is not intrinsic to the drift]
+\label{thm:T3}
+For a fixed $\tau$ there exist two accounting calibers with
+$\Delta_{\unk}(\tau,\alpha_{\text{unaware}})=0$ but
+$\Delta_{\unk}(\tau,\alpha_{\text{aware}})=-\mathrm{lost}/n\neq0$.
+\end{theorem}
+
+Under the unaware rule a sample with no catch is written $\miss$ even when the environment gate is
+non-empty, so every lost catch lands in $\miss$ and the $\unk$ count does not move; under the aware rule the
+same samples become $\unk$. Measured on the $566$-sample split: $0.0\pp$ under unaware and $+75.265\pp$
+under aware. This corrects a hypothesis from an earlier design note in which $\Delta_{\unk}=0$ was proposed
+as a sufficient-and-necessary fingerprint of silent degradation. By Theorem~\ref{thm:T3} it is a
+fingerprint of the \emph{accounting rule}, not of the drift.
+
+\begin{theorem}[One-directionality criterion]
+\label{thm:T4}
+If $\tau$ is purely removal-type ($S'\subseteq S$) then $T_{\miss\to\catch}=0$. The converse fails.
+\end{theorem}
+
+The forward direction is immediate: a catch under $S'$ implies a catch under the larger $S$. The converse
+fails because a removal and an instrument upgrade can co-occur, giving both losses and gains with a net
+$T_{\miss\to\catch}=0$. On the $566$-sample split all $11$ defect groups have
+$c_g=T_{\miss\to\catch}=0$, with $b_g$ from $1$ (ODR/link) to $38$ (STL) and layerwise McNemar $p$ as small
+as $7.3\times10^{-12}$---consistent with a purely removal-type environment drift. The falsification
+condition is sharp and was already met once: a cross-tool comparison in the companion study produced $8$
+reverse pairs and was correspondingly downgraded from a caliber-drift claim to a cross-regime stress test.
+
+\subsection{T5: chains compose in the generator layer but not in the observation layer}
+\label{sec:T5}
+
+\begin{theorem}[Chapman--Kolmogorov condition for drift chains]
+\label{thm:T5}
+Let $E_1\supseteq E_2$ and let $T_{12},T_{23},T_{13}$ be per-sample three-state transition count matrices,
+with $P_{23}$ the row-normalised $T_{23}$. Then
+$T_{13}=T_{12}P_{23}\Longleftrightarrow T^{(E_2\to E_3)}_{\miss\to\catch}=0$, i.e.\ iff
+$E_3\subseteq E_2$ (monotone absorption).
+\end{theorem}
+
+The proof is in Appendix~\ref{app:proofs}; the essential step is that monotone absorption makes
+$P_{23}[\miss][\miss]=1$ and Theorem~\ref{thm:T4} kills the reverse pair, so the $(\catch,\miss)$ cell of
+the product equals $T_{23}[\catch][\miss]+T_{12}[\catch][\miss]$, which is exactly the true $T_{13}$ cell by
+screening. Measured on the $566$-sample split: the three nested chains have maximum absolute CK error
+$0.000$, while the two non-nested chains (which restore a component) have $65.784$ and $74.272$, i.e.\
+$11.6\%$ and $13.1\%$ of $n$. The error is mass-conserving---for the ``restore asan'' chain, CK moves
+$65.784$ samples from $\catch{\to}\catch$ to $\catch{\to}\miss$ and conjures the same number of
+$\miss{\to}\catch$ transitions that do not exist. The audit consequence is blunt: a generator chain always
+composes (A4), but the \emph{observed} transition matrices do not, so an auditor cannot infer a multi-step
+caliber change by multiplying matrices; each step must be re-measured in a paired design.
+
+\subsection{T6: the correctability boundary (statement)}
+\label{sec:T6statement}
+
+\begin{theorem}[Correctability boundary]
+\label{thm:T6}
+Let $R=(V(x,a))_{x\in X,a\in A}\in\{\catch,\miss,\unk\}^{|X|\times|A|}$ be the original record and
+$\rho=\mathrm{agg}(R)$ the report. A drift $\tau$ is repairable post hoc \emph{if and only if} either (1)
+$\tau$ does not modify $R$ but only $\rho$ (accounting rule, aggregation rule, label vocabulary), so
+retaining $R$ permits recomputing any $\rho$; or (2) $\tau$ deletes columns of $R$ that are determined
+cellwise by the retained columns together with a prior. Otherwise $\tau$ is not repairable and re-measurement
+is required.
+\end{theorem}
+
+Section~\ref{sec:correct} gives the layered verdict and the quantified residual error.
+
+\subsection{Computational complexity}
+\label{sec:complexity}
+
+Once the caliber is enumerated, deciding whether a caliber change occurred is polynomial, $O(|T|\cdot n)$,
+because silence is a two-cell equality test on the transition matrix (Theorem~\ref{thm:A3}). Deciding
+whether the drift is structural or real is undecidable from paired data alone (Theorem~\ref{thm:A1}).
+Choosing a caliber $S$ to push the reported value above a target, subject to a removal budget
+$|A\setminus S|\le k$, is NP-hard by reduction from max-coverage---and the greedy selection whose
+$(1-1/e)$ guarantee the companion study established is, read at the metatheoretic level, precisely the
+approximation algorithm for caliber arbitrage. The honest limit of that statement: it is a reduction
+argument citing the classical hardness of max-coverage \citep{feige1998threshold}, not a formal reduction
+proved here, and at the scale of the instantiation ($|A|=8$, $2^{8}=256$ calibers) the problem is trivially
+enumerable. Its meaning is for evaluators with many components.
+
+% =====================================================================
+\section{Metatheory: which axioms are actually doing work}
+\label{sec:meta}
+
+\subsection{Exhaustive model checking}
+\label{sec:metadomain}
+
+Calling seven statements ``axioms'' invites the question of which are independent. We answered it by
+exhaustive enumeration on a domain small enough to be complete: $|X|=4$ samples, $|A|=3$ assets, so
+$2^{4\times3}=4096$ coverage structures, crossed with seven aggregation families deliberately chosen to
+cover the monotone/non-monotone and submodular/non-submodular quadrants (union coverage; at-least-two; best
+single; worst single; per-asset mean; per-asset sum; and exactly-one, which is non-monotone).
+
+\begin{table}[t]
+\centering
+\small
+\caption{Axiom independence over all $4096$ structures $\times$ $7$ aggregations. The minimal axiom set is
+meta-axiom $\{A1\}$, structural axioms $\{A2,A5\}$, theorems $\{A3,A4,A6,A7\}$.}
+\label{tab:independence}
+\begin{tabular}{@{}c p{1.9cm} p{7.6cm}@{}}
+\toprule
+Axiom & Verdict & Counterexample family and witness \\
+\midrule
+A1 & meta-axiom & constrains the language, not the structure \\
+A2 & genuine axiom & \texttt{min\_single}: $C_a{=}C_b{=}\{0\}, C_c{=}\varnothing$ gives $R(A){=}0$, but removing $c$ gives $1/4$ \\
+A3 & theorem & none (always true): $\tau_G$ is column deletion, $A\setminus G\setminus G=A\setminus G$ \\
+A4 & theorem & none (always true): set union commutes and is associative \\
+A5 & genuine axiom & \texttt{at\_least\_2}: same structure, $h(\{a\}){=}h(\{b\}){=}1/4$ but $h(\{a,b\}){=}1/4<1/2$ \\
+A6 & theorem & none (always true): column deletion is non-injective for every $G\neq\varnothing$ \\
+A7 & theorem & none ($3840$ witnesses); provable once accounting is written into the structure (T3) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This matters for a practical reason. Writing theorems as axioms makes an axiom system look stronger than it
+is and hides where the real constraint lies. The real constraints are that A2 requires the report to be
+monotone in components---excluding minimum-type calibers---and that A5 requires the coverage structure to be
+submodular---excluding at-least-two and mean-type calibers. Those two exclusions are the axiom-level
+counterparts of the aggregation-drift manipulability results: a mean caliber violates A5 (adding a
+zero-yield component moves the report), and a minimum caliber violates A2 (removing the worst component
+\emph{raises} the report).
+
+We record an honest gap. A2 and A5 are mutually independent in the sense that A5's witness
+(\texttt{at\_least\_2}) satisfies A2 while violating A5, so A5 does not imply A2; but within the seven-family
+aggregation set we did \emph{not} find a witness violating A2 alone. A2's independence is therefore
+established only against families that also violate A5, and a larger aggregation family would be needed for
+a strict separation. The check as written is registered as incomplete.
+
+\subsection{Incompleteness, and the missing A8}
+\label{sec:A8}
+
+The axiom system does not express Type~III drift, and we exhibit the witness rather than assert it. Fix the
+coverage structure $C_a=\{0,1\}, C_b=\{2\}, C_c=\varnothing$ and the per-sample verdicts
+$V=(\catch,\catch,\catch,\miss)$. Under a fine vocabulary the three classes have blind-spot rates
+$\{0.0,0.0,1.0\}$; under a coarse vocabulary merging them, the single class has rate $\{0.25\}$. Every
+per-sample verdict is unchanged, every quantity the seven axioms speak about is unchanged
+($R_{\text{or}}=0.75$ throughout), yet the grouped statistics move. The reason is structural: the label
+function $\lambda$ is \emph{not in the caliber signature}. The signature is $(A,E,\Theta,P)$ and has no slot
+for it.
+
+We therefore register the missing axiom and the extended signature.
+
+\begin{quote}
+\textbf{A8 (label-axis closure).} The caliber signature must be extended to $(D,A,E,\Theta,P,\lambda)$, and
+every reported statistic must declare its grouping axis $\lambda$; statistics whose $\lambda$ is undeclared
+are not comparable.
+\end{quote}
+
+This is not a stylistic requirement but the axiom form of a measured fact: the share of defect types
+exceeding $50\%$ blind-spot rate is $38.24\%$ under the normalised $34$-type vocabulary and $25.71\%$ under
+the original $70$-type one, and the relation is \emph{non-monotone} in granularity---the finer vocabulary
+contains $14$ singleton classes, which inflate the denominator without inflating the numerator. There is no
+direction in which one may ``correct'' a Type~III number from one vocabulary to another; it must be
+recomputed.
+
+\subsection{Comparison with other measurement theories}
+\label{sec:metacompare}
+
+The drift algebra sits beside three older measurement theories (Appendix~\ref{app:meta},
+Table~\ref{tab:metacompare}). Two borrowings are worth naming. First, our transition matrix does the same
+job as a multitrait--multimethod matrix \citep{campbell1959convergent}: it separates the ``method''
+(caliber) from the ``trait'' (mechanism). Second, A8 is the analogue of measurement invariance
+\citep{meredith1993measurement}: both require cross-group comparability to be declared and checked. The
+difference is that psychometrics has mature tests (Lord's $\chi^{2}$, Mantel--Haenszel) where we have only a
+structural requirement---a direction in which we could borrow. The correspondence is an analogy and we
+claim no physical one: in particular, A6's irreversibility is a consequence of our defining $\tau$ as column
+deletion, and would not be a theorem if $\tau$ were allowed to be an invertible instrument transform.
+
+% =====================================================================
+\section{Identifiability}
+\label{sec:ident}
+
+\subsection{The three-state transition matrix}
+\label{sec:transition}
+
+For two calibers $M,M'$ define the count matrix
+$T^{(M\to M')}_{ij}=|\{x: V(x;M)=i,\ V(x;M')=j\}|$ for $i,j\in\{\catch,\miss,\unk\}$. It is the complete
+sufficient statistic for a paired design, and it is what an audit should publish. For the environment change
+$E_1\to E_2$ under unaware accounting the $\unk$ row and column are identically zero in \emph{all} frames,
+and the five frames reconcile with the previously published values cell by cell ($4/4$ PASS, an independent
+recomputation rather than a transcription; Appendix~\ref{app:extra}, Table~\ref{tab:transition}). On the
+$566$-sample split: $E_1$ gives $340/226/0$ and $E_2$ gives $140/426/0$ (catch/miss/unknown), so
+$T_{\catch\to\catch}=140$, $T_{\catch\to\miss}=200$, $T_{\miss\to\catch}=0$, $T_{\miss\to\miss}=226$, and
+McNemar $b=200$, $c=0$, $p=1.245\times10^{-60}$.
+
+Row-normalising gives $P[\catch][\catch]=0.4118$, $P[\catch][\miss]=0.5882$ and $P[\miss][\miss]=1.0000$.
+The reading motivates the whole paper: $58.8\%$ of the samples the reference caliber caught are reported as
+\emph{tested and missed} under the reduced caliber, and $0\%$ are reported as \emph{not tested}. Lost
+capability is disguised as a lower rate, not as a gap in coverage.
+
+The paired design also exposes a window in which degradation is nearly invisible. Over the $63$ non-empty
+removal subsets, $|W(\rho)|=\{\calG: \text{retention}\ge\rho\wedge\text{unsound negatives}>0\}$ is $0$ at
+$\rho=100\%$ and $99\%$, $1$ at $95\%$, $7$ at $90\%$, $18$ at $80\%$ and $49$ at $50\%$. The widest window
+is removing the \emph{linker} alone: retention $98.8236\%$, so the headline rate barely moves, yet $22$
+negative verdicts are false ($14$ ODR/link, $8$ legacy) and type-conditional credibility falls to
+$90.43\%$. Reporting a single rate cannot see this. A hypothesis that the window's severity is governed by
+how \emph{concentrated} the lost capability is survives for the window's \emph{position}
+($\rho(\text{concentration},\text{retention})=+0.9429$, $n=6$) but is refuted for its \emph{severity} across
+all $63$ configurations ($\rho(\text{loss},\text{unsound})=+0.9950$ versus
+$|\rho(\text{concentration},\text{unsound})|=0.6662$). We report both, and we report that the $n=6$
+correlation is exploratory.
+
+\subsection{Structural versus real drift is not decidable}
+\label{sec:A1}
+
+\begin{theorem}[Non-identifiability from paired data]
+\label{thm:A1}
+Given paired observations $(M,M')$ alone, it is not decidable whether the drift is structural
+($\Rstar$ unchanged) or real ($\Rstar$ changed).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Let $\tau:q_2\to q_1$ be removal-type and suppose the observed table has $T_{\catch\to\miss}=b>0$,
+$T_{\miss\to\catch}=c=0$. Construct two data-generating processes. $G_{\text{struct}}$ sets $c(x)=1$ iff
+$V(x;q_2)=\catch$, so $\Rstar$ equals the reference rate and is unchanged; $G_{\text{real}}$ sets $c(x)=1$
+iff $V(x;q_1)=\catch$, so $\Rstar$ falls. Both produce the same joint distribution on
+$(V(\cdot;q_1),V(\cdot;q_2))$---the same $T$, the same $b$, the same $c=0$---and opposite conclusions about
+the capability. The latent capability is unobserved and no constraint pins it to the observed
+distribution.
+\end{proof}
+
+This is not pessimism; it is the standard conclusion for an unidentified latent quantity. It cannot be
+broken by more statistics, only by another measurement.
+
+\subsection{Nested calibers are point-identified; non-nested ones are not}
+\label{sec:A2}
+
+\begin{theorem}[Identifiability under nesting]
+\label{thm:A2}
+Let the measurement function be the coverage function $f(S)=|\bigcup_{a\in S}C_a|$ (monotone and submodular,
+verified empirically in the companion study). (i) If $q_1\subseteq q_2$ then $\Rstar$ has been observed at
+the reference caliber $q_2$, so the drift is point-identified:
+$D_\tau=\Rhat(q_1)-\Rhat(q_2)\le0$ by monotonicity. (ii) If $q_1$ and $q_2$ are incomparable, the reference
+caliber $q^{*}=q_1\cup q_2$ is unobserved and only a submodular interval is available,
+$\max(\Rhat(q_1),\Rhat(q_2))\le\Rhat(q^{*})\le\Rhat(q_1)+\Rhat(q_2)-\Rhat(q_1\cap q_2)$; point
+identification fails and the verdict is \emph{unresolved}.
+\end{theorem}
+
+\begin{corollary}
+\label{cor:A2.1}
+All four drift instances of Table~\ref{tab:fourtypes} are nested, hence their drift magnitudes are
+mathematically point-identified. What is genuinely unidentified is the separation of composition from
+mechanism effects within a single reported difference---a decomposition into two unobservable components,
+which no additional observation of the caliber can fix.
+\end{corollary}
+
+Corollary~\ref{cor:A2.1} has a rhetorical consequence we take seriously: the companion study's inability to
+separate composition from mechanism should be written as a formal limitation (non-identifiability), not as a
+deferral.
+
+\begin{theorem}[Decidability dichotomy]
+\label{thm:A3}
+(a) Whether $\tau$ is silent is decidable in $O(n)$: it is the equality test
+$T_{\catch\to\unk}=T_{\miss\to\unk}=0$ on the transition matrix. (b) Whether the drift is structural is
+undecidable from $(M,M')$ alone, unless the calibers are nested or the reference caliber is measured
+(Theorems~\ref{thm:A1}, \ref{thm:A2}).
+\end{theorem}
+
+The two halves are of different difficulty and must not be conflated: a test that decides silence cheaply
+says nothing about structure, and a system that is silent is not thereby degenerate.
+
+\subsection{Per-asset sensitivity and the contaminated-negative rate}
+\label{sec:sensitivity}
+
+Which asset's removal manufactures false negatives? Not the highest-yield one but the one with the largest
+\emph{unique} catch set, since samples also caught by a surviving asset do not change the OR verdict. On the
+$1{,}147$-sample matrix: asan $139$ unique catches ($12.12\%$), tsan $85$ ($7.41\%$), ubsan $83$ ($7.24\%$),
+compiler-warn $53$, cross-compile $14$, linker $10$, and the two structurally $\unk$ assets $0$. The
+contaminated-negative rate---reported negatives that are in fact positives---is $46.95\%$ on the
+$566$-sample split ($200$ of $426$) and $50.89\%$ on the $1{,}147$-sample matrix ($456$ of $896$). The two
+numbers are both correct and \emph{not interchangeable}: they come from different frames, and even the
+asset ranking differs between them (ubsan $>$ tsan on $566$; tsan $>$ ubsan on $1147$)---itself a
+composition-drift instance acting on an environment-drift conclusion. Any citation of these numbers must
+carry the frame.
+
+% =====================================================================
+\section{Correctability}
+\label{sec:correct}
+
+Theorem~\ref{thm:T2} said removal-type drift is irreversible. Theorem~\ref{thm:T6} sharpens that into an
+operational dichotomy: irreversibility is not a property of all removal, but of removing columns that carry
+information the retained columns cannot supply. Post-processing drifts---accounting rule, aggregation rule,
+label vocabulary---leave the record $R$ intact and are repaired at zero residual cost; so are the
+structurally-$\unk$ columns, whose values follow from a prior. Environment-gated removal of the sanitizer
+columns is in the other class.
+
+To quantify the failure we gave post-hoc repair its best chance: predict the removed column from the verdict
+combination of the retained columns (cw, cc, linker) by lookup on the $566$-sample split.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Best post-hoc reconstruction of removed sanitizer columns. ``Baseline'' is the trivial rule that
+always guesses $\unk$. Even with the best lookup, asan retains $30.04\%$ unrecoverable verdicts.}
+\label{tab:residual}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Removed column & best accuracy & \textbf{residual error} & baseline & gain \\
+\midrule
+asan & $69.96\%$ & $\mathbf{30.04\%}$ & $0.71\%$ & $+69.26\pp$ \\
+ubsan & $78.62\%$ & $\mathbf{21.38\%}$ & $0.71\%$ & $+77.92\pp$ \\
+tsan & $78.27\%$ & $\mathbf{21.73\%}$ & $0.71\%$ & $+77.56\pp$ \\
+wunsequenced & $100\%$ & $0.00\%$ & $100\%$ & $0$ (prior) \\
+compile-time & $100\%$ & $0.00\%$ & $100\%$ & $0$ (prior) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The contrast within Table~\ref{tab:residual} is the content of the theorem. Two removed columns are
+recovered perfectly at zero cost because their values are determined by a prior (they are structurally
+$\unk$). Three are not, because they carry unique information: about a third of asan's verdicts, and about a
+fifth of ubsan's and tsan's, cannot be recovered from anything retained. ``Not correctable'' is therefore
+not a property of removal as such but of removing a column that carries information nothing else carries---
+and the criterion is computable \emph{before} the removal is made. The operational rule that follows is a
+design constraint rather than a diagnostic: retain the per-asset $\times$ per-sample verdict matrix, because
+it is the only record from which post-processing drifts are repairable.
+
+% =====================================================================
+\section{Sample Complexity}
+\label{sec:sample}
+
+\subsection{Formalisation}
+\label{sec:sampleform}
+
+Test $H_0$: no drift (equal marginal rates) against $H_1$: drift with marginal difference at least
+$\varepsilon$, using a paired design and a sign test on the discordant pairs (equivalently, an exact
+McNemar test). Let $\psi=\Pr[\text{the two calibers disagree}]$ be the discordance rate and
+$\pi=\Pr[\text{direction}\mid\text{disagreement}]$. The identity
+\begin{equation}
+\varepsilon=\psi\,(2\pi-1),
+\label{eq:epspsi}
+\end{equation}
+is the hinge of the analysis. With $\alpha=0.05$ and power $0.8$ ($z_{1-\alpha/2}=1.9600$,
+$z_{1-\beta}=0.8416$), the required number of discordant pairs and samples are
+\begin{equation}
+m\ \ge\ \frac{\bigl(z_{1-\alpha/2}\sqrt{1/4}+z_{1-\beta}\sqrt{\pi(1-\pi)}\bigr)^{2}}{(\pi-1/2)^{2}},
+\qquad n=\frac{m}{\psi},
+\label{eq:sample}
+\end{equation}
+with an information-theoretic floor $m\ge\log(1/\beta)/\mathrm{KL}(\pi\|1/2)$. For the fully
+one-directional case $\pi=1$---not a degenerate corner but the actual situation on this data, where
+$c=0$---an exact binomial criterion replaces the normal approximation:
+$m\ge\lceil\log(\alpha/2)/\log(1/2)\rceil=6$.
+
+\subsection{The four types cost wildly different amounts}
+\label{sec:sampleresults}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Sample complexity by drift type on the $566$-sample paired split, $\alpha=0.05$, power $0.8$.
+Types~III and IV have $\psi=0$: their caliber change leaves \emph{every} per-sample verdict unchanged, so
+no paired test has power at any sample size.}
+\label{tab:sample}
+\begin{tabular}{@{}c p{4.6cm} r r r r r@{}}
+\toprule
+Type & Caliber change & $\psi$ & $\varepsilon$ & $m$ & $\mathbf{n}$ & KL floor \\
+\midrule
+I & drop 3 degenerate assets & $0.0071$ & $0.0071$ & $6$ & $\mathbf{849}$ & $329$ \\
+II & environment $E_1\to E_2$ & $0.3534$ & $0.3534$ & $6$ & $\mathbf{17}$ & $7$ \\
+III & label vocabulary change & $0.0000$ & $0.0000$ & --- & $\boldsymbol{\infty}$ & --- \\
+IV & aggregation rule change & $0.0000$ & $0.0000$ & --- & $\boldsymbol{\infty}$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three consequences follow, each a correction to a natural expectation.
+
+\paragraph{(i) Types III and IV are not hard---they are undetectable by this design.} Their $\psi$ is zero
+because the caliber change moves the report without moving any per-sample verdict
+(Section~\ref{sec:A8} for III; Section~\ref{sec:fourtypes} for IV). Every test built on per-sample
+verdicts---paired McNemar, permutation, bootstrap---has power identically zero. This is a property of the
+design, not of the sample size, and no budget fixes it.
+
+\paragraph{(ii) Cost is governed by the discordance rate, not the effect size.} Types I and II have the
+\emph{same} $\varepsilon$, both being fully one-directional; but $n=m/\psi$, and Type~I's $\psi$ is $1/50$
+of Type~II's, so its sample requirement is $50$ times larger ($849$ versus $17$). The mechanism is
+concrete: Type~I's drift is carried by only $4$ unique catches of the linker in a $566$-sample frame, so $6$
+discordant pairs require measuring $849$ samples. The practical rule is that audit budgets should be planned
+by \emph{how many samples carry the drift}, not by how large the drift looks: a drift reading $-35\pp$ can
+be cheap, and one reading $0.71\pp$ can be expensive.
+
+\paragraph{(iii) The paired step must become a dual design.} A five-step audit protocol in our earlier work
+treats sample-level pairing as the universal step. The result above shows it covers only the $A$ and $E$
+axes. The label and aggregation axes need a \emph{design-level contrast}: one set of per-sample verdicts,
+two label functions (or two aggregation rules), and a comparison of \emph{grouped statistics} rather than
+per-sample verdicts. The corrected protocol therefore has two designs, with cost model $n=m/\psi$ estimated
+per axis.
+
+\subsection{Sampling strategy}
+\label{sec:strategy}
+
+With $400$ repetitions over eight budgets and three strategies on the $566$-sample frame, Neyman allocation
+using true stratum discordance rates dominates at moderate budgets ($0.863$ versus $0.777$ for uniform at
+$B=20$); stratified-proportional sits between; all strategies saturate by $B\ge50$. Neyman with true rates
+is an upper bound, not an implementable policy, and an earlier two-stage adaptive variant that estimates the
+rates from a pilot quarter is \emph{worse} than uniform at small budgets ($0.280$ versus $0.505$ at
+$B=15$), because the effect here is large and the pilot's fixed cost is not repaid. The gap between the best
+simulated strategy and the theoretical requirement of Table~\ref{tab:sample} is due to the discreteness of
+the exact McNemar test at small budgets: reaching theoretical power needs a budget two to three times the
+theoretical $n$.
+
+% =====================================================================
+\section{Empirical Validation}
+\label{sec:exp}
+
+Every number in this section was computed in an earlier batch from a frozen matrix; no new measurement was
+taken for this paper. The experiments test the theorems, and each names the statement it checks.
+
+\paragraph{E1: the algebra on a frozen matrix.} Setting: the C/C++ apparatus with $|A|=8$ and frames
+$1147$ (capability boundary), $1137$ (all-pool), $566$ (paired evaluation split) and $110$ (real-world).
+Method: recompute the transition matrices from the frozen verdicts and evaluate T1 on three partitions.
+Result: the five transition matrices are reproduced with $\unk$ identically zero and reconcile with the
+previously published values in all four comparable frames (nine quantities per frame, all equal); T1's
+closed form matches the measured residual exactly in all three partitions, one of which attains equality;
+T4 holds layerwise (all $11$ defect groups have $c_g=0$); and T3's predicted accounting dependence
+reproduces ($0.0\pp$ unaware versus $+75.265\pp$ aware). This tests T1, T3, T4 and the identifiability
+dichotomy of Theorem~\ref{thm:A3}.
+
+\paragraph{E2: the correctability boundary.} Setting: the $566$-sample paired split, five drift chains
+(three nested, two non-nested that restore a component). Method: compare the composed transition matrix
+against the directly measured one, then reconstruct each removed column from the retained columns by
+lookup. Result: nested chains satisfy Chapman--Kolmogorov exactly (maximum absolute error $0.000$, $3/3$);
+non-nested chains violate it by $65.784$ and $74.272$ ($11.6\%$ and $13.1\%$ of $n$) with the error
+mass-conserving; best post-hoc reconstruction leaves residual errors of $30.04\%$ (asan), $21.38\%$ (ubsan)
+and $21.73\%$ (tsan) against $0.71\%$ for the trivial baseline, while the two structurally-$\unk$ columns
+are recovered perfectly. This tests T5 and T6 jointly.
+
+\paragraph{E3: sample complexity.} Setting: the $566$-sample frame, three sampling strategies $\times$
+eight budgets $\times$ $400$ repetitions, exact McNemar at $\alpha=0.05$. Method: empirical detection
+probability versus the closed-form requirement of Eq.~\eqref{eq:sample}. Result: Types~III and IV have
+$\psi=0$ and $n=\infty$---the paired design is powerless, not merely underpowered; Type~I requires $n=849$
+(KL floor $329$) and Type~II $n=17$ (KL floor $7$). This tests all of Section~\ref{sec:sample}, and it is
+the experiment that changes the audit protocol.
+
+\paragraph{E4: a cross-domain arm (partial).} Setting: an LLM-as-a-judge arm with $80$ samples $\times$
+$2$ judges (a reasoning model and a non-reasoning model) $\times$ $2$ semantically equivalent prompts,
+temperature $0$, with the declared per-sample verdict label as ground truth. This is a partial
+instantiation: the planned cross-domain data collection was not completed, so the arm reuses an
+in-repository judge study rather than public judge benchmarks.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Cross-domain arm. The aggregation axis is essentially non-transferable: a change of aggregation
+rule moves the LLM report by $1.03\pp$ against $33.33\pp$ in the C/C++ apparatus. Components are scored out
+of $25$ with self-set weights and no external calibration.}
+\label{tab:crossdomain}
+\begin{tabular}{@{}p{2.7cm} p{4.0cm} p{3.0cm} r@{}}
+\toprule
+Axis & C/C++ apparatus & LLM arm & Migration \\
+\midrule
+caliber (prompt) & $-35.34\pp$ & invariance $87.5\%$ / $96.25\%$ & $15.62/25$ \\
+environment (judge model) & two environments & false-report gap $13.0\pp$ & $16.25/25$ \\
+aggregation & $33.33\pp$ & $1.03\pp$ & $2.58/25$ \\
+label & $38.24\%$ vs $25.71\%$ & swing $8.56\pp$ & $21.39/25$ \\
+\midrule
+\textbf{total} & & & $\mathbf{55.84/100}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The structural-Goodhart rate in the LLM arm---the fraction of samples a judge calls a catch while the
+declared label says miss---is $26.25\%$ (reasoning judge) and $42.50\%$ (non-reasoning judge). The ten most
+severe cases concentrate in the \emph{embedded} (6) and \emph{concurrency} (3) defect families, exactly the
+families requiring an external specification. That agreement with the companion study's ``needs-oracle''
+classes is suggestive rather than conclusive: human inter-annotator agreement in this arm is zero, so
+``judge is wrong'' and ``label is wrong'' cannot be separated, and the severe cases must not be read as an
+error list.
+
+The arm also produced a live instance of Theorem~\ref{thm:T6}. The raw judge log lacks a run-identifier
+field, and one model was run twice at different token budgets, so runs can only be inferred from completion
+length. That inference moves the cross-model agreement rate by up to $39.19\pp$; the axis is therefore not
+reliably estimable, and we fall back to published aggregate quantities. The missing metadata field is an
+acquisition-layer defect, and by Theorem~\ref{thm:T6} it is not repairable after the fact---the arm
+illustrates the theorem on itself. We record two further limits: the arm is not a full cross-domain
+validation, and it records no model snapshot identifier, so its conclusion has a short reproduction horizon
+---itself a limitation of the theorem's scope.
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{The three boundaries decide what auditing can do.} Identifiability says that from paired data
+alone an auditor cannot separate a changed capability from a changed caliber, and that nesting or a
+reference measurement is what breaks the tie. Correctability says that post-processing drift can be repaired
+from retained records while acquisition-layer drift cannot, with a computable residual where repair fails.
+Sample complexity says the cost of an audit is set by how many samples carry the drift, and that for two of
+the four types the paired design is powerless by construction. Together these bound an audit from both
+sides: what it can establish, and what it must buy.
+
+\paragraph{Relation to the companion paper.} The companion study reports what was found in one apparatus;
+this paper reports what an audit can find in principle. Its five findings are each an instance of one of the
+four drift types: the collapse of an apparent selection gain is composition drift; the environment-induced
+fall in real-defect detection is environment drift; the vocabulary-dependent blind-spot share is label
+drift; and the headline blind-spot percentage is a consequence of the aggregation caliber. We cite the
+companion for those findings and do not restate its arguments.
+
+\paragraph{Limitations.} The empirical basis is one domain (C/C++ verification) plus one partial LLM arm;
+the environment axis has two control points; $92.9\%$ of the corpus is human-planted; the ``always true''
+metatheory verdicts hold only over the $4096$-structure, seven-aggregation domain, so they are in-domain
+evidence rather than general proofs; A2 and A5 could not be separated within that domain; the Type~I
+exponent $\beta$ is model-implied; the phase-transition language is an analogy with no thermodynamic
+counterpart; the LLM arm has two judges, two prompts and eighty samples with zero human agreement; and the
+risk thresholds and migration-score weights are self-set with no external calibration.
+
+\paragraph{Future work.} Four items follow directly. (1) Formalise A8 and test the extended signature on a
+second domain. (2) Derive the sample complexity of \emph{non-paired} designs, which is what Types~III and IV
+actually require. (3) Add a third environment profile (a container image) to lift the environment axis from
+two control points to three. (4) Build an equi-marginal replacement design to separate composition from
+mechanism effects---which would convert Corollary~\ref{cor:A2.1}'s non-identifiability into identifiability
+using a read-only rearrangement rather than a new measurement.
+
+\paragraph{What an evaluator should do on Monday.} The three cheapest interventions are also the most
+effective. Remove zero-yield components from the \emph{declared} asset pool, keeping them as a capability
+boundary record: this eliminates composition inflation entirely, because the removed components catch
+nothing ($0$ of $1147$). Switch the accounting rule from unaware to aware: this makes the contaminated
+negatives visible rather than silent. Declare the aggregation rule and attach a manipulability check: this
+turns aggregation drift from invisible into measurable. All three cost approximately nothing---a declaration
+change, an already-implemented accounting mode, and an already-implemented scorer---and together they raise a
+measured anti-drift score from $53.05$ to $66.67$ out of $100$ in a simulation over the same frozen matrix.
+In the same simulation, a design that reduces the asset count for simplicity scores $0.3389$ against
+$0.6230$ for the status quo and $0.7721$ for the theory-implied design, and its composition inflation is
+$1.0000$: with the pool reduced to the selection budget there is no selection problem left to measure.
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+Evaluation numbers can change without any optimisation pressure, because the caliber of measurement changed
+while the capability did not. We gave that structure an algebra---seven axioms of which only two are
+independent---and proved its three boundaries: structural and real drift are not identifiable from paired
+data alone, post-hoc repair is possible exactly on the post-measurement layer, and audit cost is governed by
+the discordance rate rather than the effect size, with two of the four drift types undetectable by a paired
+design at any sample size. The most useful practical consequence is that the three cheapest
+interventions---declaring the pool without zero-yield components, accounting for untested samples, and
+declaring the aggregation rule---cost approximately nothing and raise the measured anti-drift score from
+$53.05$ to $66.67$.
+
+\bibliographystyle{plainnat}
+\bibliography{paper2_refs}
+
+\appendix
+
+% =====================================================================
+\section{Proofs}
+\label{app:proofs}
+
+\subsection*{Theorem~\ref{thm:T1} (super-additivity, closed-form residual)}
+
+Let $C_S:=\bigcup_{a\in S}C_a$ and write
+$a_0:=|C_A\setminus(C_B\cup C_L)|$, $l_0:=|C_L\setminus(C_A\cup C_B)|$,
+$m_0:=|(C_A\cup C_L)\setminus C_B|$. Then $h(A)=a_0$, $h(L)=l_0$, $h(A\cup L)=m_0$, and
+\begin{equation}
+m_0=|C_A\setminus C_B|+|C_L\setminus C_B|-|C_A\cap C_L\setminus C_B|,
+\end{equation}
+while
+\begin{equation}
+a_0=|C_A\setminus C_B|-|C_A\cap C_L\setminus C_B|,\qquad
+l_0=|C_L\setminus C_B|-|C_A\cap C_L\setminus C_B|,
+\end{equation}
+because the part of $C_A\setminus C_B$ that lies in $C_L$ is exactly $C_A\cap C_L\setminus C_B$, and
+symmetrically for $C_L$. Subtracting gives
+$m_0-(a_0+l_0)=|C_A\cap C_L\setminus C_B|\ge0$, which is Eq.~\eqref{eq:t1residual}.
+
+Equivalently, in the language of submodularity: $f$ submodular implies $g(S):=f(S_0\setminus S)$ submodular
+(substitute $X=S_0\setminus S$, $Y=S_0\setminus T$ into the submodular inequality), so $h=f(S_0)-g$ is
+supermodular and $h(A\cup L)\ge h(A)+h(L)-h(A\cap L)=h(A)+h(L)$ since $A\cap L=\varnothing$. $\square$
+
+\paragraph{A trap worth recording.} The residual is \emph{not} the intersection of $A$'s unique-contribution
+set with $L$'s. Those two sets are disjoint by construction---one excludes $C_L$ entirely, the other
+contains only elements of $C_L$---so their intersection is identically empty and a test built on it would
+pass for every input while testing nothing. The correct form is $|C_A\cap C_L\setminus C_B|$, which can be
+non-zero precisely when a third asset set $B$ is present.
+
+\subsection*{Theorem~\ref{thm:T2} (non-invertibility)}
+
+Take $G=\{a\}$ for any asset $a$. Build $M_1,M_2$ agreeing with $M$ on all assets except $a$, with
+$C_a^{(1)}=\varnothing$ and $C_a^{(2)}=C_B$ for some non-empty retained asset set $B$. After removing $a$,
+both OR verdict sequences are decided by $A\setminus\{a\}$ and are therefore identical, while
+$\Rhat(M_1)<\Rhat(M_2)$. So $\tau_G$ is many-to-one and has no inverse. $\square$
+
+\subsection*{Theorem~\ref{thm:T3} (stratification of silence)}
+
+Under unaware accounting, a sample with no catch is written $\miss$ even when the environment gate is
+non-empty, so every catch lost to removal lands in $\miss$ and the $\unk$ count is unchanged:
+$\Delta_{\unk}=0$. Under aware accounting the same samples become $\unk$, so
+$\Delta_{\unk}=+\mathrm{lost}/n\neq0$. Both rules are admissible; neither is ``truer''. Aware makes the
+problem visible at the cost of driving the conditional-recall denominator towards zero; unaware makes it
+invisible at the cost of a report that misstates. $\square$
+
+\subsection*{Theorem~\ref{thm:T5} (Chapman--Kolmogorov condition)}
+
+($\Rightarrow$) Let $E_3\subseteq E_2\subseteq E_1$ and $V_i=V(x;E_i)$. \emph{Absorption}: if $V_2=\miss$
+then no $a\in E_2$ catches $x$; since $E_3\subseteq E_2$, no $a\in E_3$ catches $x$ either, so
+$V_3\in\{\miss,\unk\}$ (here $\unk\equiv0$), giving $P_{23}[\miss][\miss]=1$. \emph{One-directionality}:
+by Theorem~\ref{thm:T4}, $T_{12}[\miss][\catch]=0$. The $(\catch,\miss)$ cell of the product is then
+$T_{12}[c][c]\cdot P_{23}[c][m]+T_{12}[c][m]\cdot1$, and
+$P_{23}[c][m]=T_{23}[c][m]/|E_2\text{-catch}|$ with
+$|E_2\text{-catch}|=T_{12}[c][c]+T_{12}[m][c]=T_{12}[c][c]$, so the first term is $T_{23}[c][m]$ and the
+product cell equals $T_{23}[c][m]+T_{12}[c][m]$. The true cell is
+$\#\{V_1{=}c,V_3{=}m\}=\#\{V_2{=}c,V_3{=}m\}+\#\{V_2{=}m,V_3{=}m\}=T_{23}[c][m]+T_{12}[c][m]$ by
+absorption. The other cells follow from the row sums and total conservation.
+
+($\Leftarrow$) If $T_{23}[m][c]>0$ there is a sample with $V_2=\miss$, $V_3=\catch$. If
+$E_3\not\subseteq E_2$, $E_3$ contains an asset absent from $E_2$, so this sample's $V_1$ may be either
+$\catch$ or $\miss$: $V_2$ no longer screens $V_1$, the screening condition fails, and the product's
+$(\miss,\catch)$ cell is non-zero whereas the true $T_{13}$ cell is $0$. $\square$
+
+\subsection*{Theorem~\ref{thm:T6} (correctability boundary)}
+
+(1) If $\tau$ acts only on $\rho$ via a known map $\rho\mapsto\rho'$ and $R$ is retained, then $\rho'$ is
+computable, and $\rho$ is recoverable either directly (if $\rho\mapsto\rho'$ is injective on its range) or
+from $R$; residual error $0$. (2) If the deleted columns are cellwise determined by the retained columns
+together with a prior---as the structurally-$\unk$ columns are---they are reconstructible cell by cell;
+residual error $0$. (3) Otherwise the deleted columns carry information not determined by the retained ones,
+so by the construction of Theorem~\ref{thm:T2} there exist $R_1\neq R_2$ with $R_1'=R_2'$ after deletion:
+the map is many-to-one, has no inverse, and no post-hoc procedure recovers $\rho$ in general. The residual
+error is $1$ minus the best achievable prediction of the deleted column from the retained ones, which
+Table~\ref{tab:residual} evaluates. $\square$
+
+% =====================================================================
+\section{Metatheory: full tables}
+\label{app:meta}
+
+Model domain: $|X|=4$ samples, $|A|=3$ assets, all $2^{4\times3}=4096$ coverage structures, seven
+aggregation families---\texttt{or\_union} (monotone, submodular), \texttt{at\_least\_2} (monotone,
+non-submodular), \texttt{max\_single}, \texttt{min\_single}, \texttt{mean\_single} (all monotone,
+non-submodular), \texttt{sum\_single} (monotone, additive), and
+\texttt{exactly\_one\_nonmonotone} (non-monotone, the source of A2 counterexamples). Drift operators are
+removal-type, $\tau_G$ retaining $A\setminus G$, and damage is $h(G)=R(A)-R(A\setminus G)$.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Completeness check. The label-coarsening witness shows a model in which every axiom-relevant
+quantity is fixed while the grouped statistics move---so Type~III drift is inexpressible in the current
+signature.}
+\label{tab:completeness}
+\begin{tabular}{@{}p{5.4cm} p{1.6cm} p{4.4cm}@{}}
+\toprule
+Check & Result & Note \\
+\midrule
+all four observed drift types expressible? & no & Type~III cannot be expressed \\
+model satisfying all axioms yet drifting? & yes & label-coarsening witness \\
+is a ninth axiom needed? & not found beyond A8 & not excluded: the domain is finite \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The label-coarsening witness in full: $C_a=\{0,1\}$, $C_b=\{2\}$, $C_c=\varnothing$, per-sample verdicts
+$V=(\catch,\catch,\catch,\miss)$. Fine vocabulary (3 classes) $t_1=\{0,1\},t_2=\{2\},t_3=\{3\}$ gives blind
+rates $\{0.0,0.0,1.0\}$; coarse vocabulary (1 class) gives $\{0.25\}$. All per-sample verdicts, and every
+quantity the seven axioms refer to, are unchanged ($R_{\text{or}}=0.75$ throughout); only the grouped
+statistics move.
+
+\begin{table}[h]
+\centering
+\small
+\caption{The drift algebra beside three neighbouring measurement theories. The correspondences are
+analogies; we claim no physical counterpart, and A6's irreversibility is a consequence of defining $\tau$ as
+column deletion.}
+\label{tab:metacompare}
+\begin{tabular}{@{}p{2.4cm} p{3.0cm} p{3.0cm} p{3.2cm}@{}}
+\toprule
+Dimension & Drift algebra & Measurement invariance & CTT / IRT \\
+\midrule
+Object & the caliber of an evaluator & latent variable vs.\ indicators & latent trait vs.\ item responses \\
+Drift defined as & $D_\tau=\Rhat(\tau M)-\Rhat(M)$ & loadings/intercepts unequal across groups & differential item functioning \\
+Reversibility & removal-type irreversible; post-processing correctable & partly recoverable by re-estimation & correctable via anchor items \\
+Non-identifiability & yes (structural vs.\ real) & yes (latent scale) & yes ($\theta$ scale and origin) \\
+Composability & generators compose; observed matrices do not & needs anchoring & needs equating \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Complexity, restated with its caveat: deciding whether a caliber change occurred is $O(|T|\cdot n)$ once the
+caliber is enumerated; deciding whether the drift is structural is undecidable from paired data alone;
+caliber arbitrage is NP-hard by reduction from max-coverage, with a greedy $(1-1/e)$ approximation. The
+hardness statement is a reduction argument citing a classical result \citep{feige1998threshold}, not a formal
+reduction proved here, and it is vacuous at $|A|=8$.
+
+% =====================================================================
+\section{Supplementary empirical tables}
+\label{app:extra}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Universality classes. ``First-order-like'' is a descriptive label for a discontinuous jump observed
+at two control points, not a fitted order parameter; ``no transition'' means the response function is
+monotone decreasing over the whole observed range. The exponent $\beta$ is a model-implied value (a
+quadratic fit forces the mean-field value $\beta=2$), not an independent measurement.}
+\label{tab:universality}
+\begin{tabular}{@{}c p{2.8cm} p{4.0cm} p{2.6cm} r@{}}
+\toprule
+Type & Control axis & Shape & Class & $\beta$ \\
+\midrule
+I & continuous ($d$ degenerate assets) & continuous, smooth, concave & no transition (sub-critical) & $2.02$ \\
+II & binary (E1/E2) & discontinuous jump & first-order-like & n/a \\
+III & discrete (class count) & non-monotone & not a transition & n/a \\
+IV & discrete (rule switch) & discontinuous jump & first-order-like & n/a \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{T1 on the $566$-sample split ($n=566$); ``env-gated'' abbreviates $\{$asan,ubsan,tsan$\}$, and
+cw/cc abbreviate compiler-warn and cross-compile. The residual is $\le0$ in all three partitions and the
+closed form matches measurement to $<10^{-6}\pp$. Row 1 attains equality, so the bound is not slack here.}
+\label{tab:t1}
+\begin{tabular}{@{}p{4.9cm} r r r r r@{}}
+\toprule
+Partition $(A\mid L\mid B)$ & $D_A$ & $D_L$ & $D_{A\cup L}$ & residual & closed form \\
+\midrule
+env-gated $\|$ $\{$linker$\}$ $\|$ $\{$cw,cc$\}$ & $-35.3357$ & $-0.7067$ & $-36.0424$ & $0.0000$ & $0.0000$ \\
+env-gated $\|$ $\{$compiler-warn$\}$ $\|$ $\{$cc,linker$\}$ & $-35.3357$ & $-4.7703$ & $-45.0530$ & $-4.9470$ & $-4.9470$ \\
+$\{$asan$\}$ $\|$ $\{$ubsan$\}$ $\|$ $\{$tsan,cw,cc,linker$\}$ & $-10.6007$ & $-7.7739$ & $-20.6714$ & $-2.2968$ & $-2.2968$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Three-state transition matrices, $E_1\to E_2$, unaware accounting. $b=T_{\catch\to\miss}$ is the
+forward McNemar discordant count; the reverse count is $c=T_{\miss\to\catch}=0$ in every frame (column
+omitted). The last column reports whether the drift is silent ($\Delta_{\unk}=0$).}
+\label{tab:transition}
+\begin{tabular}{@{}p{3.5cm} r r r r r r r l@{}}
+\toprule
+Frame & $n$ & $E_1$ (c/m/u) & $E_2$ (c/m/u) & $T_{c\to c}$ & $T_{c\to m}$ & $T_{m\to c}$ & $b$ & silent \\
+\midrule
+A5 eval $566$ & $566$ & $340/226/0$ & $140/426/0$ & $140$ & $200$ & $0$ & $200$ & yes \\
+A5 deriv $571$ & $571$ & $376/195/0$ & $158/413/0$ & $158$ & $218$ & $0$ & $218$ & yes \\
+A5 all $1137$ & $1137$ & $716/421/0$ & $298/839/0$ & $298$ & $418$ & $0$ & $418$ & yes \\
+cap.\ boundary $1147$ & $1147$ & $707/440/0$ & $251/896/0$ & $251$ & $456$ & $0$ & $456$ & yes \\
+real-world $110$ & $110$ & $65/45/0$ & $26/84/0$ & $26$ & $39$ & $0$ & $39$ & yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Type~I: apparent selection gain versus the number $d$ of injected zero-yield components, at
+selection budget $k=4$. The greedy arm is constant at $59.55\%$ throughout---zero-yield components
+contribute nothing---so the entire rise in $g_{\text{app}}$ is a denominator effect. $d\ge4$ uses injected
+ghost components, not real assets, and must not be extrapolated.}
+\label{tab:gapp}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$d$ & assets & greedy $k{=}4$ & random-arm mean & $g_{\text{app}}$ \\
+\midrule
+0 & 5 & $59.55\%$ & $54.25\%$ & $5.30\pp$ \\
+1 & 6 & $59.55\%$ & $48.92\%$ & $10.62\pp$ \\
+2 & 7 & $59.55\%$ & $44.38\%$ & $15.16\pp$ \\
+3 & 8 & $59.55\%$ & $40.50\%$ & $19.04\pp$ \\
+4 & 9 & $59.55\%$ & $37.18\%$ & $22.37\pp$ \\
+5 & 10 & $59.55\%$ & $34.31\%$ & $25.23\pp$ \\
+6 & 11 & $59.55\%$ & $31.83\%$ & $27.71\pp$ \\
+7 & 12 & $59.55\%$ & $29.67\%$ & $29.88\pp$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Type~III: the share of classes exceeding $50\%$ blind-spot rate is \emph{not} monotone in
+granularity. The finer $70$-type vocabulary contains $14$ singleton classes, which inflate the denominator
+without inflating the numerator. A number of this form must be recomputed, never rescaled, when the
+vocabulary changes.}
+\label{tab:granularity}
+\begin{tabular}{@{}p{5.6cm} r r r@{}}
+\toprule
+Vocabulary & classes & classes $>50\%$ blind & share \\
+\midrule
+\texttt{family} & $8$ & $3$ & $37.50\%$ \\
+\texttt{source\_batch} & $9$ & $2$ & $22.22\%$ \\
+\texttt{defect\_type} normalised & $34$ & $13$ & $38.24\%$ \\
+\texttt{defect\_type} original & $70$ & $18$ & $25.71\%$ \\
+\texttt{defect\_type} $\times$ \texttt{source\_batch} & $75$ & $20$ & $26.67\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Type~IV: manipulability, defined as the change in the reported value produced by adding three
+zero-yield components---components that add no detection capability whatsoever. OR, max and at-least-two
+are immune; the per-asset mean is moved by a third; the minimum collapses. The minimum is excluded from the
+health score precisely because its collapse is degenerate.}
+\label{tab:manip}
+\begin{tabular}{@{}p{3.6cm} r r r@{}}
+\toprule
+Aggregation rule & producing pool & with 3 zero-yield comps & relative change \\
+\midrule
+\texttt{or\_any} & $61.6391\%$ & $61.6391\%$ & $0.00\%$ \\
+\texttt{max\_asset} & $35.5711\%$ & $35.5711\%$ & $0.00\%$ \\
+\texttt{at\_least\_2\_assets} & $28.1604\%$ & $28.1604\%$ & $0.00\%$ \\
+\texttt{mean\_per\_asset} & $17.6693\%$ & $11.7795\%$ & $\mathbf{33.33\%}$ \\
+\texttt{min\_asset} & $0.8718\%$ & $0.0000\%$ & $100.00\%$ (degenerate) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{Correctability by layer. ``Post-processing'' drifts leave the record $R$ intact and are repaired at
+zero residual cost; ``acquisition'' drifts delete information and are not.}
+\label{tab:correct}
+\begin{tabular}{@{}p{7.3cm} l r r@{}}
+\toprule
+Drift & Layer & Correctable? & Residual \\
+\midrule
+accounting rule (unaware $\leftrightarrow$ aware) & post-processing & yes & $0$ \\
+aggregation rule (OR $\leftrightarrow$ mean) & post-processing & yes & $0$ \\
+label vocabulary & post-processing & yes & $0$ \\
+structurally-$\unk$ columns & acquisition (prior known) & yes & $0$ \\
+env-gated removal of asan/ubsan/tsan & acquisition & \textbf{no} & Table~\ref{tab:residual} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\small
+\caption{A four-component health score (each component $25$ points) for the instantiated apparatus. The
+component values, the equal weights and the thresholds are self-set with no external calibration, so the
+total should be read as a structured summary, not as a calibrated instrument.}
+\label{tab:health}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Component & raw value & score \\
+\midrule
+composition stability & $0.2784$ & $6.96/25$ \\
+environment stability & $0.5305$ & $13.26/25$ \\
+label stability & $0.8748$ & $21.87/25$ \\
+aggregation stability & $0.6667$ & $16.67/25$ \\
+\midrule
+\textbf{total} & & $\mathbf{58.76/100}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{An evolution model, kept in the appendix.} Modelling the apparatus's own history as a state
+vector over eight capability axes with a three-valued scale ($0$ absent, $1$ partial, $2$ complete) across
+six recorded versions gives a monotone $\max$ transition with zero removals, a unique fixed point, no limit
+cycles, and an undecidable chaos question (six time points is far too few for a Lyapunov estimate). The
+model's role here is narrow and we keep it narrow: it is evidence that the apparatus's own evolution is
+failure-driven rather than optimisation-driven, which is the SG-3 premise of this paper appearing at the
+meta level. The state coordinates, the three-valued scale and the quality weights ($0.40$ detection,
+$0.35$ stability, $0.25$ interpretability) are all self-set; the landscape shape should not be read as a
+quantitative claim.
+
+% =====================================================================
+\section{Reproduction commands}
+\label{app:repro}
+
+Every number in this paper comes from a frozen artifact and can be recomputed. Representative one-line
+commands (all read-only; no detector is invoked):
+
+\begin{verbatim}
+# T1 residual + three-state transition matrices + 692 reconciliation
+python tools/compute_697_drift_algebra.py
+
+# T5 (Chapman-Kolmogorov) + T6 (correctability residual) + health score
+python tools/compute_698_drift_propagation.py
+
+# Four-type quantification: g_app(d), per-asset sensitivity, granularity ladder,
+# manipulability table
+python tools/compute_698_composition_drift.py
+python tools/detect_698_structural_goodhart.py --demo-queyi
+
+# Metatheory: 4096 structures x 7 aggregations
+python tools/compute_700_axiom_independence.py
+
+# Phase-transition scan, critical point and structural early-warning indicators
+python tools/compute_700_phase_transition.py
+
+# Sample complexity, KL floors, sampling-strategy simulation
+python tools/compute_700_sample_complexity.py
+
+# Cross-domain arm and migration score
+python tools/compute_700_llm_drift.py
+\end{verbatim}
+
+All scripts are pure-standard-library, deterministic (no random seeds beyond fixed permutation streams) and
+fail loud. The frozen matrices themselves are not regenerated by this paper.
+
+% =====================================================================
+\section{Reference verification status}
+\label{app:refs}
+
+Following the discipline of the companion paper, every bibliography entry carries a verification tag in its
+\texttt{note} field. Of the entries cited here: the majority were checked online in earlier batches
+(\texttt{verified-698} for the entries checked in that batch, \texttt{verified-695} for those checked
+earlier); the classical books and journal articles (\texttt{classic}) have no arXiv identifier and their
+metadata comes from domain knowledge; and a small number are marked \texttt{unverified-memory}, meaning
+their identifiers were recalled rather than checked. \textbf{No entry marked \texttt{unverified-memory} is
+used as evidence anywhere in this paper}---those are cited only as background and must be re-verified before
+camera-ready. One entry (\texttt{lv2026whoevaluates}) was seen only behind a paywall and is likewise flagged
+for re-verification. This paper introduces no bibliography entry that was not already present in the
+repository's earlier literature batches.
+
+\end{document}
