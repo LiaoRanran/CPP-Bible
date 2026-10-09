@@ -27,6 +27,14 @@ raw_external/
 | MT-Bench | 多轮对话评判 | 80 题×多模型 | CC-BY/lmsys | GPT-4 + 人类 | LLM 评判偏置 |
 | AlpacaEval | 指令遵循胜率 | 805 条 | MIT/CC | LLM pairwise（长度校正） | 长度偏置最典型 |
 
+
+## 701 批更新（2026-10-09）
+
+- **699 的 22 个项目已在 WSL 实测编译**：14 built:true / 8 built:false（详见 `../../701_build_results.md`）。699 记录的“构建未实测（无 WSL 出口）”**已过期**——701 实测 WSL 可联网。
+- **新增 18 个真实 C/C++ 缺陷**（`../../../data/701_new_project_defects.json`），`original_projects/` 下新增对应 `<CVE>/README.md` + `clone_build.sh`。
+- **统一索引**：`raw_external/index.json`（40 个案例）。**一键构建**：`original_projects/build_all.sh`。
+- 案例库规模：**40 个已提供构建脚本，其中 14 个经 701 实测编译通过**。
+
 ## 复用接口
 
 ```python
@@ -41,7 +49,7 @@ llm = load_llm_eval_data()["records"]                  # 240 条真实样本
 
 ## 已知偏差与限制（诚实记录）
 
-1. **构建未实测**：22 个原始项目缺陷的 `clone_build.sh` 均**未在本环境执行**（WSL 无网络出口）。`build_status = script-provided-not-executed`。后续须在有出口的 Linux 上重跑并回填 `built`。
+1. ~~构建未实测~~ **已由 701 批修正**：22 个在 WSL 实测，14 built:true / 8 built:false（见 `../../701_build_results.md`）。新增 18 个仍为 script-provided-not-executed。
 2. **修复 commit 核实**：5 个 verified=true（短 SHA 取自官方公告）；其余仅以公告 URL 引用，完整 SHA 须在该环境解析。
 3. **CVSS 标注**：值为 `nvd-reported`，发表前须用 NVD 2.0 API 复核。
 4. **LLM 数据集样本**：统一文件中的 240 条为实时下载的真实抽样；全量（数千/数万）须在有出口环境重跑 `download_llm_eval.py`。
