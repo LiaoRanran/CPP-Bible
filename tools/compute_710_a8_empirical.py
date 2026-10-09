@@ -267,7 +267,8 @@ def main(argv: list[str] | None = None) -> int:
     n = len(rows)
     blind_n = sum(1 for r in rows if r["or6"] != "catch")
     extremes = []
-    for k in (2, 3, 8, 34):
+    # k=1（全部样本 1 类）给下界 0%（整帧盲区率 38.36% < 50%），k=34 给上界
+    for k in (1, 2, 3, 8, 34):
         for tag, lam in extreme_lambdas(rows, k):
             st = stats_under_lambda(rows, lam)
             extremes.append({"k": k, "construction": tag, **{kk: st[kk] for kk in (

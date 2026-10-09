@@ -1,7 +1,7 @@
 {
  "schema": "queyi-710/a8-empirical/v1",
  "generated_by": "tools/compute_710_a8_empirical.py",
- "generated_at": "2026-10-09T19:11:36+08:00",
+ "generated_at": "2026-10-09T19:13:14+08:00",
  "detect_calls": 0,
  "research_basis": "700-A 元理论 §2.1 的标签粗化见证（4 样本玩具域）在 1147 条 676g 冻结矩阵上的真实化",
  "frame": {
@@ -93,6 +93,15 @@
  "lambda_freedom": {
   "constructive_extremes": [
    {
+    "k": 1,
+    "construction": "construct_single_class",
+    "share_high_blind_pct": 0.0,
+    "n_classes": 1,
+    "macro_mean_blind_pct": 38.3609,
+    "worst_class": "all",
+    "worst_blind_pct": 38.3609
+   },
+   {
     "k": 2,
     "construction": "construct_max_singleton_blind",
     "share_high_blind_pct": 50.0,
@@ -168,7 +177,7 @@
   "random_partition_distribution": [
    {
     "k": 2,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -177,7 +186,7 @@
    },
    {
     "k": 3,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -186,7 +195,7 @@
    },
    {
     "k": 5,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -195,7 +204,7 @@
    },
    {
     "k": 8,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -204,7 +213,7 @@
    },
    {
     "k": 14,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -213,7 +222,7 @@
    },
    {
     "k": 20,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 0.0,
     "median": 0.0,
@@ -222,7 +231,7 @@
    },
    {
     "k": 34,
-    "draws": 1000,
+    "draws": 500,
     "min": 0.0,
     "p05": 2.9412,
     "median": 5.8824,
@@ -317,13 +326,13 @@
    42.8571
   ],
   "share_range_observed_and_constructed_pp": [
-   37.5,
+   0.0,
    97.0588
   ]
  },
  "conclusion": {
   "a8_holds_on_queyi": false,
-  "why": "三档真实词表（34/14/8）是**逐层粗化**（父子关系均为函数，见 hierarchy_check），逐样本裁决与 OR 检出率**逐位不变**，但「>50% 盲类占比」从 38.2353% 变到 37.5%；且任意标签映射下该统计量的可达范围为 [37.5%, 97.0588%]",
+  "why": "三档真实词表（34/14/8）是**逐层粗化**（父子关系均为函数，见 hierarchy_check），逐样本裁决与 OR 检出率**逐位不变**，但「>50% 盲类占比」从 38.2353% 变到 37.5%；且任意标签映射下该统计量的可达范围为 [0.0%, 97.0588%]",
   "paper_implication": "**两者皆是，但威胁是可控的**：①论文现有数字都带**显式词表**（34 类归一化 / 8 家族），在这些 λ 下数字是良定义的 ⇒ 不构成对已发布数字的有效性威胁；②但「不声明 λ 的统计量不可比较」必须升格为**报告规范**（700-F 的 P4），因为同一批裁决在 34/14/8 三档下可给出 38.24% / 31.43% / 37.50% 三个都'正确'的数。③本条是 A8 的实证支撑：λ 必须进口径签名，否则 Type III 漂移静默。"
  },
  "honest_limits": [
