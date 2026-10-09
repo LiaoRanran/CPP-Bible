@@ -21,10 +21,15 @@
 | `REPRODUCIBILITY_CHECKLIST.md` | NeurIPS 复现清单逐项回答 |
 | `CONFLICT_OF_INTEREST.md` | 利益冲突声明 |
 | `AUTHOR_CONTRIBUTIONS.md` | 作者贡献声明（CRediT，单作者） |
+| `paper_appendix_extras.tex` | **706 批移出的附录节**（app:humanize / app:a5full / app:bench676l / app:incidents），逐字保留，供随正文附录或独立 supplementary 编译 |
 
 ## 2. 论文附录分组（35 个 `app:*` 标签，按主题）
 
 > 从 `queyi_neurips2027_v1.1.tex` 提取（只读）。`\appendix` 起始于 tex 第 665 行，附录正文约 1705 行。
+
+> **706 减页更新**：为满足 NeurIPS E&D 全稿 ≤36 页，已将 4 节移入本目录 `paper_appendix_extras.tex`（仅移动、逐字不改）：
+> `app:humanize`、`app:a5full`、`app:bench676l`、`app:incidents`。全稿 40 页 → **36 页**；正文仍 9 页。
+> 正文原位置保留了 `\paragraph{Moved to Supplementary Material.}` 指针；正文对这几节的 `\ref` 已改为 “Supplementary Material” 文字引用（不再断链）。
 
 ### 理论附录（Theory / Method formalism）
 | 标签 | 标题 |
@@ -43,9 +48,9 @@
 ### 实验附录（Experiments / Empirical results）
 | 标签 | 标题 |
 |---|---|
-| `app:a5full` | A5 at Full Scale (676f): 1137 Samples |
+| `app:a5full` | A5 at Full Scale (676f): 1137 Samples — **706→Supplementary** |
 | `app:blindspot` | Detector Capability Boundaries (676g): a Blind-Spot Map |
-| `app:bench676l` | Detector Depth Benchmark (676l): per-asset performance |
+| `app:bench676l` | Detector Depth Benchmark (676l): per-asset performance — **706→Supplementary** |
 | `app:threats_quantified` | Threats to Validity, Quantified |
 | `app:realworld683` | Real-World Validation (683) |
 | `app:operator683` | Operator Ablation (All 16 Configurations) (683) |
@@ -64,14 +69,14 @@
 | `app:datasheet` | Dataset Provenance and Composition |
 | `app:datametadata` | Data Metadata (Croissant + Responsible-AI Fields) |
 | `app:tables` | Threat, Validity and Evolution Tables |
-| `app:humanize` | Humanization Material (full versions; 673c) |
+| `app:humanize` | Humanization Material (full versions; 673c) — **706→Supplementary** |
 
 ### 工程 / 治理附录（Engineering / Governance / Reproduction）
 | 标签 | 标题 |
 |---|---|
 | `app:repro` | Reproduction Commands |
 | `app:reproducibility` | Reproducibility: Environment, Seeds and Commands |
-| `app:incidents` | Engineering Incident Log（刻意保留在正文之外） |
+| `app:incidents` | Engineering Incident Log（刻意保留在正文之外） — **706→Supplementary** |
 | `app:ai` | AI Use Statement |
 | `app:related` | Related Work（九小节，v1.1 新增两节） |
 | `app:future` | Future Work（remaining items） |

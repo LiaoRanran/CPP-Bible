@@ -1,0 +1,345 @@
+% =====================================================================
+%  paper_appendix_extras.tex -- sections MOVED OUT of the main paper in batch 706
+%  to meet the NeurIPS E&D <=36-page limit.  MOVE ONLY: content is byte-for-byte
+%  the same as it was in research/latex/queyi_neurips2027_v1.1.tex before 706.
+%  These are meant to be appended to the main paper (as-is), or compiled as a
+%  supplementary fragment under the same preamble.  Cross-refs to labels that
+%  stayed in the main paper (app:tables, sec:validity, ...) resolve when appended.
+%  Moved in 706: app:humanize (@orig line 1505), app:a5full (@orig line 1579),
+%                app:incidents (@orig line 1937).
+% =====================================================================
+
+% =====================================================================
+\section{Humanization Material (full versions; 673c)}
+\label{app:humanize}
+% =====================================================================
+This appendix keeps the audit trail behind the integrity and governance claims: the superseded
+first A5 run, the design trade-offs, the incidents that shaped the discipline, and the boundary of
+what we believe. Full-era text and the six case files live in the repository history.
+
+\paragraph{E4 --- Ablation A5: the 673p-era numbers are \emph{superseded}.}
+A0--A5 each carry a written hypothesis and decision rule; A0--A4 remain design-only (A1 needs a
+git-history ruleset snapshot; A2 hits the \emph{irreversible-blindness} barrier---a revealed holdout
+cannot be re-blinded, so a \emph{new} split is required). \textbf{A0 $-$ A5} is the core-mechanism
+falsifier: if the CI of $\Delta(\text{A0}-\text{A5})$ crosses 0, ``failure-driven beats same-budget
+random'' does not hold. The superseded 673p run is kept for audit: on the then-available 105-sample
+matrix, holdout FD $90.0\%$ vs.\ random $35.0\%$ and corpus $81.3\%$ vs.\ $37.5\%$---interval-reads
+at $n{=}20/16$ whose pre-registered parallel analysis already collapsed to $0.0$pp on holdout.
+\textbf{676f re-ran the design on 1137 samples; the main text quotes the 676f numbers}
+(Appendix~\ref{app:a5full}). Both runs required repairing a detector-unavailability defect (a
+constant-catch \texttt{wunsequenced} branch); headline rates are unchanged by that fix.
+
+\paragraph{Design trade-offs (condensed).}
+(i) \emph{Four states rather than three}: \texttt{unknown} must say ``not measured this time''
+without polluting either side; the price is that every rate needs a \texttt{denominator} field, or
+readers roam between $52.6\%$ and $62.5\%$ (a measured $9.9$pp effect). (ii) \emph{Merkle tree
+rather than a linear hash chain}: inclusion proofs let a third party verify one file without the
+five controlled directories; the price is a larger surface (domain separation and odd-node
+promotion are mandatory, and every re-pinning invalidates the previous anchor). (iii)
+\emph{Failure-driven rather than random selection}: a \texttt{miss} names both the missing detector
+and the asset to add; the price is seeing only \emph{known} unknowns---precisely what Finding~5
+forces us to say out loud. (iv) \emph{Provenance as obligation}: EU Regulation 2024/1689 (AI Act)
+Art.~50~\cite{eu2024aiact} imposes transparency obligations on generative outputs, matching our
+requirement that a claim carry who generated it, who verified it, and under what conditions it
+holds.
+
+\paragraph{Engineering reality (condensed).}
+The primary profile is WSL because the local MinGW-w64 toolchain ships no UBSan runtime
+(\texttt{cannot find -lubsan}) and macOS has no \texttt{setarch}; the cost is that a missing WSL
+does not raise but silently degrades 15 samples to \texttt{unknown} ($35.0\%\to10.0\%$) with the
+guard still green. Incidents that shaped the discipline, all resolved and none affecting a
+scientific conclusion: two truncated toolchain downloads (verify a dependency's byte count); a CRLF
+drift across 437 files (byte-level hashing means one newline flip invalidates every historical
+hash); and two parallel batches writing overlapping files---no collision, but only by declaration.
+The last one matters: the reconciler and the Merkle root both assume an enumerable write surface,
+and parallel development is the easiest way to break that assumption.
+
+\paragraph{Six failure cases (condensed).}
+(A) \emph{$81.2\%$: code changed, generator not rerun}---a number that never appeared in any
+artifact (never landed anywhere in the repository), because the guard compared only the fields it
+was told to compare; fixed by a three-step caliber rule (change $\Rightarrow$ rerun
+$\Rightarrow$ void) plus a range self-test, with the residual stated: the guard still does not rerun
+detectors, so the mode \emph{can still recur}.
+(B) \emph{A hand-computed ratio in the random arm} ($4.2\%$ vs.\ an executable $16.7\%$, a
+$12.5$pp gap) because the budget was copied by hand from the pre-expansion instrument set; the fix
+is our rule ``assert the caliber, never the measured value.'' (C) \emph{Three misses the detector
+genuinely cannot see} (\texttt{h46} vptr corruption crashes with no ASan banner; \texttt{h59}
+defeats TSan; \texttt{h60} strict-aliasing output identical under both compilers)---a capability
+gap, not ``the code is correct''; two further candidates were excluded \emph{with reasons}.
+(D) \emph{Three ``hard defect candidates'' that were false positives} in our own verification
+system; no production code changed and behaviour was pinned with 58 tests---our system's
+false-positive rate is not lower than that of the objects it verifies. (E) \emph{A Python 3.13
+dataclass bug and a wrong first hypothesis}; the function cited in our own task brief did not exist
+(\texttt{git log -S} finds nothing)---verify first, then act.
+
+\paragraph{Judgment boundaries (condensed).}
+\emph{Believed but not verified:} the $e$-process (non-recomputable $\mu_0$, moved out of the claim
+table); that failure-driven selection beats a random budget (A5's headline is pool composition, so
+this stays a belief about the strategy); that higher verifier coverage implies better verdicts; and
+that the provenance/scope split prevents misuse (scope completeness $0/26$, our largest
+methodological gap). \emph{Deliberately not done, with the cost:} whole-program static analysis,
+formal proof, multiple languages, a trained verdict model, and mutation score as a detection rate.
+\emph{Done but poorly:} the LLM-judge arm (12/12 errors but 4/8 false positives, significance test
+removed); the scope backfill; the OTS anchor still a placeholder; the guard unable to rerun
+detectors.
+
+\section{A5 at Full Scale (676f): 1137 Samples}
+\label{app:a5full}
+This appendix is the authoritative record of the budget-matched control; the main text quotes it and
+Appendix~\ref{app:humanize} keeps the superseded 673p-era numbers for audit.
+
+\paragraph{Design and sample bookkeeping.}
+$1137$ samples after de-duplication ($10$ content duplicates dropped, $0$ id collisions), split
+$571$ derivation / $566$ evaluation by \emph{stratified deterministic} rule: within each
+$(source\_batch, defect\_group)$ stratum, order by \texttt{sha256('20260930':sample\_id)} ascending,
+even positions $\to$ derivation, odd $\to$ evaluation (no filesystem order dependence).
+Composition: $1063$ \texttt{planted=true} / $74$ \texttt{planted=false}; families
+stl 200, concurrency 219, embedded 149, legacy 95, memory 99, UB 87, language 90, real-world 88,
+ODR 30, conditional 40, optimization 40. Every cell of the $1137\times8$ matrix is a real
+\texttt{detect} call; \texttt{unknown} is never counted as \texttt{miss}.
+
+\paragraph{Template diversity, cross-batch overlap and label quality (676m disclosure).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Value \\
+\midrule
+cross-batch byte-level duplicates (L1) & \textbf{0} \\
+cross-batch structural near-clones (L3b) & \textbf{103 pairs} (4 batch pairs) \\
+within-batch template-clone rate (L2) & \textbf{62.2\%} ($674/1083$) \\
+distinct code structures, whole pool & \textbf{572} \\
+blind re-annotation $\kappa$, \texttt{defect\_type} & 0.77 ($n{=}131$) \\
+blind re-annotation $\kappa$, \texttt{expected\_verdict} & 0.69 ($n{=}131$) \\
+compile spot-checks passed & $217/217$ (100\%) \\
+traceable real-defect sources & $74/74$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Three caveats. (i) The $\kappa$ values come from a second annotator that is an \emph{AI agent}
+reading comment-stripped sources: they measure self-consistency, \emph{not} human inter-annotator
+agreement. (ii) The $62.2\%$ clone rate is \emph{disclosed, not repaired}---we do not delete samples,
+and all $103$ near-clone pairs had \emph{conflicting} \texttt{defect\_type} labels before the
+676m unification, which is exactly why the vocabulary was unified. (iii) $93\%$ of samples are
+\texttt{planted=true} by construction, so the pool tests our \emph{instrument}, not the real-world
+defect distribution.
+
+\paragraph{Label corrections applied in 676m.}
+Two data-quality defects were repaired and are visible in this appendix's numbers: $34$
+\texttt{hung\_flag} samples moved \texttt{expected\_verdict} from \texttt{catch} to \texttt{miss}
+(a hung sanitizer emits no report), and the $56$-value \texttt{defect\_type} vocabulary was
+consolidated to $34$ canonical types (with \texttt{conditional\_trigger} /
+\texttt{optimization\_dependent} demoted from a type to a \texttt{trigger\_condition} field). The
+per-asset matrix itself is untouched, so the main endpoint is unchanged.
+
+\paragraph{Asset diagnostics: two of the eight assets are degenerate.}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Asset & catch & catch rate & unknown rate & verdict \\
+\midrule
+asan & 399 & 35.1\% & 0.88\% & usable \\
+ubsan & 268 & 23.6\% & 0.88\% & usable \\
+tsan & 255 & 22.4\% & 0.88\% & usable (3/180 unstable, see \S\ref{app:blindspot}) \\
+cross-compile & 170 & 15.0\% & 3.34\% & usable \\
+compiler-warn & 143 & 12.6\% & 0.0\% & usable \\
+linker & 10 & 0.88\% & 0.0\% & usable \\
+wunsequenced & 0 & 0.0\% & \textbf{100\%} & \textbf{degenerate} \\
+compile-time & 0 & 0.0\% & \textbf{100\%} & \textbf{degenerate} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Main endpoint ($k{=}4$, pre-registered full 8-asset pool, $n{=}566$ evaluation).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{2.7cm}p{3.3cm}p{2.2cm}p{3.9cm}@{}}
+\toprule
+Arm & assets drawn & recall (CP 95\%) & vs FD \\
+\midrule
+FD (failure-driven) & asan, ubsan, tsan, cross-compile & \textbf{54.6\% (309/566) [50.4, 58.8]} & --- \\
+Random (budget-matched) & wunsequenced, cross-compile, tsan, compile-time & 30.6\% (173/566) [26.8, 34.5] & $\Delta{=}\mathbf{+24.0}$pp [+20.5, +27.5], $p{=}2.3\times10^{-41}$, $b{=}136,c{=}0$, $h{=}0.49$ \\
+Static & compiler-warn, cross-compile, linker, wunsequenced & 24.7\% (140/566) [21.2, 28.5] & $\Delta{=}\mathbf{+29.9}$pp [+25.2, +34.5], $p{=}1.9\times10^{-31}$, $b{=}200,c{=}31$, $h{=}0.62$ \\
+full pool ($k{=}8$) & all eight & 60.1\% (340/566) [55.9, 64.1] & ceiling reference \\
+\bottomrule
+\end{tabular}
+\end{center}
+Over 2000 resampled random draws, FD is \emph{strictly} better in \textbf{97.6\%} of them
+(random mean 40.2\%, SD 9.3pp); the single seed is used only for the paired test.
+
+\paragraph{Pre-registered parallel analysis (5 usable assets, $k{=}4$).}
+Excluding the two degenerate assets leaves five candidates, and at $k{=}4$ a random draw lands on
+\emph{exactly the four assets} FD picks---both arms read 54.6\%, so
+$\Delta_{\text{FD}-\text{Rnd}}{=}\mathbf{0.0}$pp ($p{=}1.0$), while the Static contrast \emph{grows}
+to \textbf{+30.6}pp ($p{=}8.1\times10^{-34}$). On the 5 usable assets the $k{=}|A|{-}1$ zero is a
+\emph{set collision} (probability $1/\binom54{=}0.2$), while $k{=}1,2,3$ stay significant
+($+11.31/+7.42/+7.42$pp, $p\le7.7\times10^{-5}$).
+
+\paragraph{Clone-aware re-split and cluster bootstrap (677b).}
+The 1137 samples are not independent: structure hashing plus token-set Jaccard ($\ge0.85$) and
+structural cosine ($\ge0.90$) group them into \textbf{474 template families} (75.4\% of samples in a
+multi-member family; 365/566 evaluation samples have a family sibling in the derivation split).
+Rebuilding the split at the family level (three strategies, one with \emph{zero} clone pairs
+crossing) leaves the endpoint unchanged---$\Delta{=}+26.71$/$+23.02$/$+25.70$pp,
+$p\le4.1\times10^{-29}$---so template-family leakage is \emph{not} driving it. But resampling
+\emph{families} widens the interval to $[+16.6,+30.4]$pp (width $1.78\times$--$2.10\times$ the
+independent-sample CI; design effect $\approx4.1$--$4.3$, \textbf{effective $n\approx133$--$140$});
+in full-refit mode the lower bound reaches $0$, which is precisely why A5 stays
+\emph{directional}.
+
+\paragraph{Non-degenerate pools, baselines and an executable operator (677c).}
+Two \emph{distinct} pools are pre-registered on the same matrix: \textbf{A} (strict; 5 assets)
+and \textbf{B} $=$ \textbf{C} (relaxed; the two rules yield the identical six-asset set, so their
+blocks are numerically identical and we count them once). On Pool A \textbf{the selection effect survives at
+every $k$ where the arms can differ}: $+11.31$pp at $k{=}1$ ($p{=}6.0\times10^{-8}$), $+7.42$pp at
+$k{=}2$/$k{=}3$, and $+0.00$pp at $k{=}4$ (both arms draw the same four). At the main budget the
+degenerate assets are worth $+24.03$pp of the single-point $\Delta$ ($+12.81$pp vs.\ the 2000-draw
+mean), so the mechanism-level estimate is the Pool-A range $\approx$\,$+7$--$12$pp. Four further
+baselines and the executable operator are in \texttt{677c\_baseline\_comparison.md};
+\textbf{frequency $\equiv$ FD} by construction (disclosed as a limit,
+Appendix~\ref{app:formal}).
+
+\paragraph{What the contrast actually identifies (a conditional statement, not a theorem).}
+Let $D\subseteq A$ be the degenerate assets (constant-\texttt{unknown}; $|D|{=}2$). FD ranking is
+built from derivation fail-hits, exactly $0$ on $D$, so FD's top-$k$ contains no degenerate asset
+whenever $|A\setminus D|\ge k$, while a uniform random draw spends $k|D|/|A|$ of its budget on
+zero-information assets. Hence the gap vanishes when $D$ is removed---precisely what the parallel
+analysis shows ($+24.0\to0.0$). \textbf{We therefore state only the conditional result:} A5 supports
+``do not spend budget on assets that cannot inform,'' with \emph{no} evidence for a ranking
+advantage beyond that.
+
+\paragraph{$k$-sweep (exploratory).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$k$ & FD & Random & $\Delta$pp & 95\% CI & $p$ \\
+\midrule
+1 & 33.0\% & 0.0\% & +33.0 & [+29.2, +36.9] & $1.0\times10^{-56}$ \\
+2 & 45.1\% & 14.3\% & +30.7 & [+26.2, +35.3] & $7.8\times10^{-35}$ \\
+3 & 51.1\% & 30.6\% & +20.5 & [+16.5, +24.5] & $2.2\times10^{-22}$ \\
+\textbf{4} & \textbf{54.6\%} & \textbf{30.6\%} & \textbf{+24.0} & [+20.5, +27.5] & $2.3\times10^{-41}$ \\
+5 & 59.4\% & 38.7\% & +20.7 & [+17.3, +24.0] & $1.2\times10^{-35}$ \\
+6 & 60.1\% & 48.8\% & +11.3 & [+8.7, +13.9] & $1.1\times10^{-19}$ \\
+7 & 60.1\% & 49.5\% & +10.6 & [+8.1, +13.1] & $1.7\times10^{-18}$ \\
+8 & 60.1\% & 60.1\% & 0.0 & [0.0, 0.0] & 1.0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Subgroups with multiplicity control (11 tests).}
+We report BH-FDR \emph{and} Bonferroni; uncorrected $p$ must not be quoted alone.
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Defect group & $n$ (eval) & $\Delta$pp & $p_{\text{BH-FDR}}$ & $p_{\text{Bonferroni}}$ \\
+\midrule
+undefined behavior & 43 & +58.1 & $1.0\times10^{-6}$ & $1.0\times10^{-6}$ \\
+memory safety & 49 & +46.9 & $1.0\times10^{-6}$ & $3.0\times10^{-6}$ \\
+legacy & 47 & +36.2 & $5.6\times10^{-5}$ & $1.7\times10^{-4}$ \\
+stl & 100 & +15.0 & $1.7\times10^{-4}$ & $6.7\times10^{-4}$ \\
+real world & 44 & +29.5 & $5.4\times10^{-4}$ & $2.7\times10^{-3}$ \\
+optimization sensitive & 20 & +55.0 & $1.8\times10^{-3}$ & $1.1\times10^{-2}$ \\
+conditional trigger & 20 & +45.0 & $6.1\times10^{-3}$ & $4.3\times10^{-2}$ \\
+concurrency & 109 & +7.3 & $9.6\times10^{-3}$ & $8.6\times10^{-2}$ \\
+language semantics & 45 & +17.8 & $9.6\times10^{-3}$ & $8.6\times10^{-2}$ \\
+embedded & 74 & +8.1 & $3.4\times10^{-2}$ & $3.4\times10^{-1}$ \\
+odr / link & 15 & +6.7 & $1.0$ & $1.0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ten of eleven survive BH-FDR at $0.05$; \emph{odr/link} does not ($n{=}15$, $\Delta{=}+6.7$pp,
+$p{=}1$), and \emph{concurrency} is the largest group ($n{=}109$) with the smallest gain
+($+7.3$pp)---FD's advantage is concentrated in UB / memory / legacy, not in concurrency.
+
+\paragraph{Source-derived reconstructions (\texttt{planted=false}).} On the $74$
+\texttt{planted=false} samples (\emph{single-file reconstructions of real CVEs/issues, not original
+production code}; 34 evaluated) FD reads \textbf{64.7\%} vs.\ Random 35.3\%,
+$\Delta{=}\mathbf{+29.4}$pp ($p{=}2.0\times10^{-3}$); on \texttt{planted=true} (532 evaluated) FD
+reads 53.9\% vs.\ 30.3\%, $\Delta{=}\mathbf{+23.7}$pp ($p{=}2.4\times10^{-38}$). Same direction on
+the reconstructions, wide interval at $n{=}34$.
+
+\paragraph{Power.} The pre-registered requirement for a paired $\Delta{=}15$pp contrast was
+$n\approx103$--$173$; the evaluation split has \textbf{$n{=}566$} ($3$--$5\times$), with $\Delta$
+CI half-width $3.5$pp. One correction from 677b: effective $n$ after the family-level bootstrap is
+$\approx133$--$140$---inside the pre-registered window but with little margin; the design claim
+holds, and A5 intervals should be read at the wider ($1.8$--$2.1\times$) width.
+
+\section{Engineering Incident Log (deliberately kept out of the main text)}
+\label{app:incidents}
+\textbf{Why this is an appendix.} v1.0--v1.1 carried several incidents inside the main text---a
+presentation error: an incident log answers ``how well did you run your project,'' not ``what did you
+learn.'' They are recorded here because the \emph{artifact} must be honest about them; the main text
+keeps only the generalizable finding---\textbf{apparatus state is not self-announcing}.
+
+\begin{itemize}
+\item \textbf{I1 --- 81.2\% (13/16) never landed (batch 666).} Detector flag changed, generator not
+rerun; the paper reported a number no artifact contained. Fix: three-step caliber discipline
+(change $\Rightarrow$ rerun $\Rightarrow$ void), plus a range self-test (5/5 red). \textbf{Residual:}
+the guard still does not rerun detectors.
+\item \textbf{I2 --- A hand-computed ratio.} Random$^{\dagger}$ corpus $4.2\%$ (2/48) vs.\ executable
+rerun \textbf{16.7\%} (8/48): the old FD instrument budget was reused after expansion. Fix:
+budget-matched quantities are counted by script, never by a person.
+\item \textbf{I3 --- Two further ``code changed without re-measurement'' cases} (a counterfactual
+$F_1$ reported as 0; a rerun differing by 10 catches)---both I1's root cause.
+\item \textbf{I4 --- A constant-catch detector bug (\texttt{wunsequenced}).} MinGW g++ ignores the
+clang flag, so the string match always succeeded (manufacturing 18.2\% (2/11) control FPs). Fixed by
+an unrecognized-option pre-check; recomputed control FPR \textbf{0.0\% (0/11)}, headline rates
+bit-identical.
+\item \textbf{I5 --- CRLF drift across 437 files}, invalidating historical byte hashes---a direct
+threat to state reproducibility.
+\item \textbf{I6 --- Parallel-agent write conflicts} (no collision, but by declaration not design;
+the reconciler and Merkle root assume an enumerable write surface).
+\end{itemize}
+
+Full versions, the six failure cases (A--F) and the design trade-offs: Appendix~\ref{app:humanize}.
+
+
+% ---------------------------------------------------------------------
+% 706 (2nd move): app:bench676l, originally at main-paper line 1843
+% ---------------------------------------------------------------------
+% =====================================================================
+\section{Detector Depth Benchmark (676l): per-asset performance, complementarity, best-$k$}
+\label{app:bench676l}
+% =====================================================================
+Appendix~\ref{app:blindspot} maps \emph{where} the instrument is blind; this appendix asks
+\emph{which} of the eight assets carry the map, and how many are needed. All numbers are recomputed
+from the frozen $1147\times8$ matrix ($9176$ cells, $0$ missing); recall uses the
+\texttt{expected=catch} denominator ($n{=}674$).
+
+\paragraph{Single-asset ranking ($n{=}674$ expected-catch).}
+\begin{center}\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Asset & recall & precision & F1 & unknown rate & marginal contrib. (pp) \\
+\midrule
+asan & \textbf{58.5\%} & 95.3\% & 0.725 & 0.87\% & \textbf{+19.29} \\
+ubsan & 38.2\% & 94.1\% & 0.543 & 0.87\% & +10.98 \\
+tsan & 36.1\% & 91.3\% & 0.517 & 0.87\% & +10.39 \\
+compiler-warn & 19.1\% & 90.2\% & 0.316 & 0.00\% & +5.93 \\
+cross-compile & 15.1\% & 83.6\% & 0.255 & 3.31\% & +0.30 \\
+linker & 1.3\% & 90.0\% & 0.026 & 0.00\% & +1.34 \\
+wunsequenced & --- & --- & --- & \textbf{100\%} & 0.00 \\
+compile-time & --- & --- & --- & \textbf{100\%} & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The ranking is stable across both denominators; the two structurally-\texttt{unknown} assets
+contribute \emph{exactly} zero (marginal = leave-one-out on union recall).
+
+\paragraph{Union and best-$k$.} The eight-asset union reaches \textbf{94.21\%} ($635/674$;
+all-sample $61.6\%$). Exhaustive enumeration over all $2^8$ subsets gives $k{=}4$ best $=
+\textbf{92.58\%}$ (\texttt{asan, ubsan, tsan, compiler-warn}), with the marginal gain collapsing
+from $+5.93$pp at $k{=}4$ to $0.00$pp at $k{=}5$: the knee is $k{=}5$, and $k{=}4$ already reaches
+$98.3\%$ of the pool ceiling. \textbf{FD's own $k{=}4$ pick} scores \textbf{86.94\%} ($5.64$pp below
+the optimum; percentile \textbf{96.6} against 2000 random draws)---a \emph{rank-4 estimation} error
+(the derivation split over-estimates \texttt{cross-compile}, $170$ vs.\ $122$ full-pool catches).
+Same lesson as Appendix~\ref{app:a5full}: FD's value is \emph{avoiding zero-information assets},
+not superior ranking.
+
+\paragraph{\texttt{linker} is low-marginal but irreplaceable.} Its $10$ catches lie \emph{entirely}
+inside the \texttt{asan}/\texttt{ubsan}/\texttt{tsan} \texttt{unknown} set (a strong ODR violation
+stops the dynamic detectors from linking), so the weakest-average asset covers precisely the region
+the other seven cannot reach: marginal contribution and unique coverage are different questions.
+
+\paragraph{Cross-matrix caveat.} $676$l reads the $676$g matrix while the main endpoint reads
+$676$f; on their $349$ common samples the matrices disagree on $38$ of $1396$ cells ($2.7\%$), the
+same order as the $\sim5\%$ instability floor (Appendix~\ref{app:blindspot}). The ranking is robust
+to that noise; individual-cell claims are not.
