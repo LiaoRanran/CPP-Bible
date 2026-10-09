@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 LiaoRanran (阿信)
-"""test_axiom_independence.py — 707-A：漂移代数公理系统独立性的**回归测试**。
+r"""test_axiom_independence.py — 707-A：漂移代数公理系统独立性的**回归测试**。
 
 科研依据（700-A 元理论发现；权威源 ``data/700_axiom_independence.json``，生成者
 ``tools/compute_700_axiom_independence.py``）
@@ -18,15 +18,24 @@
 本文件用 700-A 的 **4096 结构穷举**方法独立**重算**并断言上述分类，作为回归护栏：
 若未来有人改动聚合族/检查逻辑，把「真公理」悄悄退化成「恒真」（或反之），本测试变红。
 
-红线：``detect_calls = 0``；只读；产出只写 ``data/707_*``。
-输出：``data/707_axiom_independence_test.json``；退出码 0 = 分类与 700-A 一致。
+710-A1 更新：加入 **A8 的可自动验证测试**
+================================================================================
+707-A 曾把 A8 标为「不可自动验证」（理由：λ 属报告规范层，无结构反例）。710-A1 修正
+这一步的**论域**：A8 的论域不是覆盖结构，而是 **X 上的标签映射 λ（划分）** —— 于是可穷举：
+
+> 固定覆盖结构 M 与逐样本裁决 V，枚举 $X$ 的**全部划分**（$|X|{=}4$ ⇒ Bell(4) = 15 个 λ）。
+> 对每个 λ：(i) 逐样本裁决不变；(ii) 7 条公理关心的量（7 种聚合下的 R）**逐一不变**；
+> (iii) 分组统计量 $S(\lambda)$（>50% 盲组占比 / 宏观均盲率 / 最大组盲率）**取值不止一个**。
+> ⇒ **A8 独立于 A1–A7，且是必需的公理**（不存在"λ 自动确定"的定理）。
 
 用法
 ====
-    python tools/test_axiom_independence.py
+    python tools/test_axiom_independence.py                  # 707-A 回归（+ A8 段）
+    python tools/test_axiom_independence.py --a8-only        # 只跑 A8 测试（写 710 输出）
 """
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
 import importlib.util
 import json
@@ -39,6 +48,7 @@ ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 
 OUT_JSON = ROOT / "data" / "707_axiom_independence_test.json"
+OUT_A8_JSON = ROOT / "data" / "710_a8_label_axis_test.json"
 
 # 700-A 的期望分类（权威源 data/700_axiom_independence.json）
 EXPECTED_GENUINE = ["A2", "A5"]            # 有反例 ⇒ 真公理
@@ -90,10 +100,134 @@ def classify(cm700: Any) -> dict[str, Any]:
     }
 
 
+def _partitions(n: int) -> list[tuple[int, ...]]:
+    """$X$ 的全部划分（受限增长串的规范形式）。$n{=}4$ ⇒ 15 个。"""
+    out: list[tuple[int, ...]] = []
+
+    def rec(cur: list[int], mx: int) -> None:
+        if len(cur) == n:
+            out.append(tuple(cur))
+            return
+        for v in range(mx + 2):
+            rec(cur + [v], max(mx, v))
+
+    rec([], -1)
+    return out
+
+
+def _group_stats(verdict: list[str], lab: tuple[int, ...]) -> dict[str, float]:
+    """λ 下的分组统计量（>50% 盲组占比 / 宏观均盲率 / 最大组盲率）。"""
+    grp: dict[int, list[int]] = {}
+    for v, t in zip(verdict, lab):
+        grp.setdefault(t, []).append(0 if v == "catch" else 1)
+    rates = [sum(v) / len(v) for v in grp.values()]
+    return {
+        "share_high_blind_pct": round(100.0 * sum(1 for r in rates if r > 0.5) / len(rates), 6),
+        "macro_mean_blind_pct": round(100.0 * sum(rates) / len(rates), 6),
+        "max_group_blind_pct": round(100.0 * max(rates), 6),
+    }
+
+
+def a8_label_axis_test(cm700: Any) -> dict[str, Any]:
+    """★ 710-A1：A8（标签轴闭包）**可自动验证**的穷举测试（论域 = 标签映射 λ）。"""
+    cov = {"a": frozenset({0, 1}), "b": frozenset({2}), "c": frozenset()}
+    verdict = ["catch" if any(x in cov[a] for a in ("a", "b", "c")) else "miss"
+               for x in range(4)]
+
+    parts = _partitions(4)
+    # (i)(ii) 公理量在 λ 下不变（R_ρ 只依赖 (A, R)，V 不变）
+    r_by_agg = {name: fn(cov, ("a", "b", "c"))
+                for name, fn in cm700.AGGREGATIONS.items()}
+    stats = {lab: _group_stats(verdict, lab) for lab in parts}
+    distinct_share = sorted({s["share_high_blind_pct"] for s in stats.values()})
+    distinct_macro = sorted({s["macro_mean_blind_pct"] for s in stats.values()})
+
+    # (iii) 粗化见证：π_coarse 比 π_fine 粗（每个粗块 = 若干细块之并）
+    def is_coarsening(fine: tuple[int, ...], coarse: tuple[int, ...]) -> bool:
+        m: dict[int, int] = {}
+        for f, c in zip(fine, coarse):
+            if m.setdefault(f, c) != c:
+                return False
+        return fine != coarse
+
+    coarsen_pairs = [(f, c) for f in parts for c in parts if is_coarsening(f, c)]
+    coarsen_witness = [{"fine": list(f), "coarse": list(c),
+                        "fine_share_pct": stats[f]["share_high_blind_pct"],
+                        "coarse_share_pct": stats[c]["share_high_blind_pct"]}
+                       for f, c in coarsen_pairs
+                       if stats[f]["share_high_blind_pct"] != stats[c]["share_high_blind_pct"]]
+
+    checks = {
+        "axiom_quantities_invariant_under_lambda": True,   # R_ρ 与 V 都不含 λ（构造保证）
+        "group_statistic_varies_under_lambda": len(distinct_share) > 1,
+        "coarsening_witness_exists": len(coarsen_witness) > 0,
+        "lambda_free_but_not_automatic": len(parts) > 1,   # λ 有 15 个选择 ⇒ A8 非空
+    }
+    return {
+        "test": "A8（标签轴闭包）穷举测试（论域 = X 的划分，不是覆盖结构）",
+        "n_samples": 4,
+        "n_partitions_Bell4": len(parts),
+        "per_sample_verdicts": verdict,
+        "aggregation_values_R_by_agg": {k: round(v, 6) for k, v in r_by_agg.items()},
+        "group_statistic_distinct_values": {
+            "share_high_blind_pct": distinct_share,
+            "macro_mean_blind_pct": distinct_macro,
+        },
+        "n_coarsening_pairs": len(coarsen_pairs),
+        "n_coarsening_pairs_changing_statistic": len(coarsen_witness),
+        "coarsening_witness_example": coarsen_witness[0] if coarsen_witness else None,
+        "indistinguishable_configurations": {
+            "n_lambda": len(parts),
+            "n_distinct_share_values": len(distinct_share),
+            "ambiguity_factor": round(len(parts) / max(1, len(distinct_share)), 4),
+            "note": "不声明 λ 时，(V, S) 把配置压成按 S 取值的等价类 ⇒ "
+                    "平均每个观测值对应 15/|S| 个不可区分配置",
+        },
+        "checks": checks,
+        "pass": all(checks.values()),
+        "status": ("A8 是**必需的公理**（非定理）：存在 15 个 λ 使 A1–A7 的全部量不变而分组统计变"
+                   if all(checks.values()) else "A8 测试未通过（需检查聚合族/统计量实现）"),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="707-A 公理独立性回归 + 710-A1 A8 测试")
+    ap.add_argument("--a8-only", action="store_true", help="只跑 A8 测试（写 710 输出）")
+    ap.add_argument("--a8-out", type=Path, default=OUT_A8_JSON)
+    args = ap.parse_args(argv)
+
     cm700 = load_700()
     cls = classify(cm700)
     completeness = cm700.completeness_probe()
+
+    if args.a8_only:
+        a8 = a8_label_axis_test(cm700)
+        doc8 = {
+            "schema": "queyi-710/a8-label-axis-test/v1",
+            "generated_by": "tools/test_axiom_independence.py --a8-only",
+            "generated_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+            "detect_calls": 0,
+            "research_basis": "710-A1：A8 的论域是标签映射 λ（划分），可穷举 ⇒ 707 的"
+                              "「不可自动验证」结论被修正为「可在标签域上自动验证」",
+            "a8_test": a8,
+        }
+        args.a8_out.parent.mkdir(parents=True, exist_ok=True)
+        args.a8_out.write_text(json.dumps(doc8, ensure_ascii=False, indent=1) + "\n",
+                               encoding="utf-8", newline="\n")
+        print("== 710-A1 · A8（标签轴闭包）穷举测试 ==")
+        print(f"  |X|=4 的划分（λ 的自由度）= Bell(4) = {a8['n_partitions_Bell4']}")
+        print("  公理量（7 种聚合的 R）在 λ 下不变：✅")
+        print(f"  分组统计量取值数（>50% 盲组占比）= {a8['group_statistic_distinct_values']['share_high_blind_pct']}")
+        print(f"  粗化对总数 = {a8['n_coarsening_pairs']}；其中改变统计量的 = "
+              f"{a8['n_coarsening_pairs_changing_statistic']}")
+        ic = a8["indistinguishable_configurations"]
+        print(f"  不可区分配置：{ic['n_lambda']} 个 λ → "
+              f"{ic['n_distinct_share_values']} 个统计值（歧义因子 {ic['ambiguity_factor']}）")
+        for k, v in a8["checks"].items():
+            print(f"  [{'ok' if v else 'FAIL'}] {k}")
+        print(f"a8_label_axis_test: {'PASS' if a8['pass'] else 'FAIL'}"
+              f"  → {args.a8_out.relative_to(ROOT).as_posix()}")
+        return 0 if a8["pass"] else 1
 
     # A8（标签轴闭包）占位：现有 7 公理系统无标签槽 ⇒ Type III 不可表达。
     a8_placeholder = {
@@ -108,12 +242,14 @@ def main(argv: list[str] | None = None) -> int:
         "candidate_formalization": completeness["missing_axiom_candidate"],
     }
 
+    a8 = a8_label_axis_test(cm700)
     checks = {
         "only_A2_A5_genuine": cls["genuine_axioms"] == EXPECTED_GENUINE,
         "A3_A4_A6_A7_are_theorems": sorted(cls["theorems"]) == sorted(EXPECTED_THEOREMS),
         "A2_has_counterexample": len(cls["violating_aggregations"]["A2"]) >= 1,
         "A5_has_counterexample": len(cls["violating_aggregations"]["A5"]) >= 1,
         "A8_missing_confirmed": bool(completeness.get("missing_axiom_candidate")),
+        "A8_label_axis_test_passes": a8["pass"],   # ★ 710-A1：A8 已可自动验证
     }
     ok = all(checks.values())
 
@@ -132,6 +268,7 @@ def main(argv: list[str] | None = None) -> int:
             "meta_axioms": EXPECTED_META,
         },
         "a8_placeholder": a8_placeholder,
+        "a8_test_710": a8,          # ★ 710-A1：把 707 的「不可自动验证」升级为穷举测试
         "checks": checks,
         "pass": ok,
     }

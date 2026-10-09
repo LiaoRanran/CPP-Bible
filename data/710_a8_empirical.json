@@ -1,0 +1,334 @@
+{
+ "schema": "queyi-710/a8-empirical/v1",
+ "generated_by": "tools/compute_710_a8_empirical.py",
+ "generated_at": "2026-10-09T19:11:36+08:00",
+ "detect_calls": 0,
+ "research_basis": "700-A 元理论 §2.1 的标签粗化见证（4 样本玩具域）在 1147 条 676g 冻结矩阵上的真实化",
+ "frame": {
+  "source": "blindspot_676g_detection_matrix.json",
+  "n": 1147,
+  "blind_n": 440,
+  "overall_blind_pct": 38.3609,
+  "verdict_source": "or_verdict_available6（OR(6)，wunsequenced/compile-time 恒 unknown）"
+ },
+ "hierarchy_check": {
+  "type_to_group_is_function": true,
+  "group_to_family_is_function": true,
+  "n_types": 34,
+  "n_groups": 14,
+  "n_families": 8,
+  "type_to_group_violations": {},
+  "group_to_family_violations": {}
+ },
+ "ladder": [
+  {
+   "vocabulary": "defect_type(34)",
+   "n_classes": 34,
+   "share_high_blind_pct": 38.2353,
+   "n_high_blind": 13,
+   "macro_mean_blind_pct": 42.1264,
+   "micro_blind_pct": 38.3609,
+   "worst_class": "uninitialized_read",
+   "worst_blind_pct": 100.0,
+   "high_blind_classes": [
+    "algorithm_misuse",
+    "atomic_ub",
+    "condition_variable",
+    "cross_tu_ub",
+    "deadlock",
+    "endianness",
+    "interrupt_safety",
+    "linker_odr",
+    "logic_error",
+    "strict_aliasing",
+    "uninitialized_read",
+    "virtual_function",
+    "volatile_misuse"
+   ]
+  },
+  {
+   "vocabulary": "group(14, 681)",
+   "n_classes": 14,
+   "share_high_blind_pct": 42.8571,
+   "n_high_blind": 6,
+   "macro_mean_blind_pct": 40.8211,
+   "micro_blind_pct": 38.3609,
+   "worst_class": "uninitialized_read",
+   "worst_blind_pct": 100.0,
+   "high_blind_classes": [
+    "concurrency_order",
+    "embedded_platform",
+    "liveness",
+    "logic_or_api",
+    "type_alias_alignment",
+    "uninitialized_read"
+   ]
+  },
+  {
+   "vocabulary": "family(8, 697)",
+   "n_classes": 8,
+   "share_high_blind_pct": 37.5,
+   "n_high_blind": 3,
+   "macro_mean_blind_pct": 38.712,
+   "micro_blind_pct": 38.3609,
+   "worst_class": "embedded",
+   "worst_blind_pct": 70.5882,
+   "high_blind_classes": [
+    "alias_type",
+    "concurrency",
+    "embedded"
+   ]
+  }
+ ],
+ "invariants_under_lambda": {
+  "per_sample_verdicts": "逐位相同（同一冻结矩阵，λ 不进入逐样本裁决）",
+  "micro_blind_pct_by_vocabulary": {
+   "defect_type(34)": 38.3609,
+   "group(14, 681)": 38.3609,
+   "family(8, 697)": 38.3609
+  },
+  "micro_is_lambda_invariant": true,
+  "note": "7 条公理的形式化只依赖 (A, R) ⇒ λ 变化不影响任何公理量（700-A §2.1）"
+ },
+ "lambda_freedom": {
+  "constructive_extremes": [
+   {
+    "k": 2,
+    "construction": "construct_max_singleton_blind",
+    "share_high_blind_pct": 50.0,
+    "n_classes": 2,
+    "macro_mean_blind_pct": 69.1536,
+    "worst_class": "blind_0",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 2,
+    "construction": "construct_binary_blind_vs_catch",
+    "share_high_blind_pct": 50.0,
+    "n_classes": 2,
+    "macro_mean_blind_pct": 50.0,
+    "worst_class": "blind",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 3,
+    "construction": "construct_max_singleton_blind",
+    "share_high_blind_pct": 66.6667,
+    "n_classes": 3,
+    "macro_mean_blind_pct": 79.4178,
+    "worst_class": "blind_1",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 3,
+    "construction": "construct_binary_blind_vs_catch",
+    "share_high_blind_pct": 50.0,
+    "n_classes": 2,
+    "macro_mean_blind_pct": 50.0,
+    "worst_class": "blind",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 8,
+    "construction": "construct_max_singleton_blind",
+    "share_high_blind_pct": 87.5,
+    "n_classes": 8,
+    "macro_mean_blind_pct": 92.2478,
+    "worst_class": "blind_6",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 8,
+    "construction": "construct_binary_blind_vs_catch",
+    "share_high_blind_pct": 50.0,
+    "n_classes": 2,
+    "macro_mean_blind_pct": 50.0,
+    "worst_class": "blind",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 34,
+    "construction": "construct_max_singleton_blind",
+    "share_high_blind_pct": 97.0588,
+    "n_classes": 34,
+    "macro_mean_blind_pct": 98.1334,
+    "worst_class": "blind_9",
+    "worst_blind_pct": 100.0
+   },
+   {
+    "k": 34,
+    "construction": "construct_binary_blind_vs_catch",
+    "share_high_blind_pct": 50.0,
+    "n_classes": 2,
+    "macro_mean_blind_pct": 50.0,
+    "worst_class": "blind",
+    "worst_blind_pct": 100.0
+   }
+  ],
+  "random_partition_distribution": [
+   {
+    "k": 2,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 0.0,
+    "max": 0.0
+   },
+   {
+    "k": 3,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 0.0,
+    "max": 0.0
+   },
+   {
+    "k": 5,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 0.0,
+    "max": 0.0
+   },
+   {
+    "k": 8,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 0.0,
+    "max": 12.5
+   },
+   {
+    "k": 14,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 7.1429,
+    "max": 14.2857
+   },
+   {
+    "k": 20,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 0.0,
+    "median": 0.0,
+    "p95": 10.0,
+    "max": 20.0
+   },
+   {
+    "k": 34,
+    "draws": 1000,
+    "min": 0.0,
+    "p05": 2.9412,
+    "median": 5.8824,
+    "p95": 14.7059,
+    "max": 20.5882
+   }
+  ],
+  "merge_only_coarsening_greedy": {
+   "start_share_pct": 38.2353,
+   "greedy_end_share_pct": 92.8571,
+   "n_groups_end": 14,
+   "n_steps": 20,
+   "trajectory": [
+    {
+     "step": 0,
+     "n_groups": 34,
+     "share_pct": 38.2353,
+     "merge": null
+    },
+    {
+     "step": 1,
+     "n_groups": 33,
+     "share_pct": 39.3939,
+     "merge": "other_ub+memory_safety"
+    },
+    {
+     "step": 2,
+     "n_groups": 32,
+     "share_pct": 40.625,
+     "merge": "data_race+memory_leak"
+    },
+    {
+     "step": 3,
+     "n_groups": 31,
+     "share_pct": 41.9355,
+     "merge": "raii_violation+memory_order"
+    },
+    {
+     "step": 4,
+     "n_groups": 30,
+     "share_pct": 43.3333,
+     "merge": "linker_odr+type_punning"
+    },
+    {
+     "step": 5,
+     "n_groups": 29,
+     "share_pct": 44.8276,
+     "merge": "out_of_bounds+use_after_free"
+    },
+    {
+     "step": 6,
+     "n_groups": 28,
+     "share_pct": 46.4286,
+     "merge": "bit_operation+integer_overflow"
+    },
+    {
+     "step": 7,
+     "n_groups": 27,
+     "share_pct": 48.1481,
+     "merge": "logic_error+alignment"
+    },
+    {
+     "step": 8,
+     "n_groups": 26,
+     "share_pct": 50.0,
+     "merge": "null_pointer_deref+double_free"
+    },
+    {
+     "step": 9,
+     "n_groups": 25,
+     "share_pct": 52.0,
+     "merge": "strict_aliasing+move_semantics"
+    },
+    {
+     "step": 10,
+     "n_groups": 24,
+     "share_pct": 54.1667,
+     "merge": "uninitialized_read+iterator_invalidation"
+    },
+    {
+     "step": 11,
+     "n_groups": 23,
+     "share_pct": 56.5217,
+     "merge": "virtual_function+register_ub"
+    }
+   ],
+   "note": "贪心**下界**；真粗化（只许合并）下的可达范围 = [0%（全部并成 1 类）, 本值]"
+  },
+  "observed_share_values_pp": [
+   37.5,
+   38.2353,
+   42.8571
+  ],
+  "share_range_observed_and_constructed_pp": [
+   37.5,
+   97.0588
+  ]
+ },
+ "conclusion": {
+  "a8_holds_on_queyi": false,
+  "why": "三档真实词表（34/14/8）是**逐层粗化**（父子关系均为函数，见 hierarchy_check），逐样本裁决与 OR 检出率**逐位不变**，但「>50% 盲类占比」从 38.2353% 变到 37.5%；且任意标签映射下该统计量的可达范围为 [37.5%, 97.0588%]",
+  "paper_implication": "**两者皆是，但威胁是可控的**：①论文现有数字都带**显式词表**（34 类归一化 / 8 家族），在这些 λ 下数字是良定义的 ⇒ 不构成对已发布数字的有效性威胁；②但「不声明 λ 的统计量不可比较」必须升格为**报告规范**（700-F 的 P4），因为同一批裁决在 34/14/8 三档下可给出 38.24% / 31.43% / 37.50% 三个都'正确'的数。③本条是 A8 的实证支撑：λ 必须进口径签名，否则 Type III 漂移静默。"
+ },
+ "honest_limits": [
+  "λ 的自由度是**数学事实**（任意 λ: X → T 都合法），本批只是把它在真实矩阵上量化；构造性极值（如 33 个盲样本单例类）是**可达但荒谬**的词表——它的用途是证明「不声明 λ 的统计量没有意义」，不是建议使用。",
+  "「>50% 盲」阈值 0.5 与 698-A §3.1 一致；换阈值数字会变（同样的 A8 论证照常成立）。",
+  "34 类词表来自 681 归一化后的矩阵字段（676g 修复版）；70 类词表与它是两套划分，不是粗化关系（698-A §7 已登记）⇒ 本节只用**真粗化链** 34→14→8 做阶梯。"
+ ]
+}

@@ -1,7 +1,7 @@
 {
  "schema": "queyi-707/axiom-independence-test/v1",
  "generated_by": "tools/test_axiom_independence.py",
- "generated_at": "2026-10-09T14:09:17+08:00",
+ "generated_at": "2026-10-09T19:03:57+08:00",
  "detect_calls": 0,
  "research_basis": "700-A 元理论发现：A3/A4/A6 恒真，A2/A5 独立（data/700_axiom_independence.json）",
  "authority_source": "data/700_axiom_independence.json",
@@ -94,12 +94,79 @@
   "cannot_auto_verify_reason": "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；本穷举域（覆盖 + 聚合）无法表达它 ⇒ 只能以「未声明 λ 的分组统计不可比较」这一规则人工/规范约束，无法像 A2/A5 那样给出结构反例。",
   "candidate_formalization": "A8（标签轴闭包）：口径签名必须扩为 (D, A, E, Θ, P, λ)，且任何报告统计量都必须显式声明其**分组轴** λ；未声明 λ 的统计量**不可比较**（与 698-A Type III 的实测结论一致）。"
  },
+ "a8_test_710": {
+  "test": "A8（标签轴闭包）穷举测试（论域 = X 的划分，不是覆盖结构）",
+  "n_samples": 4,
+  "n_partitions_Bell4": 15,
+  "per_sample_verdicts": [
+   "catch",
+   "catch",
+   "catch",
+   "miss"
+  ],
+  "aggregation_values_R_by_agg": {
+   "or_union": 0.75,
+   "at_least_2": 0.0,
+   "max_single": 0.5,
+   "min_single": 0.0,
+   "mean_single": 0.25,
+   "sum_single": 0.75,
+   "exactly_one_nonmonotone": 0.75
+  },
+  "group_statistic_distinct_values": {
+   "share_high_blind_pct": [
+    0.0,
+    25.0,
+    33.333333,
+    50.0
+   ],
+   "macro_mean_blind_pct": [
+    16.666667,
+    25.0,
+    33.333333,
+    50.0
+   ]
+  },
+  "n_coarsening_pairs": 45,
+  "n_coarsening_pairs_changing_statistic": 27,
+  "coarsening_witness_example": {
+   "fine": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "coarse": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "fine_share_pct": 50.0,
+   "coarse_share_pct": 0.0
+  },
+  "indistinguishable_configurations": {
+   "n_lambda": 15,
+   "n_distinct_share_values": 4,
+   "ambiguity_factor": 3.75,
+   "note": "不声明 λ 时，(V, S) 把配置压成按 S 取值的等价类 ⇒ 平均每个观测值对应 15/|S| 个不可区分配置"
+  },
+  "checks": {
+   "axiom_quantities_invariant_under_lambda": true,
+   "group_statistic_varies_under_lambda": true,
+   "coarsening_witness_exists": true,
+   "lambda_free_but_not_automatic": true
+  },
+  "pass": true,
+  "status": "A8 是**必需的公理**（非定理）：存在 15 个 λ 使 A1–A7 的全部量不变而分组统计变"
+ },
  "checks": {
   "only_A2_A5_genuine": true,
   "A3_A4_A6_A7_are_theorems": true,
   "A2_has_counterexample": true,
   "A5_has_counterexample": true,
-  "A8_missing_confirmed": true
+  "A8_missing_confirmed": true,
+  "A8_label_axis_test_passes": true
  },
  "pass": true
 }

@@ -1,0 +1,73 @@
+{
+ "schema": "queyi-710/a8-label-axis-test/v1",
+ "generated_by": "tools/test_axiom_independence.py --a8-only",
+ "generated_at": "2026-10-09T19:09:10+08:00",
+ "detect_calls": 0,
+ "research_basis": "710-A1：A8 的论域是标签映射 λ（划分），可穷举 ⇒ 707 的「不可自动验证」结论被修正为「可在标签域上自动验证」",
+ "a8_test": {
+  "test": "A8（标签轴闭包）穷举测试（论域 = X 的划分，不是覆盖结构）",
+  "n_samples": 4,
+  "n_partitions_Bell4": 15,
+  "per_sample_verdicts": [
+   "catch",
+   "catch",
+   "catch",
+   "miss"
+  ],
+  "aggregation_values_R_by_agg": {
+   "or_union": 0.75,
+   "at_least_2": 0.0,
+   "max_single": 0.5,
+   "min_single": 0.0,
+   "mean_single": 0.25,
+   "sum_single": 0.75,
+   "exactly_one_nonmonotone": 0.75
+  },
+  "group_statistic_distinct_values": {
+   "share_high_blind_pct": [
+    0.0,
+    25.0,
+    33.333333,
+    50.0
+   ],
+   "macro_mean_blind_pct": [
+    16.666667,
+    25.0,
+    33.333333,
+    50.0
+   ]
+  },
+  "n_coarsening_pairs": 45,
+  "n_coarsening_pairs_changing_statistic": 27,
+  "coarsening_witness_example": {
+   "fine": [
+    0,
+    0,
+    0,
+    1
+   ],
+   "coarse": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "fine_share_pct": 50.0,
+   "coarse_share_pct": 0.0
+  },
+  "indistinguishable_configurations": {
+   "n_lambda": 15,
+   "n_distinct_share_values": 4,
+   "ambiguity_factor": 3.75,
+   "note": "不声明 λ 时，(V, S) 把配置压成按 S 取值的等价类 ⇒ 平均每个观测值对应 15/|S| 个不可区分配置"
+  },
+  "checks": {
+   "axiom_quantities_invariant_under_lambda": true,
+   "group_statistic_varies_under_lambda": true,
+   "coarsening_witness_exists": true,
+   "lambda_free_but_not_automatic": true
+  },
+  "pass": true,
+  "status": "A8 是**必需的公理**（非定理）：存在 15 个 λ 使 A1–A7 的全部量不变而分组统计变"
+ }
+}
