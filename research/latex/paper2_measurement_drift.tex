@@ -88,11 +88,13 @@ evaluation failures requires \textbf{no optimisation pressure at all}: the numbe
 \emph{caliber} of measurement changed, while the capability being measured does not. We call this
 structural (passive) Goodhart and build an algebra for it.
 
-We present a seven-axiom system for measurement drift and prove that only \textbf{two} of the axioms are
-genuinely independent: idempotence, commutativity, non-invertibility and observability-stratification are
-\emph{theorems} of the framework, and enumerability is a meta-requirement. We show the system is
-\textbf{incomplete}: label-vocabulary drift (Type~III) cannot be expressed, and we register an eighth axiom
-closing the label axis.
+We present an eight-axiom system for measurement drift (A1--A8) and prove that only \textbf{three} of the
+axioms are genuinely independent: idempotence, commutativity, non-invertibility and
+observability-stratification are \emph{theorems} of the framework, and enumerability is a meta-requirement.
+The seven-axiom core is \textbf{incomplete}---label-vocabulary drift (Type~III) cannot be expressed---and we
+close it with an eighth axiom (label-axis closure), whose necessity we prove by exhaustive enumeration over
+all $15$ label mappings of the four-sample witness domain, and settle a completeness criterion for the
+extended signature.
 
 We then prove three boundary results. (i)~\textbf{Identifiability}: structural and real drift are not
 decidable from paired data alone, yet are point-identified under nested calibers. (ii)~\textbf{Correctability}:
@@ -103,8 +105,10 @@ $\Rightarrow$ infinite samples), while component-removal drift costs $849$ paire
 environment drift---cost is governed by the discordance rate, not the effect size.
 
 We instantiate the framework on a C/C++ verification apparatus ($1{,}147$ samples) and, partially, on
-LLM-as-a-judge evaluation (migration score $55.8/100$). All numbers come from frozen artifacts of earlier
-batches; no new measurement was taken for this paper.
+LLM-as-a-judge evaluation (migration score $55.8/100$; $78.3/100$ once the aggregation axis is probed the
+way the transfer criterion prescribes, which shows the published reading to be a test-design false
+negative). All numbers come from frozen artifacts of earlier batches; no new measurement was taken for this
+paper.
 \end{abstract}
 
 % =====================================================================
@@ -147,13 +151,16 @@ exactly zero power at any sample size.
 
 \paragraph{Contributions.}
 \begin{itemize}\itemsep2pt
-  \item \textbf{C1 (algebra and metatheory).} A seven-axiom algebra of measurement drift with six theorems
-  (T1--T6). Its metatheory is settled by exhaustive model checking over all $2^{4\times3}=4096$ coverage
-  structures $\times$ seven aggregation families: only A2 (monotonicity) and A5 (super-additivity) are
-  genuinely independent; A3/A4/A6/A7 are theorems; A1 is a meta-axiom. The system is \emph{incomplete}---Type~III
-  drift is inexpressible---so we register a missing A8 (label-axis closure) and extend the caliber signature
-  to a 6-tuple. Caliber arbitrage is NP-hard (max-coverage reduction) with a greedy $(1-1/e)$ approximation.
-  Sections~\ref{sec:algebra}--\ref{sec:meta}.
+  \item \textbf{C1 (algebra and metatheory).} An eight-axiom algebra of measurement drift (A1--A8) with six
+  theorems (T1--T6). Its metatheory is settled by exhaustive model checking over all $2^{4\times3}=4096$
+  coverage structures $\times$ seven aggregation families: only A2 (monotonicity), A5 (super-additivity) and
+  A8 (label-axis closure) are genuinely independent; A3/A4/A6/A7 are theorems; A1 is a meta-axiom. The
+  seven-axiom core is \emph{incomplete}---Type~III drift is inexpressible---and A8 closes the label axis; its
+  necessity is proved by exhaustive enumeration over all $15$ label mappings of the witness domain, and the
+  extended signature is governed by a completeness criterion (record injectivity requires the declared
+  caliber $(D,A,E,\Theta,P,\lambda)$ plus retention of the raw verdict matrix; comparability additionally
+  requires A2 and A5). Caliber arbitrage is NP-hard (max-coverage reduction) with a greedy $(1-1/e)$
+  approximation. Sections~\ref{sec:algebra}--\ref{sec:meta}.
   \item \textbf{C2 (four types, and their universality classes).} Structural Goodhart comes in four types
   (denominator, environment, label, aggregation), each with its own control axis, and they do \emph{not}
   belong to one universality class: two are discontinuous, one is a smooth sub-critical decay with no
@@ -165,7 +172,10 @@ exactly zero power at any sample size.
   \item \textbf{C4 (validation, and a cross-domain arm).} Four experiments instantiate the theorems on a
   frozen C/C++ matrix ($1{,}147$ samples, $566$-sample paired split) and, partially, on an LLM-as-a-judge arm
   ($80$ samples $\times$ 2 judges $\times$ 2 prompts, temperature $0$), where the protocol migrates with score
-  $55.84/100$---with the aggregation axis essentially non-transferable. Section~\ref{sec:exp}.
+  $55.84/100$. A transfer criterion (I1--I5) locates the single failing axis, and probing it with a
+  constructed zero-capability judge---the operation the criterion says was never performed---raises the score
+  to $78.26/100$ (conservative $73.26$), so the published aggregation-axis reading was a test-design false
+  negative. Section~\ref{sec:exp}.
 \end{itemize}
 
 \paragraph{Scope and honesty.} The empirical basis is one C/C++ verification apparatus plus one partial LLM
@@ -238,10 +248,11 @@ cite it for those findings only: that paper asks \emph{what was found}; this one
 
 \paragraph{Overlap with the companion submission.} This paper builds on the experimental framework introduced
 in our companion submission \citep{queyi2027caliber}, but focuses on theoretical boundaries rather than
-empirical findings. No experimental results are duplicated: the transition counts, the T1/T5/T6 diagnostics
-and the sample-complexity requirements reported here are recomputed from the same frozen matrices and are
-either new to this paper or reported in a different role. The companion submission is under review; we cite
-it anonymously and claim no priority over it.
+empirical findings. No experimental results are duplicated: the transition counts, the T1/T5/T6 diagnostics,
+the causal decomposition of the selection gain (Appendix~\ref{app:f1causal}) and the sample-complexity
+requirements reported here are recomputed from the same frozen matrices and are either new to this paper or
+reported in a different role. The companion submission is under review; we cite it anonymously and claim no
+priority over it.
 
 % =====================================================================
 \section{Measurement Drift Algebra}
@@ -322,7 +333,7 @@ Let $A$ be the asset set, $X$ the sample population, $C_a$ the catch set of asse
 $h(G):=f(A)-f(A\setminus G)$ the \emph{damage} of removing asset set $G$ (removal-type generator $\tau_G$).
 
 
-The seven axioms and their metatheory verdict are tabulated in Appendix~\ref{app:meta} (Table~\ref{tab:axioms}).
+The eight axioms and their metatheory verdict are tabulated in Appendix~\ref{app:meta} (Table~\ref{tab:axioms}).
 
 
 A3 and A4 give $(\{\tau_G\}_{G\subseteq A},\circ)\cong(2^{A},\cup)$: the generators form a commutative
@@ -330,7 +341,40 @@ idempotent monoid---a join-semilattice---and \emph{not} a group, because A6 says
 lacks an inverse. That is the algebraic content behind the most practically useful corollary of the paper:
 knowing $\Rhat(\tau_G M)$ and $G$ does not determine $\Rhat(M)$, since inversion would require the assets'
 \emph{unique} catch sets---exactly what removal destroys. Drift cannot be corrected after the fact; it can
-only be re-measured. Section~\ref{sec:correct} sharpens this into a two-sided criterion.
+only be re-measured. Section~\ref{sec:correct} sharpens this into a two-sided criterion. The irreversibility
+also holds in \emph{distribution form}: for every $G\neq\varnothing$ there exist distinct priors over
+configurations whose pushforwards $\tau_G^{\#}$ coincide---$\delta$ masses on a colliding pair, and in fact
+the whole segment between them---so no recovery map can select one point of the segment
+(Appendix~\ref{app:proofs}). The collision class that matters in practice identifies a \emph{lost catch}
+with a \emph{never-run} sample: a record that keeps only verdicts cannot distinguish ``not measured'' from
+``measured and lost'', which is why either an explicit $S$ slot or an equivalent marker is required.
+
+\paragraph{Eighth axiom: label-axis closure.} The seven-axiom core cannot express Type~III drift, because
+the caliber signature $(A,E,\Theta,P)$ has no slot for the label map $\lambda$. The witness is minimal: on
+the four-sample domain with $V=(\catch,\catch,\catch,\miss)$, the three classes of a fine vocabulary have
+blind-spot rates $\{0,0,1\}$ while a single coarse class has $\{0.25\}$, and every quantity the seven axioms
+speak about is unchanged ($R_{\text{or}}=0.75$ throughout). The collapse is not an artifact of one choice of
+vocabulary: enumerating all $\mathrm{Bell}(4)=15$ partitions of the domain, the grouped statistic takes
+\textbf{four} distinct values ($0$, $25$, $33\frac{1}{3}$, $50\%$), $27$ of the $45$ admissible coarse/fine
+pairs change it, and the ambiguity factor of an undeclared $\lambda$ is $15/4=3.75$; no function of the
+seven axioms' quantities determines $\lambda$, so A8 is a genuine axiom, not a theorem. On the real corpus
+the same non-identifiability appears as $38.24\%/42.86\%/37.50\%$ under the $34/14/8$-level vocabularies---all
+three correct, mutually incomparable, with a constructible range of $[0\%,97.06\%]$ for the same verdict
+matrix. We therefore extend the caliber signature to $(D,A,E,\Theta,P,\lambda)$: every grouped statistic
+declares its grouping axis, undeclared statistics are not comparable, and the report retains group-level
+resolution so that any coarsening can be recomputed.
+
+\paragraph{When is a protocol complete?} With A8 in place, completeness (no two admissible configurations
+agree on every observable) factors into two layers. \emph{Record injectivity} holds iff the record declares
+$(D,A,E,\Theta,P,\lambda)$ and retains the per-sample per-asset verdict matrix; each missing slot admits an
+explicit colliding pair, and the matrix-retention clause is the same obligation Theorem~\ref{thm:T6} states
+for repairability. \emph{Comparability}---the direction of a drift reading is well defined---additionally
+requires A2 and A5, because a minimum-type caliber can be moved by \emph{removing} a component and a
+mean-type caliber by \emph{adding} a zero-yield one, with no capability change either way. Two boundaries
+we keep explicit: incompleteness does \emph{not} imply non-correctability---repairability depends on
+\emph{where} the missing information sat and whether the raw record survived, so a missing label vocabulary
+on a retained matrix is repairable while the same omission on a scalar summary is not---and the criterion is
+relative to the four registered drift types, so a fifth type would reopen it.
 
 \subsection{T1: super-additivity with a closed-form residual}
 \label{sec:T1}
@@ -568,6 +612,23 @@ in-repository judge study rather than public judge benchmarks.
 
 The per-axis breakdown is in Appendix~\ref{app:extra} (Table~\ref{tab:crossdomain}).
 
+\paragraph{Reading E4 through a transfer criterion.} The migration score was published with ``aggregation
+axis non-transferable'' as its weakest component ($2.58/25$). A transfer criterion (I1--I5: all four axes
+present; pairing possible; a \emph{zero-capability component} constructible; three-state accounting;
+a non-circular truth source) locates why that reading is a \emph{test-design} false negative: what had been
+compared were two aggregation rules inside the same family, never the Type~IV operation of injecting a
+component that adds no capability. Re-analysing the same frozen judge verdicts with a constructed
+zero-capability judge, a mean-type rule moves by $25.00\pp$ while OR and majority move by $0.00\pp$---the
+same signature as the C/C++ apparatus---so the axis does transfer. Repairing the component under its own
+caliber gives $78.26/100$ (conservative $73.26$); the correction rests on a \emph{constructed} judge rather
+than a measured one, and the two totals carry different calibers, so both are reported. The same criterion
+returns one falsifiable prediction per candidate domain (e.g.\ scientific reviewing: the aggregation axis
+should move by $\ge20\%$ under zero-information reviewers), and it notes the one axis the LLM arm cannot
+strengthen: with human agreement at zero, the truth source is the declared label, so the arm identifies
+agreement, not correctness. Appendix~\ref{app:transfer} carries the criterion, the domain table, and a
+$200$-frame compiler-substitution pilot from the companion apparatus (a swap-type drift, reverse pairs
+$6$--$7$, hence outside the nested-chain algebra of Theorem~\ref{thm:T5}).
+
 
 The structural-Goodhart rate in the LLM arm---the fraction of samples a judge calls a catch while the
 declared label says miss---is $26.25\%$ (reasoning judge) and $42.50\%$ (non-reasoning judge). The ten most
@@ -606,19 +667,27 @@ drift; and the headline blind-spot percentage is a consequence of the aggregatio
 companion for those findings and do not restate its arguments.
 
 \paragraph{Limitations.} The empirical basis is one domain (C/C++ verification) plus one partial LLM arm;
-the environment axis has two control points; $92.9\%$ of the corpus is human-planted; the ``always true''
+the environment axis has two control points (a third direction---compiler substitution inside one
+OS---is pinned only by a $200$-frame pilot, a swap-type not a removal-type drift); $92.9\%$ of the corpus is
+human-planted; the ``always true''
 metatheory verdicts hold only over the $4096$-structure, seven-aggregation domain, so they are in-domain
-evidence rather than general proofs; A2 and A5 could not be separated within that domain; the Type~I
+evidence rather than general proofs; A2 and A5 could not be separated within that domain (A8's independence
+is established by exhaustive enumeration over $\mathrm{Bell}(4)=15$ label maps---a different domain than the
+coverage grid); the Type~I
 exponent $\beta$ is model-implied; the phase-transition language is an analogy with no thermodynamic
 counterpart; the LLM arm has two judges, two prompts and eighty samples with zero human agreement; and the
 risk thresholds and migration-score weights are self-set with no external calibration.
 
-\paragraph{Future work.} Four items follow directly. (1) Formalise A8 and test the extended signature on a
-second domain. (2) Derive the sample complexity of \emph{non-paired} designs, which is what Types~III and IV
+\paragraph{Future work.} Four items follow directly. (1) Test the extended signature and the completeness
+criterion on a second domain (A8's formalisation and necessity proof are in Section~\ref{sec:A8}; the label
+axis is the natural place to start, and the registered candidate ninth axiom is the sample-margin slot).
+(2) Derive the sample complexity of \emph{non-paired} designs, which is what Types~III and IV
 actually require. (3) Add a third environment profile (a container image) to lift the environment axis from
-two control points to three. (4) Build an equi-marginal replacement design to separate composition from
-mechanism effects---which would convert Corollary~\ref{cor:A2.1}'s non-identifiability into identifiability
-using a read-only rearrangement rather than a new measurement.
+two control points to three. (4) The equi-marginal replacement design has since been executed in its
+read-only form (four protocols: out-of-fold selection, external pool, column permutation, margin
+reweighting), which converts Corollary~\ref{cor:A2.1}'s non-identifiability into a bounded residual without
+a new measurement; what remains is replacing the \emph{sample pool}, the one substitution that does require
+new measurement.
 
 \paragraph{What an evaluator should do on Monday.} The three cheapest interventions are also the most
 effective. Remove zero-yield components from the \emph{declared} asset pool, keeping them as a capability
@@ -637,8 +706,8 @@ $1.0000$: with the pool reduced to the selection budget there is no selection pr
 \label{sec:conclusion}
 
 Evaluation numbers can change without any optimisation pressure, because the caliber of measurement changed
-while the capability did not. We gave that structure an algebra---seven axioms of which only two are
-independent---and proved its three boundaries: structural and real drift are not identifiable from paired
+while the capability did not. We gave that structure an algebra---eight axioms of which only three (A2, A5,
+A8) are independent---and proved its three boundaries: structural and real drift are not identifiable from paired
 data alone, post-hoc repair is possible exactly on the post-measurement layer, and audit cost is governed by
 the discordance rate rather than the effect size, with two of the four drift types undetectable by a paired
 design at any sample size. The most useful practical consequence is that the three cheapest
@@ -690,6 +759,24 @@ Take $G=\{a\}$ for any asset $a$. Build $M_1,M_2$ agreeing with $M$ on all asset
 $C_a^{(1)}=\varnothing$ and $C_a^{(2)}=C_B$ for some non-empty retained asset set $B$. After removing $a$,
 both OR verdict sequences are decided by $A\setminus\{a\}$ and are therefore identical, while
 $\Rhat(M_1)<\Rhat(M_2)$. So $\tau_G$ is many-to-one and has no inverse. $\square$
+
+\paragraph{Distribution form, and the collision class that matters.} The statement lifts from one
+configuration pair to priors: for $\mu_1=\delta_{M_1}$, $\mu_2=\delta_{M_2}$ the pushforwards
+$\tau_G^{\#}\mu_1=\tau_G^{\#}\mu_2$ coincide while $\mu_1\neq\mu_2$, and in fact every mixture
+$(1-t)\mu_1+t\,\mu_2$, $t\in[0,1]$, has the same pushforward---so a recovery map is asked to output a whole
+segment, not a point. On finite configuration spaces non-injectivity of $\tau_G$ and the existence of such a
+prior pair are equivalent (the $\Leftarrow$ direction extracts a colliding pair from any differing
+pre-image class). Two collision classes are worth separating. (i)~\emph{Hidden-column collisions} (the
+construction above) are format-independent: the deleted column's content is nowhere in the record under any
+encoding. (ii)~\emph{Lost-versus-never-run collisions} are the ones a scalar report actually suffers: with
+aware accounting, a catch destroyed by removal and a sample that was never run both read $\unk$, so
+``measured and lost'' is indistinguishable from ``not measured''. Exhaustive checking of the smallest
+non-trivial domain ($|X|=2$, $|A|=2$, all $64$ configurations) finds, for $G=\{a\}$, $8$ collision classes
+at the matrix-retaining level and $13$ at the verdict-only level, with informative collisions (same record,
+different pre-drift report) in both; the largest verdict-level class contains $18$ configurations whose
+pre-drift reports range over $\{0\%,50\%,100\%\}$. The practical corollary is the record requirement used in
+Section~\ref{sec:axioms}: keep the $\bot$ annotations or declare $S$, or the distinction is lost before any
+repair rule can act. $\square$
 
 \subsection*{Theorem~\ref{thm:T3} (stratification of silence)}
 
@@ -767,11 +854,11 @@ aggregation set we did \emph{not} find a witness violating A2 alone. A2's indepe
 established only against families that also violate A5, and a larger aggregation family would be needed for
 a strict separation. The check as written is registered as incomplete.
 
-\subsection{Incompleteness, and the missing A8}
+\subsection{Incompleteness, and the eighth axiom (A8)}
 \label{sec:A8}
 
-The axiom system does not express Type~III drift, and we exhibit the witness rather than assert it. Fix the
-coverage structure $C_a=\{0,1\}, C_b=\{2\}, C_c=\varnothing$ and the per-sample verdicts
+The seven-axiom core does not express Type~III drift, and we exhibit the witness rather than assert it. Fix
+the coverage structure $C_a=\{0,1\}, C_b=\{2\}, C_c=\varnothing$ and the per-sample verdicts
 $V=(\catch,\catch,\catch,\miss)$. Under a fine vocabulary the three classes have blind-spot rates
 $\{0.0,0.0,1.0\}$; under a coarse vocabulary merging them, the single class has rate $\{0.25\}$. Every
 per-sample verdict is unchanged, every quantity the seven axioms speak about is unchanged
@@ -779,13 +866,34 @@ per-sample verdict is unchanged, every quantity the seven axioms speak about is 
 function $\lambda$ is \emph{not in the caliber signature}. The signature is $(A,E,\Theta,P)$ and has no slot
 for it.
 
-We therefore register the missing axiom and the extended signature.
+We register the axiom---now with a proof of necessity rather than a witness.
 
 \begin{quote}
 \textbf{A8 (label-axis closure).} The caliber signature must be extended to $(D,A,E,\Theta,P,\lambda)$, and
 every reported statistic must declare its grouping axis $\lambda$; statistics whose $\lambda$ is undeclared
 are not comparable.
 \end{quote}
+
+\paragraph{Necessity (exhaustive).} The label domain is finite and small enough to enumerate: over all
+$\mathrm{Bell}(4)=15$ partitions $\lambda$ of the four-sample domain, the per-sample verdict vector and the
+seven aggregation reports are \emph{constant} ($R_{\text{or}}=0.75$ and likewise for the other six
+families) while the grouped statistic takes \textbf{four} distinct values ($0$, $25$, $33\frac{1}{3}$,
+$50\%$); of the $45$ coarse/fine pairs, $27$ change the statistic. Hence no function of the seven axioms'
+quantities determines $\lambda$, A8 is independent of A1--A7, and the ambiguity factor for an undeclared
+$\lambda$ is $15/4=3.75$. This closes the earlier ``unverifiable'' status of A8: it is verifiable by the
+same exhaustive method that settles A2/A5, once the domain is the label map rather than the coverage
+structure. A6's irreversibility is also now stated in distribution form for every $G\neq\varnothing$
+(distinct priors with identical pushforwards; Appendix~\ref{app:proofs}).
+
+\paragraph{Completeness, and one honest disjunction.} The completeness criterion in
+Section~\ref{sec:axioms} has a deliberately weak ``missing-$S$'' clause. Writing it as a \emph{conjunctive}
+obligation (``an $S$ slot is mandatory'') would make it dependent on the record format: if the protocol
+retains $\bot$ annotations, the actually-run set is recoverable from the record and the clause is
+automatically satisfied. The correct form is the \emph{disjunction}---the record must carry $S$'s
+\emph{information} (an explicit slot \emph{or} an equivalent marker)---and the witness for its necessity is
+a domain fact rather than a convention: this corpus contains two zero-yield assets (zero catches over all
+$1147$ samples), so ``declared and run but contributing nothing'' and ``never run'' are two admissible
+configurations with identical records once neither $S$ nor $\bot$ is kept.
 
 This is not a stylistic requirement but the axiom form of a measured fact: the share of defect types
 exceeding $50\%$ blind-spot rate is $38.24\%$ under the normalised $34$-type vocabulary and $25.71\%$ under
@@ -823,16 +931,16 @@ removal-type, $\tau_G$ retaining $A\setminus G$, and damage is $h(G)=R(A)-R(A\se
 \centering
 \small
 \caption{Completeness check. The label-coarsening witness shows a model in which every axiom-relevant
-quantity is fixed while the grouped statistics move---so Type~III drift is inexpressible in the current
-signature.}
+quantity is fixed while the grouped statistics move---so Type~III drift is inexpressible in the seven-axiom
+core; A8 closes it, and the check is repeated on the extended signature.}
 \label{tab:completeness}
-\begin{tabular}{@{}p{5.4cm} p{1.6cm} p{4.4cm}@{}}
+\begin{tabular}{@{}p{5.4cm} p{1.9cm} p{4.4cm}@{}}
 \toprule
 Check & Result & Note \\
 \midrule
-all four observed drift types expressible? & no & Type~III cannot be expressed \\
-model satisfying all axioms yet drifting? & yes & label-coarsening witness \\
-is a ninth axiom needed? & not found beyond A8 & not excluded: the domain is finite \\
+all four observed drift types expressible? & no (core) / yes (with A8) & Type~III inexpressible in $(A,E,\Theta,P)$; A8 adds the $\lambda$ slot \\
+model satisfying all eight axioms yet drifting? & not found & registered candidate A9$^{*}$: same verdicts, ~reweighted sample margins move the gain by $1.03\pp$ \\
+is a ninth axiom needed? & candidate registered, not proved independent & not excluded: the domain is finite and the fifth drift type is open \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -875,7 +983,7 @@ reduction proved here, and it is vacuous at $|A|=8$.
 \begin{table}[t]
 \centering
 \small
-\caption{The seven axioms, and the metatheory verdict of Section~\ref{sec:meta}. The axioms are stated in
+\caption{The eight axioms, and the metatheory verdict of Section~\ref{sec:meta}. The axioms are stated in
 full here; the independence witnesses are in Table~\ref{tab:independence}.}
 \label{tab:axioms}
 \begin{tabular}{@{}c l p{8.6cm}@{}}
@@ -889,6 +997,7 @@ A4 & commutativity, closure & $\tau_G\circ\tau_H=\tau_H\circ\tau_G=\tau_{G\cup H
 A5 & super-additivity of damage & $h(G\cup H)\ge h(G)+h(H)$, $G\cap H=\varnothing$; \emph{genuine axiom} \\
 A6 & non-invertibility & the only invertible element is $\tau_\varnothing$; \emph{theorem} \\
 A7 & observability stratification & silence is a property of $(\tau,\text{accounting})$, not of $\tau$; \emph{theorem} \\
+A8 & label-axis closure & $\lambda$ enters the signature; grouped statistics declare their grouping axis; \emph{genuine axiom} (Bell$(4){=}15$ enumeration) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -896,8 +1005,9 @@ A7 & observability stratification & silence is a property of $(\tau,\text{accoun
 \begin{table}[t]
 \centering
 \small
-\caption{Axiom independence over all $4096$ structures $\times$ $7$ aggregations. The minimal axiom set is
-meta-axiom $\{A1\}$, structural axioms $\{A2,A5\}$, theorems $\{A3,A4,A6,A7\}$.}
+\caption{Axiom independence over all $4096$ structures $\times$ $7$ aggregations plus the label domain.
+The minimal axiom set is meta-axiom $\{A1\}$, structural axioms $\{A2,A5\}$, label axiom $\{A8\}$,
+theorems $\{A3,A4,A6,A7\}$.}
 \label{tab:independence}
 \begin{tabular}{@{}c p{1.9cm} p{7.6cm}@{}}
 \toprule
@@ -910,6 +1020,7 @@ A4 & theorem & none (always true): set union commutes and is associative \\
 A5 & genuine axiom & \texttt{at\_least\_2}: same structure, $h(\{a\}){=}h(\{b\}){=}1/4$ but $h(\{a,b\}){=}1/4<1/2$ \\
 A6 & theorem & none (always true): column deletion is non-injective for every $G\neq\varnothing$ \\
 A7 & theorem & none ($3840$ witnesses); provable once accounting is written into the structure (T3) \\
+A8 & genuine axiom & all $\mathrm{Bell}(4){=}15$ label maps: verdicts and all seven reports fixed, grouped statistic takes $4$ values ($27/45$ coarse pairs change it) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1135,25 +1246,131 @@ compile-time & $100\%$ & $0.00\%$ & $100\%$ & $0$ (prior) \\
 \begin{table}[t]
 \centering
 \small
-\caption{Cross-domain arm. The aggregation axis is essentially non-transferable: a change of aggregation
-rule moves the LLM report by $1.03\pp$ against $33.33\pp$ in the C/C++ apparatus. Components are scored out
-of $25$ with self-set weights and no external calibration.}
+\caption{Cross-domain arm. Published reading: the aggregation axis is non-transferable, a change of
+aggregation rule moving the LLM report by $1.03\pp$ against $33.33\pp$ in the C/C++ apparatus. Probing the
+Type~IV operation---injecting a constructed zero-capability judge, which the transfer criterion says was
+never performed---a mean-type rule moves by $25.00\pp$ while OR and majority move by $0.00\pp$: the same
+signature as the apparatus, so the axis does transfer and the original reading was a test-design false
+negative (corrected total $78.26/100$; $73.26$ if the probed component is capped at $20/25$). Components are
+scored out of $25$ with self-set weights and no external calibration.}
 \label{tab:crossdomain}
-\begin{tabular}{@{}p{2.7cm} p{4.0cm} p{3.0cm} r@{}}
+\begin{tabular}{@{}p{2.5cm} p{3.8cm} p{4.2cm} r@{}}
 \toprule
 Axis & C/C++ apparatus & LLM arm & Migration \\
 \midrule
 caliber (prompt) & $-35.34\pp$ & invariance $87.5\%$ / $96.25\%$ & $15.62/25$ \\
 environment (judge model) & two environments & false-report gap $13.0\pp$ & $16.25/25$ \\
-aggregation & $33.33\pp$ & $1.03\pp$ & $2.58/25$ \\
+aggregation, published & $33.33\pp$ & $1.03\pp$ (same-family rules) & $2.58/25$ \\
+aggregation, probed & $33.33\pp$ & mean $25.00\pp$; OR/maj.\ $0.00\pp$ & $25/25$ \\
 label & $38.24\%$ vs $25.71\%$ & swing $8.56\pp$ & $21.39/25$ \\
 \midrule
-\textbf{total} & & & $\mathbf{55.84/100}$ \\
+\textbf{total, published} & & & $\mathbf{55.84/100}$ \\
+\textbf{total, probed} & & & $\mathbf{78.26/100}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 
+
+% =====================================================================
+% 711 Task A2/A3: transfer criterion + compiler-substitution pilot + read-only causal decomposition of F1.
+% =====================================================================
+\section{Transfer of the audit protocol: criterion, domains, and a pilot}
+\label{app:transfer}
+
+\paragraph{When does the protocol transfer?} Write a domain as
+$\mathcal{D}=(\mathcal{O},\mathcal{C},A,\mathcal{R},\Omega,\Lambda,\mathcal{T})$: objects, components, the
+per-component verdict function $A:\mathcal{C}\times\mathcal{O}\to\{\catch,\miss,\unk\}$, an aggregation
+family $\mathcal{R}$, caliber axes $\Omega$, label maps $\Lambda$, and a truth reference $\mathcal{T}$. The
+protocol transfers \emph{structurally} to $\mathcal{D}'$ iff five conditions hold---each protects one axis,
+and each failure collapses an axis to a constant:
+
+\begin{center}
+\small
+\begin{tabular}{@{}c p{6.3cm} p{5.4cm}@{}}
+\toprule
+\# & Condition & Axis it protects \\
+\midrule
+I1 & all four caliber axes present and variable & any missing axis is unmeasurable \\
+I2 & pairing possible (same object, two calibers; or a design-level control) & else effects confound with composition (Theorem~\ref{thm:A1}) \\
+I3 & a \emph{zero-capability component} constructible and the rule sensitive to component count & Type~IV untestable without it \\
+I4 & three states separable (``not measured'' $\neq$ ``not detected'') & Type~II silence unmeasurable ($\Delta_{\unk}$) \\
+I5 & a non-circular truth source exists & only agreement is measurable, not correctness \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The two directions have different strengths: failure is \emph{constructive} (each missing condition yields
+an axis with identically zero effect), while success only asserts that every axis has at least one
+non-trivial object---it does not bound the effect size, so a \emph{numerical} transfer claim needs separate
+evidence. For the C/C++ apparatus all five hold; for the LLM arm I5 is the weak link (human agreement zero).
+
+\paragraph{Domain predictions (falsifiable).} Passing the checklist yields one prediction per domain, namely
+\emph{which} axis will move: scientific reviewing---aggregation (multi-reviewer \emph{means} dilute under
+zero-information reviewers; predicted effect $\ge20\%$); educational assessment---label (score cut-points
+are a continuous $\lambda$, the worst case for comparability); medical reading studies---I3 fails ethically
+(zero-capability readers cannot be constructed; only retrospective substitutes); LLM judging---I5 (declared
+labels as truth, so judge-wrong and label-wrong are inseparable); software benchmarks---I4 (two-state
+verdicts make ``not run'' and ``not detected'' isomorphic). Each is falsifiable by running the five-step
+protocol in that domain.
+
+\paragraph{A 200-frame pilot of a third environment direction.} The environment axis elsewhere in this paper
+has two control points (WSL g++ 13.3 vs.\ native MinGW, a removal-type drift, $c=0$). A pilot from the
+companion apparatus pins a third \emph{direction}---compiler substitution inside one OS (g++ 13.3 vs.\
+clang 18.1.3, same libc/linker, $n=200$ paired frames, two assets)---with exact three-state transition
+matrices: $\catch\to\miss$ only $4/65$ (asan) and $3/48$ (ubsan) of the pre-drift catches---against
+$200/340=58.8\%$ for the removal-type drift---but with \emph{reverse} pairs ($\miss\to\catch$) of $6$ and
+$7$, so this drift is \emph{swap-type}, not removal-type: it is outside the nested-chain hypothesis of
+Theorem~\ref{thm:T5}, and its $\Delta_{\unk}=+1.5\pp$ comes from compiler-side compile failures (tool
+availability), not from environment gating. Agreement is $93.5\%$ with $\kappa=0.864/0.843$
+(three-category); no asymmetry is significant (exact McNemar $p=0.75$ and $p=0.34$). Reading: the
+near-identity outcome reproduces, but the drift algebra's removal results must not be applied to
+compiler substitutions without re-checking one-directionality.
+
+% =====================================================================
+\section{The composition/mechanism split of the selection gain, causally (read-only)}
+\label{app:f1causal}
+
+The companion paper's headline (a $+24\pp$ selection gain that collapses under pool controls) is a Type~I
+composition instance; this appendix records its decomposition in this paper's terms. All of it is a
+read-only re-analysis of the same frozen matrix.
+
+\emph{(i) An exact identity.} At budget $k=1$ the gain equals the pool's marginal-range statistic,
+$\Delta(1)=\mu_{\max}-\bar\mu$ (for any selector that picks the highest-marginal asset), verified to the
+digit on four pools ($19.9868$, $12.2968$, $15.6361$, $44.4346\pp$). The ``selection gain'' is therefore
+first of all a \emph{property of the pool}, not of the selector.
+
+\emph{(ii) Sequential decomposition of the headline.} Moving one knob at a time: $+24.03\pp$ (single-point
+caliber, full pool, $k{=}4$) $\to+14.48$ (expectation caliber, $-9.55$) $\to+6.21$ (drop two zero-yield
+assets, $-8.27$) $\to+1.55$ (drop the near-zero-yield linker, $-4.65$) $\to+12.30\pp$ (budget $k{=}4\to1$,
+$+10.74$). The two largest blocks are a caliber choice and a budget choice, not capability; the mechanism
+residual is $+12.30\pp$, and it lives entirely on the $k{=}1$ tier.
+
+\emph{(iii) The observable confounds are bounded.} Out-of-fold (clone-family-aware) selection changes the
+residual by $\le1.06\pp$ ($15$ pool$\,\times\,k$ combinations, twelve below $0.02\pp$), and reweighting the
+sample-side defect margin to the corpus margin or to uniformity changes it by $\le1.03\pp$---so the classic
+Type~I suspect (sample composition) is not the active axis here; the composition lives on the
+\emph{asset-pool} side.
+
+\emph{(iv) The one large step is itself a pool-size artifact.} ``Drop the linker'' ($-4.65\pp$) decomposes
+exactly, with a zero-yield sixth asset as the separator: the slot effect (a sixth slot in a
+$k{=}4$ budget) is $5.1237\pp$ and linker's own coverage contributes $-0.4711\pp$ ($4/566$ catches, all not
+covered by any other pool asset), i.e.\ the step is $110\%$ pool geometry and $-10\%$ linker. Replacing
+linker by a real zero-yield column reproduces $5.1237\pp$ to the digit; a cross-frame recomputation gives
+$5.35\pp$ and the independent $g_{\text{app}}$ slope of the Type~I scan gives $5.32\pp$. Sensitivity checks:
+difficulty reweighting moves the component by $\le1.51\pp$; breaking the cross-environment sample alignment
+(permutation null, $400$ draws) moves it by $-0.64\pp$. The step must therefore be reported with the pool
+size and budget attached, or not at all.
+
+\emph{(v) The remaining signal is semantic.} Per-sample detectability is predictable across clone families
+from label-level rates alone (AUC $0.785$ with a single shrunk type/group rate; $0.7999$ with
+semantic$+$context bagged CART), while models carrying source-structure features transfer worse ($0.7551$)
+---the transferable part of the signal sits at the label/semantic level, which is also where A8 locates the
+comparability problem.
+
+\emph{Honesty.} The decomposition is order-dependent (the four knobs are not independent); the
+environment-alignment and difficulty attributions are counterfactual probes, not variance shares; and the
+detectability model is estimated on same-corpus folds, so cross-corpus transfer remains untested.
 
 % =====================================================================
 % 709 Task D: Correctability + Sample Complexity moved out of the main text (page limit).
