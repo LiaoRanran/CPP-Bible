@@ -1,0 +1,3547 @@
+{
+ "schema": "queyi-697/drift-algebra/v1",
+ "generated_by": "tools/compute_697_drift_algebra.py",
+ "generated_at": "2026-10-09T08:44:38+08:00",
+ "detect_calls": 0,
+ "inputs": {
+  "a5_matrix": "data/a5_676f_detection_matrix.json",
+  "real_world_matrix": "data/683_real_world_detection_matrix.json",
+  "blindspot_matrix": "data/blindspot_676g_detection_matrix.json",
+  "reference": "data/692_environment_paired_experiment.json"
+ },
+ "asset_partition": {
+  "all": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "wunsequenced",
+   "cross-compile",
+   "linker",
+   "compile-time"
+  ],
+  "env_gated": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "static_unimplemented": [
+   "wunsequenced",
+   "compile-time"
+  ],
+  "E1_supported": [
+   "asan",
+   "ubsan",
+   "tsan",
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "E2_supported": [
+   "compiler-warn",
+   "cross-compile",
+   "linker"
+  ],
+  "E2_environment_gap": [
+   "asan",
+   "ubsan",
+   "tsan"
+  ]
+ },
+ "three_state_transitions": {
+  "A5_evaluation_566": {
+   "n": 566,
+   "counts": {
+    "catch": {
+     "catch": 140,
+     "miss": 200,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 0,
+     "miss": 226,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "row_normalized": {
+    "catch": {
+     "catch": 0.411765,
+     "miss": 0.588235,
+     "unknown": 0.0
+    },
+    "miss": {
+     "catch": 0.0,
+     "miss": 1.0,
+     "unknown": 0.0
+    },
+    "unknown": {
+     "catch": null,
+     "miss": null,
+     "unknown": null
+    }
+   },
+   "marginal_M": {
+    "catch": 340,
+    "miss": 226,
+    "unknown": 0
+   },
+   "marginal_Mprime": {
+    "catch": 140,
+    "miss": 426,
+    "unknown": 0
+   },
+   "discordant_b_M_only_catch": 200,
+   "discordant_c_Mprime_only_catch": 0,
+   "mcnemar_exact_p": 1.2446030555722283e-60,
+   "silent": true,
+   "loud": false,
+   "frame": "A5_evaluation_566",
+   "accounting": "unaware",
+   "delta_unknown_pp": 0.0,
+   "delta_catch_rate_pp": -35.3357
+  },
+  "A5_derivation_571": {
+   "n": 571,
+   "counts": {
+    "catch": {
+     "catch": 158,
+     "miss": 218,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 0,
+     "miss": 195,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "row_normalized": {
+    "catch": {
+     "catch": 0.420213,
+     "miss": 0.579787,
+     "unknown": 0.0
+    },
+    "miss": {
+     "catch": 0.0,
+     "miss": 1.0,
+     "unknown": 0.0
+    },
+    "unknown": {
+     "catch": null,
+     "miss": null,
+     "unknown": null
+    }
+   },
+   "marginal_M": {
+    "catch": 376,
+    "miss": 195,
+    "unknown": 0
+   },
+   "marginal_Mprime": {
+    "catch": 158,
+    "miss": 413,
+    "unknown": 0
+   },
+   "discordant_b_M_only_catch": 218,
+   "discordant_c_Mprime_only_catch": 0,
+   "mcnemar_exact_p": 4.7477838728798994e-66,
+   "silent": true,
+   "loud": false,
+   "frame": "A5_derivation_571",
+   "accounting": "unaware",
+   "delta_unknown_pp": 0.0,
+   "delta_catch_rate_pp": -38.1786
+  },
+  "A5_all_1137": {
+   "n": 1137,
+   "counts": {
+    "catch": {
+     "catch": 298,
+     "miss": 418,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 0,
+     "miss": 421,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "row_normalized": {
+    "catch": {
+     "catch": 0.416201,
+     "miss": 0.583799,
+     "unknown": 0.0
+    },
+    "miss": {
+     "catch": 0.0,
+     "miss": 1.0,
+     "unknown": 0.0
+    },
+    "unknown": {
+     "catch": null,
+     "miss": null,
+     "unknown": null
+    }
+   },
+   "marginal_M": {
+    "catch": 716,
+    "miss": 421,
+    "unknown": 0
+   },
+   "marginal_Mprime": {
+    "catch": 298,
+    "miss": 839,
+    "unknown": 0
+   },
+   "discordant_b_M_only_catch": 418,
+   "discordant_c_Mprime_only_catch": 0,
+   "mcnemar_exact_p": 2.9545531576914354e-126,
+   "silent": true,
+   "loud": false,
+   "frame": "A5_all_1137",
+   "accounting": "unaware",
+   "delta_unknown_pp": 0.0,
+   "delta_catch_rate_pp": -36.7634
+  },
+  "blindspot_676g_1147": {
+   "n": 1147,
+   "counts": {
+    "catch": {
+     "catch": 251,
+     "miss": 456,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 0,
+     "miss": 440,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "row_normalized": {
+    "catch": {
+     "catch": 0.355021,
+     "miss": 0.644979,
+     "unknown": 0.0
+    },
+    "miss": {
+     "catch": 0.0,
+     "miss": 1.0,
+     "unknown": 0.0
+    },
+    "unknown": {
+     "catch": null,
+     "miss": null,
+     "unknown": null
+    }
+   },
+   "marginal_M": {
+    "catch": 707,
+    "miss": 440,
+    "unknown": 0
+   },
+   "marginal_Mprime": {
+    "catch": 251,
+    "miss": 896,
+    "unknown": 0
+   },
+   "discordant_b_M_only_catch": 456,
+   "discordant_c_Mprime_only_catch": 0,
+   "mcnemar_exact_p": 1.0748601772107342e-137,
+   "silent": true,
+   "loud": false,
+   "frame": "blindspot_676g_1147",
+   "accounting": "unaware",
+   "delta_unknown_pp": 0.0,
+   "delta_catch_rate_pp": -39.7559
+  },
+  "real_world_110": {
+   "n": 110,
+   "counts": {
+    "catch": {
+     "catch": 26,
+     "miss": 39,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 0,
+     "miss": 45,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "row_normalized": {
+    "catch": {
+     "catch": 0.4,
+     "miss": 0.6,
+     "unknown": 0.0
+    },
+    "miss": {
+     "catch": 0.0,
+     "miss": 1.0,
+     "unknown": 0.0
+    },
+    "unknown": {
+     "catch": null,
+     "miss": null,
+     "unknown": null
+    }
+   },
+   "marginal_M": {
+    "catch": 65,
+    "miss": 45,
+    "unknown": 0
+   },
+   "marginal_Mprime": {
+    "catch": 26,
+    "miss": 84,
+    "unknown": 0
+   },
+   "discordant_b_M_only_catch": 39,
+   "discordant_c_Mprime_only_catch": 0,
+   "mcnemar_exact_p": 3.637978807091713e-12,
+   "silent": true,
+   "loud": false,
+   "frame": "real_world_110",
+   "accounting": "unaware",
+   "delta_unknown_pp": 0.0,
+   "delta_catch_rate_pp": -35.4545
+  }
+ },
+ "reconciliation_vs_692": [
+  {
+   "frame": "A5_evaluation_566",
+   "recomputed": {
+    "E1_catch": 340,
+    "E1_miss": 226,
+    "E1_unknown": 0,
+    "E2_catch": 140,
+    "E2_miss": 426,
+    "E2_unknown": 0,
+    "mcnemar_b": 200,
+    "mcnemar_c": 0,
+    "T_catch_catch": 140
+   },
+   "reference_692": {
+    "E1_catch": 340,
+    "E1_miss": 226,
+    "E1_unknown": 0,
+    "E2_catch": 140,
+    "E2_miss": 426,
+    "E2_unknown": 0,
+    "mcnemar_b": 200,
+    "mcnemar_c": 0
+   },
+   "mismatched_fields": [],
+   "pass": true,
+   "derived_T_catch_catch_from_692": 140,
+   "T_catch_catch_match": true
+  },
+  {
+   "frame": "A5_derivation_571",
+   "recomputed": {
+    "E1_catch": 376,
+    "E1_miss": 195,
+    "E1_unknown": 0,
+    "E2_catch": 158,
+    "E2_miss": 413,
+    "E2_unknown": 0,
+    "mcnemar_b": 218,
+    "mcnemar_c": 0,
+    "T_catch_catch": 158
+   },
+   "reference_692": {
+    "E1_catch": 376,
+    "E1_miss": 195,
+    "E1_unknown": 0,
+    "E2_catch": 158,
+    "E2_miss": 413,
+    "E2_unknown": 0,
+    "mcnemar_b": 218,
+    "mcnemar_c": 0
+   },
+   "mismatched_fields": [],
+   "pass": true,
+   "derived_T_catch_catch_from_692": 158,
+   "T_catch_catch_match": true
+  },
+  {
+   "frame": "A5_all_1137",
+   "recomputed": {
+    "E1_catch": 716,
+    "E1_miss": 421,
+    "E1_unknown": 0,
+    "E2_catch": 298,
+    "E2_miss": 839,
+    "E2_unknown": 0,
+    "mcnemar_b": 418,
+    "mcnemar_c": 0,
+    "T_catch_catch": 298
+   },
+   "reference_692": {
+    "E1_catch": 716,
+    "E1_miss": 421,
+    "E1_unknown": 0,
+    "E2_catch": 298,
+    "E2_miss": 839,
+    "E2_unknown": 0,
+    "mcnemar_b": 418,
+    "mcnemar_c": 0
+   },
+   "mismatched_fields": [],
+   "pass": true,
+   "derived_T_catch_catch_from_692": 298,
+   "T_catch_catch_match": true
+  },
+  {
+   "frame": "real_world_110",
+   "recomputed": {
+    "E1_catch": 65,
+    "E1_miss": 45,
+    "E1_unknown": 0,
+    "E2_catch": 26,
+    "E2_miss": 84,
+    "E2_unknown": 0,
+    "mcnemar_b": 39,
+    "mcnemar_c": 0,
+    "T_catch_catch": 26
+   },
+   "reference_692": {
+    "E1_catch": 65,
+    "E1_miss": 45,
+    "E1_unknown": 0,
+    "E2_catch": 26,
+    "E2_miss": 84,
+    "E2_unknown": 0,
+    "mcnemar_b": 39,
+    "mcnemar_c": 0
+   },
+   "mismatched_fields": [],
+   "pass": true,
+   "derived_T_catch_catch_from_692": 26,
+   "T_catch_catch_match": true
+  }
+ ],
+ "additivity": {
+  "A5_evaluation_566": {
+   "env_gated_vs_degenerate": {
+    "label": "env_gated_vs_degenerate",
+    "frame": "A5_evaluation_566",
+    "n": 566,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "linker"
+     ],
+     "B_retained": [
+      "compiler-warn",
+      "cross-compile"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 60.0707,
+     "R_env_only": 24.735,
+     "R_comp_only": 59.364,
+     "R_both": 24.0283
+    },
+    "drift_pp": {
+     "D_env": -35.3357,
+     "D_comp": -0.7067,
+     "D_both": -36.0424,
+     "residual_D_both_minus_sum": 0.0
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -0.0,
+     "predicted_overlap_count": 0,
+     "joint_loss_sample_count_m": 204,
+     "a_sole_count": 200,
+     "l_sole_count": 4,
+     "sum_of_sole_counts": 204,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "env_gated_vs_compiler_warn": {
+    "label": "env_gated_vs_compiler_warn",
+    "frame": "A5_evaluation_566",
+    "n": 566,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "linker",
+      "compiler-warn"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "compiler-warn"
+     ],
+     "B_retained": [
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 60.0707,
+     "R_env_only": 24.735,
+     "R_comp_only": 55.3004,
+     "R_both": 15.0177
+    },
+    "drift_pp": {
+     "D_env": -35.3357,
+     "D_comp": -4.7703,
+     "D_both": -45.053,
+     "residual_D_both_minus_sum": -4.947
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -4.947,
+     "predicted_overlap_count": 28,
+     "joint_loss_sample_count_m": 255,
+     "a_sole_count": 200,
+     "l_sole_count": 27,
+     "sum_of_sole_counts": 227,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "asan_vs_ubsan": {
+    "label": "asan_vs_ubsan",
+    "frame": "A5_evaluation_566",
+    "n": 566,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "ubsan"
+     ],
+     "remove_A_env_gated": [
+      "asan"
+     ],
+     "remove_L_degenerate": [
+      "ubsan"
+     ],
+     "B_retained": [
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 60.0707,
+     "R_env_only": 49.47,
+     "R_comp_only": 52.2968,
+     "R_both": 39.3993
+    },
+    "drift_pp": {
+     "D_env": -10.6007,
+     "D_comp": -7.7739,
+     "D_both": -20.6714,
+     "residual_D_both_minus_sum": -2.2968
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -2.2968,
+     "predicted_overlap_count": 13,
+     "joint_loss_sample_count_m": 117,
+     "a_sole_count": 60,
+     "l_sole_count": 44,
+     "sum_of_sole_counts": 104,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   }
+  },
+  "A5_derivation_571": {
+   "env_gated_vs_degenerate": {
+    "label": "env_gated_vs_degenerate",
+    "frame": "A5_derivation_571",
+    "n": 571,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "linker"
+     ],
+     "B_retained": [
+      "compiler-warn",
+      "cross-compile"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 65.8494,
+     "R_env_only": 27.6708,
+     "R_comp_only": 64.7986,
+     "R_both": 26.62
+    },
+    "drift_pp": {
+     "D_env": -38.1786,
+     "D_comp": -1.0508,
+     "D_both": -39.2294,
+     "residual_D_both_minus_sum": 0.0
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -0.0,
+     "predicted_overlap_count": 0,
+     "joint_loss_sample_count_m": 224,
+     "a_sole_count": 218,
+     "l_sole_count": 6,
+     "sum_of_sole_counts": 224,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "env_gated_vs_compiler_warn": {
+    "label": "env_gated_vs_compiler_warn",
+    "frame": "A5_derivation_571",
+    "n": 571,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "linker",
+      "compiler-warn"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "compiler-warn"
+     ],
+     "B_retained": [
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 65.8494,
+     "R_env_only": 27.6708,
+     "R_comp_only": 60.9457,
+     "R_both": 16.6375
+    },
+    "drift_pp": {
+     "D_env": -38.1786,
+     "D_comp": -4.9037,
+     "D_both": -49.2119,
+     "residual_D_both_minus_sum": -6.1296
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -6.1296,
+     "predicted_overlap_count": 35,
+     "joint_loss_sample_count_m": 281,
+     "a_sole_count": 218,
+     "l_sole_count": 28,
+     "sum_of_sole_counts": 246,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "asan_vs_ubsan": {
+    "label": "asan_vs_ubsan",
+    "frame": "A5_derivation_571",
+    "n": 571,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "ubsan"
+     ],
+     "remove_A_env_gated": [
+      "asan"
+     ],
+     "remove_L_degenerate": [
+      "ubsan"
+     ],
+     "B_retained": [
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 65.8494,
+     "R_env_only": 54.2907,
+     "R_comp_only": 59.1944,
+     "R_both": 44.1331
+    },
+    "drift_pp": {
+     "D_env": -11.5587,
+     "D_comp": -6.655,
+     "D_both": -21.7163,
+     "residual_D_both_minus_sum": -3.5026
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -3.5026,
+     "predicted_overlap_count": 20,
+     "joint_loss_sample_count_m": 124,
+     "a_sole_count": 66,
+     "l_sole_count": 38,
+     "sum_of_sole_counts": 104,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   }
+  },
+  "A5_all_1137": {
+   "env_gated_vs_degenerate": {
+    "label": "env_gated_vs_degenerate",
+    "frame": "A5_all_1137",
+    "n": 1137,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "linker"
+     ],
+     "B_retained": [
+      "compiler-warn",
+      "cross-compile"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 62.9727,
+     "R_env_only": 26.2093,
+     "R_comp_only": 62.0932,
+     "R_both": 25.3298
+    },
+    "drift_pp": {
+     "D_env": -36.7634,
+     "D_comp": -0.8795,
+     "D_both": -37.6429,
+     "residual_D_both_minus_sum": 0.0
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -0.0,
+     "predicted_overlap_count": 0,
+     "joint_loss_sample_count_m": 428,
+     "a_sole_count": 418,
+     "l_sole_count": 10,
+     "sum_of_sole_counts": 428,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "env_gated_vs_compiler_warn": {
+    "label": "env_gated_vs_compiler_warn",
+    "frame": "A5_all_1137",
+    "n": 1137,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "linker",
+      "compiler-warn"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "compiler-warn"
+     ],
+     "B_retained": [
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 62.9727,
+     "R_env_only": 26.2093,
+     "R_comp_only": 58.1354,
+     "R_both": 15.8311
+    },
+    "drift_pp": {
+     "D_env": -36.7634,
+     "D_comp": -4.8373,
+     "D_both": -47.1416,
+     "residual_D_both_minus_sum": -5.5409
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -5.5409,
+     "predicted_overlap_count": 63,
+     "joint_loss_sample_count_m": 536,
+     "a_sole_count": 418,
+     "l_sole_count": 55,
+     "sum_of_sole_counts": 473,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "asan_vs_ubsan": {
+    "label": "asan_vs_ubsan",
+    "frame": "A5_all_1137",
+    "n": 1137,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "ubsan"
+     ],
+     "remove_A_env_gated": [
+      "asan"
+     ],
+     "remove_L_degenerate": [
+      "ubsan"
+     ],
+     "B_retained": [
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 62.9727,
+     "R_env_only": 51.8909,
+     "R_comp_only": 55.7608,
+     "R_both": 41.7766
+    },
+    "drift_pp": {
+     "D_env": -11.0818,
+     "D_comp": -7.2119,
+     "D_both": -21.1961,
+     "residual_D_both_minus_sum": -2.9024
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -2.9024,
+     "predicted_overlap_count": 33,
+     "joint_loss_sample_count_m": 241,
+     "a_sole_count": 126,
+     "l_sole_count": 82,
+     "sum_of_sole_counts": 208,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   }
+  },
+  "blindspot_676g_1147": {
+   "env_gated_vs_degenerate": {
+    "label": "env_gated_vs_degenerate",
+    "frame": "blindspot_676g_1147",
+    "n": 1147,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "linker"
+     ],
+     "B_retained": [
+      "compiler-warn",
+      "cross-compile"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 61.6391,
+     "R_env_only": 21.8832,
+     "R_comp_only": 60.7672,
+     "R_both": 21.0113
+    },
+    "drift_pp": {
+     "D_env": -39.7559,
+     "D_comp": -0.8719,
+     "D_both": -40.6278,
+     "residual_D_both_minus_sum": -0.0
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -0.0,
+     "predicted_overlap_count": 0,
+     "joint_loss_sample_count_m": 466,
+     "a_sole_count": 456,
+     "l_sole_count": 10,
+     "sum_of_sole_counts": 466,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "env_gated_vs_compiler_warn": {
+    "label": "env_gated_vs_compiler_warn",
+    "frame": "blindspot_676g_1147",
+    "n": 1147,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "linker",
+      "compiler-warn"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "compiler-warn"
+     ],
+     "B_retained": [
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 61.6391,
+     "R_env_only": 21.8832,
+     "R_comp_only": 57.0183,
+     "R_both": 11.5083
+    },
+    "drift_pp": {
+     "D_env": -39.7559,
+     "D_comp": -4.6208,
+     "D_both": -50.1308,
+     "residual_D_both_minus_sum": -5.7541
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -5.7541,
+     "predicted_overlap_count": 66,
+     "joint_loss_sample_count_m": 575,
+     "a_sole_count": 456,
+     "l_sole_count": 53,
+     "sum_of_sole_counts": 509,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "asan_vs_ubsan": {
+    "label": "asan_vs_ubsan",
+    "frame": "blindspot_676g_1147",
+    "n": 1147,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "ubsan"
+     ],
+     "remove_A_env_gated": [
+      "asan"
+     ],
+     "remove_L_degenerate": [
+      "ubsan"
+     ],
+     "B_retained": [
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 61.6391,
+     "R_env_only": 49.5205,
+     "R_comp_only": 54.4028,
+     "R_both": 39.0584
+    },
+    "drift_pp": {
+     "D_env": -12.1186,
+     "D_comp": -7.2363,
+     "D_both": -22.5807,
+     "residual_D_both_minus_sum": -3.2258
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -3.2258,
+     "predicted_overlap_count": 37,
+     "joint_loss_sample_count_m": 259,
+     "a_sole_count": 139,
+     "l_sole_count": 83,
+     "sum_of_sole_counts": 222,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   }
+  },
+  "real_world_110": {
+   "env_gated_vs_degenerate": {
+    "label": "env_gated_vs_degenerate",
+    "frame": "real_world_110",
+    "n": 110,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "linker"
+     ],
+     "B_retained": [
+      "compiler-warn",
+      "cross-compile"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 59.0909,
+     "R_env_only": 23.6364,
+     "R_comp_only": 59.0909,
+     "R_both": 23.6364
+    },
+    "drift_pp": {
+     "D_env": -35.4545,
+     "D_comp": 0.0,
+     "D_both": -35.4545,
+     "residual_D_both_minus_sum": 0.0
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -0.0,
+     "predicted_overlap_count": 0,
+     "joint_loss_sample_count_m": 39,
+     "a_sole_count": 39,
+     "l_sole_count": 0,
+     "sum_of_sole_counts": 39,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "env_gated_vs_compiler_warn": {
+    "label": "env_gated_vs_compiler_warn",
+    "frame": "real_world_110",
+    "n": 110,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "ubsan",
+      "tsan",
+      "cross-compile",
+      "linker",
+      "compiler-warn"
+     ],
+     "remove_A_env_gated": [
+      "asan",
+      "ubsan",
+      "tsan"
+     ],
+     "remove_L_degenerate": [
+      "compiler-warn"
+     ],
+     "B_retained": [
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 59.0909,
+     "R_env_only": 23.6364,
+     "R_comp_only": 59.0909,
+     "R_both": 20.0
+    },
+    "drift_pp": {
+     "D_env": -35.4545,
+     "D_comp": 0.0,
+     "D_both": -39.0909,
+     "residual_D_both_minus_sum": -3.6364
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -3.6364,
+     "predicted_overlap_count": 4,
+     "joint_loss_sample_count_m": 43,
+     "a_sole_count": 39,
+     "l_sole_count": 0,
+     "sum_of_sole_counts": 39,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   },
+   "asan_vs_ubsan": {
+    "label": "asan_vs_ubsan",
+    "frame": "real_world_110",
+    "n": 110,
+    "pools": {
+     "S0_full": [
+      "asan",
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker",
+      "ubsan"
+     ],
+     "remove_A_env_gated": [
+      "asan"
+     ],
+     "remove_L_degenerate": [
+      "ubsan"
+     ],
+     "B_retained": [
+      "tsan",
+      "compiler-warn",
+      "cross-compile",
+      "linker"
+     ]
+    },
+    "catch_rates_pct": {
+     "R_full": 59.0909,
+     "R_env_only": 42.7273,
+     "R_comp_only": 56.3636,
+     "R_both": 38.1818
+    },
+    "drift_pp": {
+     "D_env": -16.3636,
+     "D_comp": -2.7273,
+     "D_both": -20.9091,
+     "residual_D_both_minus_sum": -1.8182
+    },
+    "theorem_T1_check": {
+     "closed_form_residual": -1.8182,
+     "predicted_overlap_count": 2,
+     "joint_loss_sample_count_m": 23,
+     "a_sole_count": 18,
+     "l_sole_count": 3,
+     "sum_of_sole_counts": 21,
+     "matches": true,
+     "residual_sign": "non-positive（超可加）"
+    },
+    "interpretation": "撤除型漂移的损失是**超可加**的：D_both ≤ D_env + D_comp（两者皆为负），残差恰为两个被撤资产「独有 catch 集」在保留池之外的交集大小 / n。"
+   }
+  }
+ },
+ "silence_vs_accounting": {
+  "A5_evaluation_566": {
+   "frame": "A5_evaluation_566",
+   "n": 566,
+   "unaware": {
+    "delta_unknown_pp": 0.0,
+    "delta_catch_rate_pp": -35.3357,
+    "silent": true,
+    "loud": false,
+    "T_catch_miss": 200,
+    "T_catch_unknown": 0
+   },
+   "aware": {
+    "delta_unknown_pp": 75.265,
+    "delta_catch_rate_pp": -35.3357,
+    "silent": false,
+    "loud": true,
+    "T_catch_miss": 0,
+    "T_catch_unknown": 200
+   },
+   "verdict": "同一漂移（E1→E2）在 unaware 下 Δunknown=0（静默）、在 aware 下 Δunknown≠0（响亮）⇒ 静默性是 (漂移, 记账口径) **二元组**的性质，不是漂移的内禀性质。"
+  },
+  "A5_derivation_571": {
+   "frame": "A5_derivation_571",
+   "n": 571,
+   "unaware": {
+    "delta_unknown_pp": 0.0,
+    "delta_catch_rate_pp": -38.1786,
+    "silent": true,
+    "loud": false,
+    "T_catch_miss": 218,
+    "T_catch_unknown": 0
+   },
+   "aware": {
+    "delta_unknown_pp": 72.3292,
+    "delta_catch_rate_pp": -38.1786,
+    "silent": false,
+    "loud": true,
+    "T_catch_miss": 0,
+    "T_catch_unknown": 218
+   },
+   "verdict": "同一漂移（E1→E2）在 unaware 下 Δunknown=0（静默）、在 aware 下 Δunknown≠0（响亮）⇒ 静默性是 (漂移, 记账口径) **二元组**的性质，不是漂移的内禀性质。"
+  },
+  "A5_all_1137": {
+   "frame": "A5_all_1137",
+   "n": 1137,
+   "unaware": {
+    "delta_unknown_pp": 0.0,
+    "delta_catch_rate_pp": -36.7634,
+    "silent": true,
+    "loud": false,
+    "T_catch_miss": 418,
+    "T_catch_unknown": 0
+   },
+   "aware": {
+    "delta_unknown_pp": 73.7907,
+    "delta_catch_rate_pp": -36.7634,
+    "silent": false,
+    "loud": true,
+    "T_catch_miss": 0,
+    "T_catch_unknown": 418
+   },
+   "verdict": "同一漂移（E1→E2）在 unaware 下 Δunknown=0（静默）、在 aware 下 Δunknown≠0（响亮）⇒ 静默性是 (漂移, 记账口径) **二元组**的性质，不是漂移的内禀性质。"
+  },
+  "blindspot_676g_1147": {
+   "frame": "blindspot_676g_1147",
+   "n": 1147,
+   "unaware": {
+    "delta_unknown_pp": 0.0,
+    "delta_catch_rate_pp": -39.7559,
+    "silent": true,
+    "loud": false,
+    "T_catch_miss": 456,
+    "T_catch_unknown": 0
+   },
+   "aware": {
+    "delta_unknown_pp": 78.1168,
+    "delta_catch_rate_pp": -39.7559,
+    "silent": false,
+    "loud": true,
+    "T_catch_miss": 0,
+    "T_catch_unknown": 456
+   },
+   "verdict": "同一漂移（E1→E2）在 unaware 下 Δunknown=0（静默）、在 aware 下 Δunknown≠0（响亮）⇒ 静默性是 (漂移, 记账口径) **二元组**的性质，不是漂移的内禀性质。"
+  },
+  "real_world_110": {
+   "frame": "real_world_110",
+   "n": 110,
+   "unaware": {
+    "delta_unknown_pp": 0.0,
+    "delta_catch_rate_pp": -35.4545,
+    "silent": true,
+    "loud": false,
+    "T_catch_miss": 39,
+    "T_catch_unknown": 0
+   },
+   "aware": {
+    "delta_unknown_pp": 76.3636,
+    "delta_catch_rate_pp": -35.4545,
+    "silent": false,
+    "loud": true,
+    "T_catch_miss": 0,
+    "T_catch_unknown": 39
+   },
+   "verdict": "同一漂移（E1→E2）在 unaware 下 Δunknown=0（静默）、在 aware 下 Δunknown≠0（响亮）⇒ 静默性是 (漂移, 记账口径) **二元组**的性质，不是漂移的内禀性质。"
+  }
+ },
+ "per_group_direction": {
+  "frame": "A5_evaluation_566",
+  "n_groups": 11,
+  "rows": [
+   {
+    "defect_group": "concurrency",
+    "n": 109,
+    "b_e1_only_catch": 37,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 1.4551915228366852e-11,
+    "one_directional": true
+   },
+   {
+    "defect_group": "conditional_trigger",
+    "n": 20,
+    "b_e1_only_catch": 8,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 0.0078125,
+    "one_directional": true
+   },
+   {
+    "defect_group": "embedded",
+    "n": 74,
+    "b_e1_only_catch": 6,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 0.03125,
+    "one_directional": true
+   },
+   {
+    "defect_group": "language_semantics",
+    "n": 45,
+    "b_e1_only_catch": 7,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 0.015625,
+    "one_directional": true
+   },
+   {
+    "defect_group": "legacy",
+    "n": 47,
+    "b_e1_only_catch": 25,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 5.960464477539063e-08,
+    "one_directional": true
+   },
+   {
+    "defect_group": "memory_safety",
+    "n": 49,
+    "b_e1_only_catch": 29,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 3.725290298461914e-09,
+    "one_directional": true
+   },
+   {
+    "defect_group": "odr_link",
+    "n": 15,
+    "b_e1_only_catch": 1,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 1.0,
+    "one_directional": true
+   },
+   {
+    "defect_group": "optimization_sensitive",
+    "n": 20,
+    "b_e1_only_catch": 7,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 0.015625,
+    "one_directional": true
+   },
+   {
+    "defect_group": "real_world",
+    "n": 44,
+    "b_e1_only_catch": 18,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 7.62939453125e-06,
+    "one_directional": true
+   },
+   {
+    "defect_group": "stl",
+    "n": 100,
+    "b_e1_only_catch": 38,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 7.275957614183426e-12,
+    "one_directional": true
+   },
+   {
+    "defect_group": "undefined_behavior",
+    "n": 43,
+    "b_e1_only_catch": 24,
+    "c_e2_only_catch": 0,
+    "mcnemar_exact_p": 1.1920928955078125e-07,
+    "one_directional": true
+   }
+  ],
+  "n_groups_with_reversal": 0,
+  "reversal_groups": [],
+  "criterion": "T_{miss→catch} = c_g = 0 在每一层成立 ⇒ 与纯撤除型漂移一致；任一层 c_g > 0 ⇒ 该层含非撤除成分（仪器/机制变化）。"
+ },
+ "silent_window_concentration": {
+  "grid": "ENV_GATED_ASSETS 的全部 63 个非空子集（与 692-A 同网格，独立重算）",
+  "n_configs": 63,
+  "n_type_categories": 11,
+  "concentration_definition": "1 − H(lost catches over defect_group) / log2(n_type_categories)",
+  "full_rate_pct": 60.0707,
+  "window_by_threshold": {
+   "100_pct": 0,
+   "99_pct": 0,
+   "95_pct": 1,
+   "90_pct": 7,
+   "80_pct": 18,
+   "50_pct": 49
+  },
+  "n_configs_with_unsound_negatives": 62,
+  "widest_window_config": {
+   "available_assets": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile"
+   ],
+   "n_missing": 1,
+   "missing_assets": [
+    "linker"
+   ],
+   "unaware_catch_rate_pct": 59.364,
+   "retention_of_full_pct": 98.8236,
+   "retention_gap_pp": 1.1764,
+   "unsound_negatives": 22,
+   "sound_negatives": 208,
+   "lost_type_distribution": {
+    "legacy": 8,
+    "odr_link": 14
+   },
+   "lost_type_concentration": 0.726643,
+   "lost_count": 22
+  },
+  "correlation_all_63": {
+   "spearman_retention_gap_vs_unsound": 0.995043,
+   "spearman_concentration_vs_unsound": -0.666243,
+   "supports_P1_7": false,
+   "note": "H-D3 的判别：|ρ(集中度,unsound)| > |ρ(丢失量,unsound)| 则支持，否则反证。"
+  },
+  "single_drop_configs": [
+   {
+    "missing_asset": "linker",
+    "retention_of_full_pct": 98.8236,
+    "lost_count": 22,
+    "lost_type_concentration": 0.726643,
+    "unsound_negatives": 22
+   },
+   {
+    "missing_asset": "cross-compile",
+    "retention_of_full_pct": 94.4118,
+    "lost_count": 178,
+    "lost_type_concentration": 0.374026,
+    "unsound_negatives": 178
+   },
+   {
+    "missing_asset": "compiler-warn",
+    "retention_of_full_pct": 92.0589,
+    "lost_count": 215,
+    "lost_type_concentration": 0.206017,
+    "unsound_negatives": 215
+   },
+   {
+    "missing_asset": "tsan",
+    "retention_of_full_pct": 91.4706,
+    "lost_count": 255,
+    "lost_type_concentration": 0.137077,
+    "unsound_negatives": 255
+   },
+   {
+    "missing_asset": "ubsan",
+    "retention_of_full_pct": 87.0587,
+    "lost_count": 260,
+    "lost_type_concentration": 0.110105,
+    "unsound_negatives": 260
+   },
+   {
+    "missing_asset": "asan",
+    "retention_of_full_pct": 82.353,
+    "lost_count": 275,
+    "lost_type_concentration": 0.119637,
+    "unsound_negatives": 275
+   }
+  ],
+  "spearman_single_drop_concentration_vs_retention": 0.942857,
+  "verdict_split": {
+   "P1_7_position_supported": true,
+   "P1_7_severity_refuted": true,
+   "statement": "P1.7 必须拆成两个命题：①【窗口位置】单资产撤除时，丢失能力越类型集中 ⇒ retention 越高 ⇒ 窗口越宽 （ρ(集中度, retention) = 0.942857，n=6）——**成立**；②【后果严重度】不可信负例数量由**丢失量**决定，而非集中度 （ρ(丢失量, unsound) = 0.995043 vs ρ(集中度, unsound) = -0.666243，n=63）——**反证**。695 原文把两者混为一个「宽度」，应拆开陈述。"
+  },
+  "rows": [
+   {
+    "available_assets": [
+     "asan"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 33.0389,
+    "retention_of_full_pct": 55.0,
+    "retention_gap_pp": 45.0,
+    "unsound_negatives": 379,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 98,
+     "conditional_trigger": 9,
+     "embedded": 72,
+     "language_semantics": 39,
+     "legacy": 24,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 19,
+     "real_world": 20,
+     "stl": 32,
+     "undefined_behavior": 36
+    },
+    "lost_type_concentration": 0.100932,
+    "lost_count": 379
+   },
+   {
+    "available_assets": [
+     "ubsan"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 22.7915,
+    "retention_of_full_pct": 37.9411,
+    "retention_gap_pp": 62.0589,
+    "unsound_negatives": 437,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 103,
+     "conditional_trigger": 17,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 35,
+     "memory_safety": 32,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 31,
+     "stl": 87,
+     "undefined_behavior": 9
+    },
+    "lost_type_concentration": 0.112124,
+    "lost_count": 437
+   },
+   {
+    "available_assets": [
+     "tsan"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 21.7314,
+    "retention_of_full_pct": 36.1764,
+    "retention_gap_pp": 63.8236,
+    "unsound_negatives": 443,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 73,
+     "conditional_trigger": 18,
+     "embedded": 73,
+     "language_semantics": 43,
+     "legacy": 32,
+     "memory_safety": 39,
+     "odr_link": 15,
+     "optimization_sensitive": 19,
+     "real_world": 35,
+     "stl": 60,
+     "undefined_behavior": 36
+    },
+    "lost_type_concentration": 0.04936,
+    "lost_count": 443
+   },
+   {
+    "available_assets": [
+     "compiler-warn"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 11.8375,
+    "retention_of_full_pct": 19.7059,
+    "retention_gap_pp": 80.2941,
+    "unsound_negatives": 499,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 109,
+     "conditional_trigger": 17,
+     "embedded": 60,
+     "language_semantics": 32,
+     "legacy": 37,
+     "memory_safety": 45,
+     "odr_link": 15,
+     "optimization_sensitive": 15,
+     "real_world": 37,
+     "stl": 100,
+     "undefined_behavior": 32
+    },
+    "lost_type_concentration": 0.086678,
+    "lost_count": 499
+   },
+   {
+    "available_assets": [
+     "cross-compile"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 14.311,
+    "retention_of_full_pct": 23.8236,
+    "retention_gap_pp": 76.1764,
+    "unsound_negatives": 485,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 88,
+     "conditional_trigger": 20,
+     "embedded": 67,
+     "language_semantics": 45,
+     "legacy": 42,
+     "memory_safety": 48,
+     "odr_link": 15,
+     "optimization_sensitive": 20,
+     "real_world": 37,
+     "stl": 66,
+     "undefined_behavior": 37
+    },
+    "lost_type_concentration": 0.049581,
+    "lost_count": 485
+   },
+   {
+    "available_assets": [
+     "linker"
+    ],
+    "n_missing": 5,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 0.7067,
+    "retention_of_full_pct": 1.1764,
+    "retention_gap_pp": 98.8236,
+    "unsound_negatives": 562,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 109,
+     "conditional_trigger": 20,
+     "embedded": 74,
+     "language_semantics": 45,
+     "legacy": 47,
+     "memory_safety": 49,
+     "odr_link": 11,
+     "optimization_sensitive": 20,
+     "real_world": 44,
+     "stl": 100,
+     "undefined_behavior": 43
+    },
+    "lost_type_concentration": 0.072043,
+    "lost_count": 562
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 45.053,
+    "retention_of_full_pct": 75.0,
+    "retention_gap_pp": 25.0,
+    "unsound_negatives": 311,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 95,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 16,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 32,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.142668,
+    "lost_count": 311
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "ubsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 39.7527,
+    "retention_of_full_pct": 66.1765,
+    "retention_gap_pp": 33.8235,
+    "unsound_negatives": 341,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 66,
+     "conditional_trigger": 9,
+     "embedded": 72,
+     "language_semantics": 39,
+     "legacy": 20,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 19,
+     "real_world": 19,
+     "stl": 32,
+     "undefined_behavior": 35
+    },
+    "lost_type_concentration": 0.078947,
+    "lost_count": 341
+   },
+   {
+    "available_assets": [
+     "asan",
+     "compiler-warn"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 41.3428,
+    "retention_of_full_pct": 68.8236,
+    "retention_gap_pp": 31.1764,
+    "unsound_negatives": 332,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 98,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 18,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 15,
+     "real_world": 16,
+     "stl": 32,
+     "undefined_behavior": 29
+    },
+    "lost_type_concentration": 0.112126,
+    "lost_count": 332
+   },
+   {
+    "available_assets": [
+     "asan",
+     "cross-compile"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 39.2226,
+    "retention_of_full_pct": 65.2941,
+    "retention_gap_pp": 34.7059,
+    "unsound_negatives": 344,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 78,
+     "conditional_trigger": 9,
+     "embedded": 67,
+     "language_semantics": 39,
+     "legacy": 22,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 19,
+     "real_world": 20,
+     "stl": 28,
+     "undefined_behavior": 32
+    },
+    "lost_type_concentration": 0.083967,
+    "lost_count": 344
+   },
+   {
+    "available_assets": [
+     "asan",
+     "linker"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 33.7456,
+    "retention_of_full_pct": 56.1765,
+    "retention_gap_pp": 43.8235,
+    "unsound_negatives": 375,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 98,
+     "conditional_trigger": 9,
+     "embedded": 72,
+     "language_semantics": 39,
+     "legacy": 24,
+     "memory_safety": 16,
+     "odr_link": 10,
+     "optimization_sensitive": 19,
+     "real_world": 20,
+     "stl": 32,
+     "undefined_behavior": 36
+    },
+    "lost_type_concentration": 0.106698,
+    "lost_count": 375
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 37.6325,
+    "retention_of_full_pct": 62.647,
+    "retention_gap_pp": 37.353,
+    "unsound_negatives": 353,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 72,
+     "conditional_trigger": 16,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 24,
+     "memory_safety": 27,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 26,
+     "stl": 58,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.091998,
+    "lost_count": 353
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "compiler-warn"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 28.6219,
+    "retention_of_full_pct": 47.647,
+    "retention_gap_pp": 52.353,
+    "unsound_negatives": 404,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 103,
+     "conditional_trigger": 17,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 29,
+     "memory_safety": 31,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 26,
+     "stl": 87,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.12359,
+    "lost_count": 404
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "cross-compile"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 33.2155,
+    "retention_of_full_pct": 55.294,
+    "retention_gap_pp": 44.706,
+    "unsound_negatives": 378,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 84,
+     "conditional_trigger": 17,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 32,
+     "memory_safety": 31,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 27,
+     "stl": 56,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.091202,
+    "lost_count": 378
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "linker"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 23.4982,
+    "retention_of_full_pct": 39.1176,
+    "retention_gap_pp": 60.8824,
+    "unsound_negatives": 433,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 103,
+     "conditional_trigger": 17,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 35,
+     "memory_safety": 32,
+     "odr_link": 11,
+     "optimization_sensitive": 8,
+     "real_world": 31,
+     "stl": 87,
+     "undefined_behavior": 9
+    },
+    "lost_type_concentration": 0.117461,
+    "lost_count": 433
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "compiler-warn"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 31.8021,
+    "retention_of_full_pct": 52.9411,
+    "retention_gap_pp": 47.0589,
+    "unsound_negatives": 386,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 73,
+     "conditional_trigger": 16,
+     "embedded": 59,
+     "language_semantics": 30,
+     "legacy": 26,
+     "memory_safety": 35,
+     "odr_link": 15,
+     "optimization_sensitive": 15,
+     "real_world": 28,
+     "stl": 60,
+     "undefined_behavior": 29
+    },
+    "lost_type_concentration": 0.058139,
+    "lost_count": 386
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "cross-compile"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 30.5654,
+    "retention_of_full_pct": 50.8824,
+    "retention_gap_pp": 49.1176,
+    "unsound_negatives": 393,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 59,
+     "conditional_trigger": 18,
+     "embedded": 67,
+     "language_semantics": 43,
+     "legacy": 29,
+     "memory_safety": 38,
+     "odr_link": 15,
+     "optimization_sensitive": 19,
+     "real_world": 31,
+     "stl": 43,
+     "undefined_behavior": 31
+    },
+    "lost_type_concentration": 0.040108,
+    "lost_count": 393
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "linker"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 22.4382,
+    "retention_of_full_pct": 37.353,
+    "retention_gap_pp": 62.647,
+    "unsound_negatives": 428,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 73,
+     "conditional_trigger": 18,
+     "embedded": 73,
+     "language_semantics": 43,
+     "legacy": 32,
+     "memory_safety": 39,
+     "optimization_sensitive": 19,
+     "real_world": 35,
+     "stl": 60,
+     "undefined_behavior": 36
+    },
+    "lost_type_concentration": 0.07989,
+    "lost_count": 428
+   },
+   {
+    "available_assets": [
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 24.0283,
+    "retention_of_full_pct": 40.0,
+    "retention_gap_pp": 60.0,
+    "unsound_negatives": 430,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 88,
+     "conditional_trigger": 17,
+     "embedded": 58,
+     "language_semantics": 32,
+     "legacy": 33,
+     "memory_safety": 44,
+     "odr_link": 15,
+     "optimization_sensitive": 15,
+     "real_world": 32,
+     "stl": 66,
+     "undefined_behavior": 30
+    },
+    "lost_type_concentration": 0.062879,
+    "lost_count": 430
+   },
+   {
+    "available_assets": [
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 12.5442,
+    "retention_of_full_pct": 20.8824,
+    "retention_gap_pp": 79.1176,
+    "unsound_negatives": 495,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 109,
+     "conditional_trigger": 17,
+     "embedded": 60,
+     "language_semantics": 32,
+     "legacy": 37,
+     "memory_safety": 45,
+     "odr_link": 11,
+     "optimization_sensitive": 15,
+     "real_world": 37,
+     "stl": 100,
+     "undefined_behavior": 32
+    },
+    "lost_type_concentration": 0.09159,
+    "lost_count": 495
+   },
+   {
+    "available_assets": [
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 4,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 15.0177,
+    "retention_of_full_pct": 25.0,
+    "retention_gap_pp": 75.0,
+    "unsound_negatives": 481,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 88,
+     "conditional_trigger": 20,
+     "embedded": 67,
+     "language_semantics": 45,
+     "legacy": 42,
+     "memory_safety": 48,
+     "odr_link": 11,
+     "optimization_sensitive": 20,
+     "real_world": 37,
+     "stl": 66,
+     "undefined_behavior": 37
+    },
+    "lost_type_concentration": 0.054228,
+    "lost_count": 481
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 51.0601,
+    "retention_of_full_pct": 85.0,
+    "retention_gap_pp": 15.0,
+    "unsound_negatives": 277,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 65,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 13,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 32,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.115586,
+    "lost_count": 277
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 50.0,
+    "retention_of_full_pct": 83.2353,
+    "retention_gap_pp": 16.7647,
+    "unsound_negatives": 283,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 95,
+     "conditional_trigger": 9,
+     "embedded": 52,
+     "language_semantics": 25,
+     "legacy": 12,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 14,
+     "stl": 32,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.154385,
+    "lost_count": 283
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 49.47,
+    "retention_of_full_pct": 82.353,
+    "retention_gap_pp": 17.647,
+    "unsound_negatives": 286,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 76,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 15,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 28,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.125502,
+    "lost_count": 286
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 45.7597,
+    "retention_of_full_pct": 76.1764,
+    "retention_gap_pp": 23.8236,
+    "unsound_negatives": 307,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 95,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 16,
+     "memory_safety": 15,
+     "odr_link": 10,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 32,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.149174,
+    "lost_count": 307
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 48.0565,
+    "retention_of_full_pct": 79.9999,
+    "retention_gap_pp": 20.0001,
+    "unsound_negatives": 294,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 66,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 14,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 15,
+     "real_world": 15,
+     "stl": 32,
+     "undefined_behavior": 28
+    },
+    "lost_type_concentration": 0.082975,
+    "lost_count": 294
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 44.8763,
+    "retention_of_full_pct": 74.7058,
+    "retention_gap_pp": 25.2942,
+    "unsound_negatives": 312,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 52,
+     "conditional_trigger": 9,
+     "embedded": 67,
+     "language_semantics": 39,
+     "legacy": 18,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 19,
+     "real_world": 19,
+     "stl": 28,
+     "undefined_behavior": 31
+    },
+    "lost_type_concentration": 0.068354,
+    "lost_count": 312
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 40.4594,
+    "retention_of_full_pct": 67.353,
+    "retention_gap_pp": 32.647,
+    "unsound_negatives": 327,
+    "sound_negatives": 10,
+    "lost_type_distribution": {
+     "concurrency": 66,
+     "conditional_trigger": 9,
+     "embedded": 72,
+     "language_semantics": 39,
+     "legacy": 20,
+     "memory_safety": 16,
+     "optimization_sensitive": 19,
+     "real_world": 19,
+     "stl": 32,
+     "undefined_behavior": 35
+    },
+    "lost_type_concentration": 0.114003,
+    "lost_count": 327
+   },
+   {
+    "available_assets": [
+     "asan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 45.9364,
+    "retention_of_full_pct": 76.4706,
+    "retention_gap_pp": 23.5294,
+    "unsound_negatives": 306,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 78,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 17,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 15,
+     "real_world": 16,
+     "stl": 28,
+     "undefined_behavior": 28
+    },
+    "lost_type_concentration": 0.091977,
+    "lost_count": 306
+   },
+   {
+    "available_assets": [
+     "asan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 42.0495,
+    "retention_of_full_pct": 70.0,
+    "retention_gap_pp": 30.0,
+    "unsound_negatives": 328,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 98,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 18,
+     "memory_safety": 16,
+     "odr_link": 10,
+     "optimization_sensitive": 15,
+     "real_world": 16,
+     "stl": 32,
+     "undefined_behavior": 29
+    },
+    "lost_type_concentration": 0.118177,
+    "lost_count": 328
+   },
+   {
+    "available_assets": [
+     "asan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 39.9293,
+    "retention_of_full_pct": 66.4705,
+    "retention_gap_pp": 33.5295,
+    "unsound_negatives": 340,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 78,
+     "conditional_trigger": 9,
+     "embedded": 67,
+     "language_semantics": 39,
+     "legacy": 22,
+     "memory_safety": 16,
+     "odr_link": 10,
+     "optimization_sensitive": 19,
+     "real_world": 20,
+     "stl": 28,
+     "undefined_behavior": 32
+    },
+    "lost_type_concentration": 0.089648,
+    "lost_count": 340
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 43.1095,
+    "retention_of_full_pct": 71.7646,
+    "retention_gap_pp": 28.2354,
+    "unsound_negatives": 322,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 72,
+     "conditional_trigger": 16,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 20,
+     "memory_safety": 26,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 21,
+     "stl": 58,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.098219,
+    "lost_count": 322
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 43.6396,
+    "retention_of_full_pct": 72.6471,
+    "retention_gap_pp": 27.3529,
+    "unsound_negatives": 319,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 58,
+     "conditional_trigger": 16,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 23,
+     "memory_safety": 26,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 24,
+     "stl": 43,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.081289,
+    "lost_count": 319
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 38.3392,
+    "retention_of_full_pct": 63.8235,
+    "retention_gap_pp": 36.1765,
+    "unsound_negatives": 338,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 72,
+     "conditional_trigger": 16,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 24,
+     "memory_safety": 27,
+     "optimization_sensitive": 8,
+     "real_world": 26,
+     "stl": 58,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.128264,
+    "lost_count": 338
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 38.6926,
+    "retention_of_full_pct": 64.4118,
+    "retention_gap_pp": 35.5882,
+    "unsound_negatives": 347,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 84,
+     "conditional_trigger": 17,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 26,
+     "memory_safety": 30,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 23,
+     "stl": 56,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.095723,
+    "lost_count": 347
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 29.3286,
+    "retention_of_full_pct": 48.8235,
+    "retention_gap_pp": 51.1765,
+    "unsound_negatives": 400,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 103,
+     "conditional_trigger": 17,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 29,
+     "memory_safety": 31,
+     "odr_link": 11,
+     "optimization_sensitive": 8,
+     "real_world": 26,
+     "stl": 87,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.129153,
+    "lost_count": 400
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 33.9223,
+    "retention_of_full_pct": 56.4706,
+    "retention_gap_pp": 43.5294,
+    "unsound_negatives": 374,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 84,
+     "conditional_trigger": 17,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 32,
+     "memory_safety": 31,
+     "odr_link": 11,
+     "optimization_sensitive": 8,
+     "real_world": 27,
+     "stl": 56,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.096507,
+    "lost_count": 374
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 38.6926,
+    "retention_of_full_pct": 64.4118,
+    "retention_gap_pp": 35.5882,
+    "unsound_negatives": 347,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 59,
+     "conditional_trigger": 16,
+     "embedded": 58,
+     "language_semantics": 30,
+     "legacy": 24,
+     "memory_safety": 34,
+     "odr_link": 15,
+     "optimization_sensitive": 15,
+     "real_world": 26,
+     "stl": 43,
+     "undefined_behavior": 27
+    },
+    "lost_type_concentration": 0.045276,
+    "lost_count": 347
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 32.5088,
+    "retention_of_full_pct": 54.1176,
+    "retention_gap_pp": 45.8824,
+    "unsound_negatives": 371,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 73,
+     "conditional_trigger": 16,
+     "embedded": 59,
+     "language_semantics": 30,
+     "legacy": 26,
+     "memory_safety": 35,
+     "optimization_sensitive": 15,
+     "real_world": 28,
+     "stl": 60,
+     "undefined_behavior": 29
+    },
+    "lost_type_concentration": 0.091349,
+    "lost_count": 371
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 31.2721,
+    "retention_of_full_pct": 52.0588,
+    "retention_gap_pp": 47.9412,
+    "unsound_negatives": 378,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 59,
+     "conditional_trigger": 18,
+     "embedded": 67,
+     "language_semantics": 43,
+     "legacy": 29,
+     "memory_safety": 38,
+     "optimization_sensitive": 19,
+     "real_world": 31,
+     "stl": 43,
+     "undefined_behavior": 31
+    },
+    "lost_type_concentration": 0.072291,
+    "lost_count": 378
+   },
+   {
+    "available_assets": [
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 3,
+    "missing_assets": [
+     "asan",
+     "ubsan",
+     "tsan"
+    ],
+    "unaware_catch_rate_pct": 24.735,
+    "retention_of_full_pct": 41.1765,
+    "retention_gap_pp": 58.8235,
+    "unsound_negatives": 426,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 88,
+     "conditional_trigger": 17,
+     "embedded": 58,
+     "language_semantics": 32,
+     "legacy": 33,
+     "memory_safety": 44,
+     "odr_link": 11,
+     "optimization_sensitive": 15,
+     "real_world": 32,
+     "stl": 66,
+     "undefined_behavior": 30
+    },
+    "lost_type_concentration": 0.067778,
+    "lost_count": 426
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "cross-compile",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 56.0071,
+    "retention_of_full_pct": 93.2353,
+    "retention_gap_pp": 6.7647,
+    "unsound_negatives": 192,
+    "sound_negatives": 57,
+    "lost_type_distribution": {
+     "concurrency": 65,
+     "embedded": 52,
+     "legacy": 9,
+     "odr_link": 14,
+     "real_world": 14,
+     "stl": 32,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.310775,
+    "lost_count": 192
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "compiler-warn",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 54.5936,
+    "retention_of_full_pct": 90.8822,
+    "retention_gap_pp": 9.1178,
+    "unsound_negatives": 229,
+    "sound_negatives": 28,
+    "lost_type_distribution": {
+     "concurrency": 51,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 12,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.158606,
+    "lost_count": 229
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 51.7668,
+    "retention_of_full_pct": 86.1765,
+    "retention_gap_pp": 13.8235,
+    "unsound_negatives": 263,
+    "sound_negatives": 10,
+    "lost_type_distribution": {
+     "concurrency": 65,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 13,
+     "memory_safety": 15,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 32,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.1564,
+    "lost_count": 263
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "tsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 54.2403,
+    "retention_of_full_pct": 90.2941,
+    "retention_gap_pp": 9.7059,
+    "unsound_negatives": 259,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 76,
+     "conditional_trigger": 9,
+     "embedded": 52,
+     "language_semantics": 25,
+     "legacy": 11,
+     "memory_safety": 15,
+     "odr_link": 14,
+     "optimization_sensitive": 8,
+     "real_world": 14,
+     "stl": 28,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.130638,
+    "lost_count": 259
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "tsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 50.7067,
+    "retention_of_full_pct": 84.4117,
+    "retention_gap_pp": 15.5883,
+    "unsound_negatives": 279,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 95,
+     "conditional_trigger": 9,
+     "embedded": 52,
+     "language_semantics": 25,
+     "legacy": 12,
+     "memory_safety": 15,
+     "odr_link": 10,
+     "optimization_sensitive": 8,
+     "real_world": 14,
+     "stl": 32,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.161144,
+    "lost_count": 279
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "tsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 50.1767,
+    "retention_of_full_pct": 83.5294,
+    "retention_gap_pp": 16.4706,
+    "unsound_negatives": 282,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 76,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 15,
+     "memory_safety": 15,
+     "odr_link": 10,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "stl": 28,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.131842,
+    "lost_count": 282
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "ubsan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 51.5901,
+    "retention_of_full_pct": 85.8823,
+    "retention_gap_pp": 14.1177,
+    "unsound_negatives": 274,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 52,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 13,
+     "memory_safety": 16,
+     "odr_link": 14,
+     "optimization_sensitive": 15,
+     "real_world": 15,
+     "stl": 28,
+     "undefined_behavior": 27
+    },
+    "lost_type_concentration": 0.071447,
+    "lost_count": 274
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "ubsan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 48.7633,
+    "retention_of_full_pct": 81.1765,
+    "retention_gap_pp": 18.8235,
+    "unsound_negatives": 280,
+    "sound_negatives": 10,
+    "lost_type_distribution": {
+     "concurrency": 66,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 14,
+     "memory_safety": 16,
+     "optimization_sensitive": 15,
+     "real_world": 15,
+     "stl": 32,
+     "undefined_behavior": 28
+    },
+    "lost_type_concentration": 0.120954,
+    "lost_count": 280
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "ubsan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 45.583,
+    "retention_of_full_pct": 75.8823,
+    "retention_gap_pp": 24.1177,
+    "unsound_negatives": 298,
+    "sound_negatives": 10,
+    "lost_type_distribution": {
+     "concurrency": 52,
+     "conditional_trigger": 9,
+     "embedded": 67,
+     "language_semantics": 39,
+     "legacy": 18,
+     "memory_safety": 16,
+     "optimization_sensitive": 19,
+     "real_world": 19,
+     "stl": 28,
+     "undefined_behavior": 31
+    },
+    "lost_type_concentration": 0.104544,
+    "lost_count": 298
+   },
+   {
+    "available_assets": [
+     "asan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "ubsan",
+     "tsan"
+    ],
+    "unaware_catch_rate_pct": 46.6431,
+    "retention_of_full_pct": 77.647,
+    "retention_gap_pp": 22.353,
+    "unsound_negatives": 302,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 78,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 17,
+     "memory_safety": 16,
+     "odr_link": 10,
+     "optimization_sensitive": 15,
+     "real_world": 16,
+     "stl": 28,
+     "undefined_behavior": 28
+    },
+    "lost_type_concentration": 0.097829,
+    "lost_count": 302
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "asan",
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 48.7633,
+    "retention_of_full_pct": 81.1765,
+    "retention_gap_pp": 18.8235,
+    "unsound_negatives": 290,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 58,
+     "conditional_trigger": 16,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 19,
+     "memory_safety": 25,
+     "odr_link": 15,
+     "optimization_sensitive": 8,
+     "real_world": 20,
+     "stl": 43,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.080282,
+    "lost_count": 290
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "asan",
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 43.8163,
+    "retention_of_full_pct": 72.9412,
+    "retention_gap_pp": 27.0588,
+    "unsound_negatives": 307,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 72,
+     "conditional_trigger": 16,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 20,
+     "memory_safety": 26,
+     "optimization_sensitive": 8,
+     "real_world": 21,
+     "stl": 58,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.136536,
+    "lost_count": 307
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "asan",
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 44.3463,
+    "retention_of_full_pct": 73.8235,
+    "retention_gap_pp": 26.1765,
+    "unsound_negatives": 304,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 58,
+     "conditional_trigger": 16,
+     "embedded": 61,
+     "language_semantics": 39,
+     "legacy": 23,
+     "memory_safety": 26,
+     "optimization_sensitive": 8,
+     "real_world": 24,
+     "stl": 43,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.118952,
+    "lost_count": 304
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "asan",
+     "tsan"
+    ],
+    "unaware_catch_rate_pct": 39.3993,
+    "retention_of_full_pct": 65.5882,
+    "retention_gap_pp": 34.4118,
+    "unsound_negatives": 343,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 84,
+     "conditional_trigger": 17,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 26,
+     "memory_safety": 30,
+     "odr_link": 11,
+     "optimization_sensitive": 8,
+     "real_world": 23,
+     "stl": 56,
+     "undefined_behavior": 8
+    },
+    "lost_type_concentration": 0.101141,
+    "lost_count": 343
+   },
+   {
+    "available_assets": [
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 2,
+    "missing_assets": [
+     "asan",
+     "ubsan"
+    ],
+    "unaware_catch_rate_pct": 39.3993,
+    "retention_of_full_pct": 65.5882,
+    "retention_gap_pp": 34.4118,
+    "unsound_negatives": 332,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 59,
+     "conditional_trigger": 16,
+     "embedded": 58,
+     "language_semantics": 30,
+     "legacy": 24,
+     "memory_safety": 34,
+     "optimization_sensitive": 15,
+     "real_world": 26,
+     "stl": 43,
+     "undefined_behavior": 27
+    },
+    "lost_type_concentration": 0.079756,
+    "lost_count": 332
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "linker"
+    ],
+    "unaware_catch_rate_pct": 59.364,
+    "retention_of_full_pct": 98.8236,
+    "retention_gap_pp": 1.1764,
+    "unsound_negatives": 22,
+    "sound_negatives": 208,
+    "lost_type_distribution": {
+     "legacy": 8,
+     "odr_link": 14
+    },
+    "lost_type_concentration": 0.726643,
+    "lost_count": 22
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "linker"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "cross-compile"
+    ],
+    "unaware_catch_rate_pct": 56.7138,
+    "retention_of_full_pct": 94.4118,
+    "retention_gap_pp": 5.5882,
+    "unsound_negatives": 178,
+    "sound_negatives": 67,
+    "lost_type_distribution": {
+     "concurrency": 65,
+     "embedded": 52,
+     "legacy": 9,
+     "real_world": 14,
+     "stl": 32,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.374026,
+    "lost_count": 178
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "compiler-warn"
+    ],
+    "unaware_catch_rate_pct": 55.3004,
+    "retention_of_full_pct": 92.0589,
+    "retention_gap_pp": 7.9411,
+    "unsound_negatives": 215,
+    "sound_negatives": 38,
+    "lost_type_distribution": {
+     "concurrency": 51,
+     "conditional_trigger": 9,
+     "embedded": 61,
+     "language_semantics": 35,
+     "legacy": 12,
+     "memory_safety": 15,
+     "optimization_sensitive": 8,
+     "real_world": 18,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.206017,
+    "lost_count": 215
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "tsan"
+    ],
+    "unaware_catch_rate_pct": 54.947,
+    "retention_of_full_pct": 91.4706,
+    "retention_gap_pp": 8.5294,
+    "unsound_negatives": 255,
+    "sound_negatives": 0,
+    "lost_type_distribution": {
+     "concurrency": 76,
+     "conditional_trigger": 9,
+     "embedded": 52,
+     "language_semantics": 25,
+     "legacy": 11,
+     "memory_safety": 15,
+     "odr_link": 10,
+     "optimization_sensitive": 8,
+     "real_world": 14,
+     "stl": 28,
+     "undefined_behavior": 7
+    },
+    "lost_type_concentration": 0.137077,
+    "lost_count": 255
+   },
+   {
+    "available_assets": [
+     "asan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "ubsan"
+    ],
+    "unaware_catch_rate_pct": 52.2968,
+    "retention_of_full_pct": 87.0587,
+    "retention_gap_pp": 12.9413,
+    "unsound_negatives": 260,
+    "sound_negatives": 10,
+    "lost_type_distribution": {
+     "concurrency": 52,
+     "conditional_trigger": 9,
+     "embedded": 58,
+     "language_semantics": 27,
+     "legacy": 13,
+     "memory_safety": 16,
+     "optimization_sensitive": 15,
+     "real_world": 15,
+     "stl": 28,
+     "undefined_behavior": 27
+    },
+    "lost_type_concentration": 0.110105,
+    "lost_count": 260
+   },
+   {
+    "available_assets": [
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 1,
+    "missing_assets": [
+     "asan"
+    ],
+    "unaware_catch_rate_pct": 49.47,
+    "retention_of_full_pct": 82.353,
+    "retention_gap_pp": 17.647,
+    "unsound_negatives": 275,
+    "sound_negatives": 11,
+    "lost_type_distribution": {
+     "concurrency": 58,
+     "conditional_trigger": 16,
+     "embedded": 52,
+     "language_semantics": 28,
+     "legacy": 19,
+     "memory_safety": 25,
+     "optimization_sensitive": 8,
+     "real_world": 20,
+     "stl": 43,
+     "undefined_behavior": 6
+    },
+    "lost_type_concentration": 0.119637,
+    "lost_count": 275
+   },
+   {
+    "available_assets": [
+     "asan",
+     "ubsan",
+     "tsan",
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "n_missing": 0,
+    "missing_assets": [],
+    "unaware_catch_rate_pct": 60.0707,
+    "retention_of_full_pct": 100.0,
+    "retention_gap_pp": 0.0,
+    "unsound_negatives": 0,
+    "sound_negatives": 226,
+    "lost_type_distribution": {},
+    "lost_type_concentration": 1.0,
+    "lost_count": 0
+   }
+  ],
+  "honest_note": "≥95% retention 的窗口内只有 1 个配置（与 692 一致）⇒ 窗口宽度的**阈值曲线**样本量极小，相关分析只在全部 63 配置上有统计意义，结论强度为**探索性**。"
+ }
+}
