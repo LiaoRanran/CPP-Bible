@@ -1,0 +1,262 @@
+{
+ "schema": "queyi-710/predictor-semantic-context/v1",
+ "generated_by": "tools/compute_710_predictor.py",
+ "generated_at": "2026-10-09T19:11:20+08:00",
+ "detect_calls": 0,
+ "protocol": {
+  "cv": "clone-family 感知 5 折（group_folds seed=697，与 697/693 同口径）",
+  "target": "样本级 OR(6) == catch（wunsequenced/compile-time 结构性恒 unknown）",
+  "leakage_control": "所有目标编码（type/group/family/batch 率）**只用训练折**估计；测试折行在评估前才写入特征"
+ },
+ "frame": {
+  "n": 1147,
+  "positive_rate": 0.616391,
+  "n_clone_families": 467
+ },
+ "baselines": {
+  "type_rate_only_auc": 0.766226,
+  "type_rate_only_confusion": {
+   "threshold": 0.5,
+   "tp": 556,
+   "fp": 177,
+   "fn": 151,
+   "tn": 263,
+   "accuracy": 0.714037,
+   "precision": 0.758527,
+   "recall": 0.786421,
+   "f1": 0.772222,
+   "majority_baseline_accuracy": 0.616391
+  },
+  "group_rate_only_auc": 0.771559,
+  "group_rate_only_confusion": {
+   "threshold": 0.5,
+   "tp": 568,
+   "fp": 152,
+   "fn": 139,
+   "tn": 288,
+   "accuracy": 0.746295,
+   "precision": 0.788889,
+   "recall": 0.803395,
+   "f1": 0.796076,
+   "majority_baseline_accuracy": 0.616391
+  },
+  "replicates_697_ceiling": "697 的族迁移天花板 AUC = 0.7662（同口径：group_folds seed=697）"
+ },
+ "models": {
+  "M0_type_rate(raw)": {
+   "auc": 0.766226,
+   "threshold": 0.5,
+   "tp": 556,
+   "fp": 177,
+   "fn": 151,
+   "tn": 263,
+   "accuracy": 0.714037,
+   "precision": 0.758527,
+   "recall": 0.786421,
+   "f1": 0.772222,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "type_rate"
+   ]
+  },
+  "M1_hier_shrunk(raw)": {
+   "auc": 0.785118,
+   "threshold": 0.5,
+   "tp": 570,
+   "fp": 173,
+   "fn": 137,
+   "tn": 267,
+   "accuracy": 0.72973,
+   "precision": 0.76716,
+   "recall": 0.806223,
+   "f1": 0.786207,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "shrunk_rate"
+   ]
+  },
+  "M2_语义_lr": {
+   "auc": 0.772415,
+   "threshold": 0.5,
+   "tp": 638,
+   "fp": 277,
+   "fn": 69,
+   "tn": 163,
+   "accuracy": 0.698344,
+   "precision": 0.697268,
+   "recall": 0.902405,
+   "f1": 0.786683,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "type_rate",
+    "group_rate",
+    "family_rate",
+    "type_det",
+    "det_val",
+    "type_n_log",
+    "shrunk_rate"
+   ]
+  },
+  "M3_语义+上下文_lr": {
+   "auc": 0.775172,
+   "threshold": 0.5,
+   "tp": 632,
+   "fp": 278,
+   "fn": 75,
+   "tn": 162,
+   "accuracy": 0.692241,
+   "precision": 0.694505,
+   "recall": 0.893918,
+   "f1": 0.781694,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "type_rate",
+    "group_rate",
+    "family_rate",
+    "type_det",
+    "det_val",
+    "type_n_log",
+    "shrunk_rate",
+    "batch_rate",
+    "planted",
+    "n_files"
+   ]
+  },
+  "M4_语义+上下文_bagcart": {
+   "auc": 0.799859,
+   "threshold": 0.5,
+   "tp": 538,
+   "fp": 167,
+   "fn": 169,
+   "tn": 273,
+   "accuracy": 0.707062,
+   "precision": 0.763121,
+   "recall": 0.760962,
+   "f1": 0.76204,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "type_rate",
+    "group_rate",
+    "family_rate",
+    "type_det",
+    "det_val",
+    "type_n_log",
+    "shrunk_rate",
+    "batch_rate",
+    "planted",
+    "n_files"
+   ],
+   "bagcart_fold_summed_importance_top10": [
+    [
+     "shrunk_rate",
+     564
+    ],
+    [
+     "type_rate",
+     546
+    ],
+    [
+     "type_n_log",
+     540
+    ],
+    [
+     "det_val",
+     532
+    ],
+    [
+     "batch_rate",
+     524
+    ],
+    [
+     "family_rate",
+     522
+    ],
+    [
+     "group_rate",
+     486
+    ],
+    [
+     "planted",
+     69
+    ],
+    [
+     "n_files",
+     50
+    ],
+    [
+     "type_det",
+     48
+    ]
+   ]
+  },
+  "M5_语义_bagcart": {
+   "auc": 0.798283,
+   "threshold": 0.5,
+   "tp": 529,
+   "fp": 162,
+   "fn": 178,
+   "tn": 278,
+   "accuracy": 0.703575,
+   "precision": 0.765557,
+   "recall": 0.748232,
+   "f1": 0.756795,
+   "majority_baseline_accuracy": 0.616391,
+   "feature_set": [
+    "type_rate",
+    "group_rate",
+    "family_rate",
+    "type_det",
+    "det_val",
+    "type_n_log",
+    "shrunk_rate"
+   ],
+   "bagcart_fold_summed_importance_top10": [
+    [
+     "family_rate",
+     660
+    ],
+    [
+     "group_rate",
+     659
+    ],
+    [
+     "shrunk_rate",
+     658
+    ],
+    [
+     "det_val",
+     629
+    ],
+    [
+     "type_rate",
+     604
+    ],
+    [
+     "type_n_log",
+     588
+    ],
+    [
+     "type_det",
+     83
+    ]
+   ]
+  }
+ },
+ "shrink_sensitivity_auc": {
+  "m=2": 0.773722,
+  "m=5": 0.785118,
+  "m=10": 0.78751,
+  "m=20": 0.791946
+ },
+ "reference_697": {
+  "family_transfer_ceiling_auc": 0.7662,
+  "best_structural_model_auc": 0.7551,
+  "note": "697 的族迁移天花板 = 只用 defect_type 均值；本批的 M0 即其复现。"
+ },
+ "honest_limits": [
+  "纯标准库实现（无 sklearn/xgboost）；超参未做嵌套搜索，结果不是调参上限。",
+  "目标编码在**同一批样本**上估计 ⇒ 即便只用训练折，仍属于「同源样本」；真正的跨语料迁移未测（无外部语料标签）。",
+  "所有检出率来自 1147 条（92.9% 人工植入）冻结矩阵 ⇒ 不代表真实缺陷分布。",
+  "``type_det``/``det_val`` 是训练折内的经验量，稀有类型上极不稳（type_n_log 作为补偿特征）。"
+ ]
+}
