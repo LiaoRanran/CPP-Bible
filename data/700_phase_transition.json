@@ -1,0 +1,226 @@
+{
+ "schema": "queyi-700/phase-transition/v1",
+ "generated_by": "tools/compute_700_phase_transition.py",
+ "generated_at": "2026-10-09T09:43:57+08:00",
+ "detect_calls": 0,
+ "order_parameter_definition": "序参量 φ = 测量失真 = |R̂ − R*|（报告值与机制值的偏离）；控制参数 = 口径偏离量；响应函数 χ = dφ/d(控制参数)",
+ "response_curves": {
+  "type_I": {
+   "control": "退化资产数 d",
+   "x": [
+    0.0,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    6.0,
+    7.0
+   ],
+   "phi_pp": [
+    5.3008,
+    10.6248,
+    15.1625,
+    19.0435,
+    22.3696,
+    25.2331,
+    27.7134,
+    29.8763
+   ],
+   "order_parameter": "表观增益 g_app（pp）",
+   "source": "698_composition_drift.json → injection_scan_d0_to_7"
+  },
+  "type_II": {
+   "control": "环境（E1→E2）",
+   "x": [
+    0.0,
+    1.0
+   ],
+   "phi_pp": [
+    0.0,
+    -35.3357
+   ],
+   "order_parameter": "报告率差（pp）",
+   "source": "697_drift_algebra.json → three_state_transitions.A5_evaluation_566"
+  },
+  "type_III": {
+   "control": "标签粒度（类数 g）",
+   "x": [
+    8.0,
+    9.0,
+    34.0,
+    70.0,
+    75.0
+   ],
+   "phi_pct": [
+    37.5,
+    22.2222,
+    38.2353,
+    25.7143,
+    26.6667
+   ],
+   "order_parameter": "高盲类占比（%）",
+   "source": "698_composition_drift.json → type_III_label.ladder"
+  },
+  "type_IV": {
+   "control": "掺入零产资产数",
+   "x": [
+    0.0,
+    3.0
+   ],
+   "phi_pct": [
+    0.0,
+    33.3333
+   ],
+   "order_parameter": "报告值相对变化（%）",
+   "aggregation_rule": "mean_per_asset",
+   "source": "698_composition_drift.json → type_IV_aggregation.aggregation_table"
+  },
+  "type_II_rates_pct": {
+   "E1": 60.0707,
+   "E2": 24.735
+  }
+ },
+ "criticality_type_I": {
+  "quadratic_fit": {
+   "c0": 5.470342,
+   "c1": 5.284164,
+   "c2": -0.259967,
+   "r2": 0.999724
+  },
+  "susceptibility_chi_dphi_dd": [
+   5.284164,
+   4.764231,
+   4.244298,
+   3.724364,
+   3.204431,
+   2.684498,
+   2.164564,
+   1.644631
+  ],
+  "chi_monotone_decreasing": true,
+  "stationary_point_d_star": 10.1632,
+  "stationary_point_inside_data_range": false,
+  "critical_exponent_fit": {
+   "form": "φ(d) = φ_max − B·(d* − d)^β，d* = 二次拟合的驻点（φ 的极大点）",
+   "d_star": 10.1632,
+   "phi_max_pp": 32.3222,
+   "beta": 2.022681,
+   "B": 0.24871,
+   "loglog_r2": 0.999054,
+   "n_points_used": 8
+  },
+  "verdict": "**观测区间内无临界点**：响应函数 χ 单调递减、驻点 d* 落在数据区间之外 （d* = 10.16 > max(d) = 7.0）⇒ Type I 在可观测范围内是**平滑（亚临界）退化**，不是相变。临界指数 β 的拟合值属**外推**，不可作为实测结论。"
+ },
+ "early_warning_indicators": {
+  "n_points": 8,
+  "indicators": [
+   {
+    "name": "序参量水平 φ",
+    "value": 29.8763,
+    "expected_direction_near_criticality": "升高",
+    "observed": "升高（5.30 → 29.88）",
+    "usable": true
+   },
+   {
+    "name": "增量方差 Var(Δφ)",
+    "value": 1.115877,
+    "expected_direction_near_criticality": "升高（临界慢化）",
+    "observed": "**下降**（增量单调递减）",
+    "usable": true
+   },
+   {
+    "name": "一阶自相关 AC1(φ)",
+    "value": 0.999994,
+    "expected_direction_near_criticality": "升高（临界慢化）",
+    "observed": "前半段 0.999999 → 后半段 0.999998",
+    "usable": true
+   },
+   {
+    "name": "零产组件数",
+    "value": 2,
+    "expected_direction_near_criticality": "出现即预警",
+    "observed": "恒为 2（compile-time / wunsequenced）",
+    "usable": true
+   },
+   {
+    "name": "随机臂对池大小的敏感度",
+    "value": "−13.5 pp/资产（d=0→1）",
+    "expected_direction_near_criticality": "升高",
+    "observed": "随 d 递减（−13.5 → −2.2）",
+    "usable": true
+   }
+  ],
+  "verdict": "**临界慢化类指标在本数据上失效**：增量方差与自相关都**不升反降**，与「接近临界点」的预期相反 —— 这**正面支持**了 §2 的结论（Type I 在观测区间内不是相变）。⇒ 可用的预警指标是**结构性指标**（零产组件数、随机臂敏感度），不是动力学指标。"
+ },
+ "label_fragmentation_warning": {
+  "definition": "FI = (#单样本类 + #双样本类) / #类数（词表碎片化指数）",
+  "before_681_normalization": {
+   "n_categories": 70,
+   "n_singleton": 14,
+   "n_doubleton": 6,
+   "FI": 0.285714,
+   "source": "676g by_type（原始混合词表，70 类）"
+  },
+  "after_681_normalization": {
+   "n_categories": 34,
+   "n_singleton": 0,
+   "n_doubleton": 0,
+   "FI": 0.0,
+   "source": "681 type_stats_normalized（归一化词表，34 类）"
+  },
+  "backtest_verdict": "**可以回测**：归一化前 FI = 0.2857（14 个单样本类 / 70 类），归一化后 FI = 0.0。FI 在 681 之前就**高于 0**，是一个**纯结构性的、无需任何新测量**即可读出的预警信号。⇒ 在 681 的标签归一化**之前**，FI 就已经在报警。",
+  "honest_note": "这是**事后标定**（我们已经知道 681 发生了归一化）。把它当预警指标需要一个**阈值**，而本批只有一次漂移事件 ⇒ 阈值无法标定。FI > 0 只是必要条件，不是充分条件。"
+ },
+ "universality_classes": {
+  "table": [
+   {
+    "type": "I（构成/分母）",
+    "control_axis": "连续（d）",
+    "shape": "**连续、平滑、凹**",
+    "transition_order": "**无相变**（亚临界）",
+    "exponent_beta": 2.022681,
+    "exponent_note": "外推值（d_c 落在数据区间之外）"
+   },
+   {
+    "type": "II（环境）",
+    "control_axis": "二值（E1/E2）",
+    "shape": "**不连续跳变**",
+    "transition_order": "**一阶**",
+    "exponent_beta": null,
+    "exponent_note": "一阶相变无 β（序参量在临界点跳变）"
+   },
+   {
+    "type": "III（标签）",
+    "control_axis": "离散（类数 g）",
+    "shape": "**非单调**",
+    "transition_order": "**非相变**（序参量对控制参数无单调性）",
+    "exponent_beta": null,
+    "exponent_note": "非单调 ⇒ 临界指数无定义"
+   },
+   {
+    "type": "IV（聚合）",
+    "control_axis": "离散（规则切换）",
+    "shape": "**不连续跳变**",
+    "transition_order": "**一阶**",
+    "exponent_beta": null,
+    "exponent_note": "同上"
+   }
+  ],
+  "n_distinct_orders": 1,
+  "verdict": "**四型不属于同一个普适性类。** 只有 II 与 IV 同为**一阶**（不连续跳变）；I 是**连续但无临界点**（亚临界平滑退化）；III 是**非单调**（序参量对控制参数无单调性）。⇒ 不能用一个临界指数统一刻画四型；「结构性 Goodhart 的相变理论」这一说法**必须限定为「II/IV 型是一阶相变」**。",
+  "cross_check": {
+   "type_I_beta": 2.022681,
+   "type_I_chi_monotone_decreasing": true,
+   "note": "若 I 与 II/IV 同属一个普适性类，I 也应显示不连续或发散响应 —— 实测两者都不成立。"
+  }
+ },
+ "honest_limits": [
+  "Type I 的「无临界点」结论只在 d ∈ [0,7] 上成立；d ≥ 8 的扫描含**注入的幽灵资产**（非真实资产）。",
+  "临界指数 β 由网格搜索拟合，d_c 落在数据区间之外 ⇒ **外推值**，不可作为实测结论。",
+  "Type II / IV 只有 **2 个控制点**（跳变前后）⇒ 「一阶」的判定基于「不连续」而非拟合。",
+  "预警指标只在 **8 个点**上标定；历史序列（5-6 个代理点）**不足以估计**动力学指标。",
+  "标签碎片化指数的阈值**无法标定**（只有一次漂移事件）。",
+  "「相变」是**类比**：评估系统不是热力学系统，没有温度与自由能；本批只借用「控制参数 / 序参量 / 响应函数 / 一阶二阶」这套**描述性语言**，不声称存在热力学对应物。"
+ ]
+}
