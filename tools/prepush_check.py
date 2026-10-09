@@ -65,13 +65,22 @@ ARTIFACT_RE = re.compile(r"^[^/\\]+\.(cpp|exe|o)$", re.IGNORECASE)
 # 刻意开发草稿（.gitignore 已明确忽略），不应阻断 push
 DEV_OK_RE = re.compile(r"^(_probe|_tu)[^/\\]*\.(cpp|exe|o)$", re.IGNORECASE)
 
+# 696 实测修正（**判据不变，只改超时上限**）：
+# `quality` 阶段的 27 个门禁在本机实测需 **484–798 s**（视并发负载波动；其中
+# atom_evidence_replay / poison_drill / tool_integrity / asm 系列占大头）。原硬编码
+# `timeout=600` ⇒ 只要机器稍忙就**恒因超时失败**，且失败与"门禁是否达标"无关——与
+# 648 记录的 `timeout=15 ⇒ pre-push 恒假失败` 是**同一类** harness 缺陷（那次也是
+# "判据不变，只换扫描方式"）。故把单检查超时提到 1800 s：**没有放宽任何一条判据**，
+# 只是让慢机器不再产生假失败。需要更短/更长可用 `PREPUSH_TIMEOUT_S` 覆盖。
+CHECK_TIMEOUT_S = int(os.environ.get("PREPUSH_TIMEOUT_S", "1800"))
+
 
 def _run(name: str, argv: list[str]) -> tuple[bool, str]:
     """运行一个子工具，返回 (通过?, 摘要行)。"""
     exe = [sys.executable, str(ROOT / argv[0]), *argv[1:]]
     try:
         r = subprocess.run(exe, cwd=str(ROOT), capture_output=True,
-                           text=True, encoding="utf-8", errors="replace", timeout=600)
+                           text=True, encoding="utf-8", errors="replace", timeout=CHECK_TIMEOUT_S)
     except (OSError, subprocess.SubprocessError) as e:
         return False, f"运行失败: {e}"
     ok = r.returncode == 0
