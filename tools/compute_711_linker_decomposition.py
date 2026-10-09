@@ -81,7 +81,7 @@ def main() -> dict:
     assert abs(or_full8 - 60.071) < 0.01, or_full8
 
     # ---------- 1. random-arm exact expectations + FD arm ----------
-    arms = {}
+    arms: dict[str, dict] = {}
     for name, pool, ks in (
         ("full8", tuple(POOL6) + ZERO_YIELD, (1, 2, 3, 4, 5, 6, 7, 8)),
         ("pool6", POOL6, (1, 2, 3, 4)),
@@ -180,13 +180,13 @@ def main() -> dict:
     assert abs(sum_link - link_effect) < 0.01, (sum_link, link_effect)
 
     # ---------- 3. difficulty reweighting sensitivity ----------
-    all_groups = {}
+    all_groups: dict[str, int] = {}
     for r in all_rows:
         all_groups.setdefault(r.get("defect_group") or "NA", 0)
         all_groups[r.get("defect_group") or "NA"] += 1
     corpus_share = {g: c / len(all_rows) for g, c in all_groups.items()}
 
-    eval_groups = {}
+    eval_groups: dict[str, int] = {}
     for r in eval_rows:
         eval_groups.setdefault(r.get("defect_group") or "NA", 0)
         eval_groups[r.get("defect_group") or "NA"] += 1

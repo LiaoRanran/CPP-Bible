@@ -84,7 +84,9 @@ def classes_of(fn, all_cfg, G):
 def main() -> None:
     all_cfg = list(configs())
     n = len(all_cfg)
-    G0, Ga, Gab = frozenset(), frozenset({"a"}), frozenset({"a", "b"})
+    G0: frozenset[str] = frozenset()
+    Ga: frozenset[str] = frozenset({"a"})
+    Gab: frozenset[str] = frozenset({"a", "b"})
 
     for name, fn in (("L1 (matrix retained)", image_L1), ("L2 (verdicts only)", image_L2)):
         print(f"===== {name} =====")
@@ -103,8 +105,16 @@ def main() -> None:
         print(f"      G={{a,b}}: {len(classes_of(fn, all_cfg, Gab))} collision classes (monotone: more collapse)")
 
     # (iv) the c/u collision at L2: lost catch (a ran, caught, then removed) vs never-run
-    m1 = (frozenset({"a"}), frozenset({"x1"}), frozenset())  # x1 caught by a, then a removed -> u
-    m2 = (frozenset(), frozenset({"x1"}), frozenset())  # x1 never run with a, a would catch -> u
+    m1: tuple[frozenset[str], frozenset[str], frozenset[str]] = (
+        frozenset({"a"}),
+        frozenset({"x1"}),
+        frozenset(),
+    )  # x1 caught by a, then a removed -> u
+    m2: tuple[frozenset[str], frozenset[str], frozenset[str]] = (
+        frozenset(),
+        frozenset({"x1"}),
+        frozenset(),
+    )  # x1 never run with a, a would catch -> u
     assert image_L2(m1, Ga) == image_L2(m2, Ga), (image_L2(m1, Ga), image_L2(m2, Ga))
     assert image_L1(m1, Ga) == image_L1(m2, Ga), (image_L1(m1, Ga), image_L1(m2, Ga))
     assert (R(m1), R(m2)) == (50.0, 0.0)
