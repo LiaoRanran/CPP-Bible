@@ -2783,6 +2783,175 @@ def check_batch_711_artifacts():
     return {"ok": ok_all, "checks": checks}
 
 
+def check_batch_716_artifacts():
+    """716 批次自洽检查组（**不进 tex 审计**，失败退出码 1 由 main 汇总）。
+
+    716 把新结果同时写进了**两篇**论文（论文 1：F1 实验分解段 + 附录 E3；论文 2：A2/A5 构造性
+    定理 + 实证降级 + 压页搬移）。本组做四件事：
+    1. 交付物存在性（Part 1.1/1.2/1.3/1.4/2/3 的报告与产物）；
+    2. 716-E3 的**内部恒等式与跨批锚点**（200 帧、asan/ubsan 与 683 逐位一致、compiler-warn 例外、
+       E2 支撑集 +9.0pp）；
+    3. 716 理论产物与构造性证明的**内部断言**（方向 C 恒等式、A2w/A5w 全实例违例、严格分离搜索）；
+    4. **论文 ↔ 产物字面落点**：两篇论文里的新数字必须在权威产物里有对应（避免"论文里的数字
+       在产物里找不到"的隐性漂移）。
+    """
+    checks = []
+    ok_all = True
+
+    def add(cid, name, ok, detail=""):
+        nonlocal ok_all
+        checks.append({"id": cid, "name": name, "ok": bool(ok), "detail": str(detail)[:300]})
+        ok_all = ok_all and bool(ok)
+
+    # ---------------- 1. 交付物存在性 ----------------
+    deliverables = [
+        "data/716_第三环境对实验.md", "data/716_e3_paired.json", "data/716_e3_ckpt.jsonl",
+        "tools/run_716_e3_environment.py",
+        "data/716_F1实验分解反哺报告.md",
+        "data/716_A2A5构造性证明.md", "data/716_axiom_constructive.json",
+        "tools/compute_716_axiom_constructive.py",
+        "data/716_理论方向A_信息论下界.md", "data/716_理论方向C_鲁棒统计.md",
+        "data/716_theory_directions.json", "tools/compute_716_theory.py",
+        "data/716_两篇分工调整报告.md",
+        "data/716_验收报告.md",
+    ]
+    missing = [r for r in deliverables if not os.path.exists(_p(r))]
+    add("B716-01", f"交付物存在（{len(deliverables)} 项）", not missing,
+        f"缺：{missing}" if missing else "齐全")
+
+    # ---------------- 2. E3 内部恒等式 + 跨批锚点 ----------------
+    try:
+        e3 = load_json("data/716_e3_paired.json")
+    except Exception as e:  # noqa: BLE001
+        add("B716-02", "716-E3 产物可读", False, f"{type(e).__name__}: {e}")
+        e3 = None
+    if e3:
+        pa = e3["per_asset"]
+        add("B716-02", "E3 帧数 = 200", e3["frame"]["n"] == 200, str(e3["frame"]["n"]))
+        add("B716-03", "E3 detect_calls = 0", e3.get("detect_calls") == 0, str(e3.get("detect_calls")))
+        add("B716-04", "asan/ubsan 与 683 发布值逐位（187/200 = 93.5%，κ 0.864/0.8434）",
+            pa["asan"]["agree"] == 187 and pa["ubsan"]["agree"] == 187
+            and abs(pa["asan"]["kappa_3class"] - 0.864) < 1e-4
+            and abs(pa["ubsan"]["kappa_3class"] - 0.8434) < 1e-4,
+            f"{pa['asan']['agree']}/{pa['ubsan']['agree']} κ={pa['asan']['kappa_3class']}/{pa['ubsan']['kappa_3class']}")
+        add("B716-05", "compiler-warn = 唯一显著劣化项（Δcatch +7.5pp、m→c=18、p=0.0015）",
+            abs(pa["compiler-warn"]["delta_catch_pp"] - 7.5) < 1e-6
+            and pa["compiler-warn"]["m_to_c"] == 18
+            and abs(pa["compiler-warn"]["mcnemar_exact_p"] - 0.00149) < 1e-4,
+            f"{pa['compiler-warn']['delta_catch_pp']}pp / m→c={pa['compiler-warn']['m_to_c']}")
+        add("B716-06", "三行 sanitizer 的基线是 E1、三行编译/链接资产是 E2（基线逐资产登记）",
+            all("E1" in pa[a]["baseline_environment"] for a in ("asan", "ubsan", "tsan"))
+            and all("E2" in pa[a]["baseline_environment"]
+                    for a in ("compiler-warn", "cross-compile", "linker")),
+            "baseline_environment")
+        o3 = e3["or_level"]["E2support_vs_E3_same3"]
+        add("B716-07", "E2 支撑集 E2→E3 = +9.0pp（44→62，p=2.8e-4）",
+            abs(o3["delta_catch_pp"] - 9.0) < 1e-6 and o3["e2"]["catch"] == 44
+            and o3["e3"]["catch"] == 62 and abs(o3["mcnemar_exact_p"] - 0.000277) < 1e-5,
+            f"{o3['delta_catch_pp']}pp p={o3['mcnemar_exact_p']}")
+        add("B716-08", "六行 m→c 全为正（换装置型，非撤除型）",
+            all(pa[a]["m_to_c"] > 0 for a in pa), str({a: pa[a]["m_to_c"] for a in pa}))
+
+    # ---------------- 3. 理论产物内部断言 ----------------
+    try:
+        th = load_json("data/716_theory_directions.json")
+        add("B716-09", "方向 C 阈值影响恒等式：3 规则 × 6 资产全部精确成立",
+            th["direction_C_robustness"]["checks"]["theorem_C1_identity_holds_for_all_3_rules"] is True,
+            "theorem_C1")
+        add("B716-10", "方向 A：E2 记账漂移聚合移动 = 75.265pp",
+            abs(th["direction_A_information"]["theorem_A1_zero_mutual_information"]
+                ["instance_accounting_E2"]["aggregate_move_pp"] - 75.265) < 1e-3,
+            "75.265")
+        add("B716-11", "方向 A：Bell(4)=15 划分 → 4 个不同统计值，ambiguity 15/4=3.75",
+            th["direction_A_information"]["theorem_A1_zero_mutual_information"]
+            ["instance_label_axis"]["ambiguity_factor_share_stat"] == 3.75,
+            "3.75")
+        rel = th["direction_C_robustness"]["relative_influence"]
+        add("B716-12", "方向 C：相对脆弱性反转（majority 89.29% > at_least_2 41.80% > OR 19.66%）",
+            rel["majority"]["relative_influence_pct"] > rel["at_least_2"]["relative_influence_pct"]
+            > rel["or"]["relative_influence_pct"],
+            f"{rel['or']['relative_influence_pct']}/{rel['at_least_2']['relative_influence_pct']}"
+            f"/{rel['majority']['relative_influence_pct']}")
+    except Exception as e:  # noqa: BLE001
+        add("B716-09", "716 理论产物可读", False, f"{type(e).__name__}: {e}")
+
+    try:
+        ac = load_json("data/716_axiom_constructive.json")
+        a2w = ac["theorem_A2w_min_single"] + ac["theorem_A2w_exactly_one"]
+        a5w = ac["theorem_A5w_at_least_2"]
+        add("B716-13", "A2w（min_single / exactly_one）全部实例违反 A2",
+            all(x["A2_clause_failed"] for x in a2w), f"{len(a2w)} 实例")
+        add("B716-14", "A5w（at_least_2）全部实例违反 A5",
+            all(x["A5_clause_failed"] for x in a5w), f"{len(a5w)} 实例")
+        add("B716-15", "域内核验：三条见证在 4096 域上仍违例",
+            ac["empirical_crosscheck"]["witnesses_in_domain"]["A2_min_single"]["violates"] is True
+            and ac["empirical_crosscheck"]["witnesses_in_domain"]["A2_exactly_one"]["violates"] is True
+            and ac["empirical_crosscheck"]["witnesses_in_domain"]["A5_at_least_2"]["violates"] is True,
+            "witnesses_in_domain")
+        add("B716-16", "严格分离搜索登记：秩加权族 51 个分离者、一致族 0 个（缺口仍开放）",
+            ac["gap_sharpening_order_stat_family"]["n_separators"] == 51
+            and ac["gap_sharpening_transform_mean_family"]["separators"] == [],
+            f"{ac['gap_sharpening_order_stat_family']['n_separators']} / "
+            f"{len(ac['gap_sharpening_transform_mean_family']['separators'])}")
+    except Exception as e:  # noqa: BLE001
+        add("B716-13", "716 构造性产物可读", False, f"{type(e).__name__}: {e}")
+
+    # ---------------- 4. 论文 ↔ 产物字面落点 ----------------
+    try:
+        fab = load_json("data/715_等边际替换_16组合结果.json")
+        rows = {r["term"]: r for r in fab["anova"]["rows"]}
+        add("B716-17", "715 因子主效应与论文 1 一致（k 7.3299 / pool −5.103 / linker 0.194）",
+            abs(rows["k"]["effect_pp"] - 7.3299) < 1e-3
+            and abs(rows["pool"]["effect_pp"] + 5.103) < 1e-3
+            and abs(rows["linker"]["effect_pp"] - 0.194) < 1e-3,
+            f"{rows['k']['effect_pp']}/{rows['pool']['effect_pp']}/{rows['linker']['effect_pp']}")
+        add("B716-18", "715 单次抽样校准（均值 16.108 / 期望 15.894 / gap 0.215）",
+            abs(fab["aux_expectation_caliber"]["delta_single_draw_mean_pp"] - 16.108) < 1e-3
+            and abs(fab["aux_expectation_caliber"]["gap_single_minus_expectation_pp"] - 0.2146) < 1e-3,
+            str(fab["aux_expectation_caliber"]["gap_single_minus_expectation_pp"]))
+    except Exception as e:  # noqa: BLE001
+        add("B716-17", "715 因子产物可读", False, f"{type(e).__name__}: {e}")
+
+    paper1_forms = ["7.33", "61.7", "29.9", "0.19", "0.01", "6.2", "16.11", "15.89", "0.21",
+                    "4.24", "32.51", "6.28", "5.90", "0.26",          # F1 实验分解（Part 1.2）
+                    "93.5", "97.5", "89.0", "0.593", "7.5", "9.0",    # E3 附录（Part 1.1）
+                    "app:equal716"]
+    try:
+        t1 = open(_p("research/latex/queyi_neurips2027_v1.1.tex"), encoding="utf-8").read()
+    except OSError as e:
+        t1 = ""
+        add("B716-19", "论文 1 可读", False, str(e))
+    if t1:
+        miss1 = [x for x in paper1_forms if x not in t1]
+        add("B716-19", f"论文 1 含 716 新数字/标签（{len(paper1_forms)} 项）", not miss1,
+            f"缺：{miss1}" if miss1 else "全在场")
+
+    paper2_forms = ["thm:A2w", "thm:A5w", "287", "51", "twelve", "app:empirical", "app:monday",
+                    "app:complexitydetail", "app:ckdetail"]
+    try:
+        t2 = open(_p("research/latex/paper2_measurement_drift.tex"), encoding="utf-8").read()
+    except OSError as e:
+        t2 = ""
+        add("B716-20", "论文 2 可读", False, str(e))
+    if t2:
+        miss2 = [x for x in paper2_forms if x not in t2]
+        add("B716-20", f"论文 2 含 716 新定理/搬移标签（{len(paper2_forms)} 项）", not miss2,
+            f"缺：{miss2}" if miss2 else "全在场")
+
+    # 理论报告必须含四要件（定义/定理/验证/局限）
+    for rel in ("data/716_理论方向A_信息论下界.md", "data/716_理论方向C_鲁棒统计.md"):
+        try:
+            txt = open(_p(rel), encoding="utf-8").read()
+        except OSError:
+            txt = ""
+        need = ["式化", "定理", "验证", "局限"] if txt else ["文件缺失"]
+        miss = [x for x in need if x not in txt]
+        add(f"B716-21:{os.path.basename(rel)}", f"{os.path.basename(rel)} 四要件齐全", not miss,
+            f"缺：{miss}" if miss else "齐全")
+
+    return {"ok": ok_all, "checks": checks}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="676h 论文数字可追溯性审计")
     ap.add_argument("--tex", default="research/latex/queyi_neurips2027_v1.1.tex")
@@ -2850,6 +3019,10 @@ def main(argv=None):
     # 711：反哺两篇论文 + 科研深挖 ⇒ 产物内部恒等式 + 论文↔产物字面落点（另立一组，不进 tex 审计）
     batch_711 = check_batch_711_artifacts()
 
+    # 716：第三环境 + F1 实验分解 + A2/A5 构造性 + 两个理论方向 + 论文 2 压页
+    #      ⇒ 交付物存在性 + E3 跨批锚点 + 理论内部断言 + 论文↔产物字面落点（另立一组，不进 tex 审计）
+    batch_716 = check_batch_716_artifacts()
+
     payload = {
         "schema": "queyi-676h/number-audit",
         "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
@@ -2866,6 +3039,7 @@ def main(argv=None):
         "class_samples": samples,
         "batch_692_selfcheck": batch_692,
         "batch_711_selfcheck": batch_711,
+        "batch_716_selfcheck": batch_716,
     }
     os.makedirs(os.path.dirname(_p(args.out_json)), exist_ok=True)
     write_json(_p(args.out_json), payload)
@@ -2885,9 +3059,16 @@ def main(argv=None):
         f"711 批次自洽：{sum(1 for c in batch_711['checks'] if c['ok'])}/{len(batch_711['checks'])} "
         f"{'PASS' if batch_711['ok'] else 'FAIL'}"
     )
+    print(
+        f"716 批次自洽：{sum(1 for c in batch_716['checks'] if c['ok'])}/{len(batch_716['checks'])} "
+        f"{'PASS' if batch_716['ok'] else 'FAIL'}"
+    )
+    for c in batch_716["checks"]:
+        if not c["ok"]:
+            print(f"  [FAIL] {c['id']} {c['name']} — {c['detail']}")
     print(f"输出：{args.out_json} / {args.out_md}")
     hard = sum(1 for r in results if r["verdict"] == "missing" and r["status"] == "active")
-    return 1 if (hard or not batch_692["ok"] or not batch_711["ok"]) else 0
+    return 1 if (hard or not batch_692["ok"] or not batch_711["ok"] or not batch_716["ok"]) else 0
 
 
 if __name__ == "__main__":
