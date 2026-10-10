@@ -317,10 +317,17 @@ def build(args):
 def _finish(args, src, dst, n_files):
     """复制完成后共用的收尾：包元数据修复 → 文档清洗 → 可选数据清洗 → 匿名提交 → 扫描。"""
     # 2) 包元数据修复（任务 0.4）
+    #    713：源包 queyi-audit/pyproject.toml 本身已在 713-B 修好（名称/描述/Apache-2.0/
+    #    中立 URL/无上游入口）。此时**不再覆盖**，让"发布出去的副本"与"被审计的包"
+    #    元数据逐字一致；仅在源 pyproject 仍是旧的上游工具链元数据时才套用 NEW_PYPROJECT。
     pyproject = dst / "pyproject.toml"
     if pyproject.exists():
-        pyproject.write_text(NEW_PYPROJECT, encoding="utf-8", newline="\n")
-        print("[fix ] pyproject.toml 已替换为审计包元数据（名称/描述/Apache-2.0/URL/入口）")
+        _txt = pyproject.read_text(encoding="utf-8", errors="replace")
+        if 'name = "queyi-audit"' in _txt:
+            print("[skip] pyproject.toml 已是审计包元数据（713：源包已修，不覆盖）")
+        else:
+            pyproject.write_text(NEW_PYPROJECT, encoding="utf-8", newline="\n")
+            print("[fix ] pyproject.toml 已替换为审计包元数据（名称/描述/Apache-2.0/URL/入口）")
 
     # 2b) 文档层间接线索清洗（书名 / 指向不存在脚本的陈旧索引条目）
     doc_changed = []
