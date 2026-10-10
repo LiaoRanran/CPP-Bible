@@ -1,0 +1,260 @@
+{
+ "schema": "queyi-716/theory-directions/v1",
+ "generated_by": "tools/compute_716_theory.py",
+ "detect_calls": 0,
+ "direction_A_information": {
+  "theorem_A1_zero_mutual_information": {
+   "statement": "若漂移 D 只改报告层（记账/聚合/标签）而逐样本逐资产裁决矩阵 X 不变，则 I(D;X)=0，任何基于 X 的检验在任何 n 下功效 = 显著性水平。",
+   "instance_accounting_E2": {
+    "frame": "A5 evaluation（a5_676f_detection_matrix，n=566）",
+    "assets": [
+     "compiler-warn",
+     "cross-compile",
+     "linker"
+    ],
+    "per_asset_matrix_identical_across_arms": true,
+    "unaware_verdicts": {
+     "miss": 426,
+     "catch": 140
+    },
+    "aware_verdicts": {
+     "unknown": 426,
+     "catch": 140
+    },
+    "aggregate_move_pp": 75.265,
+    "note": "X（逐样本逐资产裁决）两侧逐位相同；只有报告层的缺测量记账不同"
+   },
+   "instance_label_axis": {
+    "n_partitions": 15,
+    "n_distinct_statistic_vectors": 7,
+    "n_distinct_share_high_blind": 4,
+    "share_high_blind_values": [
+     0.0,
+     25.0,
+     33.333333,
+     50.0
+    ],
+    "or_rate_constant": 0.75,
+    "ambiguity_factor_vector": 2.142857142857143,
+    "ambiguity_factor_share_stat": 3.75,
+    "witness_values": [
+     "{\"macro_mean_blind_pct\": 16.666666666666664, \"max_group_blind_pct\": 33.33333333333333, \"share_high_blind_pct\": 0.0}",
+     "{\"macro_mean_blind_pct\": 16.666666666666668, \"max_group_blind_pct\": 50.0, \"share_high_blind_pct\": 0.0}",
+     "{\"macro_mean_blind_pct\": 25.0, \"max_group_blind_pct\": 100.0, \"share_high_blind_pct\": 25.0}",
+     "{\"macro_mean_blind_pct\": 25.0, \"max_group_blind_pct\": 25.0, \"share_high_blind_pct\": 0.0}",
+     "{\"macro_mean_blind_pct\": 25.0, \"max_group_blind_pct\": 50.0, \"share_high_blind_pct\": 0.0}",
+     "{\"macro_mean_blind_pct\": 33.333333333333336, \"max_group_blind_pct\": 100.0, \"share_high_blind_pct\": 33.333333333333336}",
+     "{\"macro_mean_blind_pct\": 50.0, \"max_group_blind_pct\": 100.0, \"share_high_blind_pct\": 50.0}"
+    ]
+   }
+  },
+  "honesty": [
+   "I(D;X)=0 是构造性事实（同一矩阵两种记账），不需要统计推断；本批不声称'任何现实中的漂移都不可见'——只对**只改报告层**的漂移成立。",
+   "标签轴实例的统计量是分组盲区率（>50% 盲组占比等），其取值范围 [0,100]%；ambiguity factor = 划分个数/统计量取值个数，与 710-A1 同定义。"
+  ]
+ },
+ "direction_C_robustness": {
+  "frame": {
+   "matrix": "blindspot_676g_detection_matrix.json",
+   "n": 1147,
+   "pool": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "m": 6
+  },
+  "catch_count_histogram": {
+   "0": 440,
+   "1": 384,
+   "2": 168,
+   "3": 127,
+   "4": 25,
+   "5": 3
+  },
+  "shares_pct": {
+   "any_catch": 61.6391,
+   "unique_catch_share": 33.4786,
+   "exactly_2_share": 14.6469,
+   "exactly_4_share": 2.1796
+  },
+  "rates_pct": {
+   "or": 61.63905841325196,
+   "at_least_2": 28.160418482999127,
+   "majority": 2.4411508282476024
+  },
+  "thresholds": {
+   "or": 1,
+   "at_least_2": 2,
+   "majority": 4
+  },
+  "critical_frame_counts": {
+   "or": {
+    "asan": 139,
+    "ubsan": 83,
+    "tsan": 85,
+    "compiler-warn": 53,
+    "cross-compile": 14,
+    "linker": 10
+   },
+   "at_least_2": {
+    "asan": 135,
+    "ubsan": 64,
+    "tsan": 70,
+    "compiler-warn": 32,
+    "cross-compile": 35,
+    "linker": 0
+   },
+   "majority": {
+    "asan": 24,
+    "ubsan": 25,
+    "tsan": 24,
+    "compiler-warn": 16,
+    "cross-compile": 11,
+    "linker": 0
+   }
+  },
+  "single_asset_contamination": {
+   "asan": {
+    "or_delta_pp": -12.11857,
+    "or_predicted_pp": -12.11857,
+    "at_least_2_delta_pp": -11.769834,
+    "at_least_2_predicted_pp": -11.769834,
+    "majority_delta_pp": -2.092415,
+    "majority_predicted_pp": -2.092415,
+    "unique_catch": 139,
+    "total_catch": 408,
+    "crit_t1": 139,
+    "crit_t2": 135,
+    "crit_t4": 24
+   },
+   "ubsan": {
+    "or_delta_pp": -7.236269,
+    "or_predicted_pp": -7.236269,
+    "at_least_2_delta_pp": -5.579773,
+    "at_least_2_predicted_pp": -5.579773,
+    "majority_delta_pp": -2.179599,
+    "majority_predicted_pp": -2.179599,
+    "unique_catch": 83,
+    "total_catch": 270,
+    "crit_t1": 83,
+    "crit_t2": 64,
+    "crit_t4": 25
+   },
+   "tsan": {
+    "or_delta_pp": -7.410636,
+    "or_predicted_pp": -7.410636,
+    "at_least_2_delta_pp": -6.102877,
+    "at_least_2_predicted_pp": -6.102877,
+    "majority_delta_pp": -2.092415,
+    "majority_predicted_pp": -2.092415,
+    "unique_catch": 85,
+    "total_catch": 263,
+    "crit_t1": 85,
+    "crit_t2": 70,
+    "crit_t4": 24
+   },
+   "compiler-warn": {
+    "or_delta_pp": -4.62075,
+    "or_predicted_pp": -4.62075,
+    "at_least_2_delta_pp": -2.789887,
+    "at_least_2_predicted_pp": -2.789887,
+    "majority_delta_pp": -1.394943,
+    "majority_predicted_pp": -1.394943,
+    "unique_catch": 53,
+    "total_catch": 143,
+    "crit_t1": 53,
+    "crit_t2": 32,
+    "crit_t4": 16
+   },
+   "cross-compile": {
+    "or_delta_pp": -1.220575,
+    "or_predicted_pp": -1.220575,
+    "at_least_2_delta_pp": -3.051439,
+    "at_least_2_predicted_pp": -3.051439,
+    "majority_delta_pp": -0.959024,
+    "majority_predicted_pp": -0.959024,
+    "unique_catch": 14,
+    "total_catch": 122,
+    "crit_t1": 14,
+    "crit_t2": 35,
+    "crit_t4": 11
+   },
+   "linker": {
+    "or_delta_pp": -0.87184,
+    "or_predicted_pp": -0.87184,
+    "at_least_2_delta_pp": 0.0,
+    "at_least_2_predicted_pp": -0.0,
+    "majority_delta_pp": 0.0,
+    "majority_predicted_pp": -0.0,
+    "unique_catch": 10,
+    "total_catch": 10,
+    "crit_t1": 10,
+    "crit_t2": 0,
+    "crit_t4": 0
+   }
+  },
+  "relative_influence": {
+   "or": {
+    "max_abs_delta_pp": 12.1186,
+    "relative_influence_pct": 19.6605
+   },
+   "at_least_2": {
+    "max_abs_delta_pp": 11.7698,
+    "relative_influence_pct": 41.7957
+   },
+   "majority": {
+    "max_abs_delta_pp": 2.1796,
+    "relative_influence_pct": 89.2857
+   }
+  },
+  "frames_flippable": {
+   "or": {
+    "threshold": 1,
+    "frames_at_or_above": 707,
+    "min_contamination_distribution": {
+     "1": 384,
+     "2": 168,
+     "3": 127,
+     "4": 25,
+     "5": 3
+    }
+   },
+   "at_least_2": {
+    "threshold": 2,
+    "frames_at_or_above": 323,
+    "min_contamination_distribution": {
+     "1": 168,
+     "2": 127,
+     "3": 25,
+     "4": 3
+    }
+   },
+   "majority": {
+    "threshold": 4,
+    "frames_at_or_above": 28,
+    "min_contamination_distribution": {
+     "1": 25,
+     "2": 3
+    }
+   }
+  },
+  "mean": {
+   "single_asset_weight": 0.166667,
+   "max_single_asset_rate_move_pp": 16.6667,
+   "dilution_add_zero_yield": 1.3333
+  },
+  "checks": {
+   "theorem_C1_identity_holds_for_all_3_rules": true
+  },
+  "honesty": [
+   "污染模型只有一种：catch→miss（能力撤退方向）；miss→catch 的伪造方向对称成立",
+   "率是 1147 条冻结矩阵上的覆盖率（92.9% 人工植入），不是真实缺陷分布。",
+   "C1 是**精确恒等式**（逐帧计数），不是近似或期望；证明见报告 §C1。",
+   "majority 的阈值取 count > m/2，m=6 ⇒ t=4；不同 m 下阈值随之变，相对脆性的结论只在 m=6 的池上实测。"
+  ]
+ }
+}
