@@ -1,0 +1,333 @@
+{
+ "schema": "queyi-716/axiom-constructive/v1",
+ "generated_by": "tools/compute_716_axiom_constructive.py",
+ "detect_calls": 0,
+ "theorem_A2w_min_single": [
+  {
+   "n": 1,
+   "m": 2,
+   "R_full": "0",
+   "R_after_removing_a": "1",
+   "A2_clause_failed": true,
+   "R_delta": "1"
+  },
+  {
+   "n": 2,
+   "m": 2,
+   "R_full": "0",
+   "R_after_removing_a": "1",
+   "A2_clause_failed": true,
+   "R_delta": "1"
+  },
+  {
+   "n": 4,
+   "m": 3,
+   "R_full": "0",
+   "R_after_removing_a": "1",
+   "A2_clause_failed": true,
+   "R_delta": "1"
+  },
+  {
+   "n": 10,
+   "m": 8,
+   "R_full": "0",
+   "R_after_removing_a": "2/5",
+   "A2_clause_failed": true,
+   "R_delta": "2/5"
+  }
+ ],
+ "theorem_A2w_exactly_one": [
+  {
+   "n": 1,
+   "m": 2,
+   "R_full": "0",
+   "R_after_removing_a": "1",
+   "A2_clause_failed": true,
+   "R_delta": "1"
+  },
+  {
+   "n": 4,
+   "m": 3,
+   "R_full": "0",
+   "R_after_removing_a": "1/4",
+   "A2_clause_failed": true,
+   "R_delta": "1/4"
+  },
+  {
+   "n": 10,
+   "m": 8,
+   "R_full": "0",
+   "R_after_removing_a": "1/10",
+   "A2_clause_failed": true,
+   "R_delta": "1/10"
+  }
+ ],
+ "theorem_A5w_at_least_2": [
+  {
+   "n": 1,
+   "m": 2,
+   "R_full": "1",
+   "h_a": "1",
+   "h_b": "1",
+   "h_ab": "1",
+   "A5_clause_failed": true,
+   "gap": "1"
+  },
+  {
+   "n": 4,
+   "m": 3,
+   "R_full": "1/4",
+   "h_a": "1/4",
+   "h_b": "1/4",
+   "h_ab": "1/4",
+   "A5_clause_failed": true,
+   "gap": "1/4"
+  },
+  {
+   "n": 10,
+   "m": 8,
+   "R_full": "1/10",
+   "h_a": "1/10",
+   "h_b": "1/10",
+   "h_ab": "1/10",
+   "A5_clause_failed": true,
+   "gap": "1/10"
+  }
+ ],
+ "empirical_crosscheck": {
+  "n_structures": 4096,
+  "per_aggregation": {
+   "or_union": {
+    "A2_violating_structures": 0,
+    "A5_violating_structures": 0
+   },
+   "at_least_2": {
+    "A2_violating_structures": 0,
+    "A5_violating_structures": 3471
+   },
+   "max_single": {
+    "A2_violating_structures": 0,
+    "A5_violating_structures": 0
+   },
+   "min_single": {
+    "A2_violating_structures": 3750,
+    "A5_violating_structures": 2589
+   },
+   "mean_single": {
+    "A2_violating_structures": 3750,
+    "A5_violating_structures": 3750
+   },
+   "sum_single": {
+    "A2_violating_structures": 0,
+    "A5_violating_structures": 0
+   },
+   "exactly_one_nonmonotone": {
+    "A2_violating_structures": 3600,
+    "A5_violating_structures": 1671
+   }
+  },
+  "witnesses_in_domain": {
+   "A2_min_single": {
+    "coverage": {
+     "a": [],
+     "b": [
+      0
+     ],
+     "c": []
+    },
+    "violates": true,
+    "satisfies_A5": false
+   },
+   "A2_exactly_one": {
+    "coverage": {
+     "a": [
+      0
+     ],
+     "b": [
+      0
+     ],
+     "c": []
+    },
+    "violates": true,
+    "satisfies_A5": true
+   },
+   "A5_at_least_2": {
+    "coverage": {
+     "a": [
+      0
+     ],
+     "b": [
+      0
+     ],
+     "c": []
+    },
+    "violates": true,
+    "satisfies_A2": true
+   }
+  },
+  "strict_separation_in_7family": [
+   "exactly_one_nonmonotone",
+   "min_single"
+  ]
+ },
+ "gap_sharpening_order_stat_family": {
+  "n_members_searched": 287,
+  "separators_found": [
+   [
+    "-2",
+    "-2",
+    "0"
+   ],
+   [
+    "-2",
+    "-1",
+    "-1"
+   ],
+   [
+    "-2",
+    "-1",
+    "-1/2"
+   ],
+   [
+    "-2",
+    "-1",
+    "0"
+   ],
+   [
+    "-2",
+    "-1",
+    "1/2"
+   ],
+   [
+    "-2",
+    "-1",
+    "1"
+   ],
+   [
+    "-2",
+    "-1/2",
+    "-1/2"
+   ],
+   [
+    "-2",
+    "-1/2",
+    "0"
+   ],
+   [
+    "-2",
+    "-1/2",
+    "1/2"
+   ],
+   [
+    "-2",
+    "-1/2",
+    "1"
+   ],
+   [
+    "-2",
+    "0",
+    "0"
+   ],
+   [
+    "-2",
+    "0",
+    "1/2"
+   ]
+  ],
+  "n_separators": 51,
+  "rate_like_separators": [
+   [
+    "-1",
+    "0",
+    "1"
+   ],
+   [
+    "-1",
+    "1/2",
+    "1/2"
+   ],
+   [
+    "-1/2",
+    "-1/2",
+    "1"
+   ],
+   [
+    "-1/2",
+    "0",
+    "1/2"
+   ],
+   [
+    "-1/2",
+    "0",
+    "1"
+   ],
+   [
+    "-1/2",
+    "1/2",
+    "1/2"
+   ]
+  ],
+  "n_rate_like_separators": 6,
+  "verdict": "构造性严格分离成立（族内存在违反 A2、满足 A5 的口径）"
+ },
+ "gap_sharpening_transform_mean_family": {
+  "family": "mean-of-transform（一致族）",
+  "members": {
+   "r^0.5": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r^1.0": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r^2.0": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r^3.0": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r-2.0r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r-1.0r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r-0.5r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r+0.5r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r+1.0r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r+2.0r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "r+4.0r^2": {
+    "violates_A2": true,
+    "violates_A5": true
+   },
+   "ln(1+r)": {
+    "violates_A2": true,
+    "violates_A5": true
+   }
+  },
+  "separators": [],
+  "verdict": "一致族内未找到分离者 ⇒ 缺口只被'秩加权族'部分锐化，仍然开放"
+ },
+ "honesty": [
+  "构造性定理覆盖**任意** n≥1、|A|≥2；4096 域枚举只作独立核对（不再承担证明责任）。",
+  "两条定理证明的是'A2/A5 不是定理（有反例）'；它们**不**证明 A2/A5 的相互独立性（那仍是登记缺口，本批在序统计量族里做定向搜索并在 §gap 里如实登记结论）。",
+  "min_single 的 A2 见证在域内还同时违反 A5（与 700-A 的观察一致）；exactly_one 亦然 —— 这一点未被本批的构造性证明改变。"
+ ]
+}
