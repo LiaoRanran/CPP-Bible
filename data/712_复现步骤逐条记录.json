@@ -1,0 +1,146 @@
+[
+  {
+    "id": "S01",
+    "area": "env",
+    "cmd": "python -m pip install -r requirements.txt --dry-run --quiet",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "",
+    "stderr_tail": "[notice] A new release of pip is available: 26.1.1 -> 26.2.1\n[notice] To update, run: C:\\Users\\ASUS\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe -m pip install --upgrade pip"
+  },
+  {
+    "id": "S02",
+    "area": "env",
+    "cmd": "bash Scripts/verify_environment.sh --report",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "==============================================\n 693-B2 · 环境体检（mode=report, profile=auto）\n==============================================\n-- OS / 内核 --\n[verify_env] OS: Linux 6.18.33.2-microsoft-standard-WSL2\n[verify_env] Distro: Ubuntu 24.04.4 LTS\n-- 编译器 --\n[verify_env] g++ = 13.3.0（auto 档不比对，只登记）\n[verify_env] clang = 18.1.3\n-- 分析器（692-D 公平对比用；缺失只警告，不阻断）--\n  WARN cppcheck = 2.13.0, expected 2.21.0 (optional)\n  WARN clang-tidy: MISSING (optional)\n  WARN valgrind: MISSING (optional)\n-- 构建系统 --\n  WARN cmake: MISSING (optional)\n-- Python --\n[verify_env] python = 3.12.3\n  WARN python 3.12.3 既非 3.13.x（产物环境）亦非 3.10.x（容器环境），请自行确认\n-- sanitizer 运行时（决定性：没有它 asan/ubsan/tsan 全是假 miss）--\n  OK   -fsanitize=address 编译+运行通过\n  OK   -fsanitize=undefined 编译+运行通过\n  OK   -fsanitize=thread 编译+运行通过\n-- 已知坑位自检 --\n  WARN -Wunsequenced 不被接受 ⇒ 该资产恒 unknown（673u 已登记的 MinGW 坑，属预期）\n  WARN 检测到 WSL：调用 wsl.exe 时必须 export WSL_UTF8=1 + WSLENV=WSL_UTF8/u，\n  WARN             否则 stderr 解码失败会让 ASan/UBSan 报告全丢（系统性假 miss）。\n-- 707-C / 698-B T6：可纠错边界 --\n  WARN 检测到【获取层能力缺口】：缺失资产/工具 ⇒ 按 698-B 定理 T6，此漂移【不可事后纠正】，\n  WARN      必须【重测】（re-measure），不要靠事后校正；详见 tools/check_drift_correctability.py\n==============================================\n 结果：OK=3  FAIL=0  WARN=10  (mode=report)\n==============================================",
+    "stderr_tail": "wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。"
+  },
+  {
+    "id": "S03",
+    "area": "paper1",
+    "cmd": "python tools/verify_paper_numbers.py --tex paper/paper1/queyi_neurips2027_v1.1.tex --tex-extra paper/paper1/supplementary/paper_appendix_extras.tex --out-json data/paper1_numbers.json --out-md data/paper1_numbers_report.md",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "检察 124 条；missing 0；consistent 112\n数字 token 1861；未归类 167\n692 批次自洽：35/35 PASS\n输出：data/paper1_numbers.json / data/paper1_numbers_report.md",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S04",
+    "area": "paper2",
+    "cmd": "python tools/verify_paper_numbers.py --tex paper/paper2/paper2_measurement_drift.tex --out-json data/paper2_numbers.json --out-md data/paper2_numbers_report.md",
+    "cwd": ".",
+    "exit": 1,
+    "stdout_tail": "检察 124 条；missing 65；consistent 44\n数字 token 653；未归类 170\n692 批次自洽：35/35 PASS\n输出：data/paper2_numbers.json / data/paper2_numbers_report.md",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S05",
+    "area": "integrity",
+    "cmd": "python tools/gen_693_manifest.py --check",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "[693-B2] 校验完成：清单 15 项（本次可解析 15 项），失配 0 项，缺失 0 项",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S06",
+    "area": "tests",
+    "cmd": "python -m pytest tests/ -q",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "..................                                                       [100%]",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S07",
+    "area": "chain",
+    "cmd": "bash Scripts/reproduce_all.sh",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": ".0 (optional)\n  WARN clang-tidy: MISSING (optional)\n  WARN valgrind: MISSING (optional)\n-- 构建系统 --\n  WARN cmake: MISSING (optional)\n-- Python --\n[verify_env] python = 3.12.3\n  WARN python 3.12.3 既非 3.13.x（产物环境）亦非 3.10.x（容器环境），请自行确认\n-- sanitizer 运行时（决定性：没有它 asan/ubsan/tsan 全是假 miss）--\n  OK   -fsanitize=address 编译+运行通过\n  OK   -fsanitize=undefined 编译+运行通过\n  WARN -fsanitize=thread 在当前画像下不可用（MinGW 无 sanitizer 运行时，属已知预期）；\n  WARN     ⇒ asan/ubsan/tsan 必须在 WSL(13.3.0) 或容器内跑，否则系统性假 miss\n-- 已知坑位自检 --\n  WARN -Wunsequenced 不被接受 ⇒ 该资产恒 unknown（673u 已登记的 MinGW 坑，属预期）\n  WARN 检测到 WSL：调用 wsl.exe 时必须 export WSL_UTF8=1 + WSLENV=WSL_UTF8/u，\n  WARN             否则 stderr 解码失败会让 ASan/UBSan 报告全丢（系统性假 miss）。\n-- 707-C / 698-B T6：可纠错边界 --\n  WARN 检测到【获取层能力缺口】：缺失资产/工具 ⇒ 按 698-B 定理 T6，此漂移【不可事后纠正】，\n  WARN      必须【重测】（re-measure），不要靠事后校正；详见 tools/check_drift_correctability.py\n==============================================\n 结果：OK=2  FAIL=0  WARN=12  (mode=report)\n==============================================\n\n[reproduce] S1 数据完整性校验（sha256）\n  missing=0 mismatch=0\n\n[reproduce] S2 论文数字复算（复用 docker/paper/run_all.sh）\n[reproduce][SKIP] S2 论文数字复算：docker/paper/run_all.sh 的前置工具未随本包发布（ tools/path_config_625.py tools/stats_672k.py tools/fix_676m_schema.py tools/audit_676k_integrity.py）\n  ⇒ S2 已登记跳过（见 out/693_reproduce/99_skipped.txt）。\n     本包可复现的数字面由 S3 门禁与 tools/verify_paper_numbers.py 覆盖；\n     run_all.sh 的完整链条需要写作仓库的 tools/ 与 data/experiments/（REPRODUCTION.md §5）。\n\n[reproduce] S3 门禁检查\n  OK  paper_quality_gate\n  [OK ] 摘要≤250词                摘要英文词数 = 229\n  [OK ] 无 TODO/FIXME/HACK 残留   仅已登记占位（TODO{670a} 宏 + 0 个 ablation 占位）\n[paper-gate] PASS\n[reproduce][SKIP] S3 fast_gate 门禁：源仓库门禁脚本未随本包发布（ tools/run_658_gate.py tools/run_669d_gate.py tools/guard_rerun_671a.py）⇒ 退化为 pytest\n  pytest 退出非 0：\n/usr/bin/python3: No module named pytest\n\n[reproduce] S4 生成验证报告\n\n==============================================\n 复现完成。报告：out/693_reproduce/99_reproduce_report.md\n ⚠ 门禁存在 FAIL，见报告\n==============================================",
+    "stderr_tail": "wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。"
+  },
+  {
+    "id": "S08",
+    "area": "paper1",
+    "cmd": "cd paper/paper1 && tectonic queyi_neurips2027_v1.1.tex --keep-logs",
+    "cwd": "paper/paper1",
+    "exit": 0,
+    "stdout_tail": "note: Running TeX ...\nnote: Running BibTeX on queyi_neurips2027_v1.1.aux ...\nnote: warnings were issued by BibTeX; use --print and/or --keep-logs for details.\nnote: Rerunning TeX because bibtex was run ...\nnote: Rerunning TeX because \"queyi_neurips2027_v1.1.out\" changed ...\nnote: Rerunning TeX because \"queyi_neurips2027_v1.1.aux\" changed ...\nnote: Running xdvipdfmx ...\nnote: Writing `queyi_neurips2027_v1.1.log` (53.3115234375 KiB)\nnote: Writing `queyi_neurips2027_v1.1.blg` (329 B)\nnote: Writing `queyi_neurips2027_v1.1.pdf` (290.0732421875 KiB)\nnote: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)",
+    "stderr_tail": "ips2027_v1.1.tex:1634: Underfull \\hbox (badness 2478) in paragraph at lines 1627--1634\nwarning: queyi_neurips2027_v1.1.tex:1634: Underfull \\hbox (badness 1389) in paragraph at lines 1627--1634\nwarning: queyi_neurips2027_v1.1.tex:1634: Underfull \\hbox (badness 1158) in paragraph at lines 1627--1634\nwarning: queyi_neurips2027_v1.1.tex:1675: Underfull \\hbox (badness 1675) in paragraph at lines 1672--1675\nwarning: queyi_neurips2027_v1.1.tex:1675: Underfull \\hbox (badness 4832) in paragraph at lines 1672--1675\nwarning: queyi_neurips2027_v1.1.tex:1684: Underfull \\hbox (badness 10000) in paragraph at lines 1676--1684\nwarning: queyi_neurips2027_v1.1.tex:1704: Underfull \\hbox (badness 3701) in paragraph at lines 1687--1704\nwarning: queyi_neurips2027_v1.1.tex:1704: Underfull \\hbox (badness 4205) in paragraph at lines 1687--1704\nwarning: queyi_neurips2027_v1.1.tex:1740: Underfull \\hbox (badness 3895) in paragraph at lines 1707--1740\nwarning: queyi_neurips2027_v1.1.tex:1775: Underfull \\hbox (badness 2310) in paragraph at lines 1774--1775\nwarning: queyi_neurips2027_v1.1.tex:1827: Overfull \\hbox (55.78374pt too wide) in paragraph at lines 1781--1827\nwarning: queyi_neurips2027_v1.1.tex:1827: Underfull \\hbox (badness 1418) in paragraph at lines 1781--1827\nwarning: queyi_neurips2027_v1.1.tex:1827: Underfull \\hbox (badness 2285) in paragraph at lines 1781--1827\nwarning: queyi_neurips2027_v1.1.tex:1870: Underfull \\vbox (badness 10000) has occurred while \\output is active\nwarning: queyi_neurips2027_v1.1.tex:1957: Overfull \\hbox (50.40645pt too wide) in paragraph at lines 1943--1957\nwarning: queyi_neurips2027_v1.1.tex:1981: Underfull \\hbox (badness 1038) in paragraph at lines 1978--1981\nwarning: queyi_neurips2027_v1.1.tex:2008: Underfull \\hbox (badness 5374) in paragraph at lines 1994--2008\nwarning: queyi_neurips2027_v1.1.tex:2008: Underfull \\hbox (badness 10000) in paragraph at lines 1994--2008\nwarning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details."
+  },
+  {
+    "id": "S09",
+    "area": "paper1",
+    "cmd": "python tools/paper_quality_gate_670c2.py",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "[paper-gate] 6 项检查， 失败 0， 跳过 1\n  [SKIP] 主文页数≤9                 缺 .aux（先运行 build）—— 跳过\n  [OK ] 0 未定义引用                undefined 条目 0\n  [OK ] 所有 \\section 有 \\label   8 个 section 均有 label\n  [OK ] 所有 \\ref 有 \\label       31 个 ref 全部有 label\n  [OK ] 摘要≤250词                摘要英文词数 = 229\n  [OK ] 无 TODO/FIXME/HACK 残留   仅已登记占位（TODO{670a} 宏 + 0 个 ablation 占位）\n[paper-gate] PASS",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S10",
+    "area": "paper1",
+    "cmd": "python tools/paper_sync_check_670c2.py",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "[paper-sync] NOT_APPLICABLE：未找到 Markdown 主稿 `C:\\CodeLearnling\\queyi-audit-clone712e\\research\\paper_shturl.md`。\n[paper-sync] 本复现包只发布 LaTeX 稿；markdown↔LaTeX 同步检查需要写作仓库（源仓库），不属于本包可复现范围（见 REPRODUCTION.md §4）。",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S11",
+    "area": "paper1",
+    "cmd": "python tools/figure_data_check_670c2.py",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "[figure-data] 图 2 张（数据图 0 / 示意图 2），通过 3，失败 0\n  [OK ] 第 1 张 figure 有 label：['fig:belnap']\n  [OK ] 第 2 张 figure 有 label：['fig:loop']\n  [OK ] 2 张图为**示意图**（无 coordinates/\\addplot 数据构件）⇒ 无硬编码数据需溯源：['fig:belnap', 'fig:loop']\n[figure-data] PASS",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S12",
+    "area": "paper2",
+    "cmd": "cd paper/paper2 && tectonic paper2_measurement_drift.tex --keep-logs",
+    "cwd": "paper/paper2",
+    "exit": 0,
+    "stdout_tail": "note: Running TeX ...\nnote: Running BibTeX on paper2_measurement_drift.aux ...\nnote: warnings were issued by BibTeX; use --print and/or --keep-logs for details.\nnote: Rerunning TeX because bibtex was run ...\nnote: Rerunning TeX because \"paper2_measurement_drift.aux\" changed ...\nnote: Rerunning TeX because \"paper2_measurement_drift.aux\" changed ...\nnote: Running xdvipdfmx ...\nnote: Writing `paper2_measurement_drift.pdf` (207.3935546875 KiB)\nnote: Writing `paper2_measurement_drift.log` (20.6064453125 KiB)\nnote: Writing `paper2_measurement_drift.blg` (284 B)\nnote: Skipped writing 3 intermediate files (use --keep-intermediates to keep them)",
+    "stderr_tail": "x:859: Underfull \\hbox (badness 10000) in paragraph at lines 859--859\nwarning: paper2_measurement_drift.tex:859: Underfull \\hbox (badness 3895) in paragraph at lines 859--859\nwarning: paper2_measurement_drift.tex:860: Underfull \\hbox (badness 6910) in paragraph at lines 859--860\nwarning: paper2_measurement_drift.tex:861: Underfull \\hbox (badness 10000) in paragraph at lines 861--861\nwarning: paper2_measurement_drift.tex:861: Underfull \\hbox (badness 3713) in paragraph at lines 861--861\nwarning: paper2_measurement_drift.tex:932: Underfull \\hbox (badness 2573) in paragraph at lines 932--932\nwarning: paper2_measurement_drift.tex:952: Underfull \\hbox (badness 10000) in paragraph at lines 952--952\nwarning: paper2_measurement_drift.tex:953: Underfull \\hbox (badness 10000) in paragraph at lines 953--953\nwarning: paper2_measurement_drift.tex:1108: Underfull \\hbox (badness 1077) in paragraph at lines 1108--1108\nwarning: paper2_measurement_drift.tex:1110: Underfull \\hbox (badness 10000) in paragraph at lines 1110--1110\nwarning: paper2_measurement_drift.tex:1111: Underfull \\hbox (badness 10000) in paragraph at lines 1111--1111\nwarning: paper2_measurement_drift.tex:1146: Underfull \\hbox (badness 10000) in paragraph at lines 1146--1146\nwarning: paper2_measurement_drift.tex:1147: Underfull \\hbox (badness 10000) in paragraph at lines 1147--1147\nwarning: paper2_measurement_drift.tex:1147: Underfull \\hbox (badness 10000) in paragraph at lines 1147--1147\nwarning: paper2_measurement_drift.tex:1199: Underfull \\vbox (badness 10000) has occurred while \\output is active\nwarning: paper2_measurement_drift.tex:1302: Underfull \\hbox (badness 4084) in paragraph at lines 1298--1302\nwarning: paper2_measurement_drift.tex:1341: Underfull \\vbox (badness 10000) has occurred while \\output is active\nwarning: paper2_measurement_drift.tex:1365: Overfull \\hbox (1.51385pt too wide) in paragraph at lines 1365--1365\nwarning: warnings were issued by the TeX engine; use --print and/or --keep-logs for details."
+  },
+  {
+    "id": "S13",
+    "area": "paper2",
+    "cmd": "python tools/test_axiom_independence.py",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "== 707-A 公理独立性回归测试（4096 结构 × 7 聚合）==\n  结构域 = 4096；聚合族 = 7\n  真公理（有反例） = ['A2', 'A5']\n  恒真（定理）     = ['A3', 'A4', 'A6', 'A7']\n  A2 反例聚合 = ['min_single', 'mean_single', 'exactly_one_nonmonotone']\n  A5 反例聚合 = ['at_least_2', 'min_single', 'mean_single', 'exactly_one_nonmonotone']\n  A8（标签轴闭包） = MISSING / TODO（存在漂移 τ_λ（标签词表变化）使**逐样本裁决与全部公理量都不变**，但**分...）\n  [ok] only_A2_A5_genuine\n  [ok] A3_A4_A6_A7_are_theorems\n  [ok] A2_has_counterexample\n  [ok] A5_has_counterexample\n  [ok] A8_missing_confirmed\ntest_axiom_independence: PASS  → data/707_axiom_independence_test.json",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S14",
+    "area": "paper2",
+    "cmd": "python tools/asset_capabilities.py --validate",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "== 707-B 零成本改进落地验证（只读，detect_calls=0）==\n  P1 零产资产 catch 合计=0；OR 8 资产=61.6391% vs 6 资产=61.6391% ⇒ Δ=0.0pp  hold=True\n  P2 Δunknown：unaware=0.0pp vs aware=75.265pp  hold=True\n  P3 OR Δ=0.0pp（免疫）；mean 稀释因子=1.333331 hold=True\n  抗漂移评分（700-D）：53.05 → 66.67\n  ALL_CLAIMS_HOLD = True  → data/707_zero_cost_landing_validation.json",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S15",
+    "area": "paper2",
+    "cmd": "python tools/sample_size_calculator.py --type II",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "== 707-D 配对样本量（700-C）==\n  psi=0.35335689045936397  eps=0.35335689045936397  pi=1.0\n  所需不一致对 m=6  所需样本 n=17\n  可由配对设计检出=True  （完全单向（π=1.0）⇒ 精确二项判据 m ≥ log(α/2)/log(1/2)=6（正态近似退化））\n  与 700-C 一致（期望 17）= True",
+    "stderr_tail": ""
+  },
+  {
+    "id": "S16",
+    "area": "anon",
+    "cmd": "python tools/sanitize_annotation_key_paths_712.py --check",
+    "cwd": ".",
+    "exit": 0,
+    "stdout_tail": "[712-key] 警告：未提供 --root-name / QUEYI_UPSTREAM_ROOT_NAME，绝对路径将被整体替换为 'upstream-root/<path>'（尾部相对路径不保留）\n[712-key] 共 145 行；含宿主绝对路径的 src_path 去重后 0 条\n[712-key] PASS：无宿主绝对路径残留",
+    "stderr_tail": ""
+  }
+]
