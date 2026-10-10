@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queyi — Auditing C/C++ Static Analysis Evaluators</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1b1c; background: #fafaf8; }
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 24px; }
+  .hero { text-align: center; padding: 60px 0 40px; }
+  .hero h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+  .hero .tagline { font-size: 1.25em; color: #5f6670; max-width: 640px; margin: 0 auto 32px; }
+  .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .badge { background: #e8e6e0; padding: 6px 14px; border-radius: 20px; font-size: 0.85em; font-weight: 500; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 40px 0; }
+  .stat { background: white; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat .number { font-size: 2.2em; font-weight: 700; color: #c0392b; }
+  .stat .label { font-size: 0.9em; color: #5f6670; margin-top: 4px; }
+  section { margin: 48px 0; }
+  h2 { font-size: 1.6em; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e4e3dd; }
+  p { margin-bottom: 16px; }
+  .finding { background: #fff8e1; border-left: 4px solid #f39c12; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .finding strong { color: #d35400; }
+  code { background: #f0efe9; padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', Monaco, monospace; font-size: 0.9em; }
+  pre { background: #1a1b1c; color: #f0efe9; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 16px 0; }
+  pre code { background: none; color: inherit; padding: 0; }
+  .links { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0; }
+  .links a { display: inline-block; padding: 10px 20px; background: #1a1b1c; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: opacity 0.2s; }
+  .links a:hover { opacity: 0.85; }
+  .links a.secondary { background: #e4e3dd; color: #1a1b1c; }
+  footer { text-align: center; padding: 40px 0; color: #9aa0a6; font-size: 0.85em; border-top: 1px solid #e4e3dd; margin-top: 60px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <h1>Queyi</h1>
+  <p class="tagline">Auditing the Evaluator: When C/C++ Static Analysis Scores Change Across Measurement Configurations, You're Not Measuring Better Code — You're Measuring a Different Ruler.</p>
+  <div class="badges">
+    <span class="badge">C/C++</span>
+    <span class="badge">Static Analysis</span>
+    <span class="badge">Evaluation Methodology</span>
+    <span class="badge">Open Source</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="number">35.45pp</div>
+    <div class="label">Drop in detection rate when measurement environment changes (60.07% → 24.74%)</div>
+  </div>
+  <div class="stat">
+    <div class="number">38.4%</div>
+    <div class="label">Sample types with &gt;50% blind spots across all 8 detection assets</div>
+  </div>
+  <div class="stat">
+    <div class="number">40</div>
+    <div class="label">Real CVE defect cases with reproducible builds</div>
+  </div>
+</div>
+
+<section>
+  <h2>The Problem</h2>
+  <p>When you benchmark static analysis tools, you assume the measurement itself is stable. It isn't.</p>
+  <p>We built <strong>Queyi</strong>, a framework that audits <em>the evaluator</em> — the measurement pipeline that produces your benchmark scores. We found that switching measurement configurations (OS, compiler flags, accounting rules) can move detection rates by <strong>35+ percentage points</strong> without changing a single line of code in the target program.</p>
+  <div class="finding">
+    <strong>Silent failure accounting:</strong> When a detection asset isn't run, naive accounting treats it as "no bug found" instead of "not measured." Unknown detections stay at 0.00pp — making the measurement look more stable than it is.
+  </div>
+</section>
+
+<section>
+  <h2>What We Found</h2>
+  <p><strong>1. Environmental drift is real and large.</strong> On 566 samples, switching from WSL to native Windows dropped joint-asset detection from 60.07% to 24.74% (McNemar p = 1.24e-60).</p>
+  <p><strong>2. Selection strategy gains are mostly budget effects.</strong> The reported +24pp advantage of asset selection over random baselines decomposes into +7.3pp budget tier, −5.1pp pool composition, and only a small residual. Equal-marginal substitution experiments confirm linker effects are near-zero once slot geometry is controlled.</p>
+  <p><strong>3. Blind spots are structural.</strong> 38.4% of defect types have &gt;50% no-capture rates across all 8 assets. This isn't a recall problem — it's a coverage problem.</p>
+</section>
+
+<section>
+  <h2>Quick Start</h2>
+  <pre><code>git clone https://github.com/yourusername/queyi-audit.git
+cd queyi-audit
+python -m pip install -e .
+python tools/verify_paper_numbers.py  # 130+ claims, 0 missing</code></pre>
+  <p>All key numbers are reproducible from frozen matrices — no re-running detectors required.</p>
+</section>
+
+<section>
+  <h2>Publications</h2>
+  <p><strong>Paper 1:</strong> Caliber Drift and Capability Boundaries in C/C++ Static Analysis Evaluation (under review)</p>
+  <p><strong>Paper 2:</strong> Measurement Drift Algebra: Axioms, Identifiability, and Sample Complexity (under review)</p>
+</section>
+
+<div class="links">
+  <a href="https://github.com/yourusername/queyi-audit">GitHub Repository</a>
+  <a href="#" class="secondary">Paper PDF (coming soon)</a>
+  <a href="#" class="secondary">Documentation</a>
+</div>
+
+<footer>
+  <p>Queyi is open-source research. All data, scripts, and frozen matrices are available for independent verification.</p>
+</footer>
+
+</div>
+</body>
+</html>

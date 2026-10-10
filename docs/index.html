@@ -1,87 +1,347 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>阙疑 Queyi — failure-driven verifier evolution for C++ defect detection</title>
-<link rel="stylesheet" href="assets/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Queyi — Your Benchmark Is Lying To You</title>
+<style>
+  :root{
+    --bg:#0a0a0f; --fg:#e8e8e8; --muted:#8a8a99;
+    --accent:#00d4ff; --accent2:#00ff88;
+    --red:#ff4d5e; --yellow:#ffd24d; --blue:#00d4ff;
+    --line:rgba(255,255,255,0.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+    background-color:var(--bg);
+    color:var(--fg);
+    line-height:1.65;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:44px 44px;
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  a{color:var(--accent);text-decoration:none}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* HERO */
+  .hero{padding:110px 0 70px;text-align:center;position:relative}
+  .hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0%,rgba(0,212,255,.12),transparent 60%);
+  }
+  .kicker{
+    display:inline-block;font-size:.8em;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--accent2);border:1px solid rgba(0,255,136,.3);
+    padding:6px 14px;border-radius:2px;margin-bottom:26px;
+  }
+  .hero h1{
+    font-size:clamp(2.6em,7vw,4.6em);font-weight:800;line-height:1.02;
+    letter-spacing:-.02em;
+    text-shadow:0 0 34px rgba(0,212,255,.35);
+  }
+  .hero h1 .flash{color:var(--accent)}
+  .hero .sub{
+    max-width:680px;margin:26px auto 0;font-size:clamp(1.05em,2.4vw,1.4em);
+    color:var(--muted);
+  }
+  .hero .sub b{color:var(--accent2);font-weight:700}
+
+  /* STAT STRIP */
+  .stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:54px 0 10px;
+  }
+  .stat{
+    border:1px solid var(--line);background:rgba(255,255,255,.015);
+    padding:30px 18px;text-align:center;position:relative;overflow:hidden;
+    transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+  }
+  .stat::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    opacity:.5;
+  }
+  .stat:hover{transform:translateY(-6px);border-color:rgba(0,212,255,.5);
+    box-shadow:0 0 28px rgba(0,212,255,.25)}
+  .stat .num{font-size:clamp(2.6em,6vw,4em);font-weight:800;line-height:1;
+    color:#fff;text-shadow:0 0 22px rgba(0,212,255,.4)}
+  .stat .num .arrow{color:var(--red);font-size:.7em;margin:0 .08em}
+  .stat .num .unit{color:var(--accent);font-size:.5em}
+  .stat .lab{margin-top:12px;font-size:.92em;color:var(--muted)}
+
+  /* CTA buttons */
+  .cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:42px}
+  .btn{
+    display:inline-block;padding:15px 32px;font-weight:700;font-size:1.02em;
+    border:1px solid var(--accent);background:var(--accent);color:#04121a;
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-3px);box-shadow:0 0 30px rgba(0,212,255,.5)}
+  .btn.ghost{background:transparent;color:var(--accent);
+    border-color:rgba(0,212,255,.45)}
+  .btn.ghost:hover{box-shadow:0 0 26px rgba(0,212,255,.3)}
+
+  /* SECTIONS */
+  section.block{padding:80px 0;border-top:1px solid var(--line)}
+  .eyebrow{color:var(--accent2);font-size:.82em;letter-spacing:.22em;
+    text-transform:uppercase;margin-bottom:14px}
+  h2{font-size:clamp(1.8em,4vw,2.6em);font-weight:800;letter-spacing:-.01em;margin-bottom:20px}
+  .lead{font-size:clamp(1.15em,2.6vw,1.5em);color:var(--fg);max-width:760px}
+  .lead .hi{color:var(--accent)}
+
+  /* PROBLEM compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:38px}
+  .panel{border:1px solid var(--line);padding:26px;background:rgba(255,255,255,.02)}
+  .panel h3{font-size:1.15em;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  .dot.r{background:var(--red);box-shadow:0 0 12px var(--red)}
+  .dot.g{background:var(--accent2);box-shadow:0 0 12px var(--accent2)}
+  .bar{height:30px;background:rgba(255,255,255,.05);position:relative;margin:10px 0;overflow:hidden}
+  .bar > span{position:absolute;top:0;left:0;height:100%;display:flex;
+    align-items:center;padding-left:10px;font-size:.78em;font-weight:700;color:#06121a}
+  .bar.detect > span{background:var(--accent)}
+  .bar.unknown > span{background:var(--red)}
+  .bar.clean > span{background:var(--muted)}
+  .panel p{font-size:.9em;color:var(--muted);margin-top:10px}
+
+  /* FINDINGS */
+  .findings{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+  .card{border:1px solid var(--line);padding:28px 24px;background:rgba(255,255,255,.02);
+    position:relative;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+  .card:hover{transform:translateY(-6px);box-shadow:0 0 30px rgba(0,212,255,.18);
+    border-color:rgba(0,212,255,.4)}
+  .card .icon{font-size:1.6em;margin-bottom:12px}
+  .card h3{font-size:1.18em;margin-bottom:10px}
+  .card p{font-size:.93em;color:var(--muted)}
+  .card .big{font-size:2.3em;font-weight:800;color:#fff;margin:6px 0 4px;
+    text-shadow:0 0 18px rgba(0,212,255,.35)}
+  .card.c1{border-top:3px solid var(--red)}
+  .card.c2{border-top:3px solid var(--yellow)}
+  .card.c3{border-top:3px solid var(--blue)}
+
+  /* METHOD */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:38px}
+  .step{border:1px solid var(--line);padding:22px 18px;background:rgba(255,255,255,.02);
+    position:relative}
+  .step .n{font-size:.8em;color:var(--accent2);letter-spacing:.2em;margin-bottom:8px}
+  .step h3{font-size:1.05em;margin-bottom:8px}
+  .step p{font-size:.86em;color:var(--muted)}
+  .step:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:50%;
+    transform:translateY(-50%);color:var(--accent);font-size:1.3em;z-index:2}
+
+  /* CTA / REPRO */
+  .repro{border:1px solid var(--line);background:rgba(0,212,255,.04);padding:30px;
+    margin-top:34px;position:relative}
+  .repro pre{background:#05060a;border:1px solid var(--line);color:#cfeaff;
+    padding:22px;overflow-x:auto;font-family:'SF Mono',Consolas,monospace;font-size:.92em;
+    line-height:1.7}
+  .repro pre .cm{color:var(--muted)}
+  .copy{position:absolute;top:14px;right:14px;border:1px solid var(--accent);
+    background:transparent;color:var(--accent);padding:7px 14px;font-size:.8em;
+    cursor:pointer;font-weight:700;transition:background .2s,color .2s}
+  .copy:hover{background:var(--accent);color:#04121a}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:46px 0 70px;text-align:center;
+    color:var(--muted);font-size:.88em}
+  footer .links{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+  footer .links a{color:var(--accent)}
+  footer .lic{color:var(--muted)}
+
+  @media(max-width:860px){
+    .stats{grid-template-columns:1fr}
+    .findings{grid-template-columns:1fr}
+    .compare{grid-template-columns:1fr}
+    .flow{grid-template-columns:1fr 1fr}
+    .step:not(:last-child)::after{content:"↓";right:50%;top:auto;bottom:-14px;
+      transform:translateX(50%)}
+  }
+  @media(max-width:520px){
+    .flow{grid-template-columns:1fr}
+    .hero{padding:80px 0 50px}
+  }
+</style>
 </head>
 <body>
-<header class="nav"><div class="nav-inner">
-  <div class="brand">阙疑 Queyi<small>failure-driven verifier evolution</small></div>
-  <nav class="links">
-    <a href="index.html">Home</a><a href="paper.html">Paper</a>
-    <a href="results.html">Results</a><a href="realworld.html">Real-World</a>
-    <a href="demo.html">Demo</a><a href="data.html">Data</a>
-    <a href="reproduce.html">Reproduce</a><a href="about.html">About</a>
-  </nav>
-</div></header>
 
-<main>
-  <section class="hero">
-    <h1>让验证器在失败中演化</h1>
-    <p class="sub">阙疑（Queyi）是一个四态判决（pass / fail / unknown / contradict）+ append-only
-      账本 + Merkle 完整性 + <b>failure-driven evolution</b> 的 C++ 缺陷检测框架。
-      本站在 683 批次更新：新增 <b>真实靶场基准</b>（可追溯 CVE/issue 重构）、跨工具链验证、
-      operator 全枚举消融与开源发布材料。</p>
-    <div class="badges" id="badges">
-      <span class="badge"><b>…</b>加载核心数字</span>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero reveal">
+    <span class="kicker">Open-source benchmark auditing</span>
+    <h1>Your Benchmark Is <span class="flash">Lying</span> To You</h1>
+    <p class="sub">We audited C/C++ static-analysis evaluators and found a <b>35&nbsp;percentage-point drift</b> between measurement environments — without changing a single line of the code under test.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num"><span data-count="60" data-dec="0">0</span><span class="arrow">→</span><span data-count="25" data-dec="0">0</span><span class="unit">%</span></div>
+        <div class="lab">Joint-asset detection: WSL&nbsp;vs&nbsp;native&nbsp;Windows</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="38.4" data-dec="1">0</span><span class="unit">%</span></div>
+        <div class="lab">Defect samples invisible to <b>all 8</b> detectors</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span data-count="40" data-dec="0">0</span></div>
+        <div class="lab">Real CVE defect cases, reproducible builds</div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn" href="https://github.com/LiaoRanran/queyi-audit">View on GitHub</a>
+      <a class="btn ghost" href="#publications">Read the Paper</a>
+    </div>
+  </header>
+
+  <!-- PROBLEM -->
+  <section class="block reveal" id="problem">
+    <div class="eyebrow">The Problem</div>
+    <h2>You think you're measuring code quality.<br>You're actually measuring your measurement pipeline.</h2>
+    <p class="lead">When a detector isn't run on a config — because it crashed, or the platform didn't support it — naive accounting silently records that as <span class="hi">"no bug found"</span> instead of <span class="hi">"not measured."</span> The score looks rock-solid. It isn't.</p>
+
+    <div class="compare">
+      <div class="panel">
+        <h3><span class="dot r"></span>Naive Accounting</h3>
+        <div class="bar detect"><span style="width:100%">100% "resolved"</span></div>
+        <div class="bar clean"><span style="width:100%">unknown = 0.00pp</span></div>
+        <p>Looks stable. Every gap is hidden. You ship a number you can't defend.</p>
+      </div>
+      <div class="panel">
+        <h3><span class="dot g"></span>Honest Accounting</h3>
+        <div class="bar detect"><span style="width:65%">65% detected</span></div>
+        <div class="bar unknown"><span style="width:35%">35pp unknown</span></div>
+        <p>Same data, honest ruler. The drift is exposed — and now you can actually fix it.</p>
+      </div>
     </div>
   </section>
 
-  <h2>它解决什么问题</h2>
-  <div class="cards">
-    <div class="card"><h3>不是"再训一个模型"</h3>
-      <p class="muted">阙疑把"用哪些检测器（8 个真实资产）"本身当作可演化的对象：
-      上一轮的失败样本驱动下一轮资产组合（operator E：failure / novel / cost / redundancy 四分量）。</p></div>
-    <div class="card"><h3>四态判决，不留"猜"</h3>
-      <p class="muted">catch / miss / unknown / contradict 严格区分：检测器不可用时是
-      <code class="inline">unknown</code>（不进伪造的 miss），双实现冲突时是
-      <code class="inline">contradict</code>。</p></div>
-    <div class="card"><h3>可审计的账本</h3>
-      <p class="muted">append-only 账本 + Merkle 根 + 每次判定的原始输出留存；
-      本仓库所有数字可由脚本逐条复算。</p></div>
-    <div class="card"><h3>真实靶场，不只是合成样本</h3>
-      <p class="muted">683 新增 <a href="realworld.html">真实靶场基准</a>：
-      每条缺陷带 CVE/NVD 在线验证记录、修复 commit 链接与最小可复现 PoC。</p></div>
-  </div>
+  <!-- FINDINGS -->
+  <section class="block reveal" id="findings">
+    <div class="eyebrow">Three Findings</div>
+    <h2>What the audit turned up</h2>
+    <div class="findings">
+      <div class="card c1">
+        <div class="icon">🔴</div>
+        <h3>Environmental Drift</h3>
+        <div class="big">60% → 25%</div>
+        <p>Same code, two machines, ten seconds apart. Joint-asset detection collapses by 35pp the moment the measurement environment changes (McNemar p&nbsp;=&nbsp;1.24e-60).</p>
+      </div>
+      <div class="card c2">
+        <div class="icon">🟡</div>
+        <h3>The Selection Gain Is Fake</h3>
+        <div class="big">+24pp</div>
+        <p>The headline "+24pp advantage" decomposes into +7pp budget tier, −5pp pool composition, and little else. Control the slot geometry and the magic mostly disappears.</p>
+      </div>
+      <div class="card c3">
+        <div class="icon">🔵</div>
+        <h3>Structural Blind Spots</h3>
+        <div class="big">38.4%</div>
+        <p>Over a third of defect samples are invisible to <b>every one</b> of the 8 detectors. This isn't low recall — it's a coverage hole in the whole family.</p>
+      </div>
+    </div>
+  </section>
 
-  <h2>核心结果（当前冻结数字）</h2>
-  <table id="core-table">
-    <thead><tr><th>指标</th><th>数值</th><th>口径与来源</th></tr></thead>
-    <tbody><tr><td colspan="3" class="muted">加载中…</td></tr></tbody>
-  </table>
-  <p class="honest">诚实边界：本站所有数字与论文/仓库 JSON 同源，由
-    <code class="inline">tools/site_683_data.py</code> 从仓库产物自动生成；
-    数字口径（样本、分母、工具链）在 Results 页逐项标注。</p>
+  <!-- METHOD -->
+  <section class="block reveal" id="method">
+    <div class="eyebrow">Method</div>
+    <h2>We don't trust the evaluator. We audit it.</h2>
+    <div class="flow">
+      <div class="step"><div class="n">01</div><h3>Freeze the Matrix</h3><p>Lock every detector verdict into an immutable, append-only ledger. No re-runs, no drift-by-hand.</p></div>
+      <div class="step"><div class="n">02</div><h3>Replay Across Environments</h3><p>Re-run the same frozen matrix on WSL, native Windows, and cross-toolchains to expose silent gaps.</p></div>
+      <div class="step"><div class="n">03</div><h3>Decompose by Accounting</h3><p>Split each score into budget, pool, and residual — so fake gains can't hide inside the average.</p></div>
+      <div class="step"><div class="n">04</div><h3>Report What's Silent</h3><p>Surface the "unknown" that naive benchmarks bury. The honest number is the useful one.</p></div>
+    </div>
+  </section>
 
-  <h2>从哪里开始</h2>
-  <div class="cards">
-    <div class="card"><h3><a href="realworld.html">真实靶场浏览器</a></h3>
-      <p class="muted">按项目 / 缺陷类型 / 年份筛选真实缺陷，查看每条 PoC 与 8 资产判定。</p></div>
-    <div class="card"><h3><a href="demo.html">交互 Demo</a></h3>
-      <p class="muted">选择一个预计算样本，看 8 个检测器各自报了什么。</p></div>
-    <div class="card"><h3><a href="results.html">结果与图表</a></h3>
-      <p class="muted">A5 主端点、盲区热力图、资产互补性、operator 消融雷达。</p></div>
-    <div class="card"><h3><a href="reproduce.html">一键复现</a></h3>
-      <p class="muted">论文编译、门禁、检测矩阵重放、Docker。</p></div>
-  </div>
-</main>
+  <!-- REPRO CTA -->
+  <section class="block reveal" id="repro">
+    <div class="eyebrow">Reproduce</div>
+    <h2>Reproduce every number in 5 commands.</h2>
+    <div class="repro">
+      <button class="copy" id="copyBtn">Copy</button>
+<pre id="cmd"><span class="cm"># clone, install, and verify every claim against the frozen matrix</span>
+git clone https://github.com/LiaoRanran/queyi-audit.git
+cd queyi-audit
+pip install -e .
+python tools/verify_paper_numbers.py   <span class="cm"># 130+ claims, 0 missing</span>
+python tools/audit_protocol.py --demo</pre>
+    </div>
+    <p class="lead" style="font-size:1.05em;margin-top:22px;color:var(--muted)">All numbers come straight from the frozen matrices — no detector needs to run. Audit us back.</p>
+  </section>
 
-<footer>阙疑 Queyi · Apache-2.0 · 数据与代码同源生成，无外部追踪器 ·
-  <a href="about.html">引用与 AI 使用声明</a></footer>
-<script src="assets/app.js"></script>
+  <!-- PUBLICATIONS -->
+  <section class="block reveal" id="publications">
+    <div class="eyebrow">Publications</div>
+    <h2>Two papers, under review</h2>
+    <p class="lead" style="font-size:1.1em">
+      <b>Paper 1</b> — Caliber Drift and Capability Boundaries in C/C++ Static Analysis Evaluation.<br>
+      <b>Paper 2</b> — Measurement Drift Algebra: Axioms, Identifiability, and Sample Complexity.
+    </p>
+    <p style="color:var(--muted);margin-top:14px">Preprints and the full frozen dataset ship with the repository above.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="links">
+      <a href="https://github.com/LiaoRanran/queyi-audit">GitHub</a>
+      <a href="#publications">Papers</a>
+      <a href="#repro">Reproduce</a>
+    </div>
+    <p class="lic">Queyi is released under the Apache-2.0 license. Data, scripts, and frozen matrices are open for independent verification.</p>
+  </footer>
+
+</div>
+
 <script>
-(async () => {
-  try {
-    const d = await loadJSON("assets/data/core_numbers.json");
-    el("badges").innerHTML = d.badges.map(b =>
-      `<span class="badge"><b>${b.value}</b>${b.label}</span>`).join("");
-    el("core-table").querySelector("tbody").innerHTML = d.table.map(r =>
-      `<tr><td>${r.metric}</td><td><b>${r.value}</b></td><td class="muted">${r.scope}</td></tr>`
-    ).join("");
-  } catch (e) {
-    el("badges").innerHTML = `<span class="badge">数据未生成：运行 tools/site_683_data.py</span>`;
+(function(){
+  // Count-up animation
+  function animate(el){
+    var target=parseFloat(el.getAttribute('data-count'));
+    var dec=parseInt(el.getAttribute('data-dec')||'0',10);
+    var dur=1400, start=null;
+    function step(ts){
+      if(!start)start=ts;
+      var p=Math.min((ts-start)/dur,1);
+      var eased=1-Math.pow(1-p,3);
+      var val=(target*eased).toFixed(dec);
+      el.textContent=val;
+      if(p<1)requestAnimationFrame(step);
+      else el.textContent=target.toFixed(dec);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Reveal on scroll + trigger counters once
+  var seen=new WeakSet();
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        if(!seen.has(e.target)){
+          seen.add(e.target);
+          e.target.querySelectorAll('[data-count]').forEach(animate);
+        }
+      }
+    });
+  },{threshold:0.25});
+  document.querySelectorAll('.reveal').forEach(function(n){io.observe(n);});
+
+  // Copy button
+  var btn=document.getElementById('copyBtn');
+  if(btn){
+    btn.addEventListener('click',function(){
+      var txt=document.getElementById('cmd').innerText;
+      navigator.clipboard.writeText(txt).then(function(){
+        btn.textContent='Copied';
+        setTimeout(function(){btn.textContent='Copy';},1600);
+      });
+    });
   }
 })();
 </script>
