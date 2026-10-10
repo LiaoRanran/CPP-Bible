@@ -1,0 +1,729 @@
+{
+ "schema": "queyi-715/equal-marginal-factorial/v1",
+ "generated_by": "tools/compute_715_equal_marginal_factorial.py",
+ "generated_at": "2026-10-10T14:47:41+08:00",
+ "detect_calls": 0,
+ "source_matrix": "data/a5_676f_detection_matrix.json",
+ "frame": {
+  "split": "evaluation",
+  "n": 566
+ },
+ "design": {
+  "type": "2^4 full factorial, equal-marginal substitution",
+  "factors": {
+   "accounting": [
+    "naive",
+    "aware"
+   ],
+   "pool": [
+    "full8",
+    "noZ"
+   ],
+   "linker": [
+    "with",
+    "without_slotctrl"
+   ],
+   "k": [
+    "k1",
+    "k4"
+   ]
+  },
+  "response": "Delta = rate(selected) - exact_expectation[rate(random)] (pp)",
+  "slot_control": "removing linker substitutes an all-miss synthetic column (ZERO_cell) so that |pool| and k are unchanged"
+ },
+ "cells": {
+  "naive|full8|with|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "rate_selected_pct": 56.0071,
+   "rate_random_pct": 40.1136,
+   "delta_pp": 15.8935,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "k": 4,
+   "accounting": "naive",
+   "pool": "full8",
+   "linker": "with",
+   "k_level": "k4"
+  },
+  "aware|full8|with|k4": {
+   "selected": [
+    "asan",
+    "wunsequenced",
+    "ubsan",
+    "tsan"
+   ],
+   "rate_selected_pct": 100.0,
+   "rate_random_pct": 89.1103,
+   "delta_pp": 10.8897,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "k": 4,
+   "accounting": "aware",
+   "pool": "full8",
+   "linker": "with",
+   "k_level": "k4"
+  },
+  "naive|noZ|with|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "rate_selected_pct": 56.0071,
+   "rate_random_pct": 48.3863,
+   "delta_pp": 7.6207,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "k": 4,
+   "accounting": "naive",
+   "pool": "noZ",
+   "linker": "with",
+   "k_level": "k4"
+  },
+  "aware|noZ|with|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "rate_selected_pct": 56.4899,
+   "rate_random_pct": 49.1812,
+   "delta_pp": 7.3087,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "k": 4,
+   "accounting": "aware",
+   "pool": "noZ",
+   "linker": "with",
+   "k_level": "k4"
+  },
+  "naive|full8|without_slotctrl|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "rate_selected_pct": 56.0071,
+   "rate_random_pct": 39.7602,
+   "delta_pp": 16.2468,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "ZERO_cell",
+    "compile-time"
+   ],
+   "k": 4,
+   "accounting": "naive",
+   "pool": "full8",
+   "linker": "without_slotctrl",
+   "k_level": "k4"
+  },
+  "aware|full8|without_slotctrl|k4": {
+   "selected": [
+    "asan",
+    "wunsequenced",
+    "ubsan",
+    "tsan"
+   ],
+   "rate_selected_pct": 100.0,
+   "rate_random_pct": 89.0553,
+   "delta_pp": 10.9447,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "ZERO_cell",
+    "compile-time"
+   ],
+   "k": 4,
+   "accounting": "aware",
+   "pool": "full8",
+   "linker": "without_slotctrl",
+   "k_level": "k4"
+  },
+  "naive|noZ|without_slotctrl|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn"
+   ],
+   "rate_selected_pct": 56.0071,
+   "rate_random_pct": 47.9152,
+   "delta_pp": 8.0919,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "ZERO_cell"
+   ],
+   "k": 4,
+   "accounting": "naive",
+   "pool": "noZ",
+   "linker": "without_slotctrl",
+   "k_level": "k4"
+  },
+  "aware|noZ|without_slotctrl|k4": {
+   "selected": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "cross-compile"
+   ],
+   "rate_selected_pct": 56.4899,
+   "rate_random_pct": 48.9247,
+   "delta_pp": 7.5653,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "ZERO_cell"
+   ],
+   "k": 4,
+   "accounting": "aware",
+   "pool": "noZ",
+   "linker": "without_slotctrl",
+   "k_level": "k4"
+  },
+  "naive|full8|with|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.0389,
+   "rate_random_pct": 13.0521,
+   "delta_pp": 19.9867,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "k": 1,
+   "accounting": "naive",
+   "pool": "full8",
+   "linker": "with",
+   "k_level": "k1"
+  },
+  "aware|full8|with|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.274,
+   "rate_random_pct": 13.1901,
+   "delta_pp": 20.084,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "linker",
+    "compile-time"
+   ],
+   "k": 1,
+   "accounting": "aware",
+   "pool": "full8",
+   "linker": "with",
+   "k_level": "k1"
+  },
+  "naive|noZ|with|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.0389,
+   "rate_random_pct": 17.4028,
+   "delta_pp": 15.636,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "k": 1,
+   "accounting": "naive",
+   "pool": "noZ",
+   "linker": "with",
+   "k_level": "k1"
+  },
+  "aware|noZ|with|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.274,
+   "rate_random_pct": 17.5867,
+   "delta_pp": 15.6873,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "k": 1,
+   "accounting": "aware",
+   "pool": "noZ",
+   "linker": "with",
+   "k_level": "k1"
+  },
+  "naive|full8|without_slotctrl|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.0389,
+   "rate_random_pct": 12.9638,
+   "delta_pp": 20.0751,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "ZERO_cell",
+    "compile-time"
+   ],
+   "k": 1,
+   "accounting": "naive",
+   "pool": "full8",
+   "linker": "without_slotctrl",
+   "k_level": "k1"
+  },
+  "aware|full8|without_slotctrl|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.274,
+   "rate_random_pct": 13.1017,
+   "delta_pp": 20.1723,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "wunsequenced",
+    "cross-compile",
+    "ZERO_cell",
+    "compile-time"
+   ],
+   "k": 1,
+   "accounting": "aware",
+   "pool": "full8",
+   "linker": "without_slotctrl",
+   "k_level": "k1"
+  },
+  "naive|noZ|without_slotctrl|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.0389,
+   "rate_random_pct": 17.285,
+   "delta_pp": 15.7538,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "ZERO_cell"
+   ],
+   "k": 1,
+   "accounting": "naive",
+   "pool": "noZ",
+   "linker": "without_slotctrl",
+   "k_level": "k1"
+  },
+  "aware|noZ|without_slotctrl|k1": {
+   "selected": [
+    "asan"
+   ],
+   "rate_selected_pct": 33.274,
+   "rate_random_pct": 17.469,
+   "delta_pp": 15.8051,
+   "pool_effective": [
+    "asan",
+    "ubsan",
+    "tsan",
+    "compiler-warn",
+    "cross-compile",
+    "ZERO_cell"
+   ],
+   "k": 1,
+   "accounting": "aware",
+   "pool": "noZ",
+   "linker": "without_slotctrl",
+   "k_level": "k1"
+  }
+ },
+ "degenerate_cells": [
+  "aware|full8|with|k4",
+  "aware|full8|without_slotctrl|k4",
+  "aware|full8|with|k1",
+  "aware|full8|without_slotctrl|k1"
+ ],
+ "degeneracy_note": "aware 记账 + full8 池：未捕获样本的池化裁决为 unknown（两个资产全 unknown）⇒ 分母 catch+miss 塌缩为 catch ⇒ rate 构造性地 =100%。这是 692 批登记的『反向分母病理』，不是数值错误；该 4 格在解读 accounting 主效应时必须单列。",
+ "yates_effects_pp": {
+  "accounting": -1.3559,
+  "pool": -5.103,
+  "accounting+pool": 1.1719,
+  "linker": 0.1935,
+  "accounting+linker": -0.0641,
+  "pool+linker": 0.0473,
+  "accounting+pool+linker": 0.0105,
+  "k": 7.3299,
+  "accounting+k": 1.4302,
+  "pool+k": 0.744,
+  "accounting+pool+k": -1.1949,
+  "linker+k": -0.0905,
+  "accounting+linker+k": 0.0641,
+  "pool+linker+k": -0.0326,
+  "accounting+pool+linker+k": -0.0105
+ },
+ "yates_effects_on_selected_rate_pp": {
+  "accounting": 11.2365,
+  "pool": -10.8775,
+  "accounting+pool": -10.8775,
+  "linker": 0.0,
+  "accounting+linker": 0.0,
+  "pool+linker": 0.0,
+  "accounting+pool+linker": 0.0,
+  "k": -33.9696,
+  "accounting+k": -11.0014,
+  "pool+k": 10.8775,
+  "accounting+pool+k": 10.8775,
+  "linker+k": 0.0,
+  "accounting+linker+k": 0.0,
+  "pool+linker+k": 0.0,
+  "accounting+pool+linker+k": 0.0
+ },
+ "anova": {
+  "note": "单次重复：效应 = contrast/8；SS = effect^2*4；F 以 4 阶交互为误差（df=1）",
+  "SS_total": 348.2559,
+  "SS_error_term": "accounting+pool+linker+k",
+  "SS_error": 0.0004,
+  "rows": [
+   {
+    "term": "k",
+    "effect_pp": 7.3299,
+    "SS": 214.9097,
+    "SS_share_pct": 61.71,
+    "F_vs_4way": 537274.25
+   },
+   {
+    "term": "pool",
+    "effect_pp": -5.103,
+    "SS": 104.1624,
+    "SS_share_pct": 29.91,
+    "F_vs_4way": 260406.0
+   },
+   {
+    "term": "accounting+k",
+    "effect_pp": 1.4302,
+    "SS": 8.1819,
+    "SS_share_pct": 2.35,
+    "F_vs_4way": 20454.75
+   },
+   {
+    "term": "accounting",
+    "effect_pp": -1.3559,
+    "SS": 7.3539,
+    "SS_share_pct": 2.11,
+    "F_vs_4way": 18384.75
+   },
+   {
+    "term": "accounting+pool+k",
+    "effect_pp": -1.1949,
+    "SS": 5.7111,
+    "SS_share_pct": 1.64,
+    "F_vs_4way": 14277.75
+   },
+   {
+    "term": "accounting+pool",
+    "effect_pp": 1.1719,
+    "SS": 5.4934,
+    "SS_share_pct": 1.58,
+    "F_vs_4way": 13733.5
+   },
+   {
+    "term": "pool+k",
+    "effect_pp": 0.744,
+    "SS": 2.2141,
+    "SS_share_pct": 0.64,
+    "F_vs_4way": 5535.25
+   },
+   {
+    "term": "linker",
+    "effect_pp": 0.1935,
+    "SS": 0.1498,
+    "SS_share_pct": 0.04,
+    "F_vs_4way": 374.5
+   },
+   {
+    "term": "linker+k",
+    "effect_pp": -0.0905,
+    "SS": 0.0328,
+    "SS_share_pct": 0.01,
+    "F_vs_4way": 82.0
+   },
+   {
+    "term": "accounting+linker",
+    "effect_pp": -0.0641,
+    "SS": 0.0164,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 41.0
+   },
+   {
+    "term": "accounting+linker+k",
+    "effect_pp": 0.0641,
+    "SS": 0.0164,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 41.0
+   },
+   {
+    "term": "pool+linker",
+    "effect_pp": 0.0473,
+    "SS": 0.0089,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 22.25
+   },
+   {
+    "term": "pool+linker+k",
+    "effect_pp": -0.0326,
+    "SS": 0.0043,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 10.75
+   },
+   {
+    "term": "accounting+pool+linker",
+    "effect_pp": 0.0105,
+    "SS": 0.0004,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 1.0
+   },
+   {
+    "term": "accounting+pool+linker+k",
+    "effect_pp": -0.0105,
+    "SS": 0.0004,
+    "SS_share_pct": 0.0,
+    "F_vs_4way": 1.0
+   }
+  ]
+ },
+ "bootstrap": {
+  "B": 400,
+  "seed": 7150,
+  "by_term": {
+   "accounting": {
+    "mean_pp": -1.2979,
+    "sd_pp": 0.3483,
+    "ci95_pp": [
+     -1.9794,
+     -0.6321
+    ],
+    "crosses_zero": false
+   },
+   "pool": {
+    "mean_pp": -4.9815,
+    "sd_pp": 0.1565,
+    "ci95_pp": [
+     -5.262,
+     -4.6608
+    ],
+    "crosses_zero": false
+   },
+   "accounting+pool": {
+    "mean_pp": 1.2954,
+    "sd_pp": 0.2648,
+    "ci95_pp": [
+     0.7911,
+     1.8714
+    ],
+    "crosses_zero": false
+   },
+   "linker": {
+    "mean_pp": 0.1929,
+    "sd_pp": 0.0923,
+    "ci95_pp": [
+     0.0481,
+     0.3894
+    ],
+    "crosses_zero": false
+   },
+   "accounting+linker": {
+    "mean_pp": -0.064,
+    "sd_pp": 0.0308,
+    "ci95_pp": [
+     -0.1312,
+     -0.0158
+    ],
+    "crosses_zero": false
+   },
+   "pool+linker": {
+    "mean_pp": 0.0471,
+    "sd_pp": 0.0225,
+    "ci95_pp": [
+     0.0116,
+     0.0961
+    ],
+    "crosses_zero": false
+   },
+   "accounting+pool+linker": {
+    "mean_pp": 0.0104,
+    "sd_pp": 0.005,
+    "ci95_pp": [
+     0.0024,
+     0.0213
+    ],
+    "crosses_zero": false
+   },
+   "k": {
+    "mean_pp": 7.0447,
+    "sd_pp": 1.4593,
+    "ci95_pp": [
+     4.255,
+     9.7987
+    ],
+    "crosses_zero": false
+   },
+   "accounting+k": {
+    "mean_pp": 1.3713,
+    "sd_pp": 0.3429,
+    "ci95_pp": [
+     0.7072,
+     2.0441
+    ],
+    "crosses_zero": false
+   },
+   "pool+k": {
+    "mean_pp": 0.6236,
+    "sd_pp": 0.2124,
+    "ci95_pp": [
+     0.1643,
+     1.0036
+    ],
+    "crosses_zero": false
+   },
+   "accounting+pool+k": {
+    "mean_pp": -1.3184,
+    "sd_pp": 0.2653,
+    "ci95_pp": [
+     -1.9098,
+     -0.8191
+    ],
+    "crosses_zero": false
+   },
+   "linker+k": {
+    "mean_pp": -0.0901,
+    "sd_pp": 0.0431,
+    "ci95_pp": [
+     -0.1832,
+     -0.0223
+    ],
+    "crosses_zero": false
+   },
+   "accounting+linker+k": {
+    "mean_pp": 0.064,
+    "sd_pp": 0.0308,
+    "ci95_pp": [
+     0.0158,
+     0.1312
+    ],
+    "crosses_zero": false
+   },
+   "pool+linker+k": {
+    "mean_pp": -0.0324,
+    "sd_pp": 0.0155,
+    "ci95_pp": [
+     -0.0666,
+     -0.0079
+    ],
+    "crosses_zero": false
+   },
+   "accounting+pool+linker+k": {
+    "mean_pp": -0.0104,
+    "sd_pp": 0.005,
+    "ci95_pp": [
+     -0.0213,
+     -0.0024
+    ],
+    "crosses_zero": false
+   }
+  }
+ },
+ "sensitivity_naive_only_2x2x2": {
+  "note": "只取 naive 记账的 8 格（排除退化格），去 accounting 后的 2^3 效应",
+  "effects_pp": {
+   "pool": -6.2749,
+   "linker": 0.2577,
+   "pool+linker": 0.0368,
+   "k": 5.8997,
+   "pool+k": 1.9389,
+   "linker+k": -0.1546,
+   "pool+linker+k": -0.0221
+  }
+ },
+ "aux_expectation_caliber": {
+  "frame": "evaluation",
+  "n": 566,
+  "delta_vs_expectation_pp": 15.8935,
+  "delta_single_draw_mean_pp": 16.108,
+  "delta_single_draw_p05_pp": 4.2403,
+  "delta_single_draw_p95_pp": 32.5088,
+  "delta_single_draw_max_pp": 43.4629,
+  "gap_single_minus_expectation_pp": 0.2146
+ }
+}
