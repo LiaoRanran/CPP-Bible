@@ -229,27 +229,70 @@ def main(argv: list[str] | None = None) -> int:
               f"  → {args.a8_out.relative_to(ROOT).as_posix()}")
         return 0 if a8["pass"] else 1
 
-    # A8（标签轴闭包）占位：现有 7 公理系统无标签槽 ⇒ Type III 不可表达。
-    a8_placeholder = {
+    # 715：把 707 的「A8 占位 = MISSING / TODO」替换为**与 710-A1 实测一致的**状态块。
+    #
+    # 为什么必须改（评审阻塞项）：707 写的 `status: "MISSING / TODO"` 描述的是 707 当时
+    # 的状态（A8 尚未可验证）。710-A1 之后同一个 JSON 里已经多出 `a8_test_710`（穷举通过、
+    # 结论「A8 是必需的公理」）。两个字段并存 ⇒ 同一份产物自相矛盾，而论文引用的是
+    # "three of the eight carry independent content"，于是出现「论文说三份、产物说两份」的
+    # 直接冲突。715 把它改成**论域分离**的显式记账。
+    core_incompleteness_witness = {
         "axiom": "A8（标签轴闭包）",
-        "status": "MISSING / TODO",
+        # 715：不再是 "MISSING / TODO"（那是 707 的时点状态）。这里描述的是
+        # 「七公理核为何不完备」这一**仍然成立**的事实。
+        "status": "incompleteness_witness_of_the_seven_axiom_core",
+        "superseded_by": "a8_test_710（710-A1 已给出 A8 的穷举验证）",
         "why": completeness["conclusion"],
-        "cannot_auto_verify_reason": (
-            "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；本穷举域（覆盖 + 聚合）"
-            "无法表达它 ⇒ 只能以「未声明 λ 的分组统计不可比较」这一规则人工/规范约束，"
-            "无法像 A2/A5 那样给出结构反例。"
+        "cannot_auto_verify_reason_in_coverage_domain": (
+            "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；覆盖 + 聚合的穷举域"
+            "无法表达它 ⇒ 在该域内无法像 A2/A5 那样给出结构反例。"
+            "710-A1 的处置是**换论域**：λ 的论域是 X 上的标签映射（划分），可以穷举。"
         ),
         "candidate_formalization": completeness["missing_axiom_candidate"],
     }
 
     a8 = a8_label_axis_test(cm700)
+
+    # ★ 715 新增：论域分离的公理记账。论文与产物都引用这一块，避免两处口径打架。
+    axiom_status = {
+        "core_seven": {
+            "scope": "coverage structures（4096 结构 × 7 聚合族）",
+            "independent_axioms": cls["genuine_axioms"],      # A2, A5
+            "theorems": cls["theorems"],                      # A3, A4, A6, A7
+            "meta_requirement": EXPECTED_META,                # A1（可枚举性）
+        },
+        "A8": {
+            "role": "added axiom（标签轴闭包），不属七公理核",
+            "scope": "X 上的标签映射 λ（|X|=4 的划分，Bell(4)=15）",
+            "necessity": "verified_by_exhaustive_enumeration_in_witness_domain",
+            "evidence": "a8_test_710：15 个 λ 使 A1–A7 的全部量不变而分组统计改变",
+            "on_working_corpus": (
+                "not_automatically_verified（|X|=1147、34 类词表只有**实测**证据："
+                "38.24/42.86/37.50%，可构造区间 [0%,97.06%]，下界是贪心界非已证最优）"
+            ),
+        },
+        # 论文里 "three of the eight carry independent content" 对应的正是这一行 **在各自论域内**
+        "independent_content_within_their_own_domain": ["A2", "A5", "A8"],
+        "domains_differ": True,
+        "note": (
+            "A2/A5 的独立性在覆盖结构域内穷举验证；A8 的独立性在标签映射域内穷举验证。"
+            "两者**不能**合为一句「七公理核里有三条独立公理」——核只有 A2/A5 两条。"
+        ),
+    }
+
     checks = {
         "only_A2_A5_genuine": cls["genuine_axioms"] == EXPECTED_GENUINE,
         "A3_A4_A6_A7_are_theorems": sorted(cls["theorems"]) == sorted(EXPECTED_THEOREMS),
         "A2_has_counterexample": len(cls["violating_aggregations"]["A2"]) >= 1,
         "A5_has_counterexample": len(cls["violating_aggregations"]["A5"]) >= 1,
-        "A8_missing_confirmed": bool(completeness.get("missing_axiom_candidate")),
-        "A8_label_axis_test_passes": a8["pass"],   # ★ 710-A1：A8 已可自动验证
+        "A8_missing_axiom_confirmed": bool(completeness.get("missing_axiom_candidate")),
+        "A8_label_axis_test_passes": a8["pass"],   # ★ 710-A1：A8 已可自动验证（限其自身论域）
+        # ★ 715 新增：产物必须把「论文说的三条」落到论域分离的记账上，否则又是两处口径
+        "independent_content_recorded_with_domains": (
+            axiom_status["independent_content_within_their_own_domain"] == ["A2", "A5", "A8"]
+            and axiom_status["domains_differ"] is True
+            and axiom_status["core_seven"]["independent_axioms"] == list(EXPECTED_GENUINE)
+        ),
     }
     ok = all(checks.values())
 
@@ -267,7 +310,8 @@ def main(argv: list[str] | None = None) -> int:
             "theorems": EXPECTED_THEOREMS,
             "meta_axioms": EXPECTED_META,
         },
-        "a8_placeholder": a8_placeholder,
+        "core_incompleteness_witness": core_incompleteness_witness,
+        "axiom_status": axiom_status,   # ★ 715：论域分离的公理记账（论文引用这一块）
         "a8_test_710": a8,          # ★ 710-A1：把 707 的「不可自动验证」升级为穷举测试
         "checks": checks,
         "pass": ok,
@@ -282,7 +326,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  恒真（定理）     = {cls['theorems']}")
     print(f"  A2 反例聚合 = {cls['violating_aggregations']['A2']}")
     print(f"  A5 反例聚合 = {cls['violating_aggregations']['A5']}")
-    print(f"  A8（标签轴闭包） = {a8_placeholder['status']}（{a8_placeholder['why'][:40]}...）")
+    print(f"  A8（标签轴闭包） = {axiom_status['A8']['necessity']}"
+          f"（论域 = {axiom_status['A8']['scope']}）")
+    print(f"  独立内容（各自论域内） = "
+          f"{axiom_status['independent_content_within_their_own_domain']}")
     for k, v in checks.items():
         print(f"  [{'ok' if v else 'FAIL'}] {k}")
     print(f"test_axiom_independence: {'PASS' if ok else 'FAIL'}  → {OUT_JSON.relative_to(ROOT).as_posix()}")

@@ -1,7 +1,7 @@
 {
  "schema": "queyi-707/axiom-independence-test/v1",
  "generated_by": "tools/test_axiom_independence.py",
- "generated_at": "2026-10-09T19:03:57+08:00",
+ "generated_at": "2026-10-10T13:47:44+08:00",
  "detect_calls": 0,
  "research_basis": "700-A 元理论发现：A3/A4/A6 恒真，A2/A5 独立（data/700_axiom_independence.json）",
  "authority_source": "data/700_axiom_independence.json",
@@ -87,12 +87,45 @@
    "A1"
   ]
  },
- "a8_placeholder": {
+ "core_incompleteness_witness": {
   "axiom": "A8（标签轴闭包）",
-  "status": "MISSING / TODO",
+  "status": "incompleteness_witness_of_the_seven_axiom_core",
+  "superseded_by": "a8_test_710（710-A1 已给出 A8 的穷举验证）",
   "why": "存在漂移 τ_λ（标签词表变化）使**逐样本裁决与全部公理量都不变**，但**分组统计改变** ⇒ 现有 7 公理系统**无法表达** Type III（标签）漂移。这是**不完备性**的具体见证。",
-  "cannot_auto_verify_reason": "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；本穷举域（覆盖 + 聚合）无法表达它 ⇒ 只能以「未声明 λ 的分组统计不可比较」这一规则人工/规范约束，无法像 A2/A5 那样给出结构反例。",
+  "cannot_auto_verify_reason_in_coverage_domain": "标签轴 λ 属于**报告规范层**，不是覆盖结构性质；覆盖 + 聚合的穷举域无法表达它 ⇒ 在该域内无法像 A2/A5 那样给出结构反例。710-A1 的处置是**换论域**：λ 的论域是 X 上的标签映射（划分），可以穷举。",
   "candidate_formalization": "A8（标签轴闭包）：口径签名必须扩为 (D, A, E, Θ, P, λ)，且任何报告统计量都必须显式声明其**分组轴** λ；未声明 λ 的统计量**不可比较**（与 698-A Type III 的实测结论一致）。"
+ },
+ "axiom_status": {
+  "core_seven": {
+   "scope": "coverage structures（4096 结构 × 7 聚合族）",
+   "independent_axioms": [
+    "A2",
+    "A5"
+   ],
+   "theorems": [
+    "A3",
+    "A4",
+    "A6",
+    "A7"
+   ],
+   "meta_requirement": [
+    "A1"
+   ]
+  },
+  "A8": {
+   "role": "added axiom（标签轴闭包），不属七公理核",
+   "scope": "X 上的标签映射 λ（|X|=4 的划分，Bell(4)=15）",
+   "necessity": "verified_by_exhaustive_enumeration_in_witness_domain",
+   "evidence": "a8_test_710：15 个 λ 使 A1–A7 的全部量不变而分组统计改变",
+   "on_working_corpus": "not_automatically_verified（|X|=1147、34 类词表只有**实测**证据：38.24/42.86/37.50%，可构造区间 [0%,97.06%]，下界是贪心界非已证最优）"
+  },
+  "independent_content_within_their_own_domain": [
+   "A2",
+   "A5",
+   "A8"
+  ],
+  "domains_differ": true,
+  "note": "A2/A5 的独立性在覆盖结构域内穷举验证；A8 的独立性在标签映射域内穷举验证。两者**不能**合为一句「七公理核里有三条独立公理」——核只有 A2/A5 两条。"
  },
  "a8_test_710": {
   "test": "A8（标签轴闭包）穷举测试（论域 = X 的划分，不是覆盖结构）",
@@ -165,8 +198,9 @@
   "A3_A4_A6_A7_are_theorems": true,
   "A2_has_counterexample": true,
   "A5_has_counterexample": true,
-  "A8_missing_confirmed": true,
-  "A8_label_axis_test_passes": true
+  "A8_missing_axiom_confirmed": true,
+  "A8_label_axis_test_passes": true,
+  "independent_content_recorded_with_domains": true
  },
  "pass": true
 }

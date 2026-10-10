@@ -106,10 +106,13 @@ re-measured under adversarial controls and receive one of four outcomes (survive
 collapses, unresolved). Auditing 1147 self-authored and 110 source-derived CVE-reconstruction
 samples yields five findings. (1)~A $+24.0$pp selection gain is mostly measurement-pool
 composition: removing degenerate assets leaves $+7.4$--$11.3$pp. (2)~The instrument is blind
-to 38.4\% of samples in a family-structured way; 41.5\% of real-defect catches ride on one
-asset. (3)~Without the declared WSL profile, real-defect detection falls
-59.09\%$\to$23.64\% with \emph{no} unknown increase and no warning---environment is part of
-the measurement. (4)~Synthetic and source-derived corpora fail TOST equivalence at $\pm10$pp
+to 38.4\% of samples in a family-structured way; 41.5\% of catches on the reconstruction corpus
+ride on one
+asset. (3)~Without the declared WSL profile, detection \emph{on our 110-sample source-derived
+reconstruction corpus} falls
+59.09\%$\to$23.64\% with \emph{no} unknown increase and no warning---on this single environment
+pair, environment is part of the
+measurement. (4)~Synthetic and source-derived corpora fail TOST equivalence at $\pm10$pp
 (90\% CI $[-10.61,+5.52]$pp); standardization shows the similar headline rates hide a
 $-17.9$pp composition offset. (5)~Failure-driven evolution yields no measurable recall gain
 over frequency selection (selection-identical in every tested block; best tier $+1.41$pp,
@@ -175,6 +178,31 @@ detector, a novel selection algorithm, or semantic verification: a \texttt{catch
 acquired evidence within a boundary, never truth. Relation to prior work is compressed here
 (full: Appendix~\ref{app:related}).
 \label{sec:related}
+
+\paragraph{The most adjacent work, and how the objects differ.}
+\citeauthor{li2026auditingaudit}~\cite{li2026auditingaudit} argue that perturbation-based
+construct-validity audits are themselves fragile and name five \emph{pipeline-level} failure modes
+(F1 silent no-op perturbations; F2 regex-extraction artefacts; F3 non-faithful scoring; F4 broken
+bootstrap pairing; F5 metric-archetype mismatch), demonstrated in a self-audit over five safety
+benchmarks, and propose a six-point due-diligence gate under which no cell in their study reaches a
+confirmatory verdict. We share the goal of auditing the auditor and the form of a failure taxonomy
+plus a gate; their F5 is adjacent to our aggregation drift.
+\textbf{The objects differ:} their five modes are
+\emph{cross-sectional implementation defects of a single audit pipeline}---each a bug a careful
+implementer would fix---whereas our eight failure modes are \emph{caliber changes across repeated
+measurements}: the same apparatus, samples and code, scored under a different denominator,
+environment, label vocabulary or aggregation rule, with nothing broken. A no-op perturbation is a
+defect; a changed denominator is a decision. They deliberately \emph{withhold} a validity verdict;
+we grade claims on a four-state scale.
+\emph{Scope of our literature search:} our 2026 references were located by general web search, not
+by a systematic review, so adjacency claims should be read as ``we did not find a closer work''.
+\citet{freiesleben2026benchmarkingepistemology} adapt psychometric validity theory to predictive
+benchmarking and state explicit validity conditions a benchmark score must satisfy before it can
+support a scientific inference. Our caliber tuple is an operationalisation of the same demand at a
+finer granularity: where they ask whether a score licenses an inference about \emph{progress or
+predictability}, we ask whether a rate survives \emph{a change in how it was measured}. We do not
+claim their conditions are insufficient; we claim that in apparatuses with configurable components
+they are not checkable without a declared caliber.
 
 % =====================================================================
 \section{What Is Being Evaluated?}
@@ -371,10 +399,13 @@ them; the protocol therefore pairs a \emph{sample-level} control (I/II) with a
 \paragraph{Datasets (never merged).}
 \emph{Synthetic corpus} (1147 samples): self-authored C++ assertions with planted defects
 across 34 normalized types (8 families), including 64 corpus-null controls and 35 hung
-samples. \emph{Source-derived real-defect corpus} (110 samples): minimal reconstructions of
+samples. \emph{Source-derived reconstruction corpus} (110 samples): minimal reconstructions of
 defects from 30+ real projects (CVE/NVD-verified mechanisms, responses frozen; \emph{not}
 original project code---reconstruction loses build-system and cross-module fidelity). We
-therefore name it \textbf{source-derived reconstruction}, never ``naturalistic'' evidence;
+therefore name it \textbf{source-derived reconstruction}, never ``naturalistic'' evidence, and
+\emph{never} ``real corpus'' or ``real defects'': nothing in this paper was measured on original
+project code (see \S\ref{sec:validity} T2); where a rate is reported below, it is the rate on the
+reconstruction corpus;
 provenance is recorded as a three-value schema (self-authored /
 source-derived-reconstruction / original-external-artifact). A 10-sample counting-caliber
 difference between the A5 matrix ($n{=}1137$, after de-duplication) and the blind-spot map
@@ -487,16 +518,19 @@ we flag the limit of this second comparison honestly---the \emph{severity labels
 are the least reproducible field we measured (AI re-label $\kappa{=}0.157$, near chance;
 \S\ref{sec:validity} T1), so ``severity does not predict detection'' is a statement about our
 labels as much as about the instrument;
-parsing/multimedia real defects detect at $86.96\%$, OS/kernel at $30.77\%$, web-server
-logic at $0\%$. On the real corpus, \textbf{41.5\%} of catches are solo-asset; asan alone
-holds 18; removing asan drops detection $59.09\%\to42.73\%$. Semantic/logic families are
-harder on real defects than on synthetic ones (type punning $-52.2$pp, logic $-22.5$pp,
+parsing/multimedia cases detect at $86.96\%$, OS/kernel at $30.77\%$, web-server
+logic at $0\%$. On the reconstruction corpus, \textbf{41.5\%} of catches are solo-asset; asan alone
+holds 18; removing asan drops detection $59.09\%\to42.73\%$. \emph{Per-asset rates on this corpus
+are not capability readings}: all $110$ reconstructions are single translation units, so the
+linker's applicability surface (ODR / multiple definition) is absent by construction and its
+$0/110$ records the corpus, not the asset. Semantic/logic families are
+harder here than on synthetic ones (type punning $-52.2$pp, logic $-22.5$pp,
 data race $-20.7$pp; type-level, all reported in Appendix~\ref{app:reframe689}). This is a
 major finding, not a limitation.
 
 
 \paragraph{F3. Environment silently changes conclusions (\textbf{survives}).}
-Under the declared WSL profile, the real corpus detects at 59.09\% ($65/110$); under the
+Under the declared WSL profile, the reconstruction corpus detects at 59.09\% ($65/110$); under the
 reduced native profile (compiler-warn/cross-compile/linker only) it drops to
 \textbf{23.64\%} ($-35.45$pp) with \emph{no} unknown increase: 39 catches depend on Linux
 sanitizers, and the un-aware protocol records the missing measurements as misses, so guards
@@ -505,8 +539,10 @@ on 200 paired samples) is benign: 93.5\% agreement, $\kappa{=}0.864/0.843$, $\De
 $\le2$pp, $\Delta$unknown $\le1.5$pp. Three-component accounting
 (catch rate / unknown rate / conditional recall) is the minimum caliber that exposes the
 difference; the native profile's sanitizer absence is an \emph{architectural inference}
-(clang-cl/MSVC not present), declared as such. \emph{Reading:} environment is part of the
-measurement, not a reproducibility footnote. \textbf{Scope of $\Delta_{\text{unknown}}{=}0$.} We report the absence of an
+(clang-cl/MSVC not present), declared as such. \emph{Reading:} on \emph{this apparatus and this
+environment pair}, environment is part of the measurement, not a reproducibility footnote; we
+state it as a one-pair finding and do not claim it generalises to other environment pairs.
+\textbf{Scope of $\Delta_{\text{unknown}}{=}0$.} We report the absence of an
 unknown increase as a \emph{candidate signature on a single environment pair}
 ($n_{\text{env}}{=}1$; E1 \texttt{wsl-gcc-13.3} vs.\ E2 \texttt{windows-native-mingw}), \emph{not}
 a sufficient \emph{fingerprint} of silent degradation: one drift instance cannot define a
@@ -584,20 +620,15 @@ family before calling a delta an improvement (Finding~1, F5).
 \end{enumerate}
 
 \paragraph{Do the rules travel?}
-A degradation-grade replication in LLM-as-a-judge evaluation scores $55.84/100$ on the
-published four-component transfer scale (caliber $15.62$, environment $16.25$, label $21.39$,
-aggregation $2.58$). That total is \emph{corrected here}: the aggregation axis was read as
-non-transferable because a rule change moved the LLM report by only $1.03$pp against $33.33$pp
-here---but the original probe compared two rules \emph{inside} one family and never performed the
-operation that defines the axis, injecting a zero-capability component. Such a component is
-constructible (an always-abstaining judge adds no capability), and on the frozen verdicts a
-mean-type rule is pulled down by $25.00$pp while OR and majority move by $0.00$pp---the same
-structural signature as here ($\sigma(\mathrm{OR}){=}0$, $\sigma(\mathrm{mean}){=}33.3\%$). The
-corrected transfer score is $78.26/100$ (conservative $73.26$): the protocol's migration was
-\emph{understated} by a test-design false negative, not limited by a domain property. One
-diagnostic signature still does not travel: silence \emph{inverts} (a lost measurement becomes
-\texttt{unknown} rather than \texttt{miss}). The correction rests on a constructed judge, not a
-measured one, and the two totals carry different calibers (Appendix~\ref{app:related}).
+A partial replication in LLM-as-a-judge evaluation scores $55.84/100$ on the published
+four-component transfer scale. A transfer criterion in the companion paper
+locates the single failing axis and, probing it with a \emph{constructed} zero-capability judge,
+raises the score to $78.26/100$ (conservative $73.26$; the two totals carry different calibers,
+so both are reported): the published reading was a test-design false negative, not a domain limit,
+and we read it as a \emph{design repair of the earlier probe}, not as a measured cross-domain
+effect. One diagnostic signature still does not travel: silence \emph{inverts} (a lost measurement
+becomes \texttt{unknown} rather than \texttt{miss}). Appendix~\ref{app:related} records the
+per-axis breakdown.
 
 The AGEA abstraction (assets--governance--evolution--accountability) and the submodular
 selection formalization are kept as \emph{tools} supporting R5, not as contributions
@@ -620,7 +651,13 @@ one: on the 25\% blind re-label ($n{=}287$; $n{=}262$ for severity)
 (near chance). Severity is thus the least reliable field we collected, which is why
 Finding~2's ``severity does not predict detection'' carries a label-side caveat as well as an
 instrument-side reading; the two lowest values were unreported before this batch (the
-per-field $\kappa$ artifact is listed in Appendix~\ref{app:reframe689}). A
+per-field $\kappa$ artifact is listed in Appendix~\ref{app:reframe689}).
+This pattern has a direct published analogue: \citet{chen2026judge} find that surface-only
+predictors reproduce $55\%$--$67\%$ of labels across five public label sets, including $67.4\%$
+of MT-Bench human votes, and conclude that a validation set must itself be audited. Both results
+say the same thing---a substantial share of what a verdict or label records is predictable from
+surface features rather than from the construct---and both argue for auditing the validation set
+itself, not only the evaluator. A
 two-annotator blind protocol with a de-identified 145-sample package, 10 calibration items,
 and pre-registered thresholds (verdict $\kappa\ge0.8$; family $\kappa\ge0.7$) is
 \emph{designed and packaged but not executed} (Appendix~\ref{app:reframe689}); until then,
@@ -1391,7 +1428,7 @@ reliability~\cite{han2025judgesverdict}. \emph{Finding~2 heterogeneity}: constru
 aggregate rates~\cite{bean2025constructvalidity} and sample-level masking~\cite{siedler2026samplelevel}.
 \emph{Finding~5}: dynamicisation introduces new incomparabilities~\cite{zhang2025swebenchlive}.
 \emph{Synthesis R1--R5}: auditor accreditation~\cite{costanzachock2022whoaudits} and validity
-theory~\cite{freiesleben2025benchmarkingepistemology}. \emph{Threats}: $\kappa$
+theory~\cite{freiesleben2026benchmarkingepistemology}. \emph{Threats}: $\kappa$
 protocol-sensitivity~\cite{norman2026reliabilityvalidity}; environment validity as a recognised
 class~\cite{siddiq2025reproducibilitycrisis,antunes2024reproducibilitysurvey,cerqueira2026conceptdrift};
 design-effect/ESS/ICC vocabulary~\cite{bean2025constructvalidity}; computable instrument
@@ -1461,37 +1498,32 @@ theorem; we claim no general law, and the evidence is a single environment pair
 (ii) column sums equal the E2 state counts, and (iii) the total equals $n$. The generating
 script asserts all three, so the matrix is reproducible from the frozen counts alone.
 
-\subsection{A metatheory: which axioms are actually independent}
+\subsection{A metatheory, deferred to the companion paper}
 \label{app:metatheory}
-The seven axioms are usually presented as a system. A finite model check ($|X|{=}4$,
-$|A|{=}3$, \emph{all} $2^{4\times3}{=}4096$ coverage structures, seven aggregation families
-spanning the monotone/non-monotone and submodular/non-submodular quadrants) shows that
-\textbf{only two of the seven are independent}: A2 (monotone removal) and A5
-(super-additivity). A3 (idempotence), A4 (commutativity/closure), A6 (irreversibility) and A7
-(observability stratification) follow from defining $\tau$ as column deletion, and A1 (caliber
-enumerability) is a \emph{meta-axiom} that constrains the language rather than the structure.
-The minimal system is therefore $\{$A1 meta$\}\cup\{$A2, A5 structural$\}$, with $\{$A3, A4,
-A6, A7$\}$ as theorems. Writing theorems as axioms makes the system look stronger than it is and
-hides where the real constraints lie; those two constraints are exactly the axiom-level
-counterpart of Type~IV manipulability---\emph{mean} calibers violate A5 (padding with a
-zero-yield asset moves the report) and \emph{min} calibers violate A2.
-\emph{Honest boundary:} ``identically true'' here means true \emph{within} this finite domain
-(4096 structures, seven aggregation families), not a proof for arbitrary domains; and A2 and A5
-could not be separated within this family, so A2's independence is registered as not strictly
-established.
+Our eight failure modes are \emph{operational identification signals}, not an axiom system. The
+axiomatisation belongs to the companion paper and we use only two of its consequences here.
+In brief: an eight-axiom algebra of drift generators is given there with a finite model check
+($|X|{=}4$, $|A|{=}3$: all $2^{4\times3}{=}4096$ coverage structures $\times$ seven aggregation
+families, plus all $\mathrm{Bell}(4){=}15$ label maps of the four-sample witness domain), a
+completeness criterion, and the finding that \textbf{only two of the seven-axiom core are
+independent}---A2 (monotone removal) and A5 (super-additivity)---while A3 (idempotence), A4
+(commutativity/closure), A6 (irreversibility) and A7 (observability stratification) follow from
+defining $\tau$ as column deletion and A1 is a \emph{meta-axiom}. The one added axiom, \textbf{A8
+(label-axis closure)}, is checked in its own (label-map) domain, not in the coverage grid; we
+never merge the two counts, because they live in different domains.
+\emph{Honest boundary:} ``identically true'' means true \emph{within} that finite domain, not a
+proof for arbitrary domains.
 
-\paragraph{Incompleteness: the missing A8.}
-The system does not describe all four drift types. Fix a coverage structure $C_a{=}\{0,1\}$,
-$C_b{=}\{2\}$, $C_c{=}\varnothing$ and a per-sample adjudication $V{=}(c,c,c,m)$; coarsening the
-label vocabulary from three classes to one leaves \emph{every} quantity the seven axioms mention
-unchanged ($R_{\mathrm{or}}{=}0.75$), while the per-group blind-spot rate moves from
-$\{0,0,1\}$ to $\{0.25\}$. Type~III (label) drift is thus \emph{inexpressible}: $\lambda$ is not
-in the caliber signature $(D,A,E,\Theta,P)$. We register the missing axiom \textbf{A8
-(label-axis closure)}: the signature must become $(D,A,E,\Theta,P,\lambda)$ and any reported
-statistic must declare its grouping axis; statistics without a declared $\lambda$ are not
-comparable. This is the axiom-level statement of the measured non-monotonicity of the
-high-blindness share (38.24\% under 34 classes vs.\ 25.71\% under 70). Within this finite domain
-we found no gap other than A8, and we do not claim there is none.
+\paragraph{The two consequences we use.}
+(i)~\emph{Type~IV manipulability}: \emph{mean}-type calibers violate A5 (padding the pool with a
+zero-yield asset moves the report) and \emph{min}-type calibers violate A2---the axiom-level
+counterpart of the aggregation drift we measure. (ii)~\emph{The label-axis obligation}: any
+grouped statistic must declare its grouping axis $\lambda$, i.e.\ the caliber signature must
+carry the $\lambda$ slot $(D,A,E,\Theta,P,\lambda)$; the witness is that coarsening a label
+vocabulary leaves every per-sample verdict and every seven-axiom quantity unchanged
+($R_{\mathrm{or}}{=}0.75$) while the per-group blind-spot rate moves from $\{0,0,1\}$ to
+$\{0.25\}$. This is the axiom-level statement of the non-monotonicity we measured on the corpus
+(38.24\% under 34 classes vs.\ 25.71\% under 70).
 
 \paragraph{Complexity of caliber arbitrage.}
 Choosing a reported asset set $S$ with $R(S)\ge v$ under a budget $|A\setminus S|\le k$ is
@@ -1530,9 +1562,15 @@ IV  & aggregation rule            & $0.0000$ & $\infty$       & --- \\
 \end{tabular}
 \end{table}
 
-Two consequences follow. (i)~Audit cost is driven by \emph{how many samples carry the drift}
+Two consequences follow, both \emph{read off this apparatus} (566-sample frame, one environment
+pair, fully one-directional discordance $\pi{=}1$).
+(i)~Audit cost is driven by \emph{how many samples carry the drift}
 ($\psi$), not by how large it is: a $-35$pp drift is detected with $17$ paired samples, while a
-$0.71$pp drift needs $849$. (ii)~Types III and IV are not ``hard to detect'' but
+$0.71$pp drift needs $849$. \emph{These two numbers are computed from measured $\psi$ and move
+with the asset pool and the environment pair; they are not universal constants.} The derivation,
+the KL floors ($329$ and $7$), and the strategy simulations are in the companion paper, where
+these are stated as a conditional design analysis rather than a general sample-size requirement.
+(ii)~Types III and IV are not ``hard to detect'' but
 \emph{undetectable by any per-sample test}: they leave every per-sample verdict unchanged, so
 $\psi{=}0$ and the power of any paired test (McNemar, permutation, bootstrap) is
 \emph{identically zero}. The protocol's Step~3 must therefore be a \textbf{dual design}:
