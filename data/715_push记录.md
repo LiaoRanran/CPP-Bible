@@ -158,6 +158,40 @@ $ git -c https.proxy= ls-remote origin HEAD   → 9d32b6cb…（直连成功）
 
 ---
 
+## 5b. 追加提交与推送失败（诚实登记）
+
+写完验收报告后又产生了 1 个提交（`475e5595` 715-C：Part 2/3 + 验收报告），**它的推送失败**：
+
+```
+$ git -c http.proxy= -c https.proxy= push origin master
+[prepush] ✅ 全部快校验通过，可 push
+error: RPC failed; curl 56 Recv failure: Connection was reset
+fatal: the remote end hung up unexpectedly
+```
+
+随后 3 次尝试（直连 1 次、代理 2 次）全部失败，且**连只读的 `ls-remote` 也失败**：
+
+```
+$ git -c https.proxy= ls-remote origin refs/heads/master
+fatal: Failed to connect to github.com port 443 after 21115 ms: Could not connect to server
+$ git ls-remote origin refs/heads/master          # 走默认代理
+fatal: Recv failure: Connection was reset
+```
+
+⇒ **本机到 github.com 的网络出口在 2026-10-10 本批次末尾不可用**（与本次改动无关；
+pre-push 钩子仍全绿）。
+
+| 仓库 | 本地 HEAD | 远端分支 | 待推送 | 说明 |
+|---|---|---|---|---|
+| `CPP-Bible` | `475e5595`（715-C） | `9d32b6cb`（715-B） | **1** | 13 个提交已成功推送；**第 14 个（验收报告）未能推送** |
+| `queyi-audit` | `de5356e` | `de5356e` | **0** | 已同步 |
+
+**处置建议**：网络恢复后，在任一有网的终端执行一次
+`git -c http.proxy= push origin master` 即可（该提交已通过 pre-push 钩子的全部检查）。
+**不需要**任何其它操作，也不需要 `--no-verify`。
+
+---
+
 ## 6. 与 Part 2 建议的冲突（诚实登记，需用户裁决）
 
 **本次 push 使两份匿名投稿论文的 LaTeX 源码以真名账号公开**（`LiaoRanran/CPP-Bible`）。
