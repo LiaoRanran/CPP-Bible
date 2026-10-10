@@ -1,0 +1,335 @@
+{
+ "schema": "queyi-716/e3-paired/v1",
+ "generated_by": "tools/run_716_e3_environment.py",
+ "generated_at": "2026-10-10T16:04:59+08:00",
+ "detect_calls": 0,
+ "frame": {
+  "n": 200,
+  "selection": "683-B3 pilot uids（stratified_sample(seed=6831, n=200)，跳过 hung；uid 与 676g 矩阵一一对应）",
+  "files_root": "data/holdout_expansion/<batch>/"
+ },
+ "environment": {
+  "E1": "WSL2 Ubuntu 24.04.4 + g++ 13.3.0（676g 冻结矩阵，reuse）",
+  "E2": "Windows native MinGW g++ 13.1.0 / clang 22.1.8（676g 冻结矩阵，reuse）",
+  "E3": "WSL2 Ubuntu 24.04.4 + clang++ 18.1.3（本批实测；asan/ubsan 复用 683-B3）"
+ },
+ "probe": {
+  "probe_time": "2026-10-10T16:05:00+08:00",
+  "wsl_available": true,
+  "fingerprint_lines": [
+   "6.18.33.2-microsoft-standard-WSL2",
+   "Ubuntu clang version 18.1.3 (1ubuntu1)",
+   "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+   "ldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39",
+   "#include <...> search starts here:",
+   " /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14",
+   " /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14",
+   " /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/backward",
+   " /usr/lib/llvm-18/lib/clang/18/include",
+   " /usr/local/include",
+   " /usr/include/x86_64-linux-gnu",
+   " /usr/include"
+  ],
+  "raw": "6.18.33.2-microsoft-standard-WSL2\n---\nUbuntu clang version 18.1.3 (1ubuntu1)\n---\ng++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\n---\nldd (Ubuntu GLIBC 2.39-0ubuntu8.9) 2.39\n---\n#include <...> search starts here:\n /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14\n /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/x86_64-linux-gnu/c++/14\n /usr/bin/../lib/gcc/x86_64-linux-gnu/14/../../../../include/c++/14/backward\n /usr/lib/llvm-18/lib/clang/18/include\n /usr/local/include\n /usr/include/x86_64-linux-gnu\n /usr/include"
+ },
+ "per_asset": {
+  "asan": {
+   "n": 200,
+   "baseline_environment": "E1: wsl-gcc-13.3",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 61,
+     "miss": 4,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 6,
+     "miss": 122,
+     "unknown": 3
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 4
+    }
+   },
+   "agree": 187,
+   "agree_pct": 93.5,
+   "kappa_3class": 0.864,
+   "e1_catch": 65,
+   "e3_catch": 67,
+   "delta_catch_pp": 1.0,
+   "delta_unknown_pp": 1.5,
+   "c_to_m": 4,
+   "m_to_c": 6,
+   "c_to_u": 0,
+   "m_to_u": 3,
+   "mcnemar_exact_p": 0.753906,
+   "e3_unknown_notes": [
+    "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-B",
+    "clang 不可用: -O0 编译失败:clang++: warning: treating 'c-header' in"
+   ]
+  },
+  "ubsan": {
+   "n": 200,
+   "baseline_environment": "E1: wsl-gcc-13.3",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 45,
+     "miss": 3,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 7,
+     "miss": 138,
+     "unknown": 3
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 4
+    }
+   },
+   "agree": 187,
+   "agree_pct": 93.5,
+   "kappa_3class": 0.8434,
+   "e1_catch": 48,
+   "e3_catch": 52,
+   "delta_catch_pp": 2.0,
+   "delta_unknown_pp": 1.5,
+   "c_to_m": 3,
+   "m_to_c": 7,
+   "c_to_u": 0,
+   "m_to_u": 3,
+   "mcnemar_exact_p": 0.34375,
+   "e3_unknown_notes": [
+    "clang 不可用: -O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-B",
+    "clang 不可用: -O0 编译失败:clang++: warning: treating 'c-header' in"
+   ]
+  },
+  "tsan": {
+   "n": 200,
+   "baseline_environment": "E1: wsl-gcc-13.3",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 42,
+     "miss": 1,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 1,
+     "miss": 149,
+     "unknown": 3
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 4
+    }
+   },
+   "agree": 195,
+   "agree_pct": 97.5,
+   "kappa_3class": 0.9341,
+   "e1_catch": 43,
+   "e3_catch": 43,
+   "delta_catch_pp": 0.0,
+   "delta_unknown_pp": 1.5,
+   "c_to_m": 1,
+   "m_to_c": 1,
+   "c_to_u": 0,
+   "m_to_u": 3,
+   "mcnemar_exact_p": 1.0,
+   "e3_unknown_notes": [
+    "-O0 编译失败:/mnt/c/CodeLearnling/note/note/C++/CPP-Bible/data/h",
+    "-O0 编译失败:clang++: warning: treating 'c-header' input as 'c++"
+   ]
+  },
+  "compiler-warn": {
+   "n": 200,
+   "baseline_environment": "E2: windows-native-mingw-gcc-13.1（676g 列在原生侧跑的）",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 20,
+     "miss": 2,
+     "unknown": 1
+    },
+    "miss": {
+     "catch": 18,
+     "miss": 158,
+     "unknown": 1
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "agree": 178,
+   "agree_pct": 89.0,
+   "kappa_3class": 0.5928,
+   "e1_catch": 23,
+   "e3_catch": 38,
+   "delta_catch_pp": 7.5,
+   "delta_unknown_pp": 1.0,
+   "c_to_m": 2,
+   "m_to_c": 18,
+   "c_to_u": 1,
+   "m_to_u": 1,
+   "mcnemar_exact_p": 0.00149,
+   "e3_unknown_notes": [
+    "clang 编译失败(非告警): /mnt/c/CodeLearnling/note/note/C++/CPP-Bibl"
+   ]
+  },
+  "cross-compile": {
+   "n": 200,
+   "baseline_environment": "E2: windows-native-mingw-gcc-13.1（676g 列在原生侧跑的）",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 20,
+     "miss": 1,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 8,
+     "miss": 163,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 1,
+     "unknown": 7
+    }
+   },
+   "agree": 190,
+   "agree_pct": 95.0,
+   "kappa_3class": 0.8205,
+   "e1_catch": 21,
+   "e3_catch": 28,
+   "delta_catch_pp": 3.5,
+   "delta_unknown_pp": -0.5,
+   "c_to_m": 1,
+   "m_to_c": 8,
+   "c_to_u": 0,
+   "m_to_u": 0,
+   "mcnemar_exact_p": 0.039062,
+   "e3_unknown_notes": [
+    "clang++ 编译失败: /mnt/c/CodeLearnling/note/note/C++/CPP-Bible/d",
+    "clang++ 编译失败: clang++: warning: treating 'c-header' input as",
+    "g++ 编译失败: /usr/bin/ld: /tmp/cc0iETNu.o: in function `f0()':\n",
+    "g++ 编译失败: /usr/bin/ld: /tmp/ccg9jrQN.o: in function `f5()':\n",
+    "g++ 编译失败: /usr/bin/ld: /tmp/ccjO9O6K.o: in function `f4()':\n"
+   ]
+  },
+  "linker": {
+   "n": 200,
+   "baseline_environment": "E2: windows-native-mingw-gcc-13.1（676g 列在原生侧跑的）",
+   "matrix_E1_rows_E3_cols": {
+    "catch": {
+     "catch": 4,
+     "miss": 0,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 3,
+     "miss": 193,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "agree": 197,
+   "agree_pct": 98.5,
+   "kappa_3class": 0.7201,
+   "e1_catch": 4,
+   "e3_catch": 7,
+   "delta_catch_pp": 1.5,
+   "delta_unknown_pp": 0.0,
+   "c_to_m": 0,
+   "m_to_c": 3,
+   "c_to_u": 0,
+   "m_to_u": 0,
+   "mcnemar_exact_p": 0.25,
+   "e3_unknown_notes": []
+  }
+ },
+ "or_level": {
+  "all6_OR_mixed_baseline": {
+   "n": 200,
+   "matrix": {
+    "catch": {
+     "catch": 118,
+     "miss": 4,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 10,
+     "miss": 68,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "e1": {
+    "miss": 78,
+    "catch": 122
+   },
+   "e3": {
+    "miss": 72,
+    "catch": 128
+   },
+   "delta_catch_pp": 3.0,
+   "delta_unknown_pp": 0.0,
+   "mcnemar_exact_p": 0.179565,
+   "baseline_note": "三列 sanitizer 的基线是 E1（WSL g++13.3），三列编译/链接资产的基线是 E2（native MinGW）——本行是**混合基线**，不得读作单一 E1→E3 对比"
+  },
+  "E2support_vs_E3_same3": {
+   "n": 200,
+   "assets": [
+    "compiler-warn",
+    "cross-compile",
+    "linker"
+   ],
+   "matrix": {
+    "catch": {
+     "catch": 41,
+     "miss": 3,
+     "unknown": 0
+    },
+    "miss": {
+     "catch": 21,
+     "miss": 135,
+     "unknown": 0
+    },
+    "unknown": {
+     "catch": 0,
+     "miss": 0,
+     "unknown": 0
+    }
+   },
+   "e2": {
+    "miss": 156,
+    "catch": 44
+   },
+   "e3": {
+    "miss": 138,
+    "catch": 62
+   },
+   "delta_catch_pp": 9.0,
+   "delta_unknown_pp": 0.0,
+   "mcnemar_exact_p": 0.000277,
+   "note": "两侧都只取 E2 支撑集 {compiler-warn, cross-compile, linker}；E2 值取自 676g 冻结矩阵（native MinGW），E3 值为本批 WSL clang 读数"
+  }
+ },
+ "honesty": [
+  "E3 的 compiler-warn / cross-compile / linker 是**口径重声明**（clang 诊断集 ≠ gcc；cross-compile 在 E3 内定义为 g++13.3 vs clang18），与 E2 的同名资产**不完全同构**——读数差异同时含'工具链差异'与'口径差异'，不得读作纯环境因果效应。",
+  "E2→E3 同时改变了 OS 与编译器（两个组件），只作对照不作因果。",
+  "asan/ubsan 为 683-B3 的 reuse（同环境 clang 18.1.3、同判定字符串），未重跑。",
+  "200 帧不含 hung 样本（抽样跳过）；全池结论不外推。"
+ ]
+}
