@@ -174,9 +174,9 @@ evaluator}; our claim concerns the audited object (a software-verification
 \emph{evidence-acquisition apparatus}, including caliber, assets, environment, labels and
 denominators), an executable protocol, and negative findings
 (Table~\ref{tab:positioning}, Appendix~\ref{app:reframe689}). We do not claim a better
-detector, a novel selection algorithm, or semantic verification: a \texttt{catch} is
-acquired evidence within a boundary, never truth. Relation to prior work is compressed here
-(full: Appendix~\ref{app:related}).
+detector, a novel selection algorithm, or semantic verification: a \texttt{catch} is acquired
+evidence within a boundary, never truth. Relation to prior work is compressed here (full:
+Appendix~\ref{app:related}).
 \label{sec:related}
 
 \paragraph{The most adjacent work, and how the objects differ.}
@@ -198,11 +198,11 @@ we grade claims on a four-state scale.
 by a systematic review, so adjacency claims should be read as ``we did not find a closer work''.
 \citet{freiesleben2026benchmarkingepistemology} adapt psychometric validity theory to predictive
 benchmarking and state explicit validity conditions a benchmark score must satisfy before it can
-support a scientific inference. Our caliber tuple is an operationalisation of the same demand at a
-finer granularity: where they ask whether a score licenses an inference about \emph{progress or
-predictability}, we ask whether a rate survives \emph{a change in how it was measured}. We do not
-claim their conditions are insufficient; we claim that in apparatuses with configurable components
-they are not checkable without a declared caliber.
+support a scientific inference. Our caliber tuple operationalises the same demand more finely:
+where they ask whether a score licenses an inference about \emph{progress or predictability}, we ask
+whether a rate survives \emph{a change in how it was measured}; we do not claim their conditions
+insufficient, only that with configurable components they are not checkable without a declared
+caliber.
 
 % =====================================================================
 \section{What Is Being Evaluated?}
@@ -500,9 +500,31 @@ sixth asset as separator, the slot effect at $k{=}4$ is $5.12$pp and \texttt{lin
 contributes $-0.47$pp (it holds $4/566$ catches, none covered by another pool asset); an independent
 cross-frame recomputation gives $5.35$pp and the $g_{\text{app}}$ slope of the Type~I scan gives
 $5.32$pp. The residual tier is also predictable rather than mysterious: under clone-family-aware
-folds, semantic$+$context features reach AUC $0.7999$ (a single shrunk type/group rate: $0.785$)
-against $0.7662$ for the type-mean baseline and $0.7551$ for models carrying source-structure
-features (Appendix~\ref{app:blindspot}).
+folds \emph{within this corpus}---held-out \emph{families}, not held-out \emph{corpora}---
+semantic$+$context features reach AUC $0.7999$ (a single shrunk type/group rate: $0.785$)
+against $0.7662$ for a type-mean baseline and $0.7551$ for models carrying source-structure
+features; \emph{cross-corpus transfer is untested} (Appendix~\ref{app:blindspot}).
+\emph{Equal-marginal substitution (experimental decomposition, added in 716).}
+The chain above moves one knob at a time in a fixed order, so it must charge the steps it
+visits with all interaction mass. Reading it, an independent read-only $2^4$ full factorial on
+the same $566$-frame matrix (accounting $\times$ pool $\times$ slot-controlled \texttt{linker}
+substitution $\times$ budget tier; \texttt{detect\_calls}$=0$, the substitution replaces
+\texttt{linker} by an all-miss column at fixed $|P|$ and $k$) gives the same picture with a
+different, path-independent attribution: the dominant dimensions are budget tier
+($+7.33$pp, $61.7\%$ of the sum of squares) and pool composition ($-5.10$pp, $29.9\%$), while
+the slot-controlled \texttt{linker} substitution is $+0.19$pp ($0.01\%$) and \emph{exactly}
+$0.00$pp on the selected-set rate---greedy never selects it at $k\in\{1,4\}$, so the $-4.65$pp
+step is pool geometry, not capability. Four interaction terms ($6.2\%$ of SS) are individually
+significant, which is why the sequential steps cannot be read as four independent main effects;
+and the $+24.03$ versus $+14.48$ contrast carries no caliber content---it is single-draw
+variance (over $2000$ draws the single-draw gain has mean $+16.11$pp, $0.21$pp from the exact
+expectation $+15.89$pp, $5$--$95\%$ range $[+4.24,+32.51]$pp). The experiment \emph{replaces no
+number} above: the chain is a path-dependent accounting identity, the factorial answers the
+path-independent attribution question. Two design choices and one degeneracy are registered:
+$k\in\{1,4\}$, pools $\in\{8,6\}$, and the four \texttt{aware}$+$full-pool cells collapse
+constructively to $100\%$, so the $2^3$ naive-only sensitivity is reported as well
+(pool $-6.28$, $k+5.90$, linker $+0.26$pp); the $16$-cell table is in
+Appendix~\ref{app:equal716}.
 \emph{Anchors and mechanism.} Apparatus-driven headline gains are not
 isolated~\cite{bhat2026benchmarkingbenchmarks,shao2026protocolvalidity}; unlike those artifacts
 (adversarial exploitation or a scoring defect), ours is non-adversarial apparatus degradation
@@ -714,13 +736,12 @@ map of what survives.
 \paragraph{Future work.}
 Execute the human annotation (the single most important pending item); reproduce a small set
 of original-project builds to test reconstruction fidelity; add an LLM-as-verifier arm and
-semantic/logic-layer verifiers; extend the audit protocol across languages/domains; and
-invite third-party replication challenges under the published caliber. Three items follow
-from the gaps exposed: (i)~\emph{an equal-margin substitution design} to separate composition
-from mechanism in F1; (ii)~\emph{a drift algebra} with identifiability conditions;
-(iii)~\emph{an axiomatisation of the four-state verdict algebra}. We also intend to
-\emph{pre-register} the A5 downgrade
-clause~\cite{vaccaro2026preregistration}.
+semantic/logic-layer verifiers; extend the protocol across languages/domains; and invite
+third-party replication challenges. Three items follow from the
+gaps exposed: an \emph{equal-margin substitution design} to separate composition from mechanism in
+F1; a \emph{drift algebra} with identifiability conditions; and an \emph{axiomatisation} of the
+four-state verdict algebra. The A5 downgrade clause will be
+pre-registered~\cite{vaccaro2026preregistration}.
 
 \clearpage
 \label{page:endmain}% records the page where the main text ends (for the 9-page check)
@@ -1948,6 +1969,40 @@ when violated), a deterministic and fully traceable operator (ties broken by id;
 auditable), and this exhaustive ablative evidence itself. Machine-readable artifacts:
 \texttt{data/683\_operator\_ablation.json}, \texttt{data/683\_baseline\_comparison.json}.
 
+\subsection{Equal-marginal substitution: the $2^4$ factorial (716)}
+\label{app:equal716}
+\textbf{Design (read-only).} All $16$ combinations of accounting rule (naive / aware) $\times$
+declared pool ($8$ assets / zero-yield-removed $6$) $\times$ slot-controlled \texttt{linker}
+substitution (present / replaced by an all-miss synthetic column) $\times$ budget tier
+($k{=}1$ / $k{=}4$), evaluated on the same $566$-frame evaluation split
+(\texttt{detect\_calls}$=0$; the slot control holds $|P|$ and $k$ fixed, so it isolates
+\emph{which asset} rather than \emph{how many}). Response:
+$\Delta=R(S_{\text{sel}})-\mathbb{E}[R(S_{\text{rand}})]$ (selection gain, pp); random arm by
+exact expectation over all $\binom{|P|}{k}$ draws.
+
+\textbf{Results.} Yates effects on $\Delta$: budget tier $+7.330$ ($SS$ $61.71\%$), pool
+$-5.103$ ($29.91\%$), accounting $-1.356$ ($2.11\%$), \texttt{linker} $+0.194$ ($0.01\%$);
+interactions accounting$\,\times\,k$ $+1.430$, accounting$\,\times\,$pool$\,\times\,k$ $-1.195$,
+accounting$\,\times\,$pool $+1.172$, pool$\,\times\,k$ $+0.744$ (jointly $6.2\%$ of $SS$; all
+bootstrap intervals exclude zero); every remaining term $|\text{effect}|\le0.064$. On the
+\emph{selected-set rate} the \texttt{linker} effect is exactly $0.000$pp: the greedy selection is
+$\{$asan, ubsan, tsan, compiler-warn$\}$ at $k{=}4$ and $\{$asan$\}$ at $k{=}1$, which never
+contains \texttt{linker}. Single-draw calibration of the random arm: mean $+16.108$pp over $2000$
+draws against the exact expectation $+15.894$pp (gap $+0.215$pp), $5$--$95\%$ range
+$[+4.240,+32.509]$pp, maximum $+43.463$pp.
+
+\textbf{Registered limits.} (i) $k\in\{1,4\}$ and pools $\in\{8,6\}$ are design choices; the
+$k\in\{2,3\}$ tier and intermediate pools were not run. (ii) In the four \texttt{aware}$+$full-pool
+cells the pool verdict is \texttt{unknown} for uncaptured samples (two all-\texttt{unknown}
+assets), so the rate collapses constructively to $100\%$; the accounting main effect and the
+accounting$\,\times\,$pool interaction therefore mix a genuine recording difference with that
+algebraic collapse and cannot be separated in this design. The $2^3$ naive-only sensitivity
+(pool $-6.275$, $k+5.900$, \texttt{linker} $+0.258$pp) is reported alongside. (iii) This is a
+substitution of \emph{columns at fixed margin}, not a replacement of the sample pool---the latter
+still requires new measurement. Artifacts: the $16$-cell JSON under \texttt{data/715\_*} plus
+\texttt{tools/compute\_715\_equal\_marginal\_factorial.py} (reproduces the effects and the
+bootstrap intervals).
+
 \section{Toolchain Sensitivity (683)}
 \label{app:toolchain683}
 \textbf{Cross-compiler (same platform).} Re-running the asan/ubsan arms of a stratified 200-sample
@@ -1962,6 +2017,21 @@ cannot replace the sanitizer arms, a boundary recorded rather than papered over.
 \textbf{Unavailable tooling (registered).} MSVC is absent from the environment and MinGW
 clang++~22.1 cannot link the ASan runtime (\texttt{libclang\_rt.asan\_dynamic} missing); neither
 contributes a number here.
+\textbf{Third environment (E3, added in 716).} A third profile---same OS and glibc, different compiler
+family (Ubuntu clang++~18.1.3, whose sanitizer runtime was smoke-verified, against the frozen WSL
+g++~13.3 baseline)---was replayed on the same stratified $200$-frame subset over the six effective
+assets, giving the environment axis a second control point beyond native MinGW. Three-state agreement
+and $\kappa$: asan $93.5\%$ ($0.864$), ubsan $93.5\%$ ($0.843$), tsan $97.5\%$ ($0.934$). The swap is
+bidirectional (reverse pairs $m\!\to\!c$: $6/7/1$; forward $c\!\to\!m$: $4/3/1$), so unlike
+environment gating this is a \emph{changed-instrument} drift, not a capability withdrawal, and the
+one-directionality criterion does not protect it. The diagnostic asset is the exception and the
+interesting case: \texttt{compiler-warn} agrees only $89.0\%$ ($\kappa{=}0.593$) with a $+7.5$pp clang
+advantage (McNemar $p{=}0.0015$)---diagnostic-text assets are the least toolchain-stable component, as
+the design pre-registered. On the three assets the native profile supports, clang recovers $+9.0$pp
+over MinGW ($44\!\to\!62$ catches, $p{=}2.8\times10^{-4}$): part of what reads as capability
+withdrawal is toolchain, not capability. Bounds: the compile/link assets carry a re-declared caliber
+under clang, the native$\to$E3 comparison changes two components at once, and $|X|{=}200$; artifacts
+\texttt{data/716\_e3\_paired.json} and \texttt{tools/run\_716\_e3\_environment.py}.
 
 \section{Added Theory, Robustness and Meta-Evaluation Analyses (684--686)}
 \label{app:added687}
