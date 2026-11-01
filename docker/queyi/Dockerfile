@@ -11,7 +11,7 @@
 #
 # 供应链：python:3.12-slim 官方镜像；仅装 pyyaml（门禁工具的顶层依赖）。
 # 以非 root 用户运行；镜像内不含任何密钥/凭据（683 红线 9）。
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 # 基础镜像以 tag 引用：683 执行环境本机无 Docker，**无法取得并验证真实 digest**，
 # 按"不编造"原则不写未验证的 digest（写了会误导且直接导致 build 失败）。
